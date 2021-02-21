@@ -137,7 +137,7 @@
      inkscape:window-width="1440"
      inkscape:window-height="847"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      showguides="false"
      inkscape:snap-bbox="true"
@@ -308,7 +308,7 @@
          style="stroke-width:0.264583" /></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:23.0085px;line-height:1.25;font-family:sans-serif;fill:#252627;fill-opacity:1;stroke:none;stroke-width:1.6733;stroke-linejoin:round"
+       style="font-style:normal;font-weight:normal;font-size:23.00850000000000151px;line-height:1.25;font-family:sans-serif;fill:#0044aa;fill-opacity:1;stroke:none;stroke-width:1.6733;stroke-linejoin:round;"
        x="37.408134"
        y="30.716223"
        id="text108-4-5-7"
@@ -317,10 +317,10 @@
          id="tspan106-3-8-1"
          x="37.408134"
          y="30.716223"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0085px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#252627;fill-opacity:1;stroke-width:1.6733;stroke-linejoin:round">doc</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.00850000000000151px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#0044aa;fill-opacity:1;stroke-width:1.6733;stroke-linejoin:round;">doc</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:22.4237px;line-height:1.25;font-family:sans-serif;fill:#252627;fill-opacity:1;stroke:none;stroke-width:1.63077;stroke-linejoin:round"
+       style="font-style:normal;font-weight:normal;font-size:22.42370000000000019px;line-height:1.25;font-family:sans-serif;fill:#0044aa;fill-opacity:1;stroke:none;stroke-width:1.63077;stroke-linejoin:round;"
        x="126.62949"
        y="29.901983"
        id="text108-4-5-3"
@@ -329,9 +329,9 @@
          id="tspan106-3-8-8"
          x="126.62949"
          y="29.901983"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.4237px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#252627;fill-opacity:1;stroke-width:1.63077;stroke-linejoin:round">dub</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.42370000000000019px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#0044aa;fill-opacity:1;stroke-width:1.63077;stroke-linejoin:round;">dub</tspan></text>
     <circle
-       style="fill:#252627;fill-opacity:1;stroke:none;stroke-width:0.428625;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#0044aa;fill-opacity:1;stroke:none;stroke-width:0.428625;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1033"
        cx="84.666664"
        cy="21.166666"
@@ -380,6 +380,6 @@
          id="tspan910"
          x="44.450001"
          y="4.2333331"
-         style="stroke-width:0.264583"></tspan></text>
+         style="stroke-width:0.264583" /></text>
   </g>
 </svg>
