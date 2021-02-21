@@ -14,7 +14,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
-   sodipodi:docname="E.inkscape.svg">
+   sodipodi:docname="E.inkscape.svg"
+   inkscape:export-filename="/Users/andy/-/images/E.png"
+   inkscape:export-xdpi="648"
+   inkscape:export-ydpi="648">
   <defs
      id="defs2">
     <linearGradient
@@ -105,10 +108,10 @@
      showgrid="true"
      units="px"
      inkscape:window-width="1440"
-     inkscape:window-height="847"
+     inkscape:window-height="872"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      showguides="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -233,7 +236,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
