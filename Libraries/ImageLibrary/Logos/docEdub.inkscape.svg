@@ -14,7 +14,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
-   sodipodi:docname="docEdub.inkscape.svg">
+   sodipodi:docname="docEdub.inkscape.svg"
+   inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+   inkscape:export-xdpi="201.39"
+   inkscape:export-ydpi="201.39">
   <defs
      id="defs2">
     <linearGradient
@@ -135,10 +138,10 @@
      showgrid="true"
      units="px"
      inkscape:window-width="1440"
-     inkscape:window-height="847"
+     inkscape:window-height="872"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      showguides="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -263,7 +266,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -279,17 +282,26 @@
        x="12.7"
        y="8.4666662"
        ry="12.7"
-       rx="6.3500028" />
+       rx="6.3500028"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6" />
     <text
        xml:space="preserve"
        id="text100"
-       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:10.58333305999999929px;white-space:pre;shape-inside:url(#rect102);stroke-linejoin:round;" />
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:10.58333305999999929px;white-space:pre;shape-inside:url(#rect102);stroke-linejoin:round;"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58329999999999949px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-linejoin:round;"
        x="48.683334"
        y="50.799999"
-       id="text203"><tspan
+       id="text203"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan201"
          x="48.683334"
@@ -300,7 +312,10 @@
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="222.25"
        y="0"
-       id="text1148"><tspan
+       id="text1148"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan1146"
          x="222.25"
@@ -312,7 +327,10 @@
        x="37.408134"
        y="30.716223"
        id="text108-4-5-7"
-       transform="scale(1.048966,0.95331975)"><tspan
+       transform="scale(1.048966,0.95331975)"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-1"
          x="37.408134"
@@ -324,7 +342,10 @@
        x="126.62949"
        y="29.901983"
        id="text108-4-5-3"
-       transform="scale(1.0196597,0.98071936)"><tspan
+       transform="scale(1.0196597,0.98071936)"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8"
          x="126.62949"
@@ -335,14 +356,20 @@
        id="path1033"
        cx="84.666664"
        cy="21.166666"
-       r="21.166666" />
+       r="21.166666"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:34.7942px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.53043;stroke-linejoin:round;stroke-opacity:1"
        x="72.681221"
        y="36.951454"
        id="text108-4-5-3-9"
-       transform="scale(1.1638256,0.85923525)"><tspan
+       transform="scale(1.1638256,0.85923525)"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8-4"
          x="72.681221"
@@ -353,7 +380,10 @@
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="120.65"
        y="50.799999"
-       id="text1027"><tspan
+       id="text1027"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan1025"
          x="120.65"
@@ -364,7 +394,10 @@
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="105.83333"
        y="-4.2333331"
-       id="text1031"><tspan
+       id="text1031"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan1029"
          x="105.83333"
@@ -375,7 +408,10 @@
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="44.450001"
        y="4.2333331"
-       id="text912"><tspan
+       id="text912"
+       inkscape:export-filename="/Users/andy/-/images/docEdub.png"
+       inkscape:export-xdpi="123.6"
+       inkscape:export-ydpi="123.6"><tspan
          sodipodi:role="line"
          id="tspan910"
          x="44.450001"
