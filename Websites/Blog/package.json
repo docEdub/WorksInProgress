@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "fonts:build": "cp ../../.git-lfs/Libraries/FontLibrary/BlogFonts/* ./build/assets/fonts",
     "fonts:clean": "rm ./build/assets/fonts/*",
-    "logo:build": "./node_modules/svgo/bin/svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
+    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
     "logo:clean": "rm ./static/img/docEdub.svg",
     "hugo:build": "hugo -d build",
     "hugo:serve": "hugo server",
