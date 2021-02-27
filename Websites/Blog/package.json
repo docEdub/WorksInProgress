@@ -8,13 +8,16 @@
     "clean": "npm run fonts:clean && npm run logo:clean && npm run hugo:clean",
     "serve": "npm run hugo:serve",
     "test": "echo \"Error: no test specified\" && exit 1",
+
     "fonts:build": "cp ../../.git-lfs/Libraries/FontLibrary/BlogFonts/* ./build/assets/fonts",
     "fonts:clean": "rm ./build/assets/fonts/*",
-    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
-    "logo:clean": "rm ./static/img/docEdub.svg",
+
     "hugo:build": "hugo -d build",
+    "hugo:clean": "rm -rf build resources public",
     "hugo:serve": "hugo server",
-    "hugo:clean": "rm -rf build resources public"
+    
+    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
+    "logo:clean": "rm ./static/img/docEdub.svg"
   },
   "author": "",
   "license": "ISC",
