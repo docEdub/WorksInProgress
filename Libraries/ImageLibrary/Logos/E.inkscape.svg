@@ -8,9 +8,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="640"
+   width="160"
    height="160"
-   viewBox="0 0 169.33333 42.333332"
+   viewBox="0 0 42.333332 42.333332"
    version="1.1"
    id="svg8"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
@@ -62,15 +62,15 @@
     </linearGradient>
     <rect
        x="42.333332"
-       y="29.633332"
-       width="63.499998"
+       y="29.633331"
+       width="63.499996"
        height="12.7"
        id="rect102" />
     <rect
        x="21.166666"
-       y="4.2333332"
-       width="192.14721"
-       height="57.191179"
+       y="4.2333331"
+       width="192.14722"
+       height="57.191177"
        id="rect80" />
     <linearGradient
        inkscape:collect="always"
@@ -99,8 +99,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.4125"
-     inkscape:cx="320"
+     inkscape:zoom="0.5"
+     inkscape:cx="80"
      inkscape:cy="80"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -112,7 +112,7 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     showguides="false"
+     showguides="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
@@ -121,102 +121,6 @@
      showborder="false"
      inkscape:showpageshadow="false"
      inkscape:pagecheckerboard="false">
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide28" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide30" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide32" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-160,0"
-       id="guide34" />
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide36" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide38" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide40" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-160,0"
-       id="guide42" />
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide44" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide46" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide48" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-160,0"
-       id="guide50" />
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide52" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide54" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide56" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-160,0"
-       id="guide58" />
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide60" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide62" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide64" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-160,0"
-       id="guide66" />
-    <sodipodi:guide
-       position="0,42.333332"
-       orientation="0,640"
-       id="guide68" />
-    <sodipodi:guide
-       position="169.33333,42.333332"
-       orientation="160,0"
-       id="guide70" />
-    <sodipodi:guide
-       position="169.33333,0"
-       orientation="0,-640"
-       id="guide72" />
-    <sodipodi:guide
-       position="0,53.270816"
-       orientation="-160,0"
-       id="guide74" />
     <inkscape:grid
        type="xygrid"
        id="grid76"
@@ -227,6 +131,38 @@
        dotted="false"
        spacingx="2.1166666"
        spacingy="2.1166666" />
+    <sodipodi:guide
+       position="0,42.333332"
+       orientation="0,160"
+       id="guide1553" />
+    <sodipodi:guide
+       position="42.333332,42.333332"
+       orientation="160,0"
+       id="guide1555" />
+    <sodipodi:guide
+       position="42.333332,0"
+       orientation="0,-160"
+       id="guide1557" />
+    <sodipodi:guide
+       position="0,0"
+       orientation="-160,0"
+       id="guide1559" />
+    <sodipodi:guide
+       position="0,42.333332"
+       orientation="0,160"
+       id="guide1561" />
+    <sodipodi:guide
+       position="42.333332,42.333332"
+       orientation="160,0"
+       id="guide1563" />
+    <sodipodi:guide
+       position="42.333332,0"
+       orientation="0,-160"
+       id="guide1565" />
+    <sodipodi:guide
+       position="0,0"
+       orientation="-160,0"
+       id="guide1567" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -247,10 +183,10 @@
     <text
        xml:space="preserve"
        id="text100"
-       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:10.58333305999999929px;white-space:pre;shape-inside:url(#rect102);stroke-linejoin:round;" />
+       style="font-style:normal;font-weight:normal;font-size:10.58329999999999949px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect102);fill:#000000;fill-opacity:1;stroke:none;stroke-linejoin:round;" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58329999999999949px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-linejoin:round;"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-linejoin:round"
        x="48.683334"
        y="50.799999"
        id="text203"><tspan
@@ -258,7 +194,7 @@
          id="tspan201"
          x="48.683334"
          y="50.799999"
-         style="stroke-width:0.264583;stroke-linejoin:round;" /></text>
+         style="stroke-width:0.264583;stroke-linejoin:round" /></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -273,19 +209,19 @@
     <circle
        style="fill:#0044aa;fill-opacity:1;stroke:none;stroke-width:0.428625;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1033"
-       cx="84.666664"
+       cx="21.166666"
        cy="21.166666"
        r="21.166666" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:34.7942px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.53043;stroke-linejoin:round;stroke-opacity:1"
-       x="72.681221"
+       x="18.119778"
        y="36.951454"
        id="text108-4-5-3-9"
-       transform="scale(1.1638256,0.85923525)"><tspan
+       transform="scale(1.1638256,0.85923526)"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8-4"
-         x="72.681221"
+         x="18.119778"
          y="36.951454"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:34.7942px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.53043;stroke-linejoin:round;stroke-opacity:1">E</tspan></text>
     <text
@@ -324,50 +260,50 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:8.12376px;line-height:1.25;font-family:sans-serif;fill:#b7b7c8;fill-opacity:0.513725;stroke:none;stroke-width:0.590803;stroke-linejoin:round"
-       x="-85.947845"
+       x="-21.486336"
        y="-31.911419"
        id="text108-4-5-3"
        transform="scale(-0.98508406,-1.0151418)"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8"
-         x="-85.947845"
+         x="-21.486336"
          y="-31.911419"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.12376px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#b7b7c8;fill-opacity:0.513725;stroke-width:0.590803;stroke-linejoin:round">dub</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:8.12376px;line-height:1.25;font-family:sans-serif;fill:#b7b7c8;fill-opacity:0.513725;stroke:none;stroke-width:0.590803;stroke-linejoin:round"
-       x="85.949493"
+       x="21.487984"
        y="9.790472"
        id="text108-4-5-3-8"
        transform="scale(0.98508406,1.0151418)"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8-2"
-         x="85.949493"
+         x="21.487984"
          y="9.790472"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.12376px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#b7b7c8;fill-opacity:0.513725;stroke-width:0.590803;stroke-linejoin:round">dub</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:8.12376px;line-height:1.25;font-family:sans-serif;fill:#b7b7c8;fill-opacity:0.513725;stroke:none;stroke-width:0.590803;stroke-linejoin:round"
        x="-22.175018"
-       y="73.377724"
+       y="10.824877"
        id="text108-4-5-3-8-5"
        transform="matrix(0,-0.98508406,1.0151418,0,0,0)"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8-2-5"
          x="-22.175018"
-         y="73.377724"
+         y="10.824877"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.12376px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#b7b7c8;fill-opacity:0.513725;stroke-width:0.590803;stroke-linejoin:round">doc</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:8.12376px;line-height:1.25;font-family:sans-serif;fill:#b7b7c8;fill-opacity:0.513725;stroke:none;stroke-width:0.590803;stroke-linejoin:round"
        x="21.486862"
-       y="-94.156616"
+       y="-31.603762"
        id="text108-4-5-3-4"
        transform="matrix(0,0.98508406,-1.0151418,0,0,0)"><tspan
          sodipodi:role="line"
          id="tspan106-3-8-8-8"
          x="21.486862"
-         y="-94.156616"
+         y="-31.603762"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.12376px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';text-align:center;text-anchor:middle;fill:#b7b7c8;fill-opacity:0.513725;stroke-width:0.590803;stroke-linejoin:round">dub</tspan></text>
   </g>
 </svg>

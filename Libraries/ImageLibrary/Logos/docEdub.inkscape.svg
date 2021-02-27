@@ -129,9 +129,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.5882352"
-     inkscape:cx="320.00001"
-     inkscape:cy="80"
+     inkscape:zoom="0.66637753"
+     inkscape:cx="219.16028"
+     inkscape:cy="12.637089"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -142,7 +142,7 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     showguides="false"
+     showguides="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
@@ -257,6 +257,22 @@
        dotted="false"
        spacingx="2.1166666"
        spacingy="2.1166666" />
+    <sodipodi:guide
+       position="0,42.333332"
+       orientation="0,640"
+       id="guide910" />
+    <sodipodi:guide
+       position="169.33333,42.333332"
+       orientation="160,0"
+       id="guide912" />
+    <sodipodi:guide
+       position="169.33333,0"
+       orientation="0,-640"
+       id="guide914" />
+    <sodipodi:guide
+       position="0,0"
+       orientation="-160,0"
+       id="guide916" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
