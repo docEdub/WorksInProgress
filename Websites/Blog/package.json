@@ -15,8 +15,8 @@
     "hugo:build": "hugo -d build",
     "hugo:clean": "rm -rf build resources public",
     "hugo:serve": "hugo server",
-    
-    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
+
+    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js --multipass",
     "logo:clean": "rm ./static/img/docEdub.svg"
   },
   "author": "",
