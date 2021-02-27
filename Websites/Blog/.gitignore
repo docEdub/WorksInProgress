@@ -1,1 +1,4 @@
+/_.build/**
 /node_modules/**
+/resources/**
+/public/**
