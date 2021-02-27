@@ -15,9 +15,9 @@
    id="svg8"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
    sodipodi:docname="docEdub.inkscape.svg"
-   inkscape:export-filename="/Users/andy/-/images/docEdub.png"
-   inkscape:export-xdpi="201.39"
-   inkscape:export-ydpi="201.39">
+   inkscape:export-filename="_.exports/docEdub.png"
+   inkscape:export-xdpi="648"
+   inkscape:export-ydpi="648">
   <defs
      id="defs2">
     <linearGradient
@@ -129,9 +129,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.99782772"
-     inkscape:cx="303.54643"
-     inkscape:cy="81.329485"
+     inkscape:zoom="1.5882352"
+     inkscape:cx="320.00001"
+     inkscape:cy="80"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -266,7 +266,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

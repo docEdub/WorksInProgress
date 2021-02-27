@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
    sodipodi:docname="E.inkscape.svg"
-   inkscape:export-filename="/Users/andy/-/images/E.png"
+   inkscape:export-filename="_.exports/E.png"
    inkscape:export-xdpi="648"
    inkscape:export-ydpi="648">
   <defs
@@ -99,9 +99,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.5694996"
-     inkscape:cx="320.9904"
-     inkscape:cy="99.798109"
+     inkscape:zoom="4.4125"
+     inkscape:cx="320"
+     inkscape:cy="80"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -236,7 +236,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
