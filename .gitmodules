@@ -1,3 +1,6 @@
 [submodule ".git-lfs"]
 	path = .git-lfs
 	url = https://gitlab.fillebrown.us/andy/docedub.git-lfs.git
+[submodule "Websites/Blog/themes/hello-friend"]
+	path = Websites/Blog/themes/hello-friend
+	url = https://github.com/panr/hugo-theme-hello-friend.git

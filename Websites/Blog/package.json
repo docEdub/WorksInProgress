@@ -1,0 +1,25 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run fonts:build && npm run logo:build && npm run hugo:build",
+    "clean": "npm run fonts:clean && npm run logo:clean && npm run hugo:clean",
+    "serve": "npm run hugo:serve",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fonts:build": "cp ../../.git-lfs/Libraries/FontLibrary/BlogFonts/* ./build/assets/fonts",
+    "fonts:clean": "rm ./build/assets/fonts/*",
+    "logo:build": "./node_modules/svgo/bin/svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js",
+    "logo:clean": "rm ./static/img/docEdub.svg",
+    "hugo:build": "hugo -d build",
+    "hugo:serve": "hugo server",
+    "hugo:clean": "rm -rf build resources public"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "hugo-bin": "^0.69.0",
+    "svgo": "^2.1.0"
+  }
+}
