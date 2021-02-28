@@ -1,0 +1,16 @@
+#include "definitions.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// File: TrackInfo.ui
+//----------------------------------------------------------------------------------------------------------------------
+
+${texteditor} bounds(${instance_name_rect}) channel("instanceName")
+${texteditor} bounds(${track_index_rect}) channel("trackIndex") identchannel("trackIndex_ui") active(0) text("")
+${texteditor} bounds(${plugin_index_rect}) channel("pluginIndex") identchannel("pluginIndex_ui") active(0) text("")
+
+${mode_label} bounds(${mode_label_1_rect}) text("1") identchannel("mode_label_1_ui")
+${mode_label} bounds(${mode_label_2_rect}) text("2") identchannel("mode_label_2_ui")
+${mode_label} bounds(${mode_label_3_rect}) text("3") identchannel("mode_label_3_ui")
+${mode_label} bounds(${mode_label_4_rect}) text("4") identchannel("mode_label_4_ui")
+
+//----------------------------------------------------------------------------------------------------------------------

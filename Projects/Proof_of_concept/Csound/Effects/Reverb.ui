@@ -1,0 +1,36 @@
+
+${grid}
+
+; Reverb enable/disable checkbox.
+${group} bounds(0, 0, ${50_square}) {
+   ;${checkbox_50x50_background} channel("enabled"))
+   ${checkbox_50x50}            channel("enabled"))
+}
+
+; Size, Cutoff Frequency, Variation Depth, and Dry/Wet knobs.
+${group} bounds(0, 50, 1000, 200) {
+
+   ${group} bounds(0, 0, 200, 200) {
+      ${knob_200x200} text("Size") channel("size") range(0, 0.99, 0.5, 1, 0.01)
+   }
+
+   ; Cutoff Frequency knob.
+   ${group} bounds(200, 0, 200, 200) {
+      ${knob_200x200} text("Cutoff Frequency") channel("cutoffFrequency") range(0, 20000, 20000, 1, 1)
+   }
+
+   ; Variation Depth knob.
+   ${group} bounds(400, 0, 200, 200) {
+      ${knob_200x200} text("Variation Depth") channel("variationDepth") range(0.1, 0.1, 0.1, 1, 0.01)
+   }
+
+   ; Dry/Wet knob.
+   ${group} bounds(600, 0, 200, 200) {
+      ${knob_200x200} text("Dry/Wet") channel("dryWet") range(0, 1, 1, 1, 0.001)
+   }
+
+   ; Volume knob.
+   ${group} bounds(800, 0, 200, 200) {
+      ${knob_200x200} text("Volume") channel("volume") range(0, 1, 1, 1, 0.001)
+   }
+}

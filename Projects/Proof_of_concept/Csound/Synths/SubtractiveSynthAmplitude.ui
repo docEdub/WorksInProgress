@@ -1,0 +1,50 @@
+
+${grid}
+
+; Amplitude enable/disable checkbox.
+${group} bounds(0, 0, ${50_square}) {
+   ;${checkbox_50x50_background} channel("amplitudeEnabled"))
+   ${checkbox_50x50}            channel("amplitudeEnabled"))
+}
+
+${group} bounds(100, 50, 800, 200) {
+    ; Attack knob.
+    ${group} bounds(0, 0, 200, 200) {
+        ${knob_200x200} text("Attack") channel("amplitudeAttack") range(0, 10, 0.1, 1, 0.001)
+
+;        ${group} bounds(0, 0, ${30_square}) {
+;            ;${checkbox_30x30_background} channel("amplitudeAttackEnabled")
+;            ${checkbox_30x30}            channel("amplitudeAttackEnabled")
+;        }
+    }
+
+    ; Decay knob.
+    ${group} bounds(200, 0, 200, 200) {
+        ${knob_200x200} text("Decay") channel("amplitudeDecay") range(0, 10, 0.1, 1, 0.001)
+
+;        ${group} bounds(0, 0, ${30_square}) {
+;            ;${checkbox_30x30_background} channel("amplitudeDecayEnabled")
+;            ${checkbox_30x30}            channel("amplitudeDecayEnabled")
+;        }
+    }
+
+    ; Sustain knob.
+    ${group} bounds(400, 0, 200, 200) {
+        ${knob_200x200} text("Sustain") channel("amplitudeSustain") range(0, 1, 0.5, 1, 0.001)
+
+;        ${group} bounds(0, 0, ${30_square}) {
+;            ;${checkbox_30x30_background} channel("amplitudeSustainEnabled")
+;            ${checkbox_30x30}            channel("amplitudeSustainEnabled")
+;        }
+    }
+
+    ; Release knob.
+    ${group} bounds(600, 0, 200, 200) {
+        ${knob_200x200} text("Release") channel("amplitudeRelease") range(0, 10, 0.1, 1, 0.001)
+
+;        ${group} bounds(0, 0, ${30_square}) {
+;            ;${checkbox_30x30_background} channel("amplitudeReleaseEnabled")
+;            ${checkbox_30x30}            channel("amplitudeReleaseEnabled")
+;        }
+    }
+}

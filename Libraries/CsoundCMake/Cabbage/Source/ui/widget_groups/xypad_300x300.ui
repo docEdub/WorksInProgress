@@ -1,0 +1,17 @@
+
+; XY pad controls 300 x 300.
+
+${group} bounds(0, 0, ${300_square}) colour(${XYPadColor}) corners(${XYPadCornerRadius}) {
+
+    ; X-axis line.
+    ${rect} bounds(0, 149, 300, 2) colour(${white}, 64) 
+
+    ; Y-axis line.
+    ${rect} bounds(149, 0, 2, 300) colour(${white}, 64)
+
+    ; Position indicator.
+    ${rect} bounds(145, 145, 10, 10) identchannel("${XYPadChannelPrefix}indicator_ui") colour(${green}) corners(5)
+
+    ; Mouse input.
+    ${xypad} bounds(-15, -14, 340, 393) channel("${XYPadChannelPrefix}inputX", "${XYPadChannelPrefix}inputY") ${xypad_range_0_to_300} alpha(0)
+}

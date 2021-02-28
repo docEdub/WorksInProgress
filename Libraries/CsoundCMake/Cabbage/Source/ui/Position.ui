@@ -1,0 +1,158 @@
+
+${grid}
+
+; Position enable/disable checkbox.
+${group} bounds(0, 0, ${50_square}) {
+   ;${checkbox_50x50_background} channel("positionEnabled"))
+   ${checkbox_50x50}            channel("positionEnabled"))
+}
+
+; Distance type combobox.
+${group} bounds(300, 0, 200, 50) {
+   ; Label
+   ${group} bounds(0, 0, 100, 50) {
+      ${label_100x50_15px_vcenter} text("Distance") align("left")
+   }
+
+   ; Combobox
+   ${group} bounds(75, 0, 100, 50) {
+      ${combobox_100x50} channel("positionDistanceType") items("Absolute", "Relative")
+   }
+}
+
+; Direction type combobox.
+${group} bounds(500, 0, 200, 50) {
+   ; Label
+   ${group} bounds(0, 0, 100, 50) {
+      ${label_100x50_15px_vcenter} text("Direction") align("left")
+   }
+
+   ; Combobox
+   ${group} bounds(75, 0, 100, 50) {
+      ${combobox_100x50} channel("positionDirectionType") items("Absolute", "Relative")
+   }
+}
+
+; Position controls.
+${group} bounds(0, 50, 1000, 400) {
+
+   ; Cartesian controls.
+   ${group} bounds(50, 0, 350, 400) {
+
+      ; Checkbox
+      ${group} bounds(0, 50, ${30_square}) {
+         ${checkbox_30x30} channel("positionXYZEnabled")
+      }
+
+      ; XYZ knobs.
+      ${group} bounds(100, 0, 150, 70) {
+
+         ; X knob.
+         ${group} bounds(0, 0, 50, 70) {
+            ${label_50x50_10px} text("x") align("centre")
+            ${knob_50x50} channel("positionX") ${range_minus_1_to_1}
+         }
+
+         ; Y knob.
+         ${group} bounds(50, 0, 50, 70) {
+            ${label_50x50_10px} text("y") align("centre")
+            ${knob_50x50} channel("positionY") ${range_minus_1_to_1}
+         }
+
+         ; Z knob.
+         ${group} bounds(100, 0, 50, 70) {
+            ${label_50x50_10px} text("z") align("centre")
+            ${knob_50x50} channel("positionCartesianZ") ${range_minus_1_to_1}
+         }
+      }
+
+      ; Trackers.
+      ${group} bounds(0, 80, 350, 300) {
+
+         ; XY tracker.
+         ${group} bounds(0, 0, ${300_square}) {
+            ${positionXY_xypad}
+         }
+
+         ; Z tracker.
+         ${group} bounds(300, 0, 50, 300) {
+            ${positionCartesianZ_xypad}
+         }
+      }
+   }
+
+   ; Max XYZ distance controls.
+   ${group} bounds(400, 0, 50, 400) {
+
+      ; Max distance knob.
+      ${group} bounds(0, 0, 50, 70) {
+         ${label_50x50_10px} text("max xyz") align("centre")
+         ${knob_50x50} channel("positionMaxXYZ") ${range_maxDistance}
+      }
+
+      ; Max distance slider.
+      ${group} bounds(0, 80, 50, 300) {
+         ${vslider} bounds(0, 0, 50, 300) channel("positionMaxXYZ_vslider") ${range_maxDistance}
+      }
+   }
+
+   ; Polar controls.
+   ${group} bounds(550, 0, 350, 400) {
+
+      ; Checkbox
+      ${group} bounds(0, 50, ${30_square}) {
+         ${checkbox_30x30} channel("positionRTZEnabled")
+      }
+
+      ; RTZ knobs.
+      ${group} bounds(100, 0, 150, 70) {
+
+         ; R knob.
+         ${group} bounds(0, 0, 50, 70) {
+            ${label_50x50_10px} text("r") align("centre")
+            ${knob_50x50} channel("positionR") ${range_minus_1_to_1}
+         }
+
+         ; T knob.
+         ${group} bounds(50, 0, 50, 70) {
+            ${label_50x50_10px} text("t") align("centre")
+            ${knob_50x50} channel("positionT") ${range_minus_180_to_180}
+         }
+
+         ; Z knob.
+         ${group} bounds(100, 0, 50, 70) {
+            ${label_50x50_10px} text("z") align("centre")
+            ${knob_50x50} channel("positionPolarZ") ${range_minus_1_to_1}
+         }
+      }
+
+      ; Trackers.
+      ${group} bounds(0, 80, 350, 300) {
+
+         ; RT tracker.
+         ${group} bounds(0, 0, ${300_square}) {
+            ${positionRT_xypad}
+         }
+
+         ; Z tracker.
+         ${group} bounds(300, 0, 50, 300) {
+            ${positionPolarZ_xypad}
+         }
+      }
+   }
+
+   ; Max R and Z distance controls.
+   ${group} bounds(900, 0, 50, 400) {
+
+      ; Max distance knob.
+      ${group} bounds(0, 0, 50, 70) {
+         ${label_50x50_10px} text("max r+z") align("centre")
+         ${knob_50x50} channel("positionMaxRZ") ${range_maxDistance}
+      }
+
+      ; Max distance slider.
+      ${group} bounds(0, 80, 50, 300) {
+         ${vslider} bounds(0, 0, 50, 300) channel("positionMaxRZ_vslider") ${range_maxDistance}
+      }
+   }
+}

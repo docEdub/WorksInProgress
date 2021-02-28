@@ -1,0 +1,4 @@
+# Apple Logic Pro X DAW files.
+/*.logicx/**/DisplayStateArchive    filter=lfs diff=lfs merge=lfs -text
+/*.logicx/**/ProjectData            filter=lfs diff=lfs merge=lfs -text
+/*.logicx/**/*.jpg                  filter=lfs diff=lfs merge=lfs -text

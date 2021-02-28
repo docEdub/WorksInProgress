@@ -1,0 +1,21 @@
+
+; LFO controls 200 x 100.
+
+${group} bounds(0, 0, ${30_square}) {
+    ;${checkbox_30x30_background} channel("${LfoChannelPrefix}LfoEnabled")
+    ${checkbox_30x30}            channel("${LfoChannelPrefix}LfoEnabled")
+}
+
+${group} bounds(0, 30, 200, 70) {
+    ${group} bounds(0, 0, 100, 70) {
+        ${combobox_100x50} channel("${LfoChannelPrefix}LfoShape") items("Sine", "Triangles", "Square (bipolar)", "Square (unipolar)", "Saw-tooth", "Saw-tooth (down)")
+    }
+    ${group} bounds(100, 0, 50, 70) {
+        ${label_50x50_10px} text("Amp") align("centre")
+        ${knob_50x50} channel("${LfoChannelPrefix}LfoAmplitude") ${adsr_range_0_to_1}
+    }
+    ${group} bounds(150, 0, 50, 70) {
+        ${label_50x50_10px} text("CPS") align("centre")
+        ${knob_50x50} channel("${LfoChannelPrefix}LfoFrequency") ${adsr_range_0_to_10}
+    }
+}

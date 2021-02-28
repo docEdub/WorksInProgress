@@ -1,0 +1,24 @@
+;-----------------------------------------------------------------------------------------------------------------------
+; File: S88.ui
+;-----------------------------------------------------------------------------------------------------------------------
+
+; Knobs
+${rslider} bounds(${knob_1_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_1") ${range_midi_1_positive}
+${rslider} bounds(${knob_2_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_2") ${range_midi_1_positive}
+${rslider} bounds(${knob_3_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_3") ${range_midi_1_positive}
+${rslider} bounds(${knob_4_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_4") ${range_midi_1_positive}
+${rslider} bounds(${knob_5_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_5") ${range_midi_1_positive}
+${rslider} bounds(${knob_6_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_6") ${range_midi_1_positive}
+${rslider} bounds(${knob_7_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_7") ${range_midi_1_positive}
+${rslider} bounds(${knob_8_x}, ${knob_y}, ${knob_width}, ${knob_height}) channel("S88_knob_8") ${range_midi_1_positive}
+
+; Keyboard
+${group} bounds(${keyboard_group_x}, ${keyboard_group_y}, ${keyboard_group_width}, ${keyboard_group_height}) {
+    ${vslider} bounds(${pitchbend_x}, ${pitchbend_y}, ${pitchbend_width}, ${pitchbend_height}) channel("S88_pitchbend") ${range_midi_2_centered}
+    ${vslider} bounds(${modwheel_x}, ${modwheel_y}, ${modwheel_width}, ${modwheel_height}) channel("S88_modwheel") ${range_midi_1_positive}
+    ${keyboard} bounds(${keyboard_x}, ${keyboard_y}, ${keyboard_width}, ${keyboard_height})
+}
+
+; Pedals
+
+;-----------------------------------------------------------------------------------------------------------------------

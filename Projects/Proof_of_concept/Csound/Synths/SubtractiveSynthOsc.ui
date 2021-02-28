@@ -1,0 +1,140 @@
+
+${grid}
+
+; Osc 1 enable/disable checkbox.
+${group} bounds(0, 0, ${50_square}) {
+   ;${checkbox_50x50_background} channel("${uiPrefix}Enabled")
+   ${checkbox_50x50}            channel("${uiPrefix}Enabled")
+}
+
+; Waveform buttons.
+${group} bounds(50, 0, 400, 50) {
+   ${button} bounds(2, 2, 96, 46) text("Saw") channel("${uiPrefix}WaveformSaw") radiogroup("${uiPrefix}Waveform") ${dark_blue_radiogroup_colors} value(1)
+   ${button} bounds(102, 2, 96, 46) text("Square") channel("${uiPrefix}WaveformSquare") radiogroup("${uiPrefix}Waveform") ${dark_blue_radiogroup_colors}
+   ${button} bounds(202, 2, 96, 46) text("Pulse") channel("${uiPrefix}WaveformPulse") radiogroup("${uiPrefix}Waveform") ${dark_blue_radiogroup_colors}
+   ${button} bounds(302, 2, 96, 46) text("Noise") channel("${uiPrefix}WaveformNoise") radiogroup("${uiPrefix}Waveform") ${dark_blue_radiogroup_colors}
+}
+
+; Pulse Width, Pitch, Cutoff Frequency, Resonance, and Volume.
+${group} bounds(0, 50, 1000, 400) {
+
+   ; Pulse Width and related controls.
+   ${group} bounds(0, 0, 200, 400) {
+
+      ; Pulse Width knob.
+      ${group} bounds(0, 0, 200, 200) {
+         ${knob_200x200} text("Pulse Width") channel("${uiPrefix}PulseWidth") range(0.01, 0.99, 0.5, 1, 0.001)
+
+         ${group} bounds(0, 0, ${30_square}) {
+            ;${checkbox_30x30_background} channel("${uiPrefix}PulseWidthEnabled")
+            ${checkbox_30x30}            channel("${uiPrefix}PulseWidthEnabled")
+         }
+      }
+
+      ; Pulse Width ADSR knobs.
+      ${group} bounds(0, 200, 200, 100) {
+         ${pulseWidthAdsrKnobs}
+      }
+
+      ; Pulse Width LFO controls.
+      ${group} bounds(0, 300, 200, 100) {
+         ${pulseWidthLfoControls}
+      }
+   }
+
+   ; Pitch and related controls.
+   ${group} bounds(200, 0, 200, 400) {
+
+      ; Pitch knob.
+      ${group} bounds(0, 0, ${200_square}) {
+         ${knob_200x200} text("Pitch") channel("${uiPrefix}Pitch") range(-96, 96, 0, 1, .01)
+
+         ${group} bounds(0, 0, ${30_square}) {
+            ;${checkbox_30x30_background} channel("${uiPrefix}PitchEnabled")
+            ${checkbox_30x30}            channel("${uiPrefix}PitchEnabled")
+         }
+      }
+
+      ; Pitch ADSR knobs.
+      ${group} bounds(0, 200, 200, 100) {
+         ${pitchAdsrKnobs}
+      }
+
+      ; Pitch LFO controls.
+      ${group} bounds(0, 300, 200, 100) {
+         ${pitchLfoControls}
+      }
+   }
+
+   ; Cutoff Frequency and related controls.
+   ${group} bounds(400, 0, 200, 400) {
+
+      ; Cutoff Frequency knob.
+      ${group} bounds(0, 0, 200, 200) {
+         ${knob_200x200} text("Cutoff Frequency") channel("${uiPrefix}FilterCutoffFrequency") range(20, 20000, 20000, 1, 1)
+
+         ${group} bounds(0, 0, ${30_square}) {
+            ;${checkbox_30x30_background} channel("${uiPrefix}FilterCutoffFrequencyEnabled")
+            ${checkbox_30x30}            channel("${uiPrefix}FilterCutoffFrequencyEnabled")
+         }
+      }
+
+      ; Cutoff Frequency ADSR knobs.
+      ${group} bounds(0, 200, 200, 100) {
+         ${filterCutoffFrequencyAdsrKnobs}
+      }
+
+      ; Cutoff Frequency LFO controls.
+      ${group} bounds(0, 300, 200, 100) {
+         ${filterCutoffFrequencyLfoControls}
+      }
+   }
+
+   ; Resonance and related controls.
+   ${group} bounds(600, 0, 200, 400) {
+
+      ; Resonance knob.
+      ${group} bounds(0, 0, ${200_square}) {
+         ${knob_200x200} text("Resonance") channel("${uiPrefix}FilterResonance") range(0, 0.999, 0, 1, 0.001)
+
+         ${group} bounds(0, 0, ${30_square}) {
+            ;${checkbox_30x30_background} channel("${uiPrefix}FilterResonanceEnabled")
+            ${checkbox_30x30}            channel("${uiPrefix}FilterResonanceEnabled")
+         }
+      }
+
+      ; Resonance ADSR knobs.
+      ${group} bounds(0, 200, 200, 100) {
+         ${filterResonanceAdsrKnobs}
+      }
+
+      ; Resonance LFO controls.
+      ${group} bounds(0, 300, 200, 100) {
+         ${filterResonanceLfoControls}
+      }
+   }
+
+   ; Volume and ADSR knobs.
+   ${group} bounds(800, 0, 200, 400) {
+
+      ; Volume knob.
+      ${group} bounds(0, 0, ${200_square}) {
+         ${knob_200x200} text("Volume") channel("${uiPrefix}Volume") range(0, 1, 1, 1, 0.001)
+
+         ${group} bounds(0, 0, ${30_square}) {
+            ;${checkbox_30x30_background} channel("${uiPrefix}VolumeEnabled")
+            ${checkbox_30x30}            channel("${uiPrefix}VolumeEnabled")
+         }
+      }
+
+      ; Volume ADSR knobs.
+      ${group} bounds(0, 200, 200, 100) {
+         ${volumeAdsrKnobs}
+      }
+
+      ; Volume LFO controls.
+      ${group} bounds(0, 300, 200, 100) {
+         ${volumeLfoControls}
+      }
+   }
+}

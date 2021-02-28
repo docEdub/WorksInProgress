@@ -1,0 +1,26 @@
+
+; ADSR knobs 200 x 100.
+
+${group} bounds(0, 0, ${30_square}) {
+    ;${checkbox_30x30_background} channel("${AdsrChannelPrefix}AdsrEnabled")
+    ${checkbox_30x30}            channel("${AdsrChannelPrefix}AdsrEnabled")
+}
+
+${group} bounds(0, 30, 200, 70) {
+    ${group} bounds(0, 0, 50, 70) {
+        ${label_50x50_10px} text("A") align("centre")
+        ${knob_50x50} channel("${AdsrChannelPrefix}Attack") ${adsr_range_0_to_10}
+    }
+    ${group} bounds(50, 0, 50, 70) {
+        ${label_50x50_10px} text("D") align("centre")
+        ${knob_50x50} channel("${AdsrChannelPrefix}Decay") ${adsr_range_0_to_10}
+    }
+    ${group} bounds(100, 0, 50, 70) {
+        ${label_50x50_10px} text("S") align("centre")
+        ${knob_50x50} channel("${AdsrChannelPrefix}Sustain") ${adsr_range_0_to_1}
+    }
+    ${group} bounds(150, 0, 50, 70) {
+        ${label_50x50_10px} text("R") align("centre")
+        ${knob_50x50} channel("${AdsrChannelPrefix}Release") ${adsr_range_0_to_10}
+    }
+}
