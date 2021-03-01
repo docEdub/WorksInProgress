@@ -1,17 +1,17 @@
 
 include_guard()
 
-set(_CsoundAuger_DIR "${CsoundAuger_DIR}")
-LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../CsoundCMake")
-find_package(CsoundCMake REQUIRED)
-set(CsoundAuger_DIR "${CsoundAuger_DIR}" CACHE STRING)
-mark_as_advanced(FORCE CsoundAuger_DIR)
-unset(_CsoundAuger_DIR)
+set(_CsoundCMake_Cabbage_DIR "${CsoundCMake_Cabbage_DIR}")
+LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
+find_package(CsoundCMake.Core REQUIRED)
+set(CsoundCMake_Cabbage_DIR "${CsoundAuger_DIR}" CACHE STRING)
+mark_as_advanced(FORCE CsoundCMake_Cabbage_DIR)
+unset(_CsoundCMake_Cabbage_DIR)
 
 if(APPLE)
     set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING)
 elseif(WIN32)
-    set(CABBAGE_PATH "C:\Program Files\Cabbage\current\Cabbage.exe" CACHE STRING)
+    set(CABBAGE_PATH "C:\\Program Files\\Cabbage\\current\\Cabbage.exe" CACHE STRING)
 endif()
 
 set(BuildPlugin_AU_Export OFF CACHE BOOL)
@@ -24,10 +24,10 @@ set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
 
 
-include("${CsoundAuger_DIR}/CsoundAugerCommon.cmake")
+include("${CsoundCMake_Cabbage_DIR}/CsoundCMake.CabbageCommon.cmake")
 
 function(add_csd)
-    add_csd_implementation(${ARGN} DEPENDS CsoundAuger)
+    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
 endfunction()
 
 function(export_csd_plugin)
@@ -55,12 +55,12 @@ function(export_csd_plugin)
         
         if(BuildPlugin_AU_Export)
             # Export AU component to ~/Library/Audio/Plug-Ins/Components.
-            add_custom_target("${export_au_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundAuger COMMAND
+            add_custom_target("${export_au_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
                 rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${au_plugin_type}
                 "${CSOUND_CMAKE_OUTPUT_DIR}/${in_file}" --destination "${plugin_path}")
             set(link_target_depends ${export_plugin_target})
         else()
-            set(link_target_depends ${preprocess_target} CsoundAuger)
+            set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
         endif()
 
         if(BuildPlugin_AU_LinkCsdFiles)
@@ -79,12 +79,12 @@ function(export_csd_plugin)
         
         if(BuildPlugin_VST3_Export)
             # Export VST3 plugin to "${CSOUND_CMAKE_OUTPUT_DIR}".
-            add_custom_target("${export_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundAuger COMMAND
+            add_custom_target("${export_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
                 rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${vst3_plugin_type}
                 "${CSOUND_CMAKE_OUTPUT_DIR}/${in_file}" --destination "${plugin_path}")
             set(link_target_depends ${export_plugin_target})
         else()
-            set(link_target_depends ${preprocess_target} CsoundAuger)
+            set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
         endif()
 
         if(BuildPlugin_VST3_LinkCsdFiles)
@@ -323,7 +323,7 @@ set(adsr_range_minus_1_to_1 "${range_minus_1_to_1}")
 macro(add_adsr_200x100)
     set(variableName ${ARGV0})
     set(AdsrChannelPrefix ${ARGV1})
-    configure_file("${CsoundAuger_DIR}/cabbage/widget-groups/adsr_200x100.ui"
+    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/adsr_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -331,7 +331,7 @@ endmacro()
 macro(add_lfo_200x100)
     set(variableName ${ARGV0})
     set(LfoChannelPrefix ${ARGV1})
-    configure_file("${CsoundAuger_DIR}/cabbage/widget-groups/lfo_200x100.ui"
+    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/lfo_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -352,7 +352,7 @@ macro(add_xypad_50x300_y)
     endif()
     set(XYPadXAxisY MATH "(300 - ${XYPadXAxisY}) - 1")
 
-    configure_file("${CsoundAuger_DIR}/cabbage/widget-groups/xypad_50x300_y.ui"
+    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_50x300_y.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp" ${variableName})
 endmacro()
@@ -371,7 +371,7 @@ macro(add_xypad_200x200)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundAuger_DIR}/cabbage/widget-groups/xypad_200x200.ui"
+    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_200x200.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp" ${variableName})
 endmacro()
@@ -390,7 +390,7 @@ macro(add_xypad_300x300)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundAuger_DIR}/cabbage/widget-groups/xypad_300x300.ui"
+    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_300x300.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp" ${variableName})
 endmacro()
@@ -406,14 +406,16 @@ if(Cabbage_UiOutlineGroups)
 endif()
 
 foreach(orc_file ${ORC_FILES})
-    configure_file("${CsoundAuger_DIR}/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
+    configure_file("${CsoundCMake_Cabbage_DIR}/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
 endforeach()
 
-add_custom_target(CsoundAuger ALL DEPENDS CsoundCMake COMMAND ${CMAKE_COMMAND}
+add_custom_target(CsoundCMake.Cabbage ALL DEPENDS CsoundCMake COMMAND ${CMAKE_COMMAND}
     -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
     -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
     -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
-    -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\" -DCsoundCMake_DIR=\"${CsoundCMake_DIR}\"
-    -DCsoundAuger_DIR=\"${CsoundAuger_DIR}\" -P "${CsoundAuger_DIR}/CsoundAugerTarget.cmake" WORKING_DIRECTORY
-    "${CMAKE_SOURCE_DIR}"
+    -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
+    -DCsoundCMake_Core_DIR=\"${CsoundCMake_Core_DIR}\"
+    -DCsoundCMake_Cabbage_DIR=\"${CsoundCMake_Cabbage_DIR}\"
+    -P "${DCsoundCMake_Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
