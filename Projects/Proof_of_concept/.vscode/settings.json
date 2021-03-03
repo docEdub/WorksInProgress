@@ -1,0 +1,5 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/Csound",
+    "cmake.buildDirectory": "${workspaceFolder}/Csound/_.build",
+    "cmake.configureOnOpen": false,
+}

@@ -1,10 +1,10 @@
  #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: cabbage-core-instr-1-head.orc
+// File: cabbage_core_instr_1_head.orc
 //----------------------------------------------------------------------------------------------------------------------
 
-    ${CSOUND_INCLUDE} "core-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "core_instr_1_head.orc"
 
     gk_playing chnget "IS_PLAYING"
 

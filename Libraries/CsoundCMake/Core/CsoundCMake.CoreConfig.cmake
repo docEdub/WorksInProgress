@@ -107,6 +107,20 @@ else()
     set(PREPROCESSOR_INCLUDE_DIR_2 ".")
 endif()
 
+# Set the CMAKE_C_COMPILER_ID variable manually on macOS. I don't know why it's not getting set anymore.
+if(NOT DEFINED CMAKE_C_COMPILER_ID)
+    if(APPLE)
+        set(CMAKE_C_COMPILER_ID "AppleClang")
+    endif()
+endif()
+
+# Set the COMPILER_FORCED flags to make CMake skip the compiler check that's failing on macOS, which is probably a bug.
+# It used to work fine without these flags being set.
+if(APPLE)
+    set(CMAKE_C_COMPILER_FORCED ON)
+    set(CMAKE_CXX_COMPILER_FORCED ON)
+endif()
+
 add_custom_target(CsoundCMake ALL COMMAND ${CMAKE_COMMAND} -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
     -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
     -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
@@ -127,15 +141,16 @@ function(add_csd_implementation)
         set(ARG_DEPENDS CsoundCMake)
     endif()
 
+    get_filename_component(csd_dir "${csd}" DIRECTORY)
     get_filename_component(csd_without_extension "${csd}" NAME_WE)
 
     # Clear CSD_DEPENDS variable before including .cmake files.
     set(CSD_DEPENDS "")
 
     # If a .cmake file with the same name as the given csd exists, include it before configuring the csd.
-    set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_without_extension}.cmake")
+    set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.cmake")
     if (EXISTS "${csd_cmake}")
-        message(STATUS "Found \"${csd_without_extension}.cmake\"")
+        message(STATUS "Found \"${csd_dir}/${csd_without_extension}.cmake\"")
         include("${csd_cmake}")
     endif()
 
@@ -156,7 +171,7 @@ function(add_csd_implementation)
 
     # Configure and preprocess the given csd.
     set(csd_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_without_extension}.csd")
-    set(csd_preprocessed "${CSOUND_CMAKE_OUTPUT_DIR}/${csd_without_extension}.csd")
+    set(csd_preprocessed "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_without_extension}.csd")
     configure_file("${csd}" "${csd_configured}")
     add_preprocess_file_target("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS})
 endfunction()

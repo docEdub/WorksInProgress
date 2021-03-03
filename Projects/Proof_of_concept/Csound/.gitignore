@@ -3,4 +3,6 @@
 /*.logicx/**/Project File Backups
 /*.logicx/**/WindowImage.jpg
 
+/_.build/**
 /_.output/**
+/_.plugins/**

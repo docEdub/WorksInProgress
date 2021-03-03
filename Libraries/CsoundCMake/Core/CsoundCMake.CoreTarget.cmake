@@ -22,9 +22,9 @@ endif()
 cmake_policy(PUSH)
 cmake_policy(SET CMP0007 NEW)
 
-include("${CsoundCMake.Core_DIR}/functions/preprocess_file.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/preprocess_file.cmake")
+include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 include("${CsoundCMake.Core_DIR}/CsoundCMake.CoreCommon.cmake")
-include("${CsoundCMake.Core_DIR}/global.cmake")
 
 foreach(orc_file ${ORC_FILES})
     preprocess_file("${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}" "${CSOUND_CMAKE_OUTPUT_DIR}/${orc_file}")

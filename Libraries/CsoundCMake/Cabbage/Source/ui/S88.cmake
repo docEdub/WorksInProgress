@@ -1,5 +1,5 @@
 
-include("${CsoundAuger_DIR}/global.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/global.cmake")
 
 define_cabbage_control_size("small")
 define_cabbage_control_size("medium")
@@ -48,5 +48,6 @@ set(keyboard_group_height MATH "${keyboard_height} + (2 * ${padding})")
 set(S88_width ${form_width})
 set(S88_height MATH "${keyboard_group_y} + ${keyboard_group_height}")
 
-set(file "cabbage/S88.ui")
-configure_file("${CsoundAuger_DIR}/${file}" "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")
+set(file "ui/S88.ui")
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/${file}"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")

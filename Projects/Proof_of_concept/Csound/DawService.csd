@@ -270,7 +270,7 @@ endop
 // Main processing instrument. Always on.
 //
 instr 1
-    ${CSOUND_INCLUDE} "core-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
     log_i_info("instr %d - done", p1)
 endin
@@ -514,9 +514,9 @@ instr HandleOscScoreGenerationMessages
     log_i_info("%s ...", nstrstr(p1))
     i_mode = i(gk_mode)
     if (i_mode == 3) then
-        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw-mode-3.sco"
+        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3.sco"
     elseif (i_mode == 4) then
-        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw-mode-4.sco"
+        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_4.sco"
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1
@@ -786,7 +786,7 @@ endin
 instr WriteTracksetOrcFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw-mode-3-trackset.orc"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_trackset.orc"
 
     clearOrcInstances()
     iI = 0
@@ -893,7 +893,7 @@ endin
 instr WriteTracksetScoFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw-mode-3-trackset.sco"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_trackset.sco"
     kI = 0
     kInstrumentCount = 0
     kAuxCount = 0

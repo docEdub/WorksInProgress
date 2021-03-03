@@ -1,13 +1,14 @@
 #include "definitions.h"
 
-${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_source_main_global_orc
-${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_source_main_global_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
+${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_af_global_orc
+${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_global_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
-// TODO: This include order is wack. Files in spatial-audio should be including files in main, not vice-versa.
-${CSOUND_INCLUDE} "source/spatial-audio/opcodes.orc"
+// TODO: This include order is wack. Files starting with af_spatial should be including files starting with af_, not ...
+// vice-versa.
+${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
 /**********************************************************************************************************************
- * File: main/global.orc
+ * File: af_global.orc
  *********************************************************************************************************************/
 
 

@@ -5,10 +5,10 @@ set(form_height 516)
 set(InstrumentName "SubtractiveSynth")
 
 get_filename_component(CSOUND_CMAKE_OUTPUT_SUBDIRECTORY "${CMAKE_CURRENT_LIST_FILE}" NAME_WE)
-include("${CsoundAuger_DIR}/cabbage/Position.cmake")
-include("${CsoundAuger_DIR}/cabbage/S88.cmake")
-include("${CsoundAuger_DIR}/cabbage/Tab.cmake")
-include("${CsoundAuger_DIR}/cabbage/TrackInfo.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/Position.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 
 configure_file("${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynth.osc.orc"
     "${CSOUND_CMAKE_OUTPUT_DIR}/SubtractiveSynth.osc.orc")

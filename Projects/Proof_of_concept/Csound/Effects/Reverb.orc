@@ -8,7 +8,7 @@
     #define INSTRUMENT_NAME ${InstrumentName}
 #endif
 
-#include "instrument-orc-definitions.h"
+#include "instrument_orc_definitions.h"
 
 
 #ifndef Reverb_orc__include_guard
@@ -28,7 +28,7 @@ _(\)
 _(\)
     "",                  "",         "",        "") // dummy line
 
-#include "instrument-cc.orc"
+#include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
     CREATE_CC_INDEX(enabled)

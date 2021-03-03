@@ -1,10 +1,4 @@
 
-// All preprocessed files should include this file on line #1 so the Csound .csd line synchronization done using CMake
-// for MSVC works correctly. MSVC adds a blank to the including file for every line in this file. The blank lines are
-// removed using CMake so the preprocessed .csd's line numbers match the input csd's line numbers. The line removal is
-// done on all preprocessed files whether they include this file or not, so including this file at the top of any file
-// that is preprocessed is required, but really only for MSVC (i.e. Microsoft's cl.exe).
-
 #ifndef CsoundCMake_definitions_h
 #define CsoundCMake_definitions_h
 
@@ -42,15 +36,15 @@
 #define DAW_SERVICE_OSC_ADDRESS "127.0.0.1"
 #define DAW_SERVICE_OSC_PORT 7770
 #define DAW_SERVICE_OSC_SCORE_GENERATION_PORT 7771
-#define DAW_SERVICE_OSC_LOG_MESSAGE_PATH "/daw-service/message/logging"
-#define DAW_SERVICE_OSC_SCORE_GENERATION_PATH "/daw-service/score/generation"
-#define DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH "/daw-service/track/registration"
-#define DAW_SERVICE_OSC_TRACK_REFERENCING_PATH "/daw-service/track/referencing"
-#define DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH "/daw-service/plugin/registration"
+#define DAW_SERVICE_OSC_LOG_MESSAGE_PATH "/DawService/message/logging"
+#define DAW_SERVICE_OSC_SCORE_GENERATION_PATH "/DawService/score/generation"
+#define DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH "/DawService/track/registration"
+#define DAW_SERVICE_OSC_TRACK_REFERENCING_PATH "/DawService/track/referencing"
+#define DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH "/DawService/plugin/registration"
 
 #define TRACK_INFO_OSC_ADDRESS "127.0.0.1"
 #define TRACK_INFO_OSC_PORT_MIN 7772
-#define TRACK_INFO_OSC_TRACK_SET_INDEX_PATH "/track-info/track/set-index"
+#define TRACK_INFO_OSC_TRACK_SET_INDEX_PATH "/TrackInfo/track/set_index"
 
 #define TRACK_COUNT_MAX 1000
 #define PLUGIN_COUNT_MAX 100

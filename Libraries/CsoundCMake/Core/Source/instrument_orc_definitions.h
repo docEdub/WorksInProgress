@@ -9,7 +9,7 @@
     #define INSTRUMENT_TRACK_INDEX 0
 #endif
 
-// TODO: This might be unused, now. If unused, remove it from this file, daw-service.csd and TrackInfo-*.orc.
+// TODO: This might be unused, now. If unused, remove it from this file, DawService.csd and TrackInfo_*.orc.
 #ifndef INSTRUMENT_PLUGIN_INDEX
     #define INSTRUMENT_PLUGIN_INDEX 0
 #endif

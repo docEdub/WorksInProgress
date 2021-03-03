@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core-options.h"
+#include "core_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -18,7 +18,7 @@ ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
 ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
-${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
+${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
 
 
 //======================================================================================================================
@@ -26,10 +26,10 @@ ${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
 //======================================================================================================================
 
 instr 1
-    ${CSOUND_INCLUDE} "cabbage-core-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
 
-    ${CSOUND_INCLUDE} "cabbage/TrackInfo-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
 
     log_i_info("nchnls_i = %d", nchnls_i)
     log_i_info("nchnls   = %d", nchnls)
@@ -147,12 +147,12 @@ ${form} caption("Reverb") size(${form_size}) pluginid("0010")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/TrackInfo.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/Tab.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
 }
 
 ; Reverb tab content

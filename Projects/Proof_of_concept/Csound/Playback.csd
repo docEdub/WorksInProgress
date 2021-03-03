@@ -133,7 +133,7 @@ endin
 
 
 #define IS_PLAYBACK 1
-#include "daw-mode-3-trackset.orc"
+#include "daw_mode_3_trackset.orc"
 
 
 // Aux mixer instrument.
@@ -247,9 +247,9 @@ endin
 #define Velocity(x) x
 #define Volume(x) x
 
-#include "daw-mode-3-trackset.sco"
-#include "daw-mode-3.sco"
-#include "daw-mode-4.sco"
+#include "daw_mode_3_trackset.sco"
+#include "daw_mode_3.sco"
+#include "daw_mode_4.sco"
 
 </CsScore>
 </CsoundSynthesizer>

@@ -1,5 +1,5 @@
 
-include("${CsoundAuger_DIR}/global.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/global.cmake")
 
 set(tab_padding 4)
 set(tab_height 26)
@@ -24,7 +24,7 @@ macro(add_tab)
     set(${tab_variable}_rect "${${tab_variable}_xy}, ${${tab_variable}_size}")
 
     # Append tab to Tab.ui.
-    set(tab_ui_path "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/Tab.ui")
+    set(tab_ui_path "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui")
     # If this is first tab, clear Tab.ui contents.
     if(${tab_index} EQUAL 0)
         file(WRITE "${tab_ui_path}" "")
@@ -50,7 +50,7 @@ endmacro()
 
 function(process_tabs)
     string(REPLACE ";" "\", \"" csound_tab_channels "\"${tab_channels}\"")
-    configure_file("${CsoundAuger_DIR}/cabbage/Tab.orc"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.orc"
         "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/.configured/Tab.orc")
 endfunction()
 
@@ -61,7 +61,7 @@ set(tab_channels "")
 
 
 add_preprocess_file_target("${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/.configured/Tab.orc"
-    "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc" DEPENDS CsoundAuger TARGET_NAME
+    "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc" DEPENDS CsoundCMake.Cabbage TARGET_NAME
     "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Tab_orc")
 
 # Add this file's preprocess target to the .csd file's preprocess target's dependencies (See CsoundCMakeConfig.cmake).

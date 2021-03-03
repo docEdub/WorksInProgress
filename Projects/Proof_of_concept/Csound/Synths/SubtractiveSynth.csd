@@ -3,14 +3,14 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core-options.h"
+#include "core_options.h"
 
 </CsOptions>
 <CsInstruments>
 
 #define OUT_CHANNEL_COUNT 6
 
-#include "cabbage-synth-global.h"
+#include "cabbage_synth_global.h"
 
 #define ORC_INSTANCE_INDEX 0 // When a .csd wraps an .orc there's only one orc instance in use at index 0.
 ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
@@ -18,8 +18,8 @@ ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
-${CSOUND_INCLUDE} "cabbage-synth-global.orc"
-${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
+${CSOUND_INCLUDE} "cabbage_synth_global.orc"
+${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
 
 
 //======================================================================================================================
@@ -27,11 +27,11 @@ ${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
 //======================================================================================================================
 
 instr 1
-    ${CSOUND_INCLUDE} "cabbage-core-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
     log_i_info("nchnls = %d", nchnls)
 
-    ${CSOUND_INCLUDE} "cabbage/TrackInfo-instr-1-head.orc"
+    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
 
     log_i_info("instr %d - done", p1)
 endin
@@ -253,17 +253,17 @@ ${form} caption("SubtractiveSynth") size(${form_size}) pluginid("0010")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/TrackInfo.ui"
+#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/Tab.ui"
+#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
 }
 
 ; S88 tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(0) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/S88.ui"
+#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/S88.ui"
 }
 
 ; Osc 1 tab content
@@ -311,7 +311,7 @@ ${group} bounds(${tab_content_group_rect}) identchannel("amplitude_tab_content_u
 ; Position tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui") visible(1) {
     ${group} bounds(${tab_content_rect}) {
-        #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/cabbage/Position.ui"
+        #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Position.ui"
     }
 }
 

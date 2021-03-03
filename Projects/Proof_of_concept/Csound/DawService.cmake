@@ -1,5 +1,5 @@
 
-include("${CsoundAuger_DIR}/CsoundAugerConfig.cmake")
+include("${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageConfig.cmake")
 
 # Set main Cabbage form width and height.
 #

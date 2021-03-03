@@ -74,14 +74,15 @@ function(export_csd_plugin)
         
         # Set VST3 plugin variables.
         set(export_plugin_target "export_${in_file_name}_vst3_plugin")
-        set(plugin_dir "${CSOUND_CMAKE_OUTPUT_DIR}")
+        set(plugin_dir "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}")
         set(plugin_path "${plugin_dir}/${in_file_name_we}.vst3")
+
         
         if(BuildPlugin_VST3_Export)
-            # Export VST3 plugin to "${CSOUND_CMAKE_OUTPUT_DIR}".
+            # Export VST3 plugin to "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}".
             add_custom_target("${export_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
                 rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${vst3_plugin_type}
-                "${CSOUND_CMAKE_OUTPUT_DIR}/${in_file}" --destination "${plugin_path}")
+                "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}" --destination "${plugin_path}")
             set(link_target_depends ${export_plugin_target})
         else()
             set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
@@ -93,7 +94,7 @@ function(export_csd_plugin)
             set(plugin_contents_dir "${plugin_path}/Contents")
             set(plugin_csd_path "${plugin_contents_dir}/${in_file_name}")
             add_custom_target("${link_target}" ALL DEPENDS ${link_target_depends} COMMAND
-                rm ${plugin_csd_path} || true && ln ${CSOUND_CMAKE_OUTPUT_DIR}/${in_file} ${plugin_csd_path} || true)
+                rm ${plugin_csd_path} || true && ln ${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name} ${plugin_csd_path} || true)
         endif()
     endif()
 
@@ -323,7 +324,7 @@ set(adsr_range_minus_1_to_1 "${range_minus_1_to_1}")
 macro(add_adsr_200x100)
     set(variableName ${ARGV0})
     set(AdsrChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/adsr_200x100.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/adsr_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -331,7 +332,7 @@ endmacro()
 macro(add_lfo_200x100)
     set(variableName ${ARGV0})
     set(LfoChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/lfo_200x100.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/lfo_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -352,7 +353,7 @@ macro(add_xypad_50x300_y)
     endif()
     set(XYPadXAxisY MATH "(300 - ${XYPadXAxisY}) - 1")
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_50x300_y.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_50x300_y.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp" ${variableName})
 endmacro()
@@ -371,7 +372,7 @@ macro(add_xypad_200x200)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_200x200.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_200x200.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp" ${variableName})
 endmacro()
@@ -390,7 +391,7 @@ macro(add_xypad_300x300)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_300x300.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_300x300.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp" ${variableName})
 endmacro()
@@ -421,8 +422,8 @@ add_custom_target(CsoundCMake.Cabbage ALL DEPENDS CsoundCMake COMMAND ${CMAKE_CO
     -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
     -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
     -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
-    -DCsoundCMake_Core_DIR=\"${CsoundCMake_Core_DIR}\"
+    -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
     -DCsoundCMake.Cabbage_DIR=\"${CsoundCMake.Cabbage_DIR}\"
-    -P "${DCsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
+    -P "${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )

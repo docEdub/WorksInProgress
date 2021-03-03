@@ -1,11 +1,11 @@
 #include "definitions.h"
 
-${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_source_spatial_audio_tables_orc
-${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_source_spatial_audio_tables_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
+${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_af_spatial_tables_orc
+${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_spatial_tables_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 
 /**********************************************************************************************************************
- * File: spatial-audio/tables.orc
+ * File: af_spatial_tables.orc
  *********************************************************************************************************************/
 
 

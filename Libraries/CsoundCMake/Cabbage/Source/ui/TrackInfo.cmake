@@ -1,5 +1,5 @@
 
-include("${CsoundAuger_DIR}/global.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/global.cmake")
 
 set(TrackInfo_width "${form_width}")
 set(TrackInfo_height "32")
@@ -43,5 +43,6 @@ set(mode_label_4_rect "${mode_label_4_x}, ${mode_label_y}, ${mode_label_width}, 
 # Widgets
 set(mode_label "${label} align(\"centre\") colour(${dark_grey}) fontcolour(${white})")
 
-set(file "cabbage/TrackInfo.ui")
-configure_file("${CsoundAuger_DIR}/${file}" "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")
+set(file "ui/TrackInfo.ui")
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/${file}"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")

@@ -1,5 +1,5 @@
 
-include("${CsoundAuger_DIR}/CsoundAugerConfig.cmake")
+include("${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageConfig.cmake")
 
 # Set form_width and form_height CMake variables before including this file.
 if(NOT DEFINED form_width OR NOT DEFINED form_height)

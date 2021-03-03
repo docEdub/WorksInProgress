@@ -1,11 +1,11 @@
 #include "definitions.h"
 
-${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_source_main_opcodes_orc
-${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_source_main_opcodes_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
+${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_af_opcodes_orc
+${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_opcodes_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 
 /**********************************************************************************************************************
- * File: main/opcodes.orc
+ * File: af_opcodes.orc
  *********************************************************************************************************************/
 
 ${CSOUND_DEFINE} X #0#

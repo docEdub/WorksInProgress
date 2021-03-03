@@ -8,7 +8,7 @@
     #define INSTRUMENT_NAME ${InstrumentName}
 #endif
 
-#include "instrument-orc-definitions.h"
+#include "instrument_orc_definitions.h"
 
 
 #ifndef SubtractiveSynth_orc__include_guard
@@ -36,6 +36,7 @@ ${CSOUND_DEFINE} PositionType_Absolute #0#
 ${CSOUND_DEFINE} PositionType_Relative #1#
 
 
+// TODO: Try using XMACROS here and in CreateCcIndexesInstrument to prevent having to keep the two in sync manually.
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
     "osc1Enabled",                              "bool",     "false",            "synced", _(\)
@@ -355,7 +356,7 @@ _(\)
 
     ; "timeOfLastPositionCalculation",            "number",   "0",                "static", _(\)
 
-#include "instrument-cc.orc"
+#include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
     // -----------------------------------------------------------------------------------------------------------------
@@ -689,7 +690,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE} "source/spatial-audio/opcodes.orc"
+${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 #endif // #ifndef SubtractiveSynth_orc__include_guard
 
 
