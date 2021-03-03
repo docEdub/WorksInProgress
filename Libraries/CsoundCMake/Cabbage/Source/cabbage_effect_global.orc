@@ -1,12 +1,12 @@
 #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: cabbage-effect-global.orc
+// File: cabbage_effect_global.orc
 // 
 // Csound globals used in Cabbage effect plugins.
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE} "cabbage-core-global.orc"
+${CSOUND_INCLUDE} "cabbage_core_global.orc"
 
 
 

@@ -11,13 +11,13 @@
 #define IN_CHANNEL_COUNT 6
 #define OUT_CHANNEL_COUNT 6
 
-#include "cabbage-effect-global.h"
+#include "cabbage_effect_global.h"
 
 #define ORC_INSTANCE_INDEX 0 // When a .csd wraps an .orc there's only one orc instance in use at index 0.
 ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
 ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
-${CSOUND_INCLUDE} "cabbage-effect-global.orc"
+${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
 
 

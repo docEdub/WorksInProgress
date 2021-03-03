@@ -1,10 +1,10 @@
 
 include_guard()
 
-include("${CsoundCMake_DIR}/functions/add_preprocess_file_target.cmake")
-include("${CsoundCMake_DIR}/functions/add_run_csound_command.cmake")
-include("${CsoundCMake_DIR}/CsoundCMakeCommon.cmake")
-include("${CsoundCMake_DIR}/global.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/add_preprocess_file_target.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/add_run_csound_command.cmake")
+include("${CsoundCMake.Core_DIR}/CsoundCMake.CoreCommon.cmake")
+include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 add_custom_target(${PROJECT_NAME})
 
@@ -89,17 +89,14 @@ set(CSOUND_IFDEF "CSOUND_IFDEF")
 set(CSOUND_IFNDEF "CSOUND_IFNDEF")
 set(CSOUND_UNDEF "CSOUND_UNDEF")
 
-configure_file("${CsoundCMake_DIR}/cabbage-core-global.h" "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage-core-global.h")
-configure_file("${CsoundCMake_DIR}/cabbage-effect-global.h" "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage-effect-global.h")
-configure_file("${CsoundCMake_DIR}/cabbage-synth-global.h" "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage-synth-global.h")
-configure_file("${CsoundCMake_DIR}/core-global.h" "${CSOUND_CMAKE_OUTPUT_DIR}/core-global.h")
-configure_file("${CsoundCMake_DIR}/core-options.h" "${CSOUND_CMAKE_OUTPUT_DIR}/core-options.h")
-configure_file("${CsoundCMake_DIR}/definitions.h" "${CSOUND_CMAKE_OUTPUT_DIR}/definitions.h")
-configure_file("${CsoundCMake_DIR}/instrument-orc-definitions.h"
-    "${CSOUND_CMAKE_OUTPUT_DIR}/instrument-orc-definitions.h")
+configure_file("${CsoundCMake.Core_DIR}/Source/core_global.h" "${CSOUND_CMAKE_OUTPUT_DIR}/core_global.h")
+configure_file("${CsoundCMake.Core_DIR}/Source/core_options.h" "${CSOUND_CMAKE_OUTPUT_DIR}/core_options.h")
+configure_file("${CsoundCMake.Core_DIR}/Source/definitions.h" "${CSOUND_CMAKE_OUTPUT_DIR}/definitions.h")
+configure_file("${CsoundCMake.Core_DIR}/Source/instrument_orc_definitions.h"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/instrument_orc_definitions.h")
 
 foreach(orc_file ${ORC_FILES})
-    configure_file("${CsoundCMake_DIR}/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
+    configure_file("${CsoundCMake.Core_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
 endforeach()
 
 if(${Build_InlineIncludes})
@@ -113,8 +110,8 @@ endif()
 add_custom_target(CsoundCMake ALL COMMAND ${CMAKE_COMMAND} -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
     -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
     -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
-    -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\" -DCsoundCMake_DIR=\"${CsoundCMake_DIR}\"
-    -P "${CsoundCMake_DIR}/CsoundCMakeTarget.cmake" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\" -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
+    -P "${CsoundCMake.Core_DIR}/CsoundCMake.CoreTarget.cmake" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
 function(add_csd_implementation)

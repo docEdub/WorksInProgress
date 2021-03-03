@@ -11,17 +11,17 @@
 </CsOptions>
 <CsInstruments>
 
-#include "core-global.h"
+#include "core_global.h"
 
-// Override core-global.h ksmps.
+// Override core_global.h ksmps.
 kr = 1000
 
 // Turn off redundant OSC logging.
 #define DISABLE_LOGGING_TO_DAW_SERVICE
 
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
-${CSOUND_DEFINE} INSTANCE_NAME #"daw-service"#
-${CSOUND_INCLUDE} "core-global.orc"
+${CSOUND_DEFINE} INSTANCE_NAME #"DawService"#
+${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 
@@ -724,7 +724,7 @@ endin
 instr WriteTrackDefinesFile
     log_i_info("%s ...", nstrstr(p1))
     
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw-mode-3-track-defines.h"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_track_defines.h"
     kI = 0
     kPreviousTrackType = TRACK_TYPE_NONE
     kInstrumentNumber = 0

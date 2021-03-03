@@ -1,7 +1,7 @@
 
 include_guard()
 
-include("${CsoundCMake_DIR}/global.cmake")
+include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 if(${Build_InlineIncludes})
     set(PREPROCESSOR_INCLUDE_DIR_1 ${CSOUND_CMAKE_CONFIGURED_FILES_DIR})
@@ -18,10 +18,10 @@ function(add_preprocess_file_command)
         COMMAND ${CMAKE_COMMAND}
             -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
             -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
-            -DCsoundCMake_DIR=\"${CsoundCMake_DIR}\"
+            -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
             -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
             -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
             -DIN_FILE=\"${in_file}\"
             -DOUT_FILE=\"${out_file}\"
-            -P "${CsoundCMake_DIR}/scripts/preprocess_file_script.cmake")
+            -P "${CsoundCMake.Core_DIR}/Source/scripts/preprocess_file_script.cmake")
 endfunction()

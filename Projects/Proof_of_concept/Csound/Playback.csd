@@ -19,10 +19,10 @@ nchnls = 6
 #define Init_instrnum 1
 #define ClearSignals_instrnum 2
 
-#include "daw-mode-3-track-defines.h"
+#include "daw_mode_3_track_defines.h"
 
 ${CSOUND_DEFINE} INSTANCE_NAME #"TestSynth playback"#
-${CSOUND_INCLUDE} "core-global.orc"
+${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 #define LOW_CHANNEL_COUNT_INDEX 0

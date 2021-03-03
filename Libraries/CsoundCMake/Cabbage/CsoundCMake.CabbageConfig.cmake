@@ -1,12 +1,12 @@
 
 include_guard()
 
-set(_CsoundCMake_Cabbage_DIR "${CsoundCMake_Cabbage_DIR}")
+set(_CsoundCMake.Cabbage_DIR "${CsoundCMake.Cabbage_DIR}")
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
-set(CsoundCMake_Cabbage_DIR "${CsoundAuger_DIR}" CACHE STRING)
-mark_as_advanced(FORCE CsoundCMake_Cabbage_DIR)
-unset(_CsoundCMake_Cabbage_DIR)
+set(CsoundCMake.Cabbage_DIR "${CsoundCMake.Cabbage_DIR}" CACHE STRING)
+mark_as_advanced(FORCE CsoundCMake.Cabbage_DIR)
+unset(_CsoundCMake.Cabbage_DIR)
 
 if(APPLE)
     set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING)
@@ -24,7 +24,7 @@ set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
 
 
-include("${CsoundCMake_Cabbage_DIR}/CsoundCMake.CabbageCommon.cmake")
+include("${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageCommon.cmake")
 
 function(add_csd)
     add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
@@ -323,7 +323,7 @@ set(adsr_range_minus_1_to_1 "${range_minus_1_to_1}")
 macro(add_adsr_200x100)
     set(variableName ${ARGV0})
     set(AdsrChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/adsr_200x100.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/adsr_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -331,7 +331,7 @@ endmacro()
 macro(add_lfo_200x100)
     set(variableName ${ARGV0})
     set(LfoChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/lfo_200x100.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/lfo_200x100.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp" ${variableName})
 endmacro()
@@ -352,7 +352,7 @@ macro(add_xypad_50x300_y)
     endif()
     set(XYPadXAxisY MATH "(300 - ${XYPadXAxisY}) - 1")
 
-    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_50x300_y.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_50x300_y.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp" ${variableName})
 endmacro()
@@ -371,7 +371,7 @@ macro(add_xypad_200x200)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_200x200.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_200x200.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp" ${variableName})
 endmacro()
@@ -390,7 +390,7 @@ macro(add_xypad_300x300)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake_Cabbage_DIR}/Source/ui/widget-groups/xypad_300x300.ui"
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget-groups/xypad_300x300.ui"
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp")
     file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp" ${variableName})
 endmacro()
@@ -405,8 +405,15 @@ if(Cabbage_UiOutlineGroups)
     set(group "${group} outlinecolour(${light_blue}, 128) outlinethickness(2)")
 endif()
 
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_core_global.h"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_core_global.h")
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_effect_global.h"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_effect_global.h")
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_synth_global.h"
+    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_synth_global.h")
+
 foreach(orc_file ${ORC_FILES})
-    configure_file("${CsoundCMake_Cabbage_DIR}/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
 endforeach()
 
 add_custom_target(CsoundCMake.Cabbage ALL DEPENDS CsoundCMake COMMAND ${CMAKE_COMMAND}
@@ -415,7 +422,7 @@ add_custom_target(CsoundCMake.Cabbage ALL DEPENDS CsoundCMake COMMAND ${CMAKE_CO
     -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
     -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
     -DCsoundCMake_Core_DIR=\"${CsoundCMake_Core_DIR}\"
-    -DCsoundCMake_Cabbage_DIR=\"${CsoundCMake_Cabbage_DIR}\"
-    -P "${DCsoundCMake_Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
+    -DCsoundCMake.Cabbage_DIR=\"${CsoundCMake.Cabbage_DIR}\"
+    -P "${DCsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )

@@ -1,8 +1,7 @@
 
 include_guard()
 
-message("CsoundCMake_DIR == ${CsoundCMake_DIR}")
-include("${CsoundCMake_DIR}/global.cmake")
+include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 function(run_csound)
     set(in_file "${ARGV0}")

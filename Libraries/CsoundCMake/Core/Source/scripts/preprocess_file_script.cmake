@@ -30,8 +30,8 @@ endif()
 cmake_policy(PUSH)
 cmake_policy(SET CMP0007 NEW)
 
-message("CsoundCMake_DIR == ${CsoundCMake_DIR}")
-include("${CsoundCMake_DIR}/functions/preprocess_file.cmake")
+message("CsoundCMake.Core_DIR == ${CsoundCMake.Core_DIR}")
+include("${CsoundCMake.Core_DIR}/functions/preprocess_file.cmake")
 preprocess_file("${IN_FILE}" "${OUT_FILE}")
 
 cmake_policy(POP)

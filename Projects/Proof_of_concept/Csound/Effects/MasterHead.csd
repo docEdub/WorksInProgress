@@ -11,7 +11,7 @@
 #define IN_CHANNEL_COUNT 6
 #define OUT_CHANNEL_COUNT 6
 
-#include "cabbage-effect-global.h"
+#include "cabbage_effect_global.h"
 
 ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
 ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
@@ -20,7 +20,7 @@ ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} IS_BUS_PLUGIN #1#
 ${CSOUND_DEFINE} IS_MASTER_BUS_PLUGIN #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_MASTER#
-${CSOUND_INCLUDE} "cabbage-effect-global.orc"
+${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
 ${CSOUND_INCLUDE} "source/main/global.orc" // For spatial-audio global variables and opcodes.
 

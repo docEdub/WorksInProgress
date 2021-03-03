@@ -11,7 +11,7 @@
 #define IN_CHANNEL_COUNT 6
 #define OUT_CHANNEL_COUNT 6
 
-#include "cabbage-effect-global.h"
+#include "cabbage_effect_global.h"
 
 #define INSTRUMENT_NAME TestBusHead
 ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(INSTRUMENT_NAME.orc)#
@@ -19,7 +19,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} IS_BUS_PLUGIN #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_BUS#
-${CSOUND_INCLUDE} "cabbage-effect-global.orc"
+${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "cabbage/TrackInfo-global.orc"
 
 

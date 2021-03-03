@@ -1,4 +1,4 @@
-#include "cabbage-core-global.h"
+#include "cabbage_core_global.h"
 
 #ifndef IN_CHANNEL_COUNT
     #define IN_CHANNEL_COUNT 2

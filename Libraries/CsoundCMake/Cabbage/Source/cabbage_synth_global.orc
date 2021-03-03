@@ -6,7 +6,7 @@
 // Csound globals used in Cabbage synth plugins.
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE} "cabbage-core-global.orc"
+${CSOUND_INCLUDE} "cabbage_core_global.orc"
 
 
 

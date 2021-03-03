@@ -24,8 +24,8 @@ cmake_policy(SET CMP0007 NEW)
 
 include("${CsoundAuger_DIR}/CsoundAugerCommon.cmake")
 
-include("${CsoundCMake_DIR}/functions/preprocess_file.cmake")
-include("${CsoundCMake_DIR}/global.cmake")
+include("${CsoundCMake.Core_DIR}/functions/preprocess_file.cmake")
+include("${CsoundCMake.Core_DIR}/global.cmake")
 
 foreach(orc_file ${ORC_FILES})
     preprocess_file("${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}" "${CSOUND_CMAKE_OUTPUT_DIR}/${orc_file}")

@@ -14,7 +14,7 @@ endif()
 cmake_policy(PUSH)
 cmake_policy(SET CMP0007 NEW)
 
-include("${CsoundCMake_DIR}/functions/run_csound.cmake")
+include("${CsoundCMake.Core_DIR}/functions/run_csound.cmake")
 run_csound("${IN_FILE}" "${OUT_FILE}")
 
 cmake_policy(POP)
