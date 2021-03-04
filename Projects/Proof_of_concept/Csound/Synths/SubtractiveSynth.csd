@@ -41,7 +41,7 @@ endin
 // Main instrument. Triggered by instruments 2 and 3.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(Synths/${InstrumentName}.orc)
 
 
 //======================================================================================================================
