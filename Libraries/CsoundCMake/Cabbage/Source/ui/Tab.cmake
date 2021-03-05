@@ -61,11 +61,14 @@ add_tab(first_tab_bug_workaround_tab "" 0)
 set(tab_channels "")
 
 
-add_preprocess_file_target(
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
-    "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
-    DEPENDS CsoundCMake.Cabbage
-    TARGET_NAME "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Tab_orc")
+if(NOT ${Build_InlineIncludes})
+    add_preprocess_file_target(
+        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+        "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+        DEPENDS CsoundCMake.Cabbage
+        TARGET_NAME "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Tab_orc")
 
-# Add this file's preprocess target to the .csd file's preprocess target's dependencies (See CsoundCMakeConfig.cmake).
-list(APPEND CSD_DEPENDS ${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Tab_orc)
+    # Add this file's preprocess target to the .csd file's preprocess target's dependencies.
+    # See CsoundCMakeConfig.cmake.
+    list(APPEND CSD_DEPENDS ${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Tab_orc)
+endif()

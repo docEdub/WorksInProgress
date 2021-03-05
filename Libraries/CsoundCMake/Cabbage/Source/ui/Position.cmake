@@ -17,11 +17,15 @@ configure_file(
     "${CsoundCMake.Cabbage_DIR}/Source/ui/Position.orc"
     "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc")
 
-add_preprocess_file_target(
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc"
-    "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc"
-    DEPENDS CsoundCMake.Cabbage
-    TARGET_NAME "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Position_orc")
+if(NOT ${Build_InlineIncludes} EQUAL ON)
+    add_preprocess_file_target(
+        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc"
+        "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc"
+        DEPENDS CsoundCMake.Cabbage
+        TARGET_NAME "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Position_orc")
 
-# Add this file's preprocess target to the .csd file's preprocess target's dependencies (See CsoundCMakeConfig.cmake).
-list(APPEND CSD_DEPENDS ${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Position_orc)
+    # Add this file's preprocess target to the .csd file's preprocess target's dependencies.
+    # See CsoundCMakeConfig.cmake.
+    list(APPEND CSD_DEPENDS ${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}_preprocess_Position_orc)
+endif()
+

@@ -2,7 +2,7 @@
 include_guard()
 
 set(CSOUND_CMAKE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/_.output")
-if(${Build_InlineIncludes})
+if(${Build_InlineIncludes} EQUAL ON)
     set(CSOUND_CMAKE_OUTPUT_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/inlined")
 else()
     set(CSOUND_CMAKE_OUTPUT_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/included")

@@ -417,13 +417,16 @@ foreach(orc_file ${ORC_FILES})
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
 endforeach()
 
-add_custom_target(CsoundCMake.Cabbage ALL DEPENDS CsoundCMake COMMAND ${CMAKE_COMMAND}
-    -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
-    -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
-    -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
-    -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
-    -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
-    -DCsoundCMake.Cabbage_DIR=\"${CsoundCMake.Cabbage_DIR}\"
-    -P "${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-)
+add_custom_target(CsoundCMake.Cabbage
+    ALL
+    COMMAND ${CMAKE_COMMAND}
+        -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
+        -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
+        -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
+        -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
+        -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
+        -DCsoundCMake.Cabbage_DIR=\"${CsoundCMake.Cabbage_DIR}\"
+        -DBuild_InlineIncludes=${Build_InlineIncludes}
+        -P "${CsoundCMake.Cabbage_DIR}/CsoundCMake.CabbageTarget.cmake"
+    DEPENDS CsoundCMake
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

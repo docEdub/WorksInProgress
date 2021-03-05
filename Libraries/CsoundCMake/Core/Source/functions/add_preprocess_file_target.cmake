@@ -23,14 +23,18 @@ function(add_preprocess_file_target)
         string(REPLACE "." "_" in_file_name "${in_file_name}")
         set(TARGET_NAME "preprocess_${in_file_name}")
     endif()
-    add_custom_target("${TARGET_NAME}" ALL DEPENDS ${ARG_DEPENDS} WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    add_custom_target("${TARGET_NAME}"
+        ALL
         COMMAND ${CMAKE_COMMAND}
             -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
             -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
             -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
             -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
             -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
+            -DBuild_InlineIncludes=${Build_InlineIncludes}
             -DIN_FILE=\"${in_file}\"
             -DOUT_FILE=\"${out_file}\"
-            -P "${CsoundCMake.Core_DIR}/Source/scripts/preprocess_file_script.cmake")
+            -P "${CsoundCMake.Core_DIR}/Source/scripts/preprocess_file_script.cmake"
+        DEPENDS ${ARG_DEPENDS}
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 endfunction()

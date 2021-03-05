@@ -26,10 +26,12 @@ include("${CsoundCMake.Core_DIR}/Source/functions/preprocess_file.cmake")
 include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 include("${CsoundCMake.Core_DIR}/CsoundCMake.CoreCommon.cmake")
 
-foreach(orc_file ${ORC_FILES})
-    preprocess_file(
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
-        "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
-endforeach()
+if(NOT ${Build_InlineIncludes} EQUAL ON)
+    foreach(orc_file ${ORC_FILES})
+        preprocess_file(
+            "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
+            "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
+    endforeach()
+endif()
 
 cmake_policy(POP)
