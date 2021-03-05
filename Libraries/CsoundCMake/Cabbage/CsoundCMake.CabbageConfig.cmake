@@ -421,7 +421,6 @@ add_custom_target(CsoundCMake.Cabbage
     ALL
     COMMAND ${CMAKE_COMMAND}
         -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
-        -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
         -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
         -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
         -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"

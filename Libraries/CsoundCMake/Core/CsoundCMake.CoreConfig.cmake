@@ -100,14 +100,7 @@ foreach(orc_file ${ORC_FILES})
     configure_file("${CsoundCMake.Core_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
 endforeach()
 
-if(${Build_InlineIncludes})
-    set(PREPROCESSOR_INCLUDE_DIR_1 ${CSOUND_CMAKE_CONFIGURED_FILES_DIR})
-    set(PREPROCESSOR_INCLUDE_DIR_2 ".")
-    # set(PREPROCESSOR_INCLUDE_DIR_2 ${CSOUND_CMAKE_OUTPUT_DIR})
-else()
-    set(PREPROCESSOR_INCLUDE_DIR_1 "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}")
-    set(PREPROCESSOR_INCLUDE_DIR_2 ".")
-endif()
+set(PREPROCESSOR_INCLUDE_DIR_1 ${CSOUND_CMAKE_CONFIGURED_FILES_DIR})
 
 # Set the CMAKE_C_COMPILER_ID variable manually on macOS. I don't know why it's not getting set anymore.
 if(NOT DEFINED CMAKE_C_COMPILER_ID)
@@ -128,7 +121,6 @@ add_custom_target(CsoundCMake
     COMMAND ${CMAKE_COMMAND}
         -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
         -DPREPROCESSOR_INCLUDE_DIR_1=\"${PREPROCESSOR_INCLUDE_DIR_1}\"
-        -DPREPROCESSOR_INCLUDE_DIR_2=\"${PREPROCESSOR_INCLUDE_DIR_2}\"
         -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
         -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
         -DBuild_InlineIncludes=${Build_InlineIncludes}

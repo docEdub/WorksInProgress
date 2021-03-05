@@ -61,7 +61,7 @@ add_tab(first_tab_bug_workaround_tab "" 0)
 set(tab_channels "")
 
 
-if(NOT ${Build_InlineIncludes})
+if(NOT ${Build_InlineIncludes} EQUAL ON)
     add_preprocess_file_target(
         "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
         "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
