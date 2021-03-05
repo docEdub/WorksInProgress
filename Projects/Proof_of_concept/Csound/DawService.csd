@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---env:INCDIR=${CSOUND_CMAKE_OUTPUT_DIR}
+--env:INCDIR=${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}
 --messagelevel=${CSOUND_MESSAGE_LEVEL}
 --midi-device=0
 --nodisplays

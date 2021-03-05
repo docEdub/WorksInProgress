@@ -25,4 +25,4 @@ set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}
 
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/Reverb.ui" "${CSOUND_CMAKE_OUTPUT_DIR}/Reverb.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/Reverb.ui" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Reverb.ui")

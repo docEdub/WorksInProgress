@@ -407,11 +407,11 @@ if(Cabbage_UiOutlineGroups)
 endif()
 
 configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_core_global.h"
-    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_core_global.h")
+    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/cabbage_core_global.h")
 configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_effect_global.h"
-    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_effect_global.h")
+    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/cabbage_effect_global.h")
 configure_file("${CsoundCMake.Cabbage_DIR}/Source/cabbage_synth_global.h"
-    "${CSOUND_CMAKE_OUTPUT_DIR}/cabbage_synth_global.h")
+    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/cabbage_synth_global.h")
 
 foreach(orc_file ${ORC_FILES})
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")

@@ -67,7 +67,7 @@ endin
 // Main instrument. Triggered by score and instrument 2.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(Effects/${InstrumentName}.orc)
 
 
 //======================================================================================================================

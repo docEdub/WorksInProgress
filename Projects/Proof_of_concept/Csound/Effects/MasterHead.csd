@@ -22,7 +22,7 @@ ${CSOUND_DEFINE} IS_MASTER_BUS_PLUGIN #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_MASTER#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
-${CSOUND_INCLUDE} "source/main/global.orc" // For spatial-audio global variables and opcodes.
+${CSOUND_INCLUDE} "af_global.orc" // For spatial-audio global variables and opcodes.
 
 
 //======================================================================================================================
@@ -75,10 +75,10 @@ instr 1
         axr = -(ay * km2 + az * km5 + ax * km8)
 
         // Use sh_hrir_order_1.wav to convert ambisonic output to stereo.
-        i_hrir_0 = ftgen(0, 0, 0, 1, "../../3rdparty/resonance-audio/1.0.0/sh_hrir_order_1.wav", 0, 0, 1)
-        i_hrir_1 = ftgen(0, 0, 0, 1, "../../3rdparty/resonance-audio/1.0.0/sh_hrir_order_1.wav", 0, 0, 2)
-        i_hrir_2 = ftgen(0, 0, 0, 1, "../../3rdparty/resonance-audio/1.0.0/sh_hrir_order_1.wav", 0, 0, 3)
-        i_hrir_3 = ftgen(0, 0, 0, 1, "../../3rdparty/resonance-audio/1.0.0/sh_hrir_order_1.wav", 0, 0, 4)
+        i_hrir_0 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 1)
+        i_hrir_1 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 2)
+        i_hrir_2 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 3)
+        i_hrir_3 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 4)
         aw dconv aw, 256, i_hrir_0
         ay dconv ayr, 256, i_hrir_1
         az dconv azr, 256, i_hrir_2
