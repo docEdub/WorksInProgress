@@ -29,9 +29,9 @@ function(preprocess_file)
 
     # Check global variables.
     set(global_variables_valid TRUE)
-    if(NOT PREPROCESSOR_INCLUDE_DIR_1 OR "${PREPROCESSOR_INCLUDE_DIR_1}" STREQUAL "")
+    if(NOT PREPROCESSOR_INCLUDE_DIR OR "${PREPROCESSOR_INCLUDE_DIR}" STREQUAL "")
         set(global_variables_valid FALSE)
-        message(SEND_ERROR "PREPROCESSOR_INCLUDE_DIR_1 not set.")
+        message(SEND_ERROR "PREPROCESSOR_INCLUDE_DIR not set.")
     endif()
     if(NOT CMAKE_C_COMPILER_ID OR "${CMAKE_C_COMPILER_ID}" STREQUAL "")
         set(global_variables_valid FALSE)
@@ -52,7 +52,7 @@ function(preprocess_file)
     # Set `compiler` and `flags` local variables.
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
         set(compiler "${CMAKE_C_COMPILER}")
-        set(include_flags -I${PREPROCESSOR_INCLUDE_DIR_1})
+        set(include_flags -I${PREPROCESSOR_INCLUDE_DIR})
         # -C:    Preserve comments during preprocessing.
         # -E:    Only run the preprocessor.
         # -P:    Do not add #line directives to output.

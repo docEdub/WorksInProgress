@@ -1,6 +1,6 @@
 
-if(NOT PREPROCESSOR_INCLUDE_DIR_1)
-    message(SEND_ERROR "PREPROCESSOR_INCLUDE_DIR_1 not set.")
+if(NOT PREPROCESSOR_INCLUDE_DIR)
+    message(SEND_ERROR "PREPROCESSOR_INCLUDE_DIR not set.")
     set(bad_input true)
 endif()
 if(NOT IN_FILE)
