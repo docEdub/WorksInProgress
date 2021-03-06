@@ -6,3 +6,4 @@
 /_.build/**
 /_.output/**
 /_.plugins/**
+/CMakeOptions.cmake

@@ -1,4 +1,11 @@
+
 *
+
+# Whitelist
+!*/
 !/Libraries/CsoundCMake/**
 !/Projects/**
 !/.gitignore
+
+# Blacklist
+.DS_Store

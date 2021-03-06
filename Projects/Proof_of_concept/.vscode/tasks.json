@@ -4,9 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake build",
+            "label": "Build",
             "type": "shell",
-            "command": "cd Csound && cmake --build _.build",
+            "command": "npm run build",
             "group": {
                 "kind": "build",
                 "isDefault": true
