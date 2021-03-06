@@ -9,10 +9,13 @@
     "serve": "npm run hugo:serve",
     "test": "echo \"Error: no test specified\" && exit 1",
 
+    "hugo:build:help": "echo 'Builds the blog in the `_.build` folder using the `hugo` tool.'",
     "hugo:build": "hugo -d _.build",
     "hugo:clean": "rm -rf _.build resources public",
+    "hugo:serve:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
     "hugo:serve": "hugo server",
 
+    "logo:build:help": "echo 'Builds the blog's minified docEdub.svg logo using the `svgo` tool.'",
     "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js --multipass",
     "logo:clean": "rm ./static/img/docEdub.svg"
   },
