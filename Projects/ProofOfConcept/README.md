@@ -10,13 +10,13 @@ scripts that might still work but the Windows build as a whole is probably broke
 - Install CMake and add `cmake` binary to PATH. (Not the `CMake.app`, the actual `cmake` binary **in** the app)
 - Install Csound.
 - Install Csound Cabbage in default location: `/Applications/Cabbage.app`.
-- In `[...]/Projects/Proof_of_concept` folder, run commands:
+- In `[...]/Projects/ProofOfConcept` folder, run commands:
     - `npm ci`
     - `npm run build`
 
-Build generates .csd files in `[...]/Projects/Proof_of_concept/Csound/_.output`.
+Build generates .csd files in `[...]/Projects/ProofOfConcept/Csound/_.output`.
 
-To change CMake config after initial build, edit `[...]/Projects/Proof_of_concept/Csound/CMakeOptions.cmake` and
+To change CMake config after initial build, edit `[...]/Projects/ProofOfConcept/Csound/CMakeOptions.cmake` and
 rebuild.
 
 If plugin options are enabled, build generates them from .csd files with Cabbage.<br>
