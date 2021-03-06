@@ -16,7 +16,7 @@
     "hugo:serve": "hugo server",
 
     "logo:build:help": "echo 'Builds the blog's minified docEdub.svg logo using the `svgo` tool.'",
-    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ../../Config/svgo.config.js --multipass",
+    "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ./config/svgo.js --multipass",
     "logo:clean": "rm ./static/img/docEdub.svg"
   },
   "author": "",
