@@ -6,8 +6,7 @@
         {
             "label": "CMake build",
             "type": "shell",
-            "command": "cmake --build Csound/_.build",
-            "problemMatcher": ["$gcc"],
+            "command": "cd Csound && cmake --build _.build",
             "group": {
                 "kind": "build",
                 "isDefault": true
