@@ -19,7 +19,7 @@ nchnls = 6
 #define Init_instrnum 1
 #define ClearSignals_instrnum 2
 
-#include "daw_mode_3_track_defines.h"
+#include "_.mode3_TrackDefines.h"
 
 ${CSOUND_DEFINE} INSTANCE_NAME #"TestSynth playback"#
 ${CSOUND_INCLUDE} "core_global.orc"
@@ -133,7 +133,7 @@ endin
 
 
 #define IS_PLAYBACK 1
-#include "daw_mode_3_trackset.orc"
+#include "_.mode3_TrackSet.orc"
 
 
 // Aux mixer instrument.
@@ -247,9 +247,9 @@ endin
 #define Velocity(x) x
 #define Volume(x) x
 
-#include "daw_mode_3_trackset.sco"
-#include "daw_mode_3.sco"
-#include "daw_mode_4.sco"
+#include "_.mode3_TrackSet.sco"
+#include "_.mode3.sco"
+#include "_.mode4.sco"
 
 </CsScore>
 </CsoundSynthesizer>

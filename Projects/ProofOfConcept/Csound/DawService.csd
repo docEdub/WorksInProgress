@@ -278,7 +278,7 @@ instr 1
 endin
 
 
-// Initialize mode.txt to 1 if file does not exist.
+// Initialize _.mode.txt to 1 if file does not exist.
 //
 instr InitializeMode
     log_ik_info("%s ...", nstrstr(p1))
@@ -298,14 +298,14 @@ instr InitializeMode
 endin
 
 
-// Read float from mode.txt.
-// Note that mode.txt must have a float in it followed by a new line, otherwise Cabbage will crash. If the file does not
+// Read float from _.mode.txt.
+// Note that _.mode.txt must have a float in it followed by a new line, otherwise Cabbage will crash. If the file does not
 // exist, this instrument will error out, so make sure it's only called from the `event` opcode, otherwise it will
 // cause Csound to stop processing the score and exit.
 //
 instr ReadMode
     log_ik_info("%s ...", nstrstr(p1))
-    gk_mode = readk("mode.txt", 8, 1)
+    gk_mode = readk("_.mode.txt", 8, 1)
     set_mode(gk_mode)
     log_k_info("Mode = %d", gk_mode)
     log_ik_info("%s - done", nstrstr(p1))
@@ -313,12 +313,12 @@ instr ReadMode
 endin
 
 
-// Write p4 float to mode.txt.
+// Write p4 float to _.mode.txt.
 //
 instr WriteMode
     log_ik_info("%s ...", nstrstr(p1))
     // Note that opening the file for write with the `fiopen` opcode clears the file.
-    i_fileHandle = fiopen( "mode.txt", 0)
+    i_fileHandle = fiopen( "_.mode.txt", 0)
     fouti(i_fileHandle, 0, 0, p4)
     ficlose(i_fileHandle)
     log_ik_info("%s - done", nstrstr(p1))
@@ -516,9 +516,9 @@ instr HandleOscScoreGenerationMessages
     log_i_info("%s ...", nstrstr(p1))
     i_mode = i(gk_mode)
     if (i_mode == 3) then
-        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3.sco"
+        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/_.mode3.sco"
     elseif (i_mode == 4) then
-        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_4.sco"
+        S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/_.mode4.sco"
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1
@@ -726,7 +726,7 @@ endin
 instr WriteTrackDefinesFile
     log_i_info("%s ...", nstrstr(p1))
     
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_track_defines.h"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/_.mode3_TrackDefines.h"
     kI = 0
     kPreviousTrackType = TRACK_TYPE_NONE
     kInstrumentNumber = 0
@@ -788,7 +788,7 @@ endin
 instr WriteTracksetOrcFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_trackset.orc"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/_.mode3_TrackSet.orc"
 
     clearOrcInstances()
     iI = 0
@@ -895,7 +895,7 @@ endin
 instr WriteTracksetScoFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/daw_mode_3_trackset.sco"
+    S_filename = "${CSOUND_CMAKE_OUTPUT_DIR}/_.mode3_TrackSet.sco"
     kI = 0
     kInstrumentCount = 0
     kAuxCount = 0

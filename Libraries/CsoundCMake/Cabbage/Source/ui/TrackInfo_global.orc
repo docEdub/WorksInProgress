@@ -83,7 +83,7 @@ endop
 //
 instr ReadMode
     log_ik_info("%s ...", nstrstr(p1))
-    gk_mode = readk("${CSOUND_CMAKE_OUTPUT_DIR}/mode.txt", 8, 1)
+    gk_mode = readk("${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/_.mode.txt", 8, 1)
     log_k_info("Mode = %d", gk_mode)
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
