@@ -1,4 +1,4 @@
-var exec = require('child_process').exec
+var spawn = require('child_process').spawn
 var os = require('os')
 var fs = require('fs')
 
@@ -26,4 +26,4 @@ else {
     throw new Error("Unsupported OS: " + os.type())
 }
 
-exec(command, (error, stdout, stderr) => { console.log(stdout + '\n' + stderr) })
+spawn('bash', [ '-c', command ], { stdio: 'inherit' })
