@@ -2,28 +2,33 @@ var spawn = require('child_process').spawn
 var os = require('os')
 var fs = require('fs')
 
-let command = ""
-
 if (os.type() === 'Darwin') {
-    if (!fs.existsSync("Csound/CMakeOptions.cmake")) {
-        fs.copyFileSync("../../Libraries/CsoundCMake/CMakeOptions.default.cmake", "Csound/CMakeOptions.cmake")
+    const csoundDir = 'Csound'
+    const shell_buildDir = '_.build'
+    const shell_optionsFile = 'CMakeOptions.cmake'
+    const shell_cacheFile = shell_buildDir + '/CMakeCache.txt'
+    const js_optionsFile = csoundDir + '/' + shell_optionsFile
+    const js_cacheFile = csoundDir + '/' + shell_cacheFile
+    const js_optionsDefaultFile = '../../Libraries/CsoundCMake/CMakeOptions.default.cmake'
+
+    if (!fs.existsSync(js_optionsFile)) {
+        fs.copyFileSync(js_optionsDefaultFile, js_optionsFile)
     }
 
-    command += "cd Csound"
+    let shellCommand = 'cd ' + csoundDir
 
-    // If the options file was modified after the cache was configured, delete the cache file to reconfigure.
-    if (fs.existsSync("Csound/_.build/CMakeCache.txt")) {
-        let cacheTime = fs.statSync("Csound/_.build/CMakeCache.txt").mtime
-        let optionsTime = fs.statSync("Csound/CMakeOptions.cmake").mtime
-        if (cacheTime < optionsTime) {
-            command += " && rm _.build/CMakeCache.txt"
+    // If options file was modified after cache file was configured, delete cache file to make CMake remake it.
+    if (fs.existsSync(js_cacheFile)) {
+        if (fs.statSync(js_cacheFile).mtime < fs.statSync(js_optionsFile).mtime) {
+            shellCommand += ' && rm ' + shell_cacheFile
         }
     }
-    command += " && cmake -B _.build -C CMakeOptions.cmake"
-    command += " && cmake --build _.build"
+
+    shellCommand += ' && cmake -B ' + shell_buildDir + ' -C ' + shell_optionsFile
+    shellCommand += ' && cmake --build ' + shell_buildDir
+
+    spawn('bash', [ '-c', shellCommand ], { stdio: 'inherit' })
 }
 else {
-    throw new Error("Unsupported OS: " + os.type())
+    throw new Error('Unsupported OS: ' + os.type())
 }
-
-spawn('bash', [ '-c', command ], { stdio: 'inherit' })
