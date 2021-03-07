@@ -24,7 +24,8 @@ if (os.type() === 'Darwin') {
         }
     }
 
-    shellCommand += ' && cmake -B ' + shell_buildDir + ' -C ' + shell_optionsFile
+    shellCommand += ' && cmake -B ' + shell_buildDir + ' -C ' + shell_optionsFile + ' -D BUILD_PLAYBACK_CSD='
+    shellCommand += process.argv.includes('BUILD_PLAYBACK_CSD') ? 'ON' : 'OFF'
     shellCommand += ' && cmake --build ' + shell_buildDir
 
     spawn('bash', [ '-c', shellCommand ], { stdio: 'inherit' })

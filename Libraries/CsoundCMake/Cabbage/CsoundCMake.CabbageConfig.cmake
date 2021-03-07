@@ -19,6 +19,13 @@ set(BuildPlugin_AU_LinkCsdFiles OFF CACHE BOOL)
 set(BuildPlugin_VST3_Export OFF CACHE BOOL)
 set(BuildPlugin_VST3_LinkCsdFiles OFF CACHE BOOL)
 
+if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
+    set(BuildPlugin_AU_Export OFF)
+    set(BuildPlugin_AU_LinkCsdFiles OFF)
+    set(BuildPlugin_VST3_Export OFF)
+    set(BuildPlugin_VST3_LinkCsdFiles OFF)
+endif()
+
 set(Cabbage_LogCabbageOutput OFF CACHE BOOL)
 set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
