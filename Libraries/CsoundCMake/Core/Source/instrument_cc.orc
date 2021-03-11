@@ -38,8 +38,8 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 #define CREATE_CC_INDEX(channel) CC_INDEX(channel) init ccIndex(STRINGIZE(channel))
 
 #define CC_VALUE_default(channel) giCcValueDefaults[CC_INDEX(channel)]
-#define CC_VALUE_i(channel) giCcValues[ORC_INSTANCE_INDEX][CC_INDEX(channel)]
-#define CC_VALUE_k(channel) gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(channel)]
+#define CC_VALUE_i(channel) giCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
+#define CC_VALUE_k(channel) gkCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
 
 #define InitializeCcValuesInstrument CONCAT(INSTRUMENT_NAME, _InitializeCcValues)
 #define CreateCcIndexesInstrument CONCAT(INSTRUMENT_NAME, _CreateCcIndexes)

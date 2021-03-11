@@ -58,6 +58,8 @@ instr INSTRUMENT_ID
         log_i_info("%s ...", SInstrument)
     #endif
 
+    iOrcInstanceIndex = ORC_INSTANCE_INDEX
+
     // Don't modify the signal in DAW service modes 2, 3, and 4. It will mess up the track index and CC score messages.
     #if !IS_PLAYBACK
         if (gk_mode != 1) kgoto end

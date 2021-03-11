@@ -691,12 +691,247 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+
+giMaxDistance = 100
+giMinDistance = 5
+giMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giMinDistance, giMaxDistance)
+
+
+instr SubtractiveSynth_CcEvent
+    iCcType = p4
+    iCcValue = p5
+    iOrcInstanceIndex = p6
+
+    giCcValues[iOrcInstanceIndex][iCcType] = iCcValue
+    gkCcValues[iOrcInstanceIndex][iCcType] = iCcValue
+
+    log_k_debug("EVENT_CC %s = %f ...", gSCcInfo[iCcType][$CC_INFO_CHANNEL], iCcValue)
+
+    iCalculatePosition init false
+    if (CC_VALUE_i(positionEnabled) == true &&
+            CC_INDEX(positionEnabled) <= iCcType &&
+            iCcType <= CC_INDEX(positionMaxRZ)) then
+        ; log_k_debug("... updating position ...")
+        kDopplerShift = 1
+        kPosition[] init 3
+        kPosition[$X] = 0
+        kPosition[$Y] = 0
+        kPosition[$Z] = 0
+        if (CC_VALUE_i(positionXYZEnabled) == true) then
+            ; log_k_debug("... xyz ...")
+            kMaxXYZ = CC_VALUE_k(positionMaxXYZ)
+            kPosition[$X] = kMaxXYZ * CC_VALUE_k(positionX)
+            kPosition[$Y] = kMaxXYZ * CC_VALUE_k(positionY)
+            kPosition[$Z] = kMaxXYZ * CC_VALUE_k(positionCartesianZ)
+        endif
+        if (CC_VALUE_i(positionRTZEnabled) == true) then
+            kMaxRZ = CC_VALUE_k(positionMaxRZ)
+            kPositionPolarR = kMaxRZ * CC_VALUE_k(positionR)
+            kPositionPolarT_radians = $AF_MATH__DEGREES_TO_RADIANS * CC_VALUE_k(positionT)
+            kPosition[$X] = kPosition[$X] + kPositionPolarR * sin(kPositionPolarT_radians)
+            kPosition[$Y] = kPosition[$Y] + kPositionPolarR * cos(kPositionPolarT_radians)
+            kPosition[$Z] = kPosition[$Z] + kMaxRZ *CC_VALUE_k(positionPolarZ)
+        endif
+        iPositionDistanceType = CC_VALUE_i(positionDistanceType)
+        if (iPositionDistanceType == $PositionType_Relative) then
+            kPosition[$X] = kPosition[$X] + gk_AF_3D_ListenerPosition[$X]
+            kPosition[$Y] = kPosition[$Y] + gk_AF_3D_ListenerPosition[$Y]
+            kPosition[$Z] = kPosition[$Z] + gk_AF_3D_ListenerPosition[$Z]
+        endif
+
+        kPreviousDistance = CC_VALUE_k(calculatedDistance)
+        kListenerDistance = AF_3D_Audio_SourceDistance(kPosition)
+        kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kListenerDistance, giMinDistance, giMaxDistance)
+        ; kPreviousTime = CC_VALUE_k(timeOfLastPositionCalculation)
+        ; kCurrentTime = time_k()
+        ; if (kPreviousTime == 0 || kPreviousTime < kCurrentTime) then
+            ; log_k_debug("... saving updated position (%f, %f, %f) ...", kPosition[$X], kPosition[$Y], kPosition[$Z])
+            ; kDopplerShift = AF_3D_Audio_DopplerShift(kPreviousDistance, kListenerDistance, kCurrentTime - kPreviousTime)
+
+            ; gkCcValues[iOrcInstanceIndex][CC_INDEX(timeOfLastPositionCalculation)] = kCurrentTime
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedPositionX)] = kPosition[$X]
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedPositionY)] = kPosition[$Y]
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedPositionZ)] = kPosition[$Z]
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedDistance)] = kListenerDistance
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedDistanceAttenuation)] = kDistanceAttenuation
+            gkCcValues[iOrcInstanceIndex][CC_INDEX(calculatedDopplerShift)] = kDopplerShift
+
+            kMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(0, giMinDistance, giMaxDistance)
+            kRolloffFrequency = 5000 + (15000 * (1 - ((kMinDistanceAttenuation - kDistanceAttenuation) / kMinDistanceAttenuation)))
+            
+            ; #if LOGGING
+            ;     if (changed(kPosition[$X]) == true ||
+            ;             changed(kPosition[$Y]) == true ||
+            ;             changed(kPosition[$Z]) == true) then
+            ;         log_k_debug("xyz = (%f, %f, %f)", kPosition[$X], kPosition[$Y], kPosition[$Z])
+            ;         ; log_k_debug("distance = %f, attenuation = %f, dopplerShift = %f",
+            ;         ;     kListenerDistance,
+            ;         ;     kDistanceAttenuation,
+            ;         ;     kDopplerShift)
+            ;     endif
+            ; #endif
+        ; endif
+    endif
+
+    ; log_k_debug("EVENT_CC %s - done", gSCcInfo[iCcType][$CC_INFO_CHANNEL])
+
+    turnoff
+endin
+
+instr SubtractiveSynth_Note
+    iPitch = p4
+    iVelocity = p5 / 127
+    iOrcInstanceIndex = p6
+    iInstrumentTrackIndex = p7
+
+    log_i_trace("iPitch = %f", iPitch)
+
+    kDopplerShift init 1
+    ; if (CC_VALUE_i(positionEnabled) == true) then
+    ;     kDopplerShift = CC_VALUE_k(calculatedDopplerShift)
+    ; endif
+
+    aOut = 0
+
+    #define OSC_INDEX 1
+    #include "SubtractiveSynth.osc.orc"
+    #undef OSC_INDEX
+    #define OSC_INDEX 2
+    #include "SubtractiveSynth.osc.orc"
+    #undef OSC_INDEX
+    #define OSC_INDEX 3
+    #include "SubtractiveSynth.osc.orc"
+    #undef OSC_INDEX
+    #define OSC_INDEX 4
+    #include "SubtractiveSynth.osc.orc"
+    #undef OSC_INDEX
+
+    if (CC_VALUE_i(filterEnabled) == true) then
+        kFilterCutoffFrequency init CC_VALUE_default(filterCutoffFrequency)
+        if (CC_VALUE_i(filterCutoffFrequencyEnabled) == true) then
+            kFilterCutoffFrequency = CC_VALUE_k(filterCutoffFrequency)
+        endif
+
+        kFilterResonance init CC_VALUE_default(filterResonance)
+        if (CC_VALUE_i(filterResonanceEnabled) == true) then
+            kFilterResonance = CC_VALUE_k(filterResonance)
+        endif
+
+        if (CC_VALUE_i(filterCutoffFrequencyAdsrEnabled) == true) then
+            iFilterCutoffFrequencyDefault = CC_VALUE_default(filterCutoffFrequency)
+            kFilterCutoffFrequencyAdsr = adsr_linsegr(
+                CC_VALUE_i(filterCutoffFrequencyAttack),
+                CC_VALUE_i(filterCutoffFrequencyDecay),
+                CC_VALUE_i(filterCutoffFrequencySustain),
+                CC_VALUE_i(filterCutoffFrequencyRelease))
+            kFilterCutoffFrequency = iFilterCutoffFrequencyDefault -
+                (kFilterCutoffFrequencyAdsr * (iFilterCutoffFrequencyDefault - kFilterCutoffFrequency))
+        endif
+
+        if (CC_VALUE_i(filterResonanceAdsrEnabled) == true) then
+            iFilterResonanceDefault = CC_VALUE_default(filterResonance)
+            kFilterResonanceAdsr = adsr_linsegr(
+                CC_VALUE_i(filterResonanceAttack),
+                CC_VALUE_i(filterResonanceDecay),
+                CC_VALUE_i(filterResonanceSustain),
+                CC_VALUE_i(filterResonanceRelease))
+            kFilterResonance = iFilterResonanceDefault -
+                (kFilterResonanceAdsr * (iFilterResonanceDefault - kFilterResonance))
+        endif
+
+        aOut = moogladder(aOut, kFilterCutoffFrequency, kFilterResonance)
+    endif
+
+    if (CC_VALUE_i(amplitudeEnabled) == true) then
+        log_i_debug("adsr = %f, %f, %f, %f", CC_VALUE_i(amplitudeAttack), CC_VALUE_i(amplitudeDecay),
+            CC_VALUE_i(amplitudeSustain), CC_VALUE_i(amplitudeRelease))
+        aOut *= adsr_linsegr(CC_VALUE_i(amplitudeAttack), CC_VALUE_i(amplitudeDecay), CC_VALUE_i(amplitudeSustain),
+            CC_VALUE_i(amplitudeRelease))
+    endif
+
+    iPositionEnabled = CC_VALUE_i(positionEnabled)
+    if (iPositionEnabled == true) then
+        // Calculate signal to reverb before attenuating to simulate distance. These parameters will probably need
+        // to be adjusted for each different type of sound.
+        kDistanceAttenuation = CC_VALUE_k(calculatedDistanceAttenuation)
+        kRolloffFrequency =
+            5000 + (15000 * (1 - ((giMinDistanceAttenuation - kDistanceAttenuation) / giMinDistanceAttenuation)))
+        aOut = tone(aOut, kRolloffFrequency)
+        aReverbSendSignal = aOut
+
+        // Attenuate signal by listener distance.
+        aOut *= kDistanceAttenuation
+    else
+        aReverbSendSignal = aOut
+    endif
+
+    ; log_i_debug("iOrcInstanceIndex = %d", iOrcInstanceIndex)
+    ; log_i_debug("iInstrumentTrackIndex = %d", iInstrumentTrackIndex)
+
+    if (nchnls == 6) then
+        // Assume channels 1-4 are for first order ambisonics, with channels 5 and 6 for reverb left and right.
+
+        // Output ambisonic channels 1-4.
+        if (iPositionEnabled == true) then
+            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_XYZ(
+                CC_VALUE_k(calculatedPositionX),
+                CC_VALUE_k(calculatedPositionY),
+                CC_VALUE_k(calculatedPositionZ))
+        else
+            kAmbisonicChannelGains[] = fillarray(1, 1, 1, 1)
+        endif
+        kI = 0
+        while (kI < 4) do
+            #if IS_PLAYBACK
+                gaInstrumentSignals[iInstrumentTrackIndex][kI] =
+                    gaInstrumentSignals[iInstrumentTrackIndex][kI] + (kAmbisonicChannelGains[kI] * aOut)
+                kI += 1
+            #else
+                // NB: kAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
+                // but it works fine if it's assigned to a k variable that's put in the outch opcode.
+                // TODO: File bug report?
+                kAmbisonicChannelGain = kAmbisonicChannelGains[kI]
+                kI += 1
+                outch(kI, kAmbisonicChannelGain * aOut)
+            #endif
+        od
+
+        // Output reverb channels 5 and 6.
+        #if IS_PLAYBACK
+            gaInstrumentSignals[iInstrumentTrackIndex][4] =
+                gaInstrumentSignals[iInstrumentTrackIndex][4] + aReverbSendSignal
+            gaInstrumentSignals[iInstrumentTrackIndex][5] =
+                gaInstrumentSignals[iInstrumentTrackIndex][5] + aReverbSendSignal
+        #else
+            outch(5, aReverbSendSignal)
+            outch(6, aReverbSendSignal)
+        #endif
+    else
+        // All channel configurations other than 6 are not supported, yet, so just copy the `aOut` signal to all
+        // output channels for now.
+        kI = 0
+        while (kI < nchnls) do
+            #if IS_PLAYBACK
+                gaInstrumentSignals[iInstrumentTrackIndex][kI] =
+                    gaInstrumentSignals[iInstrumentTrackIndex][kI] + aOut
+                kI += 1
+            #else
+                kI += 1
+                outch(kI, aOut)
+            #endif
+        od
+    endif
+endin
+
+giSubtractiveSynthCcEventInstrumentNumber = nstrnum("SubtractiveSynth_CcEvent")
+giSubtractiveSynthNoteInstrumentNumber = nstrnum("SubtractiveSynth_Note")
+
 #endif // #ifndef SubtractiveSynth_orc__include_guard
 
 
 instr INSTRUMENT_ID
     ; log_i_debug("p1 = %f", p1)
-    ; log_i_debug("track index = %d", INSTRUMENT_TRACK_INDEX)
+    ; log_i_debug("track index = %d", iInstrumentTrackIndex)
 
     #if LOGGING
         #ifdef INSTRUMENT_ID_DEFINED
@@ -707,230 +942,19 @@ instr INSTRUMENT_ID
         log_i_info("%s ...", SInstrument)
     #endif
 
-    iMaxDistance = 100
-    iMinDistance = 5
-    iMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, iMinDistance, iMaxDistance)
-
     iEventType = p4
     if (iEventType == EVENT_CC) then
-        iCcType = p5
-        iCcValue = p6
-        giCcValues[ORC_INSTANCE_INDEX][iCcType] = iCcValue
-        gkCcValues[ORC_INSTANCE_INDEX][iCcType] = iCcValue
-
-        ; log_k_debug("EVENT_CC %s = %f ...", gSCcInfo[iCcType][$CC_INFO_CHANNEL], iCcValue)
-
-        iCalculatePosition init false
-        if (CC_VALUE_i(positionEnabled) == true &&
-                CC_INDEX(positionEnabled) <= iCcType &&
-                iCcType <= CC_INDEX(positionMaxRZ)) then
-            ; log_k_debug("... updating position ...")
-            kDopplerShift = 1
-            kPosition[] init 3
-            kPosition[$X] = 0
-            kPosition[$Y] = 0
-            kPosition[$Z] = 0
-            if (CC_VALUE_i(positionXYZEnabled) == true) then
-                ; log_k_debug("... xyz ...")
-                kMaxXYZ = CC_VALUE_k(positionMaxXYZ)
-                kPosition[$X] = kMaxXYZ * CC_VALUE_k(positionX)
-                kPosition[$Y] = kMaxXYZ * CC_VALUE_k(positionY)
-                kPosition[$Z] = kMaxXYZ * CC_VALUE_k(positionCartesianZ)
-            endif
-            if (CC_VALUE_i(positionRTZEnabled) == true) then
-                kMaxRZ = CC_VALUE_k(positionMaxRZ)
-                kPositionPolarR = kMaxRZ * CC_VALUE_k(positionR)
-                kPositionPolarT_radians = $AF_MATH__DEGREES_TO_RADIANS * CC_VALUE_k(positionT)
-                kPosition[$X] = kPosition[$X] + kPositionPolarR * sin(kPositionPolarT_radians)
-                kPosition[$Y] = kPosition[$Y] + kPositionPolarR * cos(kPositionPolarT_radians)
-                kPosition[$Z] = kPosition[$Z] + kMaxRZ *CC_VALUE_k(positionPolarZ)
-            endif
-            iPositionDistanceType = CC_VALUE_i(positionDistanceType)
-            if (iPositionDistanceType == $PositionType_Relative) then
-                kPosition[$X] = kPosition[$X] + gk_AF_3D_ListenerPosition[$X]
-                kPosition[$Y] = kPosition[$Y] + gk_AF_3D_ListenerPosition[$Y]
-                kPosition[$Z] = kPosition[$Z] + gk_AF_3D_ListenerPosition[$Z]
-            endif
-
-            kPreviousDistance = CC_VALUE_k(calculatedDistance)
-            kListenerDistance = AF_3D_Audio_SourceDistance(kPosition)
-            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kListenerDistance, iMinDistance, iMaxDistance)
-            ; kPreviousTime = CC_VALUE_k(timeOfLastPositionCalculation)
-            ; kCurrentTime = time_k()
-            ; if (kPreviousTime == 0 || kPreviousTime < kCurrentTime) then
-                ; log_k_debug("... saving updated position (%f, %f, %f) ...", kPosition[$X], kPosition[$Y], kPosition[$Z])
-                ; kDopplerShift = AF_3D_Audio_DopplerShift(kPreviousDistance, kListenerDistance, kCurrentTime - kPreviousTime)
-
-                ; gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(timeOfLastPositionCalculation)] = kCurrentTime
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedPositionX)] = kPosition[$X]
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedPositionY)] = kPosition[$Y]
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedPositionZ)] = kPosition[$Z]
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedDistance)] = kListenerDistance
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedDistanceAttenuation)] = kDistanceAttenuation
-                gkCcValues[ORC_INSTANCE_INDEX][CC_INDEX(calculatedDopplerShift)] = kDopplerShift
-
-                kMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(0, iMinDistance, iMaxDistance)
-                kRolloffFrequency = 5000 + (15000 * (1 - ((kMinDistanceAttenuation - kDistanceAttenuation) / kMinDistanceAttenuation)))
-                
-                ; #if LOGGING
-                ;     if (changed(kPosition[$X]) == true ||
-                ;             changed(kPosition[$Y]) == true ||
-                ;             changed(kPosition[$Z]) == true) then
-                ;         log_k_debug("xyz = (%f, %f, %f)", kPosition[$X], kPosition[$Y], kPosition[$Z])
-                ;         ; log_k_debug("distance = %f, attenuation = %f, dopplerShift = %f",
-                ;         ;     kListenerDistance,
-                ;         ;     kDistanceAttenuation,
-                ;         ;     kDopplerShift)
-                ;     endif
-                ; #endif
-            ; endif
-        endif
-
-        ; log_k_debug("EVENT_CC %s - done", gSCcInfo[iCcType][$CC_INFO_CHANNEL])
-
+        event_i("i", giSubtractiveSynthCcEventInstrumentNumber, 0, p3, p5, p6, ORC_INSTANCE_INDEX)
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
-        iPitch = p5
-        iVelocity = p6 / 127
-
-        kDopplerShift init 1
-        ; if (CC_VALUE_i(positionEnabled) == true) then
-        ;     kDopplerShift = CC_VALUE_k(calculatedDopplerShift)
-        ; endif
-
-        aOut = 0
-
-        #define OSC_INDEX 1
-        #include "SubtractiveSynth.osc.orc"
-        #undef OSC_INDEX
-        #define OSC_INDEX 2
-        #include "SubtractiveSynth.osc.orc"
-        #undef OSC_INDEX
-        #define OSC_INDEX 3
-        #include "SubtractiveSynth.osc.orc"
-        #undef OSC_INDEX
-        #define OSC_INDEX 4
-        #include "SubtractiveSynth.osc.orc"
-        #undef OSC_INDEX
-
-        if (CC_VALUE_i(filterEnabled) == true) then
-            kFilterCutoffFrequency init CC_VALUE_default(filterCutoffFrequency)
-            if (CC_VALUE_i(filterCutoffFrequencyEnabled) == true) then
-                kFilterCutoffFrequency = CC_VALUE_k(filterCutoffFrequency)
-            endif
-
-            kFilterResonance init CC_VALUE_default(filterResonance)
-            if (CC_VALUE_i(filterResonanceEnabled) == true) then
-                kFilterResonance = CC_VALUE_k(filterResonance)
-            endif
-
-            if (CC_VALUE_i(filterCutoffFrequencyAdsrEnabled) == true) then
-                iFilterCutoffFrequencyDefault = CC_VALUE_default(filterCutoffFrequency)
-                kFilterCutoffFrequencyAdsr = adsr_linsegr(
-                    CC_VALUE_i(filterCutoffFrequencyAttack),
-                    CC_VALUE_i(filterCutoffFrequencyDecay),
-                    CC_VALUE_i(filterCutoffFrequencySustain),
-                    CC_VALUE_i(filterCutoffFrequencyRelease))
-                kFilterCutoffFrequency = iFilterCutoffFrequencyDefault -
-                    (kFilterCutoffFrequencyAdsr * (iFilterCutoffFrequencyDefault - kFilterCutoffFrequency))
-            endif
-
-            if (CC_VALUE_i(filterResonanceAdsrEnabled) == true) then
-                iFilterResonanceDefault = CC_VALUE_default(filterResonance)
-                kFilterResonanceAdsr = adsr_linsegr(
-                    CC_VALUE_i(filterResonanceAttack),
-                    CC_VALUE_i(filterResonanceDecay),
-                    CC_VALUE_i(filterResonanceSustain),
-                    CC_VALUE_i(filterResonanceRelease))
-                kFilterResonance = iFilterResonanceDefault -
-                    (kFilterResonanceAdsr * (iFilterResonanceDefault - kFilterResonance))
-            endif
-
-            aOut = moogladder(aOut, kFilterCutoffFrequency, kFilterResonance)
-        endif
-
-        if (CC_VALUE_i(amplitudeEnabled) == true) then
-            log_i_debug("adsr = %f, %f, %f, %f", CC_VALUE_i(amplitudeAttack), CC_VALUE_i(amplitudeDecay),
-                CC_VALUE_i(amplitudeSustain), CC_VALUE_i(amplitudeRelease))
-            aOut *= adsr_linsegr(CC_VALUE_i(amplitudeAttack), CC_VALUE_i(amplitudeDecay), CC_VALUE_i(amplitudeSustain),
-                CC_VALUE_i(amplitudeRelease))
-        endif
-
-        iPositionEnabled = CC_VALUE_i(positionEnabled)
-        if (iPositionEnabled == true) then
-            // Calculate signal to reverb before attenuating to simulate distance. These parameters will probably need
-            // to be adjusted for each different type of sound.
-            kDistanceAttenuation = CC_VALUE_k(calculatedDistanceAttenuation)
-            kRolloffFrequency =
-                5000 + (15000 * (1 - ((iMinDistanceAttenuation - kDistanceAttenuation) / iMinDistanceAttenuation)))
-            aOut = tone(aOut, kRolloffFrequency)
-            aReverbSendSignal = aOut
-
-            // Attenuate signal by listener distance.
-            aOut *= kDistanceAttenuation
-        else
-            aReverbSendSignal = aOut
-        endif
-
-        log_i_debug("ORC_INSTANCE_INDEX = %d", ORC_INSTANCE_INDEX)
-        log_i_debug("INSTRUMENT_TRACK_INDEX = %d", INSTRUMENT_TRACK_INDEX)
-
-        if (nchnls == 6) then
-            // Assume channels 1-4 are for first order ambisonics, with channels 5 and 6 for reverb left and right.
-
-            // Output ambisonic channels 1-4.
-            if (iPositionEnabled == true) then
-                kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_XYZ(
-                    CC_VALUE_k(calculatedPositionX),
-                    CC_VALUE_k(calculatedPositionY),
-                    CC_VALUE_k(calculatedPositionZ))
-            else
-                kAmbisonicChannelGains[] = fillarray(1, 1, 1, 1)
-            endif
-            kI = 0
-            while (kI < 4) do
-                #if IS_PLAYBACK
-                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][kI] =
-                        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][kI] + (kAmbisonicChannelGains[kI] * aOut)
-                    kI += 1
-                #else
-                    // NB: kAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
-                    // but it works fine if it's assigned to a k variable that's put in the outch opcode.
-                    // TODO: File bug report?
-                    kAmbisonicChannelGain = kAmbisonicChannelGains[kI]
-                    kI += 1
-                    outch(kI, kAmbisonicChannelGain * aOut)
-                #endif
-            od
-
-            // Output reverb channels 5 and 6.
-            #if IS_PLAYBACK
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] =
-                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbSendSignal
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] =
-                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbSendSignal
-            #else
-                outch(5, aReverbSendSignal)
-                outch(6, aReverbSendSignal)
-            #endif
-        else
-            // All channel configurations other than 6 are not supported, yet, so just copy the `aOut` signal to all
-            // output channels for now.
-            kI = 0
-            while (kI < nchnls) do
-                #if IS_PLAYBACK
-                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][kI] =
-                        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][kI] + aOut
-                    kI += 1
-                #else
-                    kI += 1
-                    outch(kI, aOut)
-                #endif
-            od
+        iSubInstrumentNumber = giSubtractiveSynthNoteInstrumentNumber + frac(p1)
+        event_i("i", iSubInstrumentNumber, 0, p3, p5, p6, ORC_INSTANCE_INDEX, INSTRUMENT_TRACK_INDEX)
+        kReleased = release()
+        if (kReleased == true) then
+            event("i", -iSubInstrumentNumber, 0, 0)
         endif
     endif
 
-end:
     log_i_info("%s - done", SInstrument)
 endin
 
