@@ -16,7 +16,7 @@ if (os.type() === 'Darwin') {
 
     let command = 'cd ' + csoundDir
 
-    // If options file was modified after cache file was configured, delete cache file so CMakes remake it.
+    // If options file was modified after cache file was configured, delete cache file so CMake remakes it.
     if (fs.existsSync(cacheFile)) {
         if (fs.statSync(cacheFile).mtime < fs.statSync(optionsFile).mtime) {
             command += ' && rm ' + cacheFile
