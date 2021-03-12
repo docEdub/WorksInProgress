@@ -775,7 +775,6 @@ instr SubtractiveSynth_CcEvent
 
     ; log_k_debug("EVENT_CC %s - done", gSCcInfo[iCcType][$CC_INFO_CHANNEL])
 
-    turnoff
 endin
 
 instr SubtractiveSynth_Note
@@ -882,43 +881,24 @@ instr SubtractiveSynth_Note
         endif
         kI = 0
         while (kI < 4) do
-            #if IS_PLAYBACK
-                gaInstrumentSignals[iInstrumentTrackIndex][kI] =
-                    gaInstrumentSignals[iInstrumentTrackIndex][kI] + (kAmbisonicChannelGains[kI] * aOut)
-                kI += 1
-            #else
-                // NB: kAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
-                // but it works fine if it's assigned to a k variable that's put in the outch opcode.
-                // TODO: File bug report?
-                kAmbisonicChannelGain = kAmbisonicChannelGains[kI]
-                kI += 1
-                outch(kI, kAmbisonicChannelGain * aOut)
-            #endif
+            // NB: kAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
+            // but it works fine if it's assigned to a k variable that's put in the outch opcode.
+            // TODO: File bug report?
+            kAmbisonicChannelGain = kAmbisonicChannelGains[kI]
+            kI += 1
+            outch(kI, kAmbisonicChannelGain * aOut)
         od
 
         // Output reverb channels 5 and 6.
-        #if IS_PLAYBACK
-            gaInstrumentSignals[iInstrumentTrackIndex][4] =
-                gaInstrumentSignals[iInstrumentTrackIndex][4] + aReverbSendSignal
-            gaInstrumentSignals[iInstrumentTrackIndex][5] =
-                gaInstrumentSignals[iInstrumentTrackIndex][5] + aReverbSendSignal
-        #else
-            outch(5, aReverbSendSignal)
-            outch(6, aReverbSendSignal)
-        #endif
+        outch(5, aReverbSendSignal)
+        outch(6, aReverbSendSignal)
     else
         // All channel configurations other than 6 are not supported, yet, so just copy the `aOut` signal to all
         // output channels for now.
         kI = 0
         while (kI < nchnls) do
-            #if IS_PLAYBACK
-                gaInstrumentSignals[iInstrumentTrackIndex][kI] =
-                    gaInstrumentSignals[iInstrumentTrackIndex][kI] + aOut
-                kI += 1
-            #else
-                kI += 1
-                outch(kI, aOut)
-            #endif
+            kI += 1
+            outch(kI, aOut)
         od
     endif
 endin
@@ -944,15 +924,27 @@ instr INSTRUMENT_ID
 
     iEventType = p4
     if (iEventType == EVENT_CC) then
-        event_i("i", giSubtractiveSynthCcEventInstrumentNumber, 0, p3, p5, p6, ORC_INSTANCE_INDEX)
+        aUnused subinstr giSubtractiveSynthCcEventInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
-        iSubInstrumentNumber = giSubtractiveSynthNoteInstrumentNumber + frac(p1)
-        event_i("i", iSubInstrumentNumber, 0, p3, p5, p6, ORC_INSTANCE_INDEX, INSTRUMENT_TRACK_INDEX)
-        kReleased = release()
-        if (kReleased == true) then
-            event("i", -iSubInstrumentNumber, 0, 0)
-        endif
+        ao1, ao2, ao3, ao4, ao5, ao6 subinstr giSubtractiveSynthNoteInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX,
+            INSTRUMENT_TRACK_INDEX
+
+        #if IS_PLAYBACK
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = ao1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = ao2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = ao3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = ao4
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = ao5
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = ao6
+        #else
+            outch(1, ao1)
+            outch(2, ao2)
+            outch(3, ao3)
+            outch(4, ao4)
+            outch(5, ao5)
+            outch(6, ao6)
+        #endif
     endif
 
     log_i_info("%s - done", SInstrument)
