@@ -5,6 +5,7 @@
   "scripts": {
     "bounce": "node build.js BUILD_PLAYBACK_CSD",
     "build": "node build.js",
+    "build-and-bounce": "npm run build && npm run bounce",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
