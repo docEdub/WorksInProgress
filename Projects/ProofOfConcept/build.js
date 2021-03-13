@@ -23,8 +23,10 @@ if (os.type() === 'Darwin') {
         }
     }
 
-    command += ' && cmake -B ' + buildDir + ' -C ' + optionsFile + ' -D BUILD_PLAYBACK_CSD=' +
-        (process.argv.includes('BUILD_PLAYBACK_CSD') ? 'ON' : 'OFF') + ' && cmake --build ' + buildDir
+    command += ' && cmake -B ' + buildDir + ' -C ' + optionsFile
+        + ' -D BUILD_PLAYBACK_CSD=' + (process.argv.includes('BUILD_PLAYBACK_CSD') ? 'ON' : 'OFF')
+        + ' -D FOR_PLAYBACK_CSD=' + (process.argv.includes('FOR_PLAYBACK_CSD') ? 'ON' : 'OFF')
+        + ' && cmake --build ' + buildDir
 
     spawn('bash', [ '-c', command ], { stdio: 'inherit' })
 }

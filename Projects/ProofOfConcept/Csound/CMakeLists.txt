@@ -18,3 +18,9 @@ else()
     add_csd_effect("Effects/Reverb.csd")
     add_csd_synth("Synths/SubtractiveSynth.csd")
 endif()
+
+# If the Build_InlineIncludes options is off, make sure the _.build/inlined/_.configured folder gets made so the
+# DAW service has somehwere to put the files generated for playback.
+if("${Build_InlineIncludes}" STREQUAL "OFF")
+    file(MAKE_DIRECTORY "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}")
+endif()

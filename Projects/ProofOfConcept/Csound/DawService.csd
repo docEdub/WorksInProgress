@@ -516,9 +516,9 @@ instr HandleOscScoreGenerationMessages
     log_i_info("%s ...", nstrstr(p1))
     i_mode = i(gk_mode)
     if (i_mode == 3) then
-        S_filename = "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/_.mode3.sco"
+        S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3.sco"
     elseif (i_mode == 4) then
-        S_filename = "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/_.mode4.sco"
+        S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode4.sco"
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1
@@ -726,7 +726,7 @@ endin
 instr WriteTrackDefinesFile
     log_i_info("%s ...", nstrstr(p1))
     
-    S_filename = "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/_.mode3_TrackDefines.h"
+    S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3_TrackDefines.h"
     kI = 0
     kPreviousTrackType = TRACK_TYPE_NONE
     kInstrumentNumber = 0
@@ -788,7 +788,7 @@ endin
 instr WriteTracksetOrcFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/_.mode3_TrackSet.orc"
+    S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3_TrackSet.orc"
 
     clearOrcInstances()
     iI = 0
@@ -833,11 +833,11 @@ instr WriteTracksetOrcFile
             log_k_debug("Trackset %d: kOrcInstanceIndex = %d", kI, kOrcInstanceIndex)
             kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
             gkOrcInstanceCounters[kOrcInstanceIndex] = kOrcInstance + 1
-            if (k_trackType == TRACK_TYPE_INSTRUMENT) then
+            ; if (k_trackType == TRACK_TYPE_INSTRUMENT) then
                 SOrcDirectory = "Synths"
-            else
-                SOrcDirectory = "Effects"
-            endif
+            ; else
+            ;     SOrcDirectory = "Effects"
+            ; endif
             SInstrumentId = sprintfk("%s_%d", strsubk(S_orcFilename, 0, strrindexk(S_orcFilename, ".orc")), kTrack)
 
             fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
@@ -873,7 +873,7 @@ instr WriteTracksetOrcFile
                 fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX %d\n", kJ + 1)
                 fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
                 fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
-                fprintks(S_filename, "#include \"${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/%s\" // -%d\n", SOrcFilename, 0)
+                fprintks(S_filename, "#include \"${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Effects/%s\" // -%d\n", SOrcFilename, 0)
                 fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
                 fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
                 fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
@@ -900,7 +900,7 @@ endin
 instr WriteTracksetScoFile
     log_i_info("%s ...", nstrstr(p1))
 
-    S_filename = "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/_.mode3_TrackSet.sco"
+    S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3_TrackSet.sco"
     kI = 0
     kInstrumentCount = 0
     kAuxCount = 0

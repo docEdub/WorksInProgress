@@ -2,7 +2,8 @@
 include_guard()
 
 set(CSOUND_CMAKE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/_.build")
-if("${Build_InlineIncludes}" STREQUAL "ON")
+set(CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/inlined/.configured")
+if("${Build_InlineIncludes}" STREQUAL "ON" OR "${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
     set(CSOUND_CMAKE_OUTPUT_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/inlined")
 else()
     set(CSOUND_CMAKE_OUTPUT_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/included")
