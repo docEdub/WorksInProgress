@@ -143,7 +143,7 @@ i"${InstrumentName}" 0 z EVENT_EFFECT_ON
 
 <Cabbage>
 
-${form} caption("Reverb") size(${form_size}) pluginid("0010")
+${form} caption("Reverb") size(${form_size}) pluginid("0100")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
