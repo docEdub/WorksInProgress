@@ -16,6 +16,7 @@ else()
     add_csd_effect("Effects/BusHead.csd")
     add_csd_effect("Effects/MasterHead.csd")
     add_csd_effect("Effects/Reverb.csd")
+    add_csd_synth("Synths/PointSynth.csd")
     add_csd_synth("Synths/SubtractiveSynth.csd")
 endif()
 
