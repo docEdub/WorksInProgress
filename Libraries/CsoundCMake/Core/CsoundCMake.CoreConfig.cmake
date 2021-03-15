@@ -119,16 +119,28 @@ if(APPLE)
     set(CMAKE_CXX_COMPILER_FORCED ON)
 endif()
 
-add_custom_target(CsoundCMake
-    ALL
-    COMMAND ${CMAKE_COMMAND}
-        -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
-        -DPREPROCESSOR_INCLUDE_DIR=\"${PREPROCESSOR_INCLUDE_DIR}\"
-        -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
-        -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
-        -DBuild_InlineIncludes=${Build_InlineIncludes}
-        -P "${CsoundCMake.Core_DIR}/CsoundCMake.CoreTarget.cmake"
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set(orc_file_dependencies "")
+if(NOT ${Build_InlineIncludes} EQUAL ON)
+    foreach(orc_file ${ORC_FILES})
+        add_custom_command(
+            OUTPUT "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
+            MAIN_DEPENDENCY "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+            COMMAND ${CMAKE_COMMAND}
+                -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
+                -DPREPROCESSOR_INCLUDE_DIR=\"${PREPROCESSOR_INCLUDE_DIR}\"
+                -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
+                -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
+                -DBuild_InlineIncludes=${Build_InlineIncludes}
+                -DINPUT_FILE=\"${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}\"
+                -DOUTPUT_FILE=\"${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}\"
+                -P "${CsoundCMake.Core_DIR}/CsoundCMake.CoreTarget.cmake"
+        )
+        list(APPEND orc_file_dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
+    endforeach()
+endif()
+
+add_custom_target(CsoundCMake.Core ALL DEPENDS ${orc_file_dependencies})
 
 function(add_csd_implementation)
     set(csd "${ARGV0}")
