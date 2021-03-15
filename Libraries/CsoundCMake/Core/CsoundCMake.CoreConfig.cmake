@@ -29,8 +29,8 @@ set(ORC_FILES
     "time.orc"
 )
 
-# Override the CMake `set` function to mark variables as non-advanced and allow defining cache variables without having
-# to set a description string.
+# Override the CMake `set` function to allow defining cache variables without having to set a description string, and to
+# add a MATH option to use instead of CMake's `math(EXPR ...)` nomenclature.
 macro(set)
     if("MATH" STREQUAL "${ARGV1}")
         math(EXPR ${ARGV0} "${ARGV2}")
@@ -40,19 +40,10 @@ macro(set)
         else()
             _set(${ARGV})
         endif()
-        mark_as_advanced(CLEAR ${ARGV0})
     else()
         _set(${ARGV})
     endif()
 endmacro()
-
-# Mark all variables as advanced. The variables we define will be set back to non-advanced by the overridden `set`
-# function.
-function(mark_all_variables_as_advanced)
-    get_cmake_property(variables VARIABLES)
-    mark_as_advanced(FORCE ${variables})
-endfunction()
-mark_all_variables_as_advanced()
 
 set(Build_InlineIncludes OFF CACHE BOOL)
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
