@@ -7,14 +7,14 @@ include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 add_custom_target(${PROJECT_NAME})
 
-set(HEADER_FILES
+set(CsoundCMake_Core_HeaderFiles
     "core_global.h"
     "core_options.h"
     "definitions.h"
     "instrument_orc_definitions.h"
 )
 
-set(ORC_FILES
+set(CsoundCMake_Core_OrcFiles
     "af_global.orc"
     "af_opcodes.orc"
     "af_spatial_opcodes.orc"
@@ -109,11 +109,11 @@ function(configure_source_file)
     configure_file("${CsoundCMake.Core_DIR}/Source/${file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${file}")
 endfunction()
 
-foreach(header_file ${HEADER_FILES})
+foreach(header_file ${CsoundCMake_Core_HeaderFiles})
     configure_source_file("${header_file}")
 endforeach()
 
-foreach(orc_file ${ORC_FILES})
+foreach(orc_file ${CsoundCMake_Core_OrcFiles})
     configure_source_file("${orc_file}")
 endforeach()
 
@@ -134,16 +134,16 @@ if(APPLE)
 endif()
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
-    foreach(orc_file ${ORC_FILES})
+    foreach(orc_file ${CsoundCMake_Core_OrcFiles})
         add_preprocess_file_command(
             "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
             "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
         )
-        list(APPEND CsoundCMake.Core.Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
+        list(APPEND CsoundCMake_Core_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
     endforeach()
 endif()
 
-add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake.Core.Dependencies})
+add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake_Core_Dependencies})
 
 function(add_csd_implementation)
     set(csd "${ARGV0}")
