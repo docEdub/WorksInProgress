@@ -46,8 +46,6 @@ function(preprocess_file)
     if(NOT arguments_valid OR NOT global_variables_valid)
         return()
     endif()
-
-    message(STATUS "Preprocessing \"${in_file}\" to \"${out_file}\"")
     
     # Set `compiler` and `flags` local variables.
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
