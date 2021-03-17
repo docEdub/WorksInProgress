@@ -3,6 +3,7 @@ include_guard()
 
 include("${CsoundCMake.Core_DIR}/Source/functions/add_preprocess_file_command.cmake")
 include("${CsoundCMake.Core_DIR}/Source/functions/add_run_csound_command.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/get_dependencies.cmake")
 include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 add_custom_target(${PROJECT_NAME})
@@ -178,8 +179,18 @@ function(add_csd_implementation)
         set(orc_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
         configure_file("${orc}" "${orc_configured}")
         if(NOT ${Build_InlineIncludes} EQUAL ON)
+            get_dependencies(dependencies "${orc_configured}")
+            # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
+            # message("\n${orc} dependencies = \n  ${formatted_dependencies}\n")
+
             set(orc_preprocessed "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
-            add_preprocess_file_command("${orc_configured}" "${orc_preprocessed}" DEPENDS ${ARG_DEPENDS})
+            add_preprocess_file_command(
+                "${orc_configured}"
+                "${orc_preprocessed}"
+                DEPENDS
+                    ${ARG_DEPENDS}
+                    ${dependenices}
+            )
         endif()
     endif()
 
@@ -188,11 +199,18 @@ function(add_csd_implementation)
         list(APPEND ARG_DEPENDS ${CSD_DEPENDS})
     endif()
 
-    # Configure and preprocess the given csd.
+    # Configure the given csd.
     set(csd_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.csd")
     configure_file("${csd}" "${csd_configured}")
+
+    # Get the configured csd's dependencies.
+    get_dependencies(dependencies "${csd_configured}")
+    # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
+    # message("\n${csd} dependencies = \n  ${formatted_dependencies}\n")
+
+    # Add the command to preprocess the given csd.
     set(csd_preprocessed "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_without_extension}.csd")
-    add_preprocess_file_command("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS})
+    add_preprocess_file_command("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS} ${dependencies})
 endfunction()
 
 function(add_csd)
