@@ -148,7 +148,6 @@ add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake_Core_Dependencies})
 
 function(add_csd_implementation)
     set(csd "${ARGV0}")
-    message(STATUS "Adding csd \"${csd}\"")
 
     set(options OPTIONS)
     set(one_value_keywords ONE_VALUE_KEYWORDS)
@@ -168,14 +167,12 @@ function(add_csd_implementation)
     # If a .cmake file with the same name as the given csd exists, include it before configuring the csd.
     set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.cmake")
     if (EXISTS "${csd_cmake}")
-        message(STATUS "Found \"${csd_dir}/${csd_without_extension}.cmake\"")
         include("${csd_cmake}")
     endif()
 
     # If a .orc file with the same name as the given csd exists, configure and preprocess it.
     set(orc "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.orc")
     if (EXISTS "${orc}")
-        message(STATUS "Found \"${csd_dir}/${csd_without_extension}.orc\"")
         set(orc_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
         configure_file("${orc}" "${orc_configured}")
         if(NOT ${Build_InlineIncludes} EQUAL ON)
