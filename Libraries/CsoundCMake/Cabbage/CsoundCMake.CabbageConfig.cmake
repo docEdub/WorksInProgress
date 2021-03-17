@@ -37,7 +37,7 @@ set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
 
 function(add_csd)
-    # add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
+    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
 endfunction()
 
 function(export_csd_plugin)
@@ -83,39 +83,51 @@ function(export_csd_plugin)
         endif()
         
         # Set VST3 plugin variables.
-        set(export_plugin_target "export_${in_file_name}_vst3_plugin")
         set(plugin_dir "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}")
         set(plugin_path "${plugin_dir}/${in_file_name_we}.vst3")
 
-        
         if(BuildPlugin_VST3_Export)
             # Export VST3 plugin to "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}".
-            add_custom_target("${export_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
-                rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${vst3_plugin_type}
-                "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}" --destination "${plugin_path}")
-            set(link_target_depends ${export_plugin_target})
+            add_custom_command(
+                OUTPUT "${plugin_path}/Contents/Info.plist"
+                MAIN_DEPENDENCY "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}"
+                DEPENDS CsoundCMake.Cabbage
+                COMMAND
+                    rm -rf "${plugin_path}" || true &&
+                    "${CABBAGE_PATH}/Contents/MacOS/Cabbage"
+                        --export-${vst3_plugin_type}
+                        "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}"
+                        --destination "${plugin_path}"
+                        > /dev/null 2>&1
+            )
+            set(vst3_depends "${plugin_path}/Contents/Info.plist")
         else()
-            set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
+            set(vst3_depends "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}")
         endif()
 
-        if(BuildPlugin_VST3_LinkCsdFiles)
-            # Make hard link for .csd in ~/Library/Audio/Plug-Ins/Components so Cabbage plugins can find them.
-            set(link_target "link_${in_file_name}")
-            set(plugin_contents_dir "${plugin_path}/Contents")
-            set(plugin_csd_path "${plugin_contents_dir}/${in_file_name}")
-            add_custom_target("${link_target}" ALL DEPENDS ${link_target_depends} COMMAND
-                rm ${plugin_csd_path} || true && ln ${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name} ${plugin_csd_path} || true)
+        if(BuildPlugin_VST3_Export OR BuildPlugin_VST3_LinkCsdFiles)
+            if(BuildPlugin_VST3_LinkCsdFiles)
+                set(link_target "${in_file_name}__VST3_LinkCsdFiles")
+                set(plugin_contents_dir "${plugin_path}/Contents")
+                set(plugin_csd_path "${plugin_contents_dir}/${in_file_name}")
+                set(link_csd_file_command
+                    rm ${plugin_csd_path} || true &&
+                    ln ${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name} ${plugin_csd_path} || true
+                )
+            endif()
+            add_custom_target("${in_file_name_we}.vst3" ALL DEPENDS ${vst3_depends} COMMAND ${link_csd_file_command})
+        else()
+            add_custom_target("${in_file_name_we}.csd" ALL DEPENDS ${vst3_depends})
         endif()
     endif()
-
 endfunction()
 
 function(add_csd_effect)
-    # export_csd_plugin("${ARGV0}" "effect")
+    export_csd_plugin("${ARGV0}" "effect")
 endfunction()
 
 function(add_csd_synth)
-    # export_csd_plugin("${ARGV0}" "synth")
+    export_csd_plugin("${ARGV0}" "synth")
 endfunction()
 
 macro(define_cabbage_control_size PREFIX)

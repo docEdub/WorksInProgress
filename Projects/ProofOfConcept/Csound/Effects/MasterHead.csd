@@ -117,7 +117,7 @@ i1 0 z
 ${form} caption("TestMasterHead") size(${form_width}, ${form_height}) pluginid("0004")
 
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
 }
 
 ${csoundoutput} bounds(${csoundoutput_group_rect})

@@ -3,6 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
+test
+
 #include "core_options.h"
 
 </CsOptions>

@@ -46,4 +46,5 @@ set(mode_label "${label} align(\"centre\") colour(${dark_grey}) fontcolour(${whi
 set(file "ui/TrackInfo.ui")
 configure_file(
     "${CsoundCMake.Cabbage_DIR}/Source/${file}"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")
+    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}"
+)

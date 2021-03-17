@@ -51,4 +51,5 @@ set(S88_height MATH "${keyboard_group_y} + ${keyboard_group_height}")
 set(file "ui/S88.ui")
 configure_file(
     "${CsoundCMake.Cabbage_DIR}/Source/${file}"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}")
+    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}"
+)
