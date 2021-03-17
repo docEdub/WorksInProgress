@@ -57,16 +57,8 @@ function(preprocess_file)
         # -x c:  Force language to C.
         # See https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-flags.
         set(flags -C -E -P -x c ${include_flags} ${in_file})
-    elseif("MSVC" STREQUAL "${CMAKE_C_COMPILER_ID}")
-        string(REPLACE "/" "\\\\" compiler "${CMAKE_C_COMPILER}")
-        string(REPLACE "/" "\\\\" PREPROCESSOR_INCLUDE_NATIVE_DIR "${PREPROCESSOR_INCLUDE_NATIVE_DIR}")
-        set(include_flags /I ${PREPROCESSOR_INCLUDE_NATIVE_DIR})
-        # /C:  Preserves comments during preprocessing.
-        # /EP: Copies preprocessor output to standard output. Does not add #line directives to output.
-        # See https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category#preprocessor.
-        set(flags /C /EP /nologo ${include_flags} ${in_file})
     else()
-        message(FATAL_ERROR "Unknown compiler id \"${CMAKE_C_COMPILER_ID}\"")
+        message(FATAL_ERROR "Compiler \"${CMAKE_C_COMPILER_ID}\" is not supported yet.")
     endif()
 
     # Set `working_directory` local variable to directory containing input file.
