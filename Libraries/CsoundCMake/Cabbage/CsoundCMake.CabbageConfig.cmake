@@ -346,17 +346,17 @@ set(adsr_range_minus_1_to_1 "${range_minus_1_to_1}")
 macro(add_adsr_200x100)
     set(variableName ${ARGV0})
     set(AdsrChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/adsr_200x100.ui"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp")
-    file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/adsr_200x100.ui-tmp" ${variableName})
+    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${AdsrChannelPrefix}.adsr_200x100.ui")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/adsr_200x100.ui" "${outputFileName}")
+    set(${variableName} "${outputFileName}")
 endmacro()
 
 macro(add_lfo_200x100)
     set(variableName ${ARGV0})
     set(LfoChannelPrefix ${ARGV1})
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/lfo_200x100.ui"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp")
-    file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/lfo_200x100.ui-tmp" ${variableName})
+    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${AdsrChannelPrefix}.lfo_200x100.ui")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/lfo_200x100.ui" "${outputFileName}")
+    set(${variableName} "${outputFileName}")
 endmacro()
 
 macro(add_xypad_50x300_y)
@@ -375,9 +375,9 @@ macro(add_xypad_50x300_y)
     endif()
     set(XYPadXAxisY MATH "(300 - ${XYPadXAxisY}) - 1")
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_50x300_y.ui"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp")
-    file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_50x300_y.ui-tmp" ${variableName})
+    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${AdsrChannelPrefix}.xypad_50x300_y.ui")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_50x300_y.ui" "${outputFileName}")
+    set(${variableName} "${outputFileName}")
 endmacro()
 
 macro(add_xypad_200x200)
@@ -394,9 +394,9 @@ macro(add_xypad_200x200)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_200x200.ui"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp")
-    file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_200x200.ui-tmp" ${variableName})
+    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${AdsrChannelPrefix}.xypad_200x200.ui")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_200x200.ui" "${outputFileName}")
+    set(${variableName} "${outputFileName}")
 endmacro()
 
 macro(add_xypad_300x300)
@@ -413,9 +413,9 @@ macro(add_xypad_300x300)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_300x300.ui"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp")
-    file(READ "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/xypad_300x300.ui-tmp" ${variableName})
+    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${AdsrChannelPrefix}.xypad_300x300.ui")
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_300x300.ui" "${outputFileName}")
+    set(${variableName} "${outputFileName}")
 endmacro()
 
 #=======================================================================================================================

@@ -39,16 +39,16 @@ set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
 macro(add_osc_controls)
-    add_adsr_200x100(pulseWidthAdsrKnobs "${uiPrefix}PulseWidth")
-    add_lfo_200x100(pulseWidthLfoControls "${uiPrefix}PulseWidth")
-    add_adsr_200x100(pitchAdsrKnobs "${uiPrefix}Pitch")
-    add_lfo_200x100(pitchLfoControls "${uiPrefix}Pitch")
-    add_adsr_200x100(filterCutoffFrequencyAdsrKnobs "${uiPrefix}FilterCutoffFrequency")
-    add_lfo_200x100(filterCutoffFrequencyLfoControls "${uiPrefix}FilterCutoffFrequency")
-    add_adsr_200x100(filterResonanceAdsrKnobs "${uiPrefix}FilterResonance")
-    add_lfo_200x100(filterResonanceLfoControls "${uiPrefix}FilterResonance")
-    add_adsr_200x100(volumeAdsrKnobs "${uiPrefix}Volume")
-    add_lfo_200x100(volumeLfoControls "${uiPrefix}Volume")
+    add_adsr_200x100(pulseWidthAdsrKnobs "${InstrumentName}.${uiPrefix}PulseWidth")
+    add_lfo_200x100(pulseWidthLfoControls "${InstrumentName}.${uiPrefix}PulseWidth")
+    add_adsr_200x100(pitchAdsrKnobs "${InstrumentName}.${uiPrefix}Pitch")
+    add_lfo_200x100(pitchLfoControls "${InstrumentName}.${uiPrefix}Pitch")
+    add_adsr_200x100(filterCutoffFrequencyAdsrKnobs "${InstrumentName}.${uiPrefix}FilterCutoffFrequency")
+    add_lfo_200x100(filterCutoffFrequencyLfoControls "${InstrumentName}.${uiPrefix}FilterCutoffFrequency")
+    add_adsr_200x100(filterResonanceAdsrKnobs "${InstrumentName}.${uiPrefix}FilterResonance")
+    add_lfo_200x100(filterResonanceLfoControls "${InstrumentName}.${uiPrefix}FilterResonance")
+    add_adsr_200x100(volumeAdsrKnobs "${InstrumentName}.${uiPrefix}Volume")
+    add_lfo_200x100(volumeLfoControls "${InstrumentName}.${uiPrefix}Volume")
 endmacro()
 
 set(uiPrefix "osc1")
@@ -75,8 +75,8 @@ configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui"
     "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthOsc4.ui")
 
-add_adsr_200x100(filterCutoffFrequencyAdsrKnobs "filterCutoffFrequency")
-add_adsr_200x100(filterResonanceAdsrKnobs "filterResonance")
+add_adsr_200x100(filterCutoffFrequencyAdsrKnobs "${InstrumentName}.filterCutoffFrequency")
+add_adsr_200x100(filterResonanceAdsrKnobs "${InstrumentName}.filterResonance")
 configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthFilter.ui"
     "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthFilter.ui")
