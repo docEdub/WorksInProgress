@@ -188,6 +188,8 @@ function(add_csd_implementation)
                     ${ARG_DEPENDS}
                     ${dependenices}
             )
+
+            list(APPEND ARG_DEPENDS "${orc_preprocessed}")
         endif()
     endif()
 
