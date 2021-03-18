@@ -6,4 +6,3 @@
 --nodisplays
 --nosound
 -+rtmidi=null
---test=test
