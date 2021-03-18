@@ -23,9 +23,9 @@ macro(add_tab)
     set(${tab_variable}_size "${${tab_variable}_width}, ${${tab_variable}_height}")
     set(${tab_variable}_rect "${${tab_variable}_xy}, ${${tab_variable}_size}")
 
-    # Append tab to Tab.ui.
-    set(tab_ui_path "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui")
-    # If this is first tab, clear Tab.ui contents.
+    # Append tab to Tab.ui.tmp.
+    set(tab_ui_path "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui.tmp")
+    # If this is first tab, clear Tab.ui.tmp contents.
     if(${tab_index} EQUAL 0)
         file(WRITE "${tab_ui_path}" "")
     endif()
@@ -49,6 +49,10 @@ macro(add_tab)
 endmacro()
 
 function(process_tabs)
+    set(tab_ui_path "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui")
+    set(tab_ui_path_tmp "${tab_ui_path}.tmp")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${tab_ui_path_tmp}" "${tab_ui_path}")
+
     string(REPLACE ";" "\", \"" csound_tab_channels "\"${tab_channels}\"")
     configure_file(
         "${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.orc"

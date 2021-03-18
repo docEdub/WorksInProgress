@@ -253,17 +253,17 @@ ${form} caption("SubtractiveSynth") size(${form_size}) pluginid("0010")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
 }
 
 ; S88 tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(0) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/S88.ui"
+    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/S88.ui"
 }
 
 ; Osc 1 tab content
