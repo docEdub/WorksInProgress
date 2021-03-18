@@ -38,10 +38,13 @@ set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
 
 function(add_csd)
     add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
+    set(csd "${ARGV0}")
+    get_filename_component(csd_file_name "${csd}" NAME)
+    add_custom_target("${csd_file_name}" ALL DEPENDS "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}")
 endfunction()
 
 function(export_csd_plugin)
-    add_csd("${ARGV0}")
+    add_csd_implementation(${ARGV0} DEPENDS CsoundCMake.Cabbage)
 
     set(in_file "${ARGV0}")
 
