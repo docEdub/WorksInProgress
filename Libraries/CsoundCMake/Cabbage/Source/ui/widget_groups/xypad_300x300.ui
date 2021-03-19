@@ -10,8 +10,8 @@ ${group} bounds(0, 0, ${300_square}) colour(${XYPadColor}) corners(${XYPadCorner
     ${rect} bounds(149, 0, 2, 300) colour(${white}, 64)
 
     ; Position indicator.
-    ${rect} bounds(145, 145, 10, 10) identchannel("${XYPadChannelPrefix}indicator_ui") colour(${green}) corners(5)
+    ${rect} bounds(145, 145, 10, 10) identchannel("${XYPadChannelPrefix}_xypad_indicator_ui") colour(${green}) corners(5)
 
     ; Mouse input.
-    ${xypad} bounds(-15, -14, 340, 393) channel("${XYPadChannelPrefix}inputX", "${XYPadChannelPrefix}inputY") ${xypad_range_0_to_300} alpha(0)
+    ${xypad} bounds(-15, -14, 340, 393) channel("${XYPadChannelPrefix}_xypad_inputX", "${XYPadChannelPrefix}_xypad_inputY") ${xypad_range_0_to_300} alpha(0)
 }

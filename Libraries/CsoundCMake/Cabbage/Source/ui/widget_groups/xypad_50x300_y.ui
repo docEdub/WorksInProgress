@@ -7,8 +7,8 @@ ${group} bounds(0, 0, 50, 300) colour(${XYPadColor}) {
     ${rect} bounds(0, ${XYPadXAxisY}, 300, 2) colour(${white}, 64) visible(${XYPadXAxisVisible}) 
 
     ; Position indicator.
-    ${rect} bounds(0, ${XYPadXAxisY}, 50, 2) identchannel("${XYPadChannelPrefix}indicator_ui") colour(${green})
+    ${rect} bounds(0, ${XYPadXAxisY}, 50, 2) identchannel("${XYPadChannelPrefix}_xypad_indicator_ui") colour(${green})
 
     ; Mouse input.
-    ${xypad} bounds(0, -14, 50, 393) channel("${XYPadChannelPrefix}inputX", "${XYPadChannelPrefix}inputY") ${XYPadRange} alpha(0)
+    ${xypad} bounds(0, -14, 50, 393) channel("${XYPadChannelPrefix}_xypad_inputX", "${XYPadChannelPrefix}_xypad_inputY") ${XYPadRange} alpha(0)
 }

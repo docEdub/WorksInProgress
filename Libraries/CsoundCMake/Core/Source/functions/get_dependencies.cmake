@@ -3,9 +3,9 @@ include_guard()
 
 include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
-function(preprocess_file)
-    set(in_file "${ARGV0}")
-    set(out_file "${ARGV1}")
+function(get_dependencies)
+    set(out_variable ${ARGV0})
+    set(in_file "${ARGV1}")
 
     # Check arguments.
     set(arguments_valid TRUE)
@@ -18,13 +18,6 @@ function(preprocess_file)
     elseif(NOT EXISTS "${in_file}")
         set(arguments_valid FALSE)
         message(SEND_ERROR "Input file not found. \"${in_file}\"")
-    endif()
-    if(NOT out_file OR "${out_file}" STREQUAL "")
-        set(arguments_valid FALSE)
-        message(SEND_ERROR "No output file specified.")
-    elseif(NOT IS_ABSOLUTE "${out_file}")
-        set(arguments_valid FALSE)
-        message(SEND_ERROR "Output file path not absolute.")
     endif()
 
     # Check global variables.
@@ -51,12 +44,10 @@ function(preprocess_file)
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
         set(compiler "${CMAKE_C_COMPILER}")
         set(include_flags -I${PREPROCESSOR_INCLUDE_DIR})
-        # -C:    Preserve comments during preprocessing.
-        # -E:    Only run the preprocessor.
-        # -P:    Do not add #line directives to output.
+        # -MM:   Write dependencies to stdout.
         # -x c:  Force language to C.
         # See https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-flags.
-        set(flags -C -E -P -x c ${include_flags} ${in_file})
+        set(flags -MM -x c ${include_flags} ${in_file})
     else()
         message(FATAL_ERROR "Compiler \"${CMAKE_C_COMPILER_ID}\" is not supported yet.")
     endif()
@@ -64,10 +55,16 @@ function(preprocess_file)
     # Set `working_directory` local variable to directory containing input file.
     get_filename_component(working_directory "${in_file}" DIRECTORY)
 
-    # Run compiler command with compiler-specific flags to preprocess input file to stdout.
+    # Run compiler command with compiler-specific flags to write dependencies to stdout.
     execute_process(COMMAND "${compiler}" ${flags} WORKING_DIRECTORY "${working_directory}" RESULT_VARIABLE result
         OUTPUT_VARIABLE stdout)
 
-    # Write output file.
-    file(WRITE "${out_file}" "${stdout}")
+    # Parse output file.
+    string(REPLACE "\\\n" ";" dependencies ${stdout})
+    list(REMOVE_AT dependencies 0 1)
+    foreach(dependency ${dependencies})
+        string(STRIP "${dependency}" dependency)
+        list(APPEND stripped_dependencies "${dependency}")
+    endforeach()
+    set(${out_variable} ${stripped_dependencies} PARENT_SCOPE)
 endfunction()

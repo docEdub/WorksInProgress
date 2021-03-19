@@ -1,15 +1,37 @@
 
 include_guard()
 
-include("${CsoundCMake.Core_DIR}/Source/functions/add_preprocess_file_target.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/add_preprocess_file_command.cmake")
 include("${CsoundCMake.Core_DIR}/Source/functions/add_run_csound_command.cmake")
-include("${CsoundCMake.Core_DIR}/CsoundCMake.CoreCommon.cmake")
+include("${CsoundCMake.Core_DIR}/Source/functions/get_dependencies.cmake")
 include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 
 add_custom_target(${PROJECT_NAME})
 
-# Override the CMake `set` function to mark variables as non-advanced and allow defining cache variables without having
-# to set a description string.
+set(CsoundCMake_Core_HeaderFiles
+    "core_global.h"
+    "core_options.h"
+    "definitions.h"
+    "instrument_orc_definitions.h"
+)
+
+set(CsoundCMake_Core_OrcFiles
+    "af_global.orc"
+    "af_opcodes.orc"
+    "af_spatial_opcodes.orc"
+    "af_spatial_tables.orc"
+    "core_global.orc"
+    "core_instr_1_head.orc"
+    "instrument_cc.orc"
+    "log.orc"
+    "log.orc.h"
+    "math.orc"
+    "string.orc"
+    "time.orc"
+)
+
+# Override the CMake `set` function to allow defining cache variables without having to set a description string, and to
+# add a MATH option to use instead of CMake's `math(EXPR ...)` nomenclature.
 macro(set)
     if("MATH" STREQUAL "${ARGV1}")
         math(EXPR ${ARGV0} "${ARGV2}")
@@ -19,19 +41,10 @@ macro(set)
         else()
             _set(${ARGV})
         endif()
-        mark_as_advanced(CLEAR ${ARGV0})
     else()
         _set(${ARGV})
     endif()
 endmacro()
-
-# Mark all variables as advanced. The variables we define will be set back to non-advanced by the overridden `set`
-# function.
-function(mark_all_variables_as_advanced)
-    get_cmake_property(variables VARIABLES)
-    mark_as_advanced(FORCE ${variables})
-endfunction()
-mark_all_variables_as_advanced()
 
 set(Build_InlineIncludes OFF CACHE BOOL)
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
@@ -92,15 +105,17 @@ set(CSOUND_IFDEF "CSOUND_IFDEF")
 set(CSOUND_IFNDEF "CSOUND_IFNDEF")
 set(CSOUND_UNDEF "CSOUND_UNDEF")
 
-configure_file("${CsoundCMake.Core_DIR}/Source/core_global.h" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/core_global.h")
-configure_file("${CsoundCMake.Core_DIR}/Source/core_options.h" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/core_options.h")
-configure_file("${CsoundCMake.Core_DIR}/Source/definitions.h" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/definitions.h")
-configure_file(
-    "${CsoundCMake.Core_DIR}/Source/instrument_orc_definitions.h"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/instrument_orc_definitions.h")
+function(configure_source_file)
+    set(file "${ARGV0}")
+    configure_file("${CsoundCMake.Core_DIR}/Source/${file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${file}")
+endfunction()
 
-foreach(orc_file ${ORC_FILES})
-    configure_file("${CsoundCMake.Core_DIR}/Source/${orc_file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
+foreach(header_file ${CsoundCMake_Core_HeaderFiles})
+    configure_source_file("${header_file}")
+endforeach()
+
+foreach(orc_file ${CsoundCMake_Core_OrcFiles})
+    configure_source_file("${orc_file}")
 endforeach()
 
 set(PREPROCESSOR_INCLUDE_DIR ${CSOUND_CMAKE_CONFIGURED_FILES_DIR})
@@ -119,20 +134,20 @@ if(APPLE)
     set(CMAKE_CXX_COMPILER_FORCED ON)
 endif()
 
-add_custom_target(CsoundCMake
-    ALL
-    COMMAND ${CMAKE_COMMAND}
-        -DCMAKE_C_COMPILER=\"${CMAKE_C_COMPILER}\"
-        -DPREPROCESSOR_INCLUDE_DIR=\"${PREPROCESSOR_INCLUDE_DIR}\"
-        -DCMAKE_C_COMPILER_ID=\"${CMAKE_C_COMPILER_ID}\"
-        -DCsoundCMake.Core_DIR=\"${CsoundCMake.Core_DIR}\"
-        -DBuild_InlineIncludes=${Build_InlineIncludes}
-        -P "${CsoundCMake.Core_DIR}/CsoundCMake.CoreTarget.cmake"
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+if(NOT ${Build_InlineIncludes} EQUAL ON)
+    foreach(orc_file ${CsoundCMake_Core_OrcFiles})
+        add_preprocess_file_command(
+            "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
+            "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
+        )
+        list(APPEND CsoundCMake_Core_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
+    endforeach()
+endif()
+
+add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake_Core_Dependencies})
 
 function(add_csd_implementation)
     set(csd "${ARGV0}")
-    message(STATUS "Adding csd \"${csd}\"")
 
     set(options OPTIONS)
     set(one_value_keywords ONE_VALUE_KEYWORDS)
@@ -152,19 +167,29 @@ function(add_csd_implementation)
     # If a .cmake file with the same name as the given csd exists, include it before configuring the csd.
     set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.cmake")
     if (EXISTS "${csd_cmake}")
-        message(STATUS "Found \"${csd_dir}/${csd_without_extension}.cmake\"")
         include("${csd_cmake}")
     endif()
 
     # If a .orc file with the same name as the given csd exists, configure and preprocess it.
     set(orc "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.orc")
     if (EXISTS "${orc}")
-        message(STATUS "Found \"${csd_dir}/${csd_without_extension}.orc\"")
         set(orc_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
         configure_file("${orc}" "${orc_configured}")
         if(NOT ${Build_InlineIncludes} EQUAL ON)
+            get_dependencies(dependencies "${orc_configured}")
+            # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
+            # message("\n${orc} dependencies = \n  ${formatted_dependencies}\n")
+
             set(orc_preprocessed "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
-            add_preprocess_file_target("${orc_configured}" "${orc_preprocessed}" DEPENDS ${ARG_DEPENDS})
+            add_preprocess_file_command(
+                "${orc_configured}"
+                "${orc_preprocessed}"
+                DEPENDS
+                    ${ARG_DEPENDS}
+                    ${dependenices}
+            )
+
+            list(APPEND ARG_DEPENDS "${orc_preprocessed}")
         endif()
     endif()
 
@@ -173,13 +198,20 @@ function(add_csd_implementation)
         list(APPEND ARG_DEPENDS ${CSD_DEPENDS})
     endif()
 
-    # Configure and preprocess the given csd.
+    # Configure the given csd.
     set(csd_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.csd")
-    set(csd_preprocessed "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_without_extension}.csd")
     configure_file("${csd}" "${csd_configured}")
-    add_preprocess_file_target("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS})
+
+    # Get the configured csd's dependencies.
+    get_dependencies(dependencies "${csd_configured}")
+    # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
+    # message("\n${csd} dependencies = \n  ${formatted_dependencies}\n")
+
+    # Add the command to preprocess the given csd.
+    set(csd_preprocessed "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_without_extension}.csd")
+    add_preprocess_file_command("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS} ${dependencies})
 endfunction()
 
 function(add_csd)
-    add_csd_implementation(${ARGN} DEPENDS CsoundCMake)
+    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Core)
 endfunction()

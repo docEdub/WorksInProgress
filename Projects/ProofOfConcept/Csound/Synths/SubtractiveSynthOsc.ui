@@ -33,12 +33,12 @@ ${group} bounds(0, 50, 1000, 400) {
 
       ; Pulse Width ADSR knobs.
       ${group} bounds(0, 200, 200, 100) {
-         ${pulseWidthAdsrKnobs}
+         #include "${pulseWidthAdsrKnobs}"
       }
 
       ; Pulse Width LFO controls.
       ${group} bounds(0, 300, 200, 100) {
-         ${pulseWidthLfoControls}
+         #include "${pulseWidthLfoControls}"
       }
    }
 
@@ -57,12 +57,12 @@ ${group} bounds(0, 50, 1000, 400) {
 
       ; Pitch ADSR knobs.
       ${group} bounds(0, 200, 200, 100) {
-         ${pitchAdsrKnobs}
+         #include "${pitchAdsrKnobs}"
       }
 
       ; Pitch LFO controls.
       ${group} bounds(0, 300, 200, 100) {
-         ${pitchLfoControls}
+         #include "${pitchLfoControls}"
       }
    }
 
@@ -81,12 +81,12 @@ ${group} bounds(0, 50, 1000, 400) {
 
       ; Cutoff Frequency ADSR knobs.
       ${group} bounds(0, 200, 200, 100) {
-         ${filterCutoffFrequencyAdsrKnobs}
+         #include "${filterCutoffFrequencyAdsrKnobs}"
       }
 
       ; Cutoff Frequency LFO controls.
       ${group} bounds(0, 300, 200, 100) {
-         ${filterCutoffFrequencyLfoControls}
+         #include "${filterCutoffFrequencyLfoControls}"
       }
    }
 
@@ -105,12 +105,12 @@ ${group} bounds(0, 50, 1000, 400) {
 
       ; Resonance ADSR knobs.
       ${group} bounds(0, 200, 200, 100) {
-         ${filterResonanceAdsrKnobs}
+         #include "${filterResonanceAdsrKnobs}"
       }
 
       ; Resonance LFO controls.
       ${group} bounds(0, 300, 200, 100) {
-         ${filterResonanceLfoControls}
+         #include "${filterResonanceLfoControls}"
       }
    }
 
@@ -129,12 +129,12 @@ ${group} bounds(0, 50, 1000, 400) {
 
       ; Volume ADSR knobs.
       ${group} bounds(0, 200, 200, 100) {
-         ${volumeAdsrKnobs}
+         #include "${volumeAdsrKnobs}"
       }
 
       ; Volume LFO controls.
       ${group} bounds(0, 300, 200, 100) {
-         ${volumeLfoControls}
+         #include "${volumeLfoControls}"
       }
    }
 }
