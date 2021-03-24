@@ -20,14 +20,10 @@ set(CsoundCMake_Cabbage_OrcFiles
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
 
-set(BuildPlugin_AU_Export OFF CACHE BOOL)
-set(BuildPlugin_AU_LinkCsdFiles OFF CACHE BOOL)
 set(BuildPlugin_VST3_Export OFF CACHE BOOL)
 set(BuildPlugin_VST3_LinkCsdFiles OFF CACHE BOOL)
 
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
-    set(BuildPlugin_AU_Export OFF)
-    set(BuildPlugin_AU_LinkCsdFiles OFF)
     set(BuildPlugin_VST3_Export OFF)
     set(BuildPlugin_VST3_LinkCsdFiles OFF)
 endif()
@@ -48,42 +44,14 @@ function(export_csd_plugin)
 
     set(in_file "${ARGV0}")
 
-    set(au_plugin_type "AU")
     set(vst3_plugin_type "VST3")
     if("${ARGV1}" STREQUAL "synth")
-        set(au_plugin_type "${au_plugin_type}i")
         set(vst3_plugin_type "${vst3_plugin_type}i")
     endif()
 
     if(APPLE)
         get_filename_component(in_file_name "${in_file}" NAME)
         get_filename_component(in_file_name_we "${in_file}" NAME_WE)
-
-        set(preprocess_target "preprocess_${in_file_name_we}_csd")
-
-        # Set AU plugin variables.
-        set(export_plugin_target "export_${in_file_name}_au_plugin")
-        set(plugin_dir "~/Library/Audio/Plug-Ins/Components")
-        set(plugin_path "${plugin_dir}/${in_file_name_we}.component")
-        
-        if(BuildPlugin_AU_Export)
-            # Export AU component to ~/Library/Audio/Plug-Ins/Components.
-            add_custom_target("${export_au_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
-                rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${au_plugin_type}
-                "${CSOUND_CMAKE_OUTPUT_DIR}/${in_file}" --destination "${plugin_path}")
-            set(link_target_depends ${export_plugin_target})
-        else()
-            set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
-        endif()
-
-        if(BuildPlugin_AU_LinkCsdFiles)
-            # Make hard link for .csd in ~/Library/Audio/Plug-Ins/Components so Cabbage plugins can find them.
-            set(link_target "link_${in_file_name}_au")
-            set(plugin_contents_dir "${plugin_path}/Contents")
-            set(plugin_csd_path "${plugin_contents_dir}/CabbagePlugin.csd")
-            add_custom_target("${link_target}" ALL DEPENDS ${link_target_depends} COMMAND
-                rm ${plugin_csd_path} || true && ln ${CSOUND_CMAKE_OUTPUT_DIR}/${in_file} ${plugin_csd_path} || true)
-        endif()
         
         # Set VST3 plugin variables.
         set(plugin_dir "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}")
@@ -131,6 +99,38 @@ endfunction()
 
 function(add_csd_synth)
     export_csd_plugin("${ARGV0}" "synth")
+endfunction()
+
+function(get_output_csd_file_path csd_file_path source_file_path)
+    get_filename_component(source_file_name "${source_file_path}" NAME)
+    set(${csd_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name}" PARENT_SCOPE)
+endfunction()
+
+function(get_output_vst3_file_path vst3_file_path source_file_path)
+    get_filename_component(source_file_name_we "${source_file_path}" NAME_WE)
+    set(${vst3_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name_we}.vst3" PARENT_SCOPE)
+endfunction()
+
+function(add_csd_targets)
+    set(options OPTIONS)
+    set(one_value_keywords ONE_VALUE_KEYWORDS)
+    set(multi_value_keywords
+        EFFECT_PLUGIN_SOURCES
+        SYNTH_PLUGIN_SOURCES
+        STANDALONE_SOURCES
+        PLAYBACK_SOURCES
+    )
+    cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
+
+    foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES ARG_SYNTH_PLUGIN_SOURCES ARG_STANDALONE_SOURCES)
+        get_generated_file_paths(configured_csd preprocessed_csd "${csd}" "${csd}")
+        get_output_csd_file_path(output_csd "${csd}")
+        get_output_vst3_file_path(output_vst3 "${csd}")
+        add_csd_implementation("${csd}" DEPENDS CsoundCMake.Cabbage)
+        list(APPEND preprocessed_csd_files "${preprocessed_csd}")
+    endforeach()
+
+    add_custom_target("csd_files" ALL DEPENDS ${preprocessed_csd_files})
 endfunction()
 
 macro(define_cabbage_control_size PREFIX)
