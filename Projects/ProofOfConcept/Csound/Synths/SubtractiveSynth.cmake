@@ -4,15 +4,17 @@ set(form_height 516)
 
 set(InstrumentName "SubtractiveSynth")
 
+set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
+get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
+
 get_filename_component(CSOUND_CMAKE_OUTPUT_SUBDIRECTORY "${CMAKE_CURRENT_LIST_FILE}" NAME_WE)
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Position.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynth.osc.orc"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynth.osc.orc")
+configure_file("${CSD_SOURCE_DIR}/SubtractiveSynth.osc.orc" "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynth.osc.orc")
 
 
 add_tab(s88_tab "S88" 64)
@@ -53,34 +55,28 @@ endmacro()
 
 set(uiPrefix "osc1")
 add_osc_controls()
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthOsc1.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui" "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthOsc1.ui")
 
 set(uiPrefix "osc2")
 add_osc_controls()
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthOsc2.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui" "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthOsc2.ui")
 
 set(uiPrefix "osc3")
 add_osc_controls()
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthOsc3.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui" "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthOsc3.ui")
 
 set(uiPrefix "osc4")
 add_osc_controls()
-configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthOsc4.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthOsc.ui" "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthOsc4.ui")
 
 add_adsr_200x100(filterCutoffFrequencyAdsrKnobs "filterCutoffFrequency")
 add_adsr_200x100(filterResonanceAdsrKnobs "filterResonance")
 configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthFilter.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthFilter.ui")
+    "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthFilter.ui"
+    )
 
 configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/SubtractiveSynthAmplitude.ui"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Synths/SubtractiveSynthAmplitude.ui")
+    "${CSD_CONFIGURED_FILES_DIR}/SubtractiveSynthAmplitude.ui"
+    )

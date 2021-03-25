@@ -219,7 +219,14 @@ function(add_csd_implementation)
     get_dependencies(dependencies "${csd_configured}")
 
     # Add the command to preprocess the given csd.
-    add_preprocess_file_command("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS} ${dependencies})
+    get_filename_component(csd_file_name "${csd}" NAME)
+    add_preprocess_file_command(
+        "${csd_configured}"
+        "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}"
+        DEPENDS
+            ${ARG_DEPENDS}
+            ${dependencies}
+        )
 endfunction()
 
 function(add_csd)
