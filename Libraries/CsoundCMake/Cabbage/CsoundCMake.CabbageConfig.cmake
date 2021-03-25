@@ -483,3 +483,5 @@ if(NOT ${Build_InlineIncludes} EQUAL ON)
 endif()
 
 add_custom_target(CsoundCMake.Cabbage ALL DEPENDS ${CsoundCMake_Cabbage_Dependencies} CsoundCMake.Core)
+
+mark_as_advanced(FORCE CsoundCMake.Cabbage_DIR)

@@ -281,3 +281,16 @@ function(add_playback_csd)
             ${dependencies}
         )
 endfunction()
+
+set(ADVANCED_SETTINGS
+    CMAKE_BUILD_TYPE
+    CMAKE_EXECUTABLE_FORMAT
+    CMAKE_INSTALL_PREFIX
+    CMAKE_OSX_ARCHITECTURES
+    CMAKE_OSX_DEPLOYMENT_TARGET
+    CMAKE_OSX_SYSROOT
+    CsoundCMake.Core_DIR
+    )
+foreach(setting IN LISTS ADVANCED_SETTINGS)
+    mark_as_advanced(FORCE ${setting})
+endforeach()
