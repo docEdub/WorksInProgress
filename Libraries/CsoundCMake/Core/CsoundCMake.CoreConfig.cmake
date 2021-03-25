@@ -149,7 +149,7 @@ add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake_Core_Dependencies})
 function(get_generated_csd_dirs configured_files_dir preprocessed_files_dir source_csd_path)
     get_filename_component(source_csd_name_we "${source_csd_path}" NAME_WE)
     get_filename_component(source_dir "${source_csd_path}" DIRECTORY)
-    string(REPLACE "${CMAKE_SOURCE_DIR}" "" source_dir "${source_dir}")
+    string(REPLACE "${CMAKE_SOURCE_DIR}/" "" source_dir "${source_dir}")
     set(relative_dir "${source_dir}/${source_csd_name_we}")
     set(${configured_files_dir} "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
     set(${preprocessed_files_dir} "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
@@ -185,6 +185,9 @@ function(add_csd_implementation)
     if (EXISTS "${csd_cmake}")
         include("${csd_cmake}")
     endif()
+
+    # Configure a csd_options.h file for the given csd.
+    configure_file("${CsoundCMake.Core_DIR}/Source/csd_options.h" "${CSD_CONFIGURED_FILES_DIR}/csd_options.h")
 
     # If a .orc file with the same name as the given csd exists, configure and preprocess it.
     set(orc "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.orc")

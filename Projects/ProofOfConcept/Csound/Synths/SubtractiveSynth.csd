@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core_options.h"
+#include "csd_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -41,7 +41,7 @@ endin
 // Main instrument. Triggered by instruments 2 and 3.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(Synths/${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 
 //======================================================================================================================
