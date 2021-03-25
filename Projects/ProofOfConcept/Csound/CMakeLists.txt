@@ -11,16 +11,16 @@ find_package(CsoundCMake.Cabbage REQUIRED)
 
 add_csd_targets(
     EFFECT_PLUGIN_SOURCES
-        # "Effects/BusHead.csd"
-        # "Effects/MasterHead.csd"
-        # "Effects/Reverb.csd"
+        "Effects/BusHead.csd"
+        "Effects/MasterHead.csd"
+        "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
-        # "Synths/PointSynth.csd"
+        "Synths/PointSynth.csd"
         "Synths/SubtractiveSynth.csd"
     STANDALONE_SOURCES
-        # "DawService/DawService.csd"
+        "DawService/DawService.csd"
     PLAYBACK_SOURCES
-        # "DawPlayback/DawPlayback.csd"
+        "DawPlayback/DawPlayback.csd"
 )
 
 # If the Build_InlineIncludes options is off, make sure the _.build/inlined/_.configured folder gets made so the

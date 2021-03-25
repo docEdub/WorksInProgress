@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core_options.h"
+#include "csd_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -18,7 +18,7 @@ ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
 ${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
-${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
+${CSOUND_INCLUDE} "TrackInfo_global.orc"
 
 
 //======================================================================================================================
@@ -29,7 +29,7 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
 
-    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
 
     log_i_info("nchnls_i = %d", nchnls_i)
     log_i_info("nchnls   = %d", nchnls)
@@ -67,7 +67,7 @@ endin
 // Main instrument. Triggered by score and instrument 2.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(Effects/${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 
 //======================================================================================================================
@@ -124,7 +124,7 @@ instr 2
 endin
 
 
-${CSOUND_INCLUDE} "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+${CSOUND_INCLUDE} "Tab.orc"
 
 
 //======================================================================================================================
@@ -147,12 +147,12 @@ ${form} caption("Reverb") size(${form_size}) pluginid("0100")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
+    #include "Tab.ui"
 }
 
 ; Reverb tab content

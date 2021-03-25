@@ -4,7 +4,10 @@ set(form_height 516)
 
 set(InstrumentName "Reverb")
 
-get_filename_component(CSOUND_CMAKE_OUTPUT_SUBDIRECTORY "${CMAKE_CURRENT_LIST_FILE}" NAME_WE)
+set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
+get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
+
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
@@ -25,4 +28,4 @@ set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}
 
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/Reverb.ui" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Effects/Reverb.ui")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/Reverb.ui" "${CSD_CONFIGURED_FILES_DIR}/Reverb.ui")
