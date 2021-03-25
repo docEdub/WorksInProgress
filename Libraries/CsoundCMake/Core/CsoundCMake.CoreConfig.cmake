@@ -196,7 +196,6 @@ function(add_csd_implementation)
         configure_file("${orc}" "${orc_configured}")
         if(NOT ${Build_InlineIncludes} EQUAL ON)
             get_dependencies(dependencies "${orc_configured}")
-            message("orc_configured = ${orc_configured}")
             add_preprocess_file_command(
                 "${orc_configured}"
                 "${orc_preprocessed}"
