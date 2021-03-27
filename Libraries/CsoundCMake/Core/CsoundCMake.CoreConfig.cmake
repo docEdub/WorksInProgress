@@ -230,7 +230,3 @@ function(add_csd_implementation)
             ${dependencies}
         )
 endfunction()
-
-function(add_csd)
-    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Core)
-endfunction()
