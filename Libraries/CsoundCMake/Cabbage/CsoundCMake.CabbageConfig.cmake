@@ -125,7 +125,7 @@ function(add_csd_targets)
     foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES ARG_SYNTH_PLUGIN_SOURCES ARG_STANDALONE_SOURCES)
         add_csd_implementation("${csd}" DEPENDS CsoundCMake.Cabbage)
         get_output_csd_file_path(output_csd "${csd}")
-        list(APPEND csd_target_dependencies "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}")
+        list(APPEND csd_target_dependencies "${output_csd}")
     endforeach()
 
     foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES)
