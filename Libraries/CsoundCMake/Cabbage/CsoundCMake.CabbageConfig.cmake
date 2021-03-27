@@ -149,8 +149,8 @@ function(add_csd_targets)
             )
     endforeach()
 
-    add_custom_target("csd" ALL DEPENDS ${csd_target_dependencies})
-    add_custom_target("vst3" DEPENDS ${vst3_target_dependencies})
+    add_custom_target("csd" ALL DEPENDS ${csd_target_dependencies} CsoundCMake.Cabbage)
+    add_custom_target("vst3" DEPENDS "csd" ${vst3_target_dependencies})
 endfunction()
 
 macro(define_cabbage_control_size PREFIX)
