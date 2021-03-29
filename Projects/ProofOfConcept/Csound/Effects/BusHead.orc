@@ -7,7 +7,7 @@
 #ifdef INSTRUMENT_ID
     #define INSTRUMENT_ID_DEFINED
 #else
-    #define INSTRUMENT_ID TestBusHead
+    #define INSTRUMENT_ID ${InstrumentName}
 #endif
 
 
