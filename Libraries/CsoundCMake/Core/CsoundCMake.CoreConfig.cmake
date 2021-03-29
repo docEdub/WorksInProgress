@@ -150,7 +150,11 @@ function(get_generated_csd_dirs configured_files_dir preprocessed_files_dir sour
     get_filename_component(source_csd_name_we "${source_csd_path}" NAME_WE)
     get_filename_component(source_dir "${source_csd_path}" DIRECTORY)
     string(REPLACE "${CMAKE_SOURCE_DIR}/" "" source_dir "${source_dir}")
-    set(relative_dir "${source_dir}/${source_csd_name_we}")
+    if ("${source_csd_name_we}" STREQUAL "${source_dir}")
+        set(relative_dir "${source_dir}")
+    else()
+        set(relative_dir "${source_dir}/${source_csd_name_we}")
+    endif()
     set(${configured_files_dir} "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
     set(${preprocessed_files_dir} "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
 endfunction()
@@ -225,6 +229,53 @@ function(add_csd_implementation)
     add_preprocess_file_command(
         "${csd_configured}"
         "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}"
+        DEPENDS
+            ${ARG_DEPENDS}
+            ${dependencies}
+        )
+endfunction()
+
+function(add_playback_csd)
+    set(csd "${ARGV0}")
+
+    set(options OPTIONS)
+    set(one_value_keywords ONE_VALUE_KEYWORDS)
+    set(multi_value_keywords DEPENDS)
+    cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
+
+    if(ARG_DEPENDS STREQUAL "")
+        set(ARG_DEPENDS CsoundCMake)
+    endif()
+
+    get_filename_component(csd_dir "${csd}" DIRECTORY)
+    get_filename_component(csd_without_extension "${csd}" NAME_WE)
+
+    # Clear CSD_DEPENDS variable before including .cmake files.
+    set(CSD_DEPENDS "")
+
+    # If a .cmake file with the same name as the given csd exists, include it before configuring the csd.
+    set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.cmake")
+    if (EXISTS "${csd_cmake}")
+        include("${csd_cmake}")
+    endif()
+
+    # Add dependencies injected by included .cmake files.
+    if(DEFINED CSD_DEPENDS)
+        list(APPEND ARG_DEPENDS ${CSD_DEPENDS})
+    endif()
+
+    # Configure the given csd.
+    get_generated_file_paths(csd_configured csd_preprocessed "${csd}" "${csd}")
+    configure_file("${csd}" "${csd_configured}")
+
+    # Get the configured csd's dependencies.
+    get_dependencies(dependencies "${csd_configured}")
+
+    # Add the command to preprocess the given csd.
+    get_filename_component(csd_file_name "${csd}" NAME)
+    add_preprocess_file_command(
+        "${csd_configured}"
+        "${CSOUND_CMAKE_PLAYBACK_OUTPUT_DIR}/${csd_file_name}"
         DEPENDS
             ${ARG_DEPENDS}
             ${dependencies}

@@ -44,19 +44,11 @@ function(add_vst3)
         
         # Set VST3 plugin variables.
         get_output_vst3_file_path(plugin_path "${csd}")
+        string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_plugin_path "${plugin_path}")
 
         # Export VST3 plugin to "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}".
-        # message("\n")
-        # message("MAIN_DEPENDENCY = ${csd_output_file_path}")
-        # message("COMMAND =")
-        # message("    ${CMAKE_COMMAND} -E rm -rf ${plugin_path} &&")
-        # message("    ${CABBAGE_PATH}/Contents/MacOS/Cabbage")
-        # message("        --export-${vst3_plugin_type}")
-        # message("        ${csd_output_file_path}")
-        # message("        --destination ${plugin_path}")
-        # message("        > /dev/null 2>&1")
-        # message("\n")
         add_custom_command(
+            COMMENT "Generating ${relative_plugin_path}"
             OUTPUT "${plugin_path}/Contents/Info.plist"
             MAIN_DEPENDENCY "${csd_output_file_path}"
             COMMAND
@@ -73,7 +65,7 @@ function(add_vst3)
         string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_csd_output_file_path "${csd_output_file_path}")
         string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_plugin_csd_file_path "${plugin_csd_file_path}")
         add_custom_command(
-            COMMENT "Hard linking ${relative_csd_output_file_path} -> ${relative_plugin_csd_file_path}"
+            COMMENT "Linking ${relative_csd_output_file_path} -> ${relative_plugin_csd_file_path}"
             OUTPUT "${plugin_csd_file_path}.stamp"
             MAIN_DEPENDENCY "${csd_output_file_path}"
             COMMAND
@@ -99,6 +91,11 @@ function(get_output_csd_file_path csd_file_path source_file_path)
     set(${csd_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name}" PARENT_SCOPE)
 endfunction()
 
+function(get_playback_output_csd_file_path csd_file_path source_file_path)
+    get_filename_component(source_file_name "${source_file_path}" NAME)
+    set(${csd_file_path} "${CSOUND_CMAKE_PLAYBACK_OUTPUT_DIR}/${source_file_name}" PARENT_SCOPE)
+endfunction()
+
 function(get_output_vst3_file_path vst3_file_path source_file_path)
     get_filename_component(source_file_name_we "${source_file_path}" NAME_WE)
     set(${vst3_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name_we}.vst3" PARENT_SCOPE)
@@ -121,29 +118,45 @@ function(add_csd_targets)
         list(APPEND csd_target_dependencies "${output_csd}")
     endforeach()
 
-    foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES)
-        get_filename_component(csd_file_name "${csd}" NAME)
-        add_vst3_effect("${csd}")
-        get_output_vst3_file_path(output_vst3 "${csd}")
-        list(APPEND vst3_target_dependencies
-            "${output_vst3}/Contents/Info.plist"
-            "${output_vst3}/Contents/${csd_file_name}.stamp"
-            )
-
-    endforeach()
-
-    foreach(csd IN LISTS ARG_SYNTH_PLUGIN_SOURCES)
-        get_filename_component(csd_file_name "${csd}" NAME)
-        add_vst3_synth("${csd}")
-        get_output_vst3_file_path(output_vst3 "${csd}")
-        list(APPEND vst3_target_dependencies
-            "${output_vst3}/Contents/Info.plist"
-            "${output_vst3}/Contents/${csd_file_name}.stamp"
-            )
-    endforeach()
+    if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
+        foreach(csd IN LISTS ARG_PLAYBACK_SOURCES)
+            # set(PREVIOUS_PREPROCESSOR_INCLUDE_DIR ${PREPROCESSOR_INCLUDE_DIR})
+            # set(PREPROCESSOR_INCLUDE_DIR ${CSOUND_CMAKE_PREPROCESSED_FILES_DIR})
+            add_playback_csd("${csd}" DEPENDS ${csd_target_dependencies})
+            # set(PREPROCESSOR_INCLUDE_DIR ${PREVIOUS_PREPROCESSOR_INCLUDE_DIR})
+            get_playback_output_csd_file_path(output_csd "${csd}")
+            list(APPEND playback_csd_target_dependencies "${output_csd}")
+        endforeach()
+        set(csd_target_dependencies ${playback_csd_target_dependencies})
+    endif()
 
     add_custom_target("csd" ALL DEPENDS ${csd_target_dependencies} CsoundCMake.Cabbage)
-    add_custom_target("vst3" DEPENDS "csd" ${vst3_target_dependencies})
+
+    # Add vst3 target.
+    if(NOT "${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
+        foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES)
+            get_filename_component(csd_file_name "${csd}" NAME)
+            add_vst3_effect("${csd}")
+            get_output_vst3_file_path(output_vst3 "${csd}")
+            list(APPEND vst3_target_dependencies
+                "${output_vst3}/Contents/Info.plist"
+                "${output_vst3}/Contents/${csd_file_name}.stamp"
+                )
+        endforeach()
+
+        foreach(csd IN LISTS ARG_SYNTH_PLUGIN_SOURCES)
+            get_filename_component(csd_file_name "${csd}" NAME)
+            add_vst3_synth("${csd}")
+            get_output_vst3_file_path(output_vst3 "${csd}")
+            list(APPEND vst3_target_dependencies
+                "${output_vst3}/Contents/Info.plist"
+                "${output_vst3}/Contents/${csd_file_name}.stamp"
+                )
+        endforeach()
+
+        add_custom_target("vst3" DEPENDS "csd" ${vst3_target_dependencies})
+    endif()
+    
 endfunction()
 
 macro(define_cabbage_control_size PREFIX)

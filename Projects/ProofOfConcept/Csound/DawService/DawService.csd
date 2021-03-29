@@ -838,6 +838,7 @@ instr WriteTracksetOrcFile
             ; else
             ;     SOrcDirectory = "Effects"
             ; endif
+            SOrcSubDirectory = strsubk(S_orcFilename, 0, strlenk(S_orcFilename) - 4)
             SInstrumentId = sprintfk("%s_%d", strsubk(S_orcFilename, 0, strrindexk(S_orcFilename, ".orc")), kTrack)
 
             fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
@@ -846,7 +847,8 @@ instr WriteTracksetOrcFile
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX 0\n")
             fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
             fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
-            fprintks(S_filename, "#include \"${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/%s/%s\" // -%d\n", SOrcDirectory, S_orcFilename, 0)
+            fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/%s/%s/%s\" // -%d\n", \
+                SOrcDirectory, SOrcSubDirectory, S_orcFilename, 0)
             fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
             fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
             fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
@@ -867,13 +869,15 @@ instr WriteTracksetOrcFile
                 log_k_debug("kTrackIndex = %d, kPluginIndex = %d, SOrcFilename = %s", kI, kJ, SOrcFilename)
                 SInstrumentId = sprintfk("%s_%d_%d", strsubk(SOrcFilename, 0, strrindexk(SOrcFilename, ".orc")),
                     kTrack, kJ)
+                SOrcSubDirectory = strsubk(SOrcFilename, 0, strlenk(SOrcFilename) - 4)
 
                 fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
                 fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
                 fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX %d\n", kJ + 1)
                 fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
                 fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
-                fprintks(S_filename, "#include \"${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/Effects/%s\" // -%d\n", SOrcFilename, 0)
+                fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/Effects/%s/%s\" // -%d\n",
+                    SOrcSubDirectory, SOrcFilename, 0)
                 fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
                 fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
                 fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
@@ -953,7 +957,7 @@ instr WriteTracksetScoFile
                     kI, kJ)
                 // NB: A fractional instrument is used here so it doesn't get turned off by the non-fractional CC event
                 // score lines.
-                fprintks(S_filename, "i CONCAT(%s, .1) 0 -1 EVENT_EFFECT_ON Unused(%d)\n", SInstrumentName, 0)
+                fprintks(S_filename, "i %s.1 0 -1 EVENT_EFFECT_ON Unused(%d)\n", SInstrumentName, 0)
                 kJ += 1
             else
                 // Break out of loop.
