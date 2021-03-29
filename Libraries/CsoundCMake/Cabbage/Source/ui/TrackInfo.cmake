@@ -43,8 +43,4 @@ set(mode_label_4_rect "${mode_label_4_x}, ${mode_label_y}, ${mode_label_width}, 
 # Widgets
 set(mode_label "${label} align(\"centre\") colour(${dark_grey}) fontcolour(${white})")
 
-set(file "ui/TrackInfo.ui")
-configure_file(
-    "${CsoundCMake.Cabbage_DIR}/Source/${file}"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}"
-)
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.ui" "${CSD_CONFIGURED_FILES_DIR}/TrackInfo.ui")

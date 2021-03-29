@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core_options.h"
+#include "csd_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -21,13 +21,13 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
 ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
-${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
+${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 
 instr CompileOrc
     log_i_info("Compiling PointSynth.orc ...")
-    iResult = compileorc("${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/Synths/PointSynth.orc")
+    iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PointSynth.orc")
     if (iResult == 0) then
         log_i_info("Compiling PointSynth.orc - succeeded")
     else
@@ -42,7 +42,7 @@ endin
 
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
-    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
 
     pylruni("import os")
 
@@ -51,7 +51,7 @@ instr 1
     kPreviousModifiedTime init 0
     if (kCurrentTime - kPreviousTime > 1) then
         kPreviousTime = kCurrentTime
-        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/Synths/PointSynth.orc\"))")
+        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSD_PREPROCESSED_FILES_DIR}/PointSynth.orc\"))")
         if (kPreviousModifiedTime < kModifiedTime) then
             kPreviousModifiedTime = kModifiedTime
             event("i", "CompileOrc", 0, -1)
@@ -64,7 +64,7 @@ endin
 // Main instrument. Triggered by instruments 2 and 3.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(Synths/${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 
 //======================================================================================================================
@@ -212,7 +212,7 @@ instr 3
 endin
 
 
-${CSOUND_INCLUDE} "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+${CSOUND_INCLUDE} "Tab.orc"
 
 //======================================================================================================================
 
@@ -233,17 +233,17 @@ ${form} caption("${InstrumentName}") size(${form_size}) pluginid("0011")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
+    #include "Tab.ui"
 }
 
 ; S88 tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(0) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/S88.ui"
+    #include "S88.ui"
 }
 
 ; Settings tab content

@@ -146,6 +146,26 @@ endif()
 
 add_custom_target(CsoundCMake.Core ALL DEPENDS ${CsoundCMake_Core_Dependencies})
 
+function(get_generated_csd_dirs configured_files_dir preprocessed_files_dir source_csd_path)
+    get_filename_component(source_csd_name_we "${source_csd_path}" NAME_WE)
+    get_filename_component(source_dir "${source_csd_path}" DIRECTORY)
+    string(REPLACE "${CMAKE_SOURCE_DIR}/" "" source_dir "${source_dir}")
+    if ("${source_csd_name_we}" STREQUAL "${source_dir}")
+        set(relative_dir "${source_dir}")
+    else()
+        set(relative_dir "${source_dir}/${source_csd_name_we}")
+    endif()
+    set(${configured_files_dir} "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
+    set(${preprocessed_files_dir} "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${relative_dir}" PARENT_SCOPE)
+endfunction()
+
+function(get_generated_file_paths configured_file_path preprocessed_file_path source_csd_path source_file_path)
+    get_filename_component(source_file_name "${source_file_path}" NAME)
+    get_generated_csd_dirs(configured_files_dir preprocessed_files_dir "${source_csd_path}")
+    set(${configured_file_path} "${configured_files_dir}/${source_file_name}" PARENT_SCOPE)
+    set(${preprocessed_file_path} "${preprocessed_files_dir}/${source_file_name}" PARENT_SCOPE)
+endfunction()
+
 function(add_csd_implementation)
     set(csd "${ARGV0}")
 
@@ -170,17 +190,16 @@ function(add_csd_implementation)
         include("${csd_cmake}")
     endif()
 
+    # Configure a csd_options.h file for the given csd.
+    configure_file("${CsoundCMake.Core_DIR}/Source/csd_options.h" "${CSD_CONFIGURED_FILES_DIR}/csd_options.h")
+
     # If a .orc file with the same name as the given csd exists, configure and preprocess it.
     set(orc "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.orc")
     if (EXISTS "${orc}")
-        set(orc_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
+        get_generated_file_paths(orc_configured orc_preprocessed "${csd}" "${orc}")
         configure_file("${orc}" "${orc_configured}")
         if(NOT ${Build_InlineIncludes} EQUAL ON)
             get_dependencies(dependencies "${orc_configured}")
-            # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
-            # message("\n${orc} dependencies = \n  ${formatted_dependencies}\n")
-
-            set(orc_preprocessed "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${csd_dir}/${csd_without_extension}.orc")
             add_preprocess_file_command(
                 "${orc_configured}"
                 "${orc_preprocessed}"
@@ -199,19 +218,66 @@ function(add_csd_implementation)
     endif()
 
     # Configure the given csd.
-    set(csd_configured "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${csd_dir}/${csd_without_extension}.csd")
+    get_generated_file_paths(csd_configured csd_preprocessed "${csd}" "${csd}")
     configure_file("${csd}" "${csd_configured}")
 
     # Get the configured csd's dependencies.
     get_dependencies(dependencies "${csd_configured}")
-    # string(REPLACE ";" "\n  " formatted_dependencies "${dependencies}")
-    # message("\n${csd} dependencies = \n  ${formatted_dependencies}\n")
 
     # Add the command to preprocess the given csd.
-    set(csd_preprocessed "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_without_extension}.csd")
-    add_preprocess_file_command("${csd_configured}" "${csd_preprocessed}" DEPENDS ${ARG_DEPENDS} ${dependencies})
+    get_filename_component(csd_file_name "${csd}" NAME)
+    add_preprocess_file_command(
+        "${csd_configured}"
+        "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}"
+        DEPENDS
+            ${ARG_DEPENDS}
+            ${dependencies}
+        )
 endfunction()
 
-function(add_csd)
-    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Core)
+function(add_playback_csd)
+    set(csd "${ARGV0}")
+
+    set(options OPTIONS)
+    set(one_value_keywords ONE_VALUE_KEYWORDS)
+    set(multi_value_keywords DEPENDS)
+    cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
+
+    if(ARG_DEPENDS STREQUAL "")
+        set(ARG_DEPENDS CsoundCMake)
+    endif()
+
+    get_filename_component(csd_dir "${csd}" DIRECTORY)
+    get_filename_component(csd_without_extension "${csd}" NAME_WE)
+
+    # Clear CSD_DEPENDS variable before including .cmake files.
+    set(CSD_DEPENDS "")
+
+    # If a .cmake file with the same name as the given csd exists, include it before configuring the csd.
+    set(csd_cmake "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}.cmake")
+    if (EXISTS "${csd_cmake}")
+        include("${csd_cmake}")
+    endif()
+
+    # Add dependencies injected by included .cmake files.
+    if(DEFINED CSD_DEPENDS)
+        list(APPEND ARG_DEPENDS ${CSD_DEPENDS})
+    endif()
+
+    # Configure the given csd.
+    get_generated_file_paths(csd_configured csd_preprocessed "${csd}" "${csd}")
+    configure_file("${csd}" "${csd_configured}")
+
+    # Get the configured csd's dependencies.
+    get_dependencies(dependencies "${csd_configured}")
+
+    # Add the command to preprocess the given csd.
+    get_filename_component(csd_file_name "${csd}" NAME)
+    add_preprocess_file_command(
+        "${csd_configured}"
+        "${CSOUND_CMAKE_PLAYBACK_OUTPUT_DIR}/${csd_file_name}"
+        DEPENDS
+            ${ARG_DEPENDS}
+            ${dependencies}
+        )
 endfunction()

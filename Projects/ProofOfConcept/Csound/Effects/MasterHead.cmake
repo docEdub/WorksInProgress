@@ -2,9 +2,12 @@
 set(form_width 960)
 set(form_height 640)
 
-set(InstrumentName "TestMasterHead")
+set(InstrumentName "MasterHead")
 
-get_filename_component(CSOUND_CMAKE_OUTPUT_SUBDIRECTORY "${CMAKE_CURRENT_LIST_FILE}" NAME_WE)
+set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
+get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
+
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 
 set(csoundoutput_group_y MATH "${TrackInfo_height} + ${padding}")

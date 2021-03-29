@@ -4,7 +4,7 @@ var spawn = require('child_process').spawn;
 
 if (os.type() === 'Darwin') {
     const csoundDir = path.resolve('Csound')
-    const buildDir = csoundDir + '/_.build'
+    const buildDir = csoundDir + '/build'
     spawn('bash', [ '-c', 'cd ' + buildDir + ' && make ' + process.argv.slice(2).join(' ')], { stdio: 'inherit' })
 }
 else {

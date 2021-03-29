@@ -17,17 +17,15 @@ set(CsoundCMake_Cabbage_OrcFiles
     "cabbage_synth_global.orc"
 )
 
+set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING " ")
+
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
 
-set(BuildPlugin_AU_Export OFF CACHE BOOL)
-set(BuildPlugin_AU_LinkCsdFiles OFF CACHE BOOL)
 set(BuildPlugin_VST3_Export OFF CACHE BOOL)
 set(BuildPlugin_VST3_LinkCsdFiles OFF CACHE BOOL)
 
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
-    set(BuildPlugin_AU_Export OFF)
-    set(BuildPlugin_AU_LinkCsdFiles OFF)
     set(BuildPlugin_VST3_Export OFF)
     set(BuildPlugin_VST3_LinkCsdFiles OFF)
 endif()
@@ -36,101 +34,129 @@ set(Cabbage_LogCabbageOutput OFF CACHE BOOL)
 set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
 
-function(add_csd)
-    add_csd_implementation(${ARGN} DEPENDS CsoundCMake.Cabbage)
+function(add_vst3)
     set(csd "${ARGV0}")
-    get_filename_component(csd_file_name "${csd}" NAME)
-    add_custom_target("${csd_file_name}" ALL DEPENDS "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}")
-endfunction()
-
-function(export_csd_plugin)
-    add_csd_implementation(${ARGV0} DEPENDS CsoundCMake.Cabbage)
-
-    set(in_file "${ARGV0}")
-
-    set(au_plugin_type "AU")
-    set(vst3_plugin_type "VST3")
-    if("${ARGV1}" STREQUAL "synth")
-        set(au_plugin_type "${au_plugin_type}i")
-        set(vst3_plugin_type "${vst3_plugin_type}i")
-    endif()
+    set(vst3_plugin_type "${ARGV1}")
 
     if(APPLE)
-        get_filename_component(in_file_name "${in_file}" NAME)
-        get_filename_component(in_file_name_we "${in_file}" NAME_WE)
-
-        set(preprocess_target "preprocess_${in_file_name_we}_csd")
-
-        # Set AU plugin variables.
-        set(export_plugin_target "export_${in_file_name}_au_plugin")
-        set(plugin_dir "~/Library/Audio/Plug-Ins/Components")
-        set(plugin_path "${plugin_dir}/${in_file_name_we}.component")
-        
-        if(BuildPlugin_AU_Export)
-            # Export AU component to ~/Library/Audio/Plug-Ins/Components.
-            add_custom_target("${export_au_plugin_target}" ALL DEPENDS ${preprocess_target} CsoundCMake.Cabbage COMMAND
-                rm -rf "${plugin_path}" || true && "${CABBAGE_PATH}/Contents/MacOS/Cabbage" --export-${au_plugin_type}
-                "${CSOUND_CMAKE_OUTPUT_DIR}/${in_file}" --destination "${plugin_path}")
-            set(link_target_depends ${export_plugin_target})
-        else()
-            set(link_target_depends ${preprocess_target} CsoundCMake.Cabbage)
-        endif()
-
-        if(BuildPlugin_AU_LinkCsdFiles)
-            # Make hard link for .csd in ~/Library/Audio/Plug-Ins/Components so Cabbage plugins can find them.
-            set(link_target "link_${in_file_name}_au")
-            set(plugin_contents_dir "${plugin_path}/Contents")
-            set(plugin_csd_path "${plugin_contents_dir}/CabbagePlugin.csd")
-            add_custom_target("${link_target}" ALL DEPENDS ${link_target_depends} COMMAND
-                rm ${plugin_csd_path} || true && ln ${CSOUND_CMAKE_OUTPUT_DIR}/${in_file} ${plugin_csd_path} || true)
-        endif()
+        get_filename_component(csd_file_name "${csd}" NAME)
+        set(csd_output_file_path "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}")
         
         # Set VST3 plugin variables.
-        set(plugin_dir "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}")
-        set(plugin_path "${plugin_dir}/${in_file_name_we}.vst3")
+        get_output_vst3_file_path(plugin_path "${csd}")
+        string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_plugin_path "${plugin_path}")
 
-        if(BuildPlugin_VST3_Export)
-            # Export VST3 plugin to "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}".
-            add_custom_command(
-                OUTPUT "${plugin_path}/Contents/Info.plist"
-                MAIN_DEPENDENCY "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}"
-                DEPENDS CsoundCMake.Cabbage
-                COMMAND
-                    rm -rf "${plugin_path}" || true &&
-                    "${CABBAGE_PATH}/Contents/MacOS/Cabbage"
-                        --export-${vst3_plugin_type}
-                        "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}"
-                        --destination "${plugin_path}"
-                        > /dev/null 2>&1
+        # Export VST3 plugin to "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}".
+        add_custom_command(
+            COMMENT "Generating ${relative_plugin_path}"
+            OUTPUT "${plugin_path}/Contents/Info.plist"
+            MAIN_DEPENDENCY "${csd_output_file_path}"
+            COMMAND
+                ${CMAKE_COMMAND} -E rm -rf "${plugin_path}" &&
+                "${CABBAGE_PATH}/Contents/MacOS/Cabbage"
+                    --export-${vst3_plugin_type}
+                    "${csd_output_file_path}"
+                    --destination "${plugin_path}"
+                    > /dev/null 2>&1
             )
-            set(vst3_depends "${plugin_path}/Contents/Info.plist")
-        else()
-            set(vst3_depends "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name}")
-        endif()
 
-        if(BuildPlugin_VST3_Export OR BuildPlugin_VST3_LinkCsdFiles)
-            if(BuildPlugin_VST3_LinkCsdFiles)
-                set(link_target "${in_file_name}__VST3_LinkCsdFiles")
-                set(plugin_contents_dir "${plugin_path}/Contents")
-                set(plugin_csd_path "${plugin_contents_dir}/${in_file_name}")
-                set(link_csd_file_command
-                    rm ${plugin_csd_path} || true &&
-                    ln ${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${in_file_name} ${plugin_csd_path} || true
-                )
-            endif()
-            add_custom_target("${in_file_name_we}.vst3" ALL DEPENDS ${vst3_depends} COMMAND ${link_csd_file_command})
-        else()
-            add_custom_target("${in_file_name_we}.csd" ALL DEPENDS ${vst3_depends})
-        endif()
+        # Link the output .csd to the plugin .csd.
+        set(plugin_csd_file_path "${plugin_path}/Contents/${csd_file_name}")
+        string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_csd_output_file_path "${csd_output_file_path}")
+        string(REPLACE "${CMAKE_BINARY_DIR}/" "" relative_plugin_csd_file_path "${plugin_csd_file_path}")
+        add_custom_command(
+            COMMENT "Linking ${relative_csd_output_file_path} -> ${relative_plugin_csd_file_path}"
+            OUTPUT "${plugin_csd_file_path}.stamp"
+            MAIN_DEPENDENCY "${csd_output_file_path}"
+            COMMAND
+                ${CMAKE_COMMAND} -E touch "${plugin_csd_file_path}.stamp" &&
+                ${CMAKE_COMMAND} -E rm -f "${plugin_csd_file_path}" &&
+                ${CMAKE_COMMAND} -E create_hardlink "${csd_output_file_path}" "${plugin_csd_file_path}"
+            DEPENDS
+                "${plugin_path}/Contents/Info.plist"
+            )
     endif()
 endfunction()
 
-function(add_csd_effect)
-    export_csd_plugin("${ARGV0}" "effect")
+function(add_vst3_effect)
+    add_vst3("${ARGV0}" "VST3")
 endfunction()
 
-function(add_csd_synth)
-    export_csd_plugin("${ARGV0}" "synth")
+function(add_vst3_synth)
+    add_vst3("${ARGV0}" "VST3i")
+endfunction()
+
+function(get_output_csd_file_path csd_file_path source_file_path)
+    get_filename_component(source_file_name "${source_file_path}" NAME)
+    set(${csd_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name}" PARENT_SCOPE)
+endfunction()
+
+function(get_playback_output_csd_file_path csd_file_path source_file_path)
+    get_filename_component(source_file_name "${source_file_path}" NAME)
+    set(${csd_file_path} "${CSOUND_CMAKE_PLAYBACK_OUTPUT_DIR}/${source_file_name}" PARENT_SCOPE)
+endfunction()
+
+function(get_output_vst3_file_path vst3_file_path source_file_path)
+    get_filename_component(source_file_name_we "${source_file_path}" NAME_WE)
+    set(${vst3_file_path} "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${source_file_name_we}.vst3" PARENT_SCOPE)
+endfunction()
+
+function(add_csd_targets)
+    set(options OPTIONS)
+    set(one_value_keywords ONE_VALUE_KEYWORDS)
+    set(multi_value_keywords
+        EFFECT_PLUGIN_SOURCES
+        SYNTH_PLUGIN_SOURCES
+        STANDALONE_SOURCES
+        PLAYBACK_SOURCES
+    )
+    cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
+
+    foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES ARG_SYNTH_PLUGIN_SOURCES ARG_STANDALONE_SOURCES)
+        add_csd_implementation("${csd}" DEPENDS CsoundCMake.Cabbage)
+        get_output_csd_file_path(output_csd "${csd}")
+        list(APPEND csd_target_dependencies "${output_csd}")
+    endforeach()
+
+    if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
+        foreach(csd IN LISTS ARG_PLAYBACK_SOURCES)
+            # set(PREVIOUS_PREPROCESSOR_INCLUDE_DIR ${PREPROCESSOR_INCLUDE_DIR})
+            # set(PREPROCESSOR_INCLUDE_DIR ${CSOUND_CMAKE_PREPROCESSED_FILES_DIR})
+            add_playback_csd("${csd}" DEPENDS ${csd_target_dependencies})
+            # set(PREPROCESSOR_INCLUDE_DIR ${PREVIOUS_PREPROCESSOR_INCLUDE_DIR})
+            get_playback_output_csd_file_path(output_csd "${csd}")
+            list(APPEND playback_csd_target_dependencies "${output_csd}")
+        endforeach()
+        set(csd_target_dependencies ${playback_csd_target_dependencies})
+    endif()
+
+    add_custom_target("csd" ALL DEPENDS ${csd_target_dependencies} CsoundCMake.Cabbage)
+
+    # Add vst3 target.
+    if(NOT "${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
+        foreach(csd IN LISTS ARG_EFFECT_PLUGIN_SOURCES)
+            get_filename_component(csd_file_name "${csd}" NAME)
+            add_vst3_effect("${csd}")
+            get_output_vst3_file_path(output_vst3 "${csd}")
+            list(APPEND vst3_target_dependencies
+                "${output_vst3}/Contents/Info.plist"
+                "${output_vst3}/Contents/${csd_file_name}.stamp"
+                )
+        endforeach()
+
+        foreach(csd IN LISTS ARG_SYNTH_PLUGIN_SOURCES)
+            get_filename_component(csd_file_name "${csd}" NAME)
+            add_vst3_synth("${csd}")
+            get_output_vst3_file_path(output_vst3 "${csd}")
+            list(APPEND vst3_target_dependencies
+                "${output_vst3}/Contents/Info.plist"
+                "${output_vst3}/Contents/${csd_file_name}.stamp"
+                )
+        endforeach()
+
+        add_custom_target("vst3" DEPENDS "csd" ${vst3_target_dependencies})
+    endif()
+    
 endfunction()
 
 macro(define_cabbage_control_size PREFIX)
@@ -349,7 +375,7 @@ set(adsr_range_minus_1_to_1 "${range_minus_1_to_1}")
 macro(add_adsr_200x100)
     set(variableName ${ARGV0})
     set(AdsrChannelPrefix ${ARGV1})
-    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${InstrumentName}.${AdsrChannelPrefix}.adsr_200x100.ui")
+    set(outputFileName "${CSD_CONFIGURED_FILES_DIR}/${InstrumentName}.${AdsrChannelPrefix}.adsr_200x100.ui")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/adsr_200x100.ui" "${outputFileName}")
     set(${variableName} "${outputFileName}")
 endmacro()
@@ -357,7 +383,7 @@ endmacro()
 macro(add_lfo_200x100)
     set(variableName ${ARGV0})
     set(LfoChannelPrefix ${ARGV1})
-    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${InstrumentName}.${LfoChannelPrefix}.lfo_200x100.ui")
+    set(outputFileName "${CSD_CONFIGURED_FILES_DIR}/${InstrumentName}.${LfoChannelPrefix}.lfo_200x100.ui")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/lfo_200x100.ui" "${outputFileName}")
     set(${variableName} "${outputFileName}")
 endmacro()
@@ -378,7 +404,7 @@ macro(add_xypad_50x300_y)
     endif()
     set(XYPadXAxisY MATH "(300 - ${XYPadXAxisY}) - 1")
 
-    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_50x300_y.ui")
+    set(outputFileName "${CSD_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_50x300_y.ui")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_50x300_y.ui" "${outputFileName}")
     set(${variableName} "${outputFileName}")
 endmacro()
@@ -397,7 +423,7 @@ macro(add_xypad_200x200)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_200x200.ui")
+    set(outputFileName "${CSD_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_200x200.ui")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_200x200.ui" "${outputFileName}")
     set(${variableName} "${outputFileName}")
 endmacro()
@@ -416,7 +442,7 @@ macro(add_xypad_300x300)
         message(SEND_ERROR "Unknown XYPad type ${XYPadType}")
     endif()
 
-    set(outputFileName "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_300x300.ui")
+    set(outputFileName "${CSD_CONFIGURED_FILES_DIR}/${InstrumentName}.${XYPadChannelPrefix}.xypad_300x300.ui")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/widget_groups/xypad_300x300.ui" "${outputFileName}")
     set(${variableName} "${outputFileName}")
 endmacro()
@@ -433,7 +459,8 @@ endif()
 
 function(configure_source_file)
     set(file "${ARGV0}")
-    configure_file("${CsoundCMake.Cabbage_DIR}/Source/${file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${file}")
+    get_filename_component(file_name "${file}" NAME)
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/${file}" "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${file_name}")
 endfunction()
 
 foreach(header_file ${CsoundCMake_Cabbage_HeaderFiles})
@@ -446,11 +473,12 @@ endforeach()
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
     foreach(orc_file ${CsoundCMake_Cabbage_OrcFiles})
+        get_filename_component(orc_file_name "${orc_file}" NAME)
         add_preprocess_file_command(
-            "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
-            "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
+            "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file_name}"
+            "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file_name}"
         )
-        list(APPEND CsoundCMake_Cabbage_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
+        list(APPEND CsoundCMake_Cabbage_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file_name}")
     endforeach()
 endif()
 

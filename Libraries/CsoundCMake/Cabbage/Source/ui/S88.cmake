@@ -48,8 +48,4 @@ set(keyboard_group_height MATH "${keyboard_height} + (2 * ${padding})")
 set(S88_width ${form_width})
 set(S88_height MATH "${keyboard_group_y} + ${keyboard_group_height}")
 
-set(file "ui/S88.ui")
-configure_file(
-    "${CsoundCMake.Cabbage_DIR}/Source/${file}"
-    "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/${file}"
-)
+configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.ui" "${CSD_CONFIGURED_FILES_DIR}/S88.ui")

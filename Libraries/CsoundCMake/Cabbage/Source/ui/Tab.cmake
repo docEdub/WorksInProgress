@@ -24,7 +24,7 @@ macro(add_tab)
     set(${tab_variable}_rect "${${tab_variable}_xy}, ${${tab_variable}_size}")
 
     # Append tab to Tab.ui.tmp.
-    set(tab_ui_path "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui.tmp")
+    set(tab_ui_path "${CSD_CONFIGURED_FILES_DIR}/Tab.ui.tmp")
     # If this is first tab, clear Tab.ui.tmp contents.
     if(${tab_index} EQUAL 0)
         file(WRITE "${tab_ui_path}" "")
@@ -49,15 +49,12 @@ macro(add_tab)
 endmacro()
 
 function(process_tabs)
-    set(tab_ui_path "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui")
+    set(tab_ui_path "${CSD_CONFIGURED_FILES_DIR}/Tab.ui")
     set(tab_ui_path_tmp "${tab_ui_path}.tmp")
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${tab_ui_path_tmp}" "${tab_ui_path}")
 
     string(REPLACE ";" "\", \"" csound_tab_channels "\"${tab_channels}\"")
-    configure_file(
-        "${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.orc"
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
-    )
+    configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.orc" "${CSD_CONFIGURED_FILES_DIR}/Tab.orc")
 endfunction()
 
 # Cabbage has an issue causing the first tab button to fail almost all the time. To work around it, add a dummy tab with
@@ -67,13 +64,11 @@ set(tab_channels "")
 
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
-    add_preprocess_file_command(
-        "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
-        "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+    add_preprocess_file_command("${CSD_CONFIGURED_FILES_DIR}/Tab.orc" "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc"
         DEPENDS CsoundCMake.Cabbage
-    )
+        )
 
     # Add this file's preprocessed file to the .csd file's preprocess target's dependencies.
     # See CsoundCMakeConfig.cmake.
-    list(APPEND CSD_DEPENDS "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc")
+    list(APPEND CSD_DEPENDS "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc")
 endif()
