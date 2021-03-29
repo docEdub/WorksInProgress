@@ -20,6 +20,8 @@ _(\)
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
