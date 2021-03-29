@@ -241,6 +241,9 @@ instr 3
         event_i("i", nstrnum("AddActiveNote"), 0, 1, iNoteNumber, iVelocity)
 
         if (k_released == true) then
+            if (gkReactivatedNotes[iNoteNumber] > 0) then
+                event("i", -gkReactivatedNotes[iNoteNumber], k_releaseDeltaTime, 0)
+            endif
             event("i", -i_instrument, k_releaseDeltaTime, 0)
             event("i", nstrnum("RemoveActiveNote"), 0, 1, iNoteNumber)
         endif
