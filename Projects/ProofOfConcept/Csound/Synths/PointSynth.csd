@@ -24,8 +24,13 @@ ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
+gkReloaded init false
 
 instr CompileOrc
+    if (gkReloaded == true) then
+        gkReloaded = false
+        turnoff
+    endif
     log_i_info("Compiling PointSynth.orc ...")
     iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PointSynth.orc")
     if (iResult == 0) then
@@ -33,6 +38,7 @@ instr CompileOrc
     else
         log_i_info("Compiling PointSynth.orc - failed")
     endif
+    gkReloaded = true
 endin
 
 

@@ -52,6 +52,8 @@ instr PointSynth_Note
     iVelocity = p5 / 127
     iOrcInstanceIndex = p6
     iInstrumentTrackIndex = p7
+    aOut = poscil(0.01, cpsmidinn(iPitch))
+    outch(1, aOut)
 endin
 
 giPointSynthCcEventInstrumentNumber = nstrnum("PointSynth_CcEvent")
@@ -84,6 +86,11 @@ instr INSTRUMENT_ID
             outch(4, ao4)
             outch(5, ao5)
             outch(6, ao6)
+        
+            if (gkReloaded == true) then
+                log_k_debug("Turning off instrument %.03f due to reload.", p1)
+                turnoff
+            endif
         #endif
     endif
 endin
