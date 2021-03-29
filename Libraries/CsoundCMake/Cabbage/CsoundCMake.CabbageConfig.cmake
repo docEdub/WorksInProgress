@@ -22,14 +22,6 @@ set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING " ")
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
 
-set(BuildPlugin_VST3_Export OFF CACHE BOOL)
-set(BuildPlugin_VST3_LinkCsdFiles OFF CACHE BOOL)
-
-if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
-    set(BuildPlugin_VST3_Export OFF)
-    set(BuildPlugin_VST3_LinkCsdFiles OFF)
-endif()
-
 set(Cabbage_LogCabbageOutput OFF CACHE BOOL)
 set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
