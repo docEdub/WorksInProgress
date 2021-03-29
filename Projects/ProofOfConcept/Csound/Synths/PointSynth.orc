@@ -64,6 +64,8 @@ giPointSynthNoteInstrumentNumber = nstrnum("PointSynth_Note")
 //----------------------------------------------------------------------------------------------------------------------
 
 instr INSTRUMENT_ID
+    log_i_debug("%.3f ...", p1)
+
     iEventType = p4
     if (iEventType == EVENT_CC) then
         aUnused subinstr giPointSynthCcEventInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX
@@ -93,6 +95,8 @@ instr INSTRUMENT_ID
             endif
         #endif
     endif
+
+    log_i_info("%.3f - done", p1)
 endin
 
 //----------------------------------------------------------------------------------------------------------------------
