@@ -25,67 +25,29 @@ ${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 gkReloaded init false
-gkActiveNotes[] init 128
-gkReactivatedNotes[] init 128
-gkReactivatedNoteId init 0
-
-instr AddActiveNote
-    iNote = p4
-    iVelocity = p5
-    gkActiveNotes[iNote] = iVelocity
-    turnoff
-endin
-
-instr RemoveActiveNote
-    iNote = p4
-    gkActiveNotes[iNote] = 0
-endin
-
-instr ReactivateNote
-    iNoteNumber = p4
-    iVelocity = p5
-    gi_noteId += 1
-    if (gi_noteId == 1000) then
-        gi_noteId = 1
-    endif
-    i_instrument = nstrnum(STRINGIZE(${InstrumentName})) + gi_noteId / 1000
-    event("i", i_instrument, 0.1, -1, EVENT_NOTE_ON, iNoteNumber, iVelocity)
-    if (gkReactivatedNotes[iNoteNumber] > 0) then
-        event("i", -gkReactivatedNotes[iNoteNumber], 0, 0)
-    endif
-    gkReactivatedNotes[iNoteNumber] = i_instrument
-    log_k_debug("Reactivating note %d: instr %.3f", iNoteNumber, i_instrument)
-    turnoff
-endin
-
-instr ReactivateNotes
-    log_k_debug("Reactivating notes ...")
-    kI = 0
-    while (kI < 128) do
-        if (gkActiveNotes[kI] > 0) then
-            gkReactivatedNoteId += 1
-            if (gkReactivatedNoteId == 1000) then
-                gkReactivatedNoteId = 1
-            endif
-            kInstrumentNumber = nstrnum("ReactivateNote") + gkReactivatedNoteId / 1000
-            event("i", kInstrumentNumber, 0, -1, kI, gkActiveNotes[kI])
-        endif
-        kI += 1
-    od
-    log_k_debug("Reactivating notes - done")
-    turnoff
-endin
 
 instr CompileOrc
     if (gkReloaded == true) then
         gkReloaded = false
         turnoff
     endif
+
     log_i_info("Compiling PointSynth.orc ...")
+
+    iInstrumentNumber = nstrnum(STRINGIZE(${InstrumentName}))    
+    kI = 0
+    while (kI < 100) do
+        kInstrumentNumber = 3// iInstrumentNumber// + kI / 1000
+        kActiveInstrumentCount = active:k(kInstrumentNumber)
+        if (0 < kActiveInstrumentCount) then
+            log_k_debug("Instrument %.3f has %d instances active.", kInstrumentNumber, kActiveInstrumentCount)
+        endif
+        kI += 1
+    od
+
     iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PointSynth.orc")
     if (iResult == 0) then
         log_i_info("Compiling PointSynth.orc - succeeded")
-        event_i("i", nstrnum("ReactivateNotes"), 0.1, -1)
     else
         log_i_info("Compiling PointSynth.orc - failed")
     endif
@@ -113,19 +75,6 @@ instr 1
             kPreviousModifiedTime = kModifiedTime
             event("i", "CompileOrc", 0, -1)
         endif
-    endif
-
-    // Deactivate all reactivated notes when the DAW stops playing since they won't be deactivated on their own.
-    if (changed(gk_playing) == true && gk_playing == false) then
-        kI = 0
-        while (kI < 128) do
-            kInstrumentNumber = gkReactivatedNotes[kI]
-            if (kInstrumentNumber > 0) then
-                log_k_debug("Deactivating reactivated note %d: instr %.3f", kI, kInstrumentNumber)
-                event("i", -kInstrumentNumber, 0, 0)
-            endif
-            kI += 1
-        od
     endif
 endin
 
@@ -241,14 +190,12 @@ instr 3
         iNoteNumber = notnum()
         iVelocity = veloc()
         event_i("i", i_instrument, 0, -1, EVENT_NOTE_ON, iNoteNumber, iVelocity)
-        event_i("i", nstrnum("AddActiveNote"), 0, 1, iNoteNumber, iVelocity)
+        if (gkReloaded == true) then
+            event("i", i_instrument, 0, -1, EVENT_NOTE_ON, iNoteNumber, iVelocity)
+        endif
 
         if (k_released == true) then
-            if (gkReactivatedNotes[iNoteNumber] > 0) then
-                event("i", -gkReactivatedNotes[iNoteNumber], k_releaseDeltaTime, 0)
-            endif
-            event("i", -i_instrument, k_releaseDeltaTime, 0)
-            event("i", nstrnum("RemoveActiveNote"), 0, 1, iNoteNumber)
+            event("i", i_instrument, k_releaseDeltaTime, -1, EVENT_NOTE_OFF, iNoteNumber, 0)
         endif
         log_i_info("instr 3, mode_1 - done")
         goto end

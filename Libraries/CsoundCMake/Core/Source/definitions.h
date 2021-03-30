@@ -78,9 +78,11 @@
 #define LOG_TO_CSOUND_OUTPUT _(${CsoundLog_ToCsoundOutput})
 #define LOG_TO_DAW_SERVICE _(${CsoundLog_ToDawService})
 
+#define EVENT_ALWAYS_ON 0
 #define EVENT_EFFECT_ON 1
 #define EVENT_NOTE_ON   1
-#define EVENT_CC        2
+#define EVENT_NOTE_OFF  2
+#define EVENT_CC        3
 
 #ifdef _MSC_VER
     #define ARGUMENT_COUNT(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
