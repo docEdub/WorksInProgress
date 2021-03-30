@@ -75,12 +75,12 @@ instr INSTRUMENT_ID
             INSTRUMENT_TRACK_INDEX
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = ao1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = ao2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = ao3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = ao4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = ao5
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = ao6
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + ao1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + ao2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + ao3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + ao4
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + ao5
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + ao6
         #else
             outch(1, ao1)
             outch(2, ao2)
