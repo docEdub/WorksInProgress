@@ -195,7 +195,7 @@ instr 3
         endif
 
         if (k_released == true) then
-            event("i", i_instrument, k_releaseDeltaTime, -1, EVENT_NOTE_OFF, iNoteNumber, 0)
+            event("i", -i_instrument, k_releaseDeltaTime, 1)
         endif
         log_i_info("instr 3, mode_1 - done")
         goto end
