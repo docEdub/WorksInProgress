@@ -136,9 +136,11 @@ endif()
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
     foreach(orc_file ${CsoundCMake_Core_OrcFiles})
+        get_dependencies(orc_file_dependencies "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
         add_preprocess_file_command(
             "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
             "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
+            DEPENDS ${orc_file_dependencies}
         )
         list(APPEND CsoundCMake_Core_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
     endforeach()
