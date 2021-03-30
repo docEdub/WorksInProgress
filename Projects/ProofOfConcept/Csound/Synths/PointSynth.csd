@@ -33,18 +33,6 @@ instr CompileOrc
     endif
 
     log_i_info("Compiling PointSynth.orc ...")
-
-    iInstrumentNumber = nstrnum(STRINGIZE(${InstrumentName}))    
-    kI = 0
-    while (kI < 100) do
-        kInstrumentNumber = 3// iInstrumentNumber// + kI / 1000
-        kActiveInstrumentCount = active:k(kInstrumentNumber)
-        if (0 < kActiveInstrumentCount) then
-            log_k_debug("Instrument %.3f has %d instances active.", kInstrumentNumber, kActiveInstrumentCount)
-        endif
-        kI += 1
-    od
-
     iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PointSynth.orc")
     if (iResult == 0) then
         log_i_info("Compiling PointSynth.orc - succeeded")
