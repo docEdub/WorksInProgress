@@ -71,23 +71,23 @@ instr INSTRUMENT_ID
         aUnused subinstr giPointSynthCcEventInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
-        ao1, ao2, ao3, ao4, ao5, ao6 subinstr giPointSynthNoteInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX,
+        a1, a2, a3, a4, a5, a6 subinstr giPointSynthNoteInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX,
             INSTRUMENT_TRACK_INDEX
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + ao1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + ao2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + ao3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + ao4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + ao5
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + ao6
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + a5
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + a6
         #else
-            outch(1, ao1)
-            outch(2, ao2)
-            outch(3, ao3)
-            outch(4, ao4)
-            outch(5, ao5)
-            outch(6, ao6)
+            outch(1, a1)
+            outch(2, a2)
+            outch(3, a3)
+            outch(4, a4)
+            outch(5, a5)
+            outch(6, a6)
         
             if (gkReloaded == true) then
                 log_k_debug("Turning off instrument %.03f due to reload.", p1)
