@@ -50,6 +50,9 @@ instr ReactivateNote
     endif
     i_instrument = nstrnum(STRINGIZE(${InstrumentName})) + gi_noteId / 1000
     event("i", i_instrument, 0.1, -1, EVENT_NOTE_ON, iNoteNumber, iVelocity)
+    if (gkReactivatedNotes[iNoteNumber] > 0) then
+        event("i", -gkReactivatedNotes[iNoteNumber], 0, 0)
+    endif
     gkReactivatedNotes[iNoteNumber] = i_instrument
     log_k_debug("Reactivating note %d: instr %.3f", iNoteNumber, i_instrument)
     turnoff
