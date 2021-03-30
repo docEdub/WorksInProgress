@@ -207,7 +207,7 @@ function(add_csd_implementation)
                 "${orc_preprocessed}"
                 DEPENDS
                     ${ARG_DEPENDS}
-                    ${dependenices}
+                    ${dependencies}
             )
 
             list(APPEND ARG_DEPENDS "${orc_preprocessed}")
