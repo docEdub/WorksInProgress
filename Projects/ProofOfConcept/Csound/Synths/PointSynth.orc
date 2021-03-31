@@ -112,7 +112,13 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             #endif
-        else ; iNoteNumber >= 128 : Instance was generated recursively.
+        else ; iNoteNumber > 127 : Instance was generated recursively.
+            iNoteNumber -= 1000
+            if (iNoteNumber > 127) then
+                log_k_error("Note number is greater than 127 (iNoteNumber = %f.", iNoteNumber)
+                igoto endin
+                turnoff
+            endif
             iCPS = cpsmidinn(p5 - 1000)
             aOut = pluck(0.005 * (iVelocity / 127), k(iCPS), iCPS, 0, 1)
 
@@ -147,6 +153,7 @@ instr INSTRUMENT_ID
             #endif            
         endif
     endif
+endin:
 endin
 
 //----------------------------------------------------------------------------------------------------------------------
