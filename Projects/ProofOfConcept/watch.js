@@ -3,7 +3,7 @@ var watch = require('node-watch');
 var spawn = require('child_process').spawn;
 
 if (os.type() === 'Darwin') {
-    const foldersToWatch = [
+    const pathsToWatch = [
         './Csound',
         '../../Libraries/CsoundCMake'
     ]
@@ -24,9 +24,9 @@ if (os.type() === 'Darwin') {
     }
 
     console.log('\nWatching folders ...')
-    foldersToWatch.forEach(folder => {
-        console.log('  ', folder)
-        watch(folder, {
+    pathsToWatch.forEach(path => {
+        console.log('  ', path)
+        watch(path, {
             recursive: true,
             filter(path, skip) {
                 if (/\/build\/\bCMakeCache.txt\b$/.test(path)) return true
