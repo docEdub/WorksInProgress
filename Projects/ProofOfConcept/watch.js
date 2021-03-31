@@ -29,9 +29,8 @@ if (os.type() === 'Darwin') {
         watch(folder, {
             recursive: true,
             filter(path, skip) {
-                if (/\/build/.test(path)) {
-                    return skip
-                }
+                if (/\/build\/\bCMakeCache.txt\b$/.test(path)) return true
+                if (/\/build/.test(path)) return skip
                 return true
             }
         }, make)
