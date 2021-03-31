@@ -113,7 +113,6 @@ instr INSTRUMENT_ID
                 endif
             #endif
         else ; iNoteNumber >= 128 : Instance was generated recursively.
-            ; aOut = poscil(0.01 * (iVelocity / 127), cpsmidinn(p5 - 1000))
             iCPS = cpsmidinn(p5 - 1000)
             aOut = pluck(0.005 * (iVelocity / 127), k(iCPS), iCPS, 0, 1)
 
