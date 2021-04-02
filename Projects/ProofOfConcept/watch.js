@@ -1,6 +1,6 @@
 var os = require('os');
 var watch = require('node-watch');
-var spawn = require('child_process').spawn;
+var spawnSync = require('child_process').spawnSync;
 
 if (os.type() === 'Darwin') {
     const pathsToWatch = [
@@ -12,14 +12,16 @@ if (os.type() === 'Darwin') {
     
     const make = (event, fileName) => {
         if (fileName) {
-            console.log('\n', fileName, 'changed ...')
+            console.log(fileName, 'changed')
             if (debounce) {
                 return
             }
             debounce = setTimeout(() => {
                 debounce = false
-            }, 100) 
-            spawn('bash', [ '-c', 'node make'], { stdio: 'inherit' })
+                console.log('-----------------------------------------------------------------------------------------')
+                spawnSync('bash', [ '-c', 'node make'], { stdio: 'inherit' })
+                console.log('\n')
+            }, 100)
         }
     }
 
@@ -35,6 +37,7 @@ if (os.type() === 'Darwin') {
             }
         }, make)
     })
+    console.log('\n')
 }
 else {
     throw new Error('Unsupported OS: ' + os.type())
