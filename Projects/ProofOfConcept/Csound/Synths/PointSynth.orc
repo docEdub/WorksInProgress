@@ -77,34 +77,37 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        iFadeInTime = 0.02
-        iFadeOutTime = 0.1
+        iFadeInTime = 0.01
+        iFadeOutTime = 0.01
         iTotalTime = iFadeInTime + iFadeOutTime
+        iSeed = iNoteNumber / 128
         if (iNoteNumber < 128) then
-            kI init 1
-            kJ init 0
-            kCountdown init 0.05
+            kI init 0
+            kCountdownNeedsInit init true
+            if (kCountdownNeedsInit == true) then
+                kJ = 0
+                while (kJ < iNoteNumber) do
+                    kCountdown = 0.5 + abs(rand(0.5, iSeed))
+                    kJ += 1
+                od
+                kCountdownNeedsInit = false
+            endif
             kCountdown -= 1 / kr
             if (kCountdown <= 0) then
-
                 // Generate new note.
-                kJ += 1
-                if (kJ == 1000) then
-                    kJ = 1
-                endif
-                kInstrumentNumber = p1 + kJ / 1000000
-                kNoteNumberOffsetDivisor = 2 + abs(rand:k(12, iNoteNumber / 128))
-                log_k_debug("kNoteNumberOffsetDivisor = %f, kI = %d, kJ = %d", kNoteNumberOffsetDivisor, kI, kJ)
-                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
-                    iNoteNumber + 1000 + kI / kNoteNumberOffsetDivisor,
-                    iVelocity - kI)
-                log_k_debug("SEvent = %s", SEvent)
-                scoreline(SEvent, 1)
-                kCountdown = rand(0.2, iNoteNumber / 128) + 0.2
                 kI += 1
-                if (kI > 64) then
+                if (kI == 1000) then
                     kI = 1
                 endif
+                kInstrumentNumber = p1 + kI / 1000000
+                kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
+                kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
+                    kNoteNumber,
+                    kVelocity)
+                log_k_debug("SEvent = %s", SEvent)
+                scoreline(SEvent, 1)
+                kCountdownNeedsInit = true
             endif
             
             #if !IS_PLAYBACK
@@ -120,7 +123,9 @@ instr INSTRUMENT_ID
                 turnoff
             endif
             iCPS = cpsmidinn(p5 - 1000)
-            aOut = pluck(0.005 * (iVelocity / 127), k(iCPS), iCPS, 0, 1)
+            iSineAmp = 0.01
+            kCPS = linseg(iCPS, iTotalTime, iCPS + 100)
+            aOut = oscil(iSineAmp, kCPS)
 
             aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
             aOut *= aEnvelope
