@@ -66,11 +66,12 @@
 #define VOLUME_TRACKING_SIGNAL 0.000001
 #define VOLUME_TRACKING_SIGNAL_TO_VOLUME(signal) (signal * VOLUME_TRACKING_DIVISOR)
 
-#define EVENT_ALWAYS_ON 0
-#define EVENT_EFFECT_ON 1
-#define EVENT_NOTE_ON   1
-#define EVENT_NOTE_OFF  2
-#define EVENT_CC        3
+#define EVENT_ALWAYS_ON      0
+#define EVENT_EFFECT_ON      1
+#define EVENT_NOTE_ON        1
+#define EVENT_NOTE_OFF       2
+#define EVENT_NOTE_GENERATED 3
+#define EVENT_CC             4
 
 #define LOG_TRACE _(${CsoundLog_Level0Trace})
 #define LOG_DEBUG _(${CsoundLog_Level1Debug})
