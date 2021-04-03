@@ -17,6 +17,7 @@ add_csd_targets(
     SYNTH_PLUGIN_SOURCES
         "Synths/PointSynth.csd"
         "Synths/SubtractiveSynth.csd"
+        "Synths/TableSynth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
     PLAYBACK_SOURCES

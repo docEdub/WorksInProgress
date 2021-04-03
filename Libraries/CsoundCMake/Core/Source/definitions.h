@@ -30,8 +30,13 @@
 #define CSOUND_INCLUDE _(HASH)_(include)
 #define CSOUND_UNDEF _(HASH)_(undef)
 
+#define return igoto endin
+
 #define string_i(x) x
 #define string_k(x) sprintfk("%s", x)
+
+#define RAW_TABLE_INDEX        = 0
+#define NORMALIZED_TABLE_INDEX = 1
 
 #define DAW_SERVICE_OSC_ADDRESS "127.0.0.1"
 #define DAW_SERVICE_OSC_PORT 7770
