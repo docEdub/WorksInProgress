@@ -42,27 +42,21 @@ giMaxDistance = 100
 giMinDistance = 5
 giMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giMinDistance, giMaxDistance)
 
+${CSOUND_DEFINE} POINT_SYNTH_NEXT_RTZ_COUNT #16384#
+giPointSynthNextRT[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
+giPointSynthNextRTZ_i init 0
 
-instr PointSynth_CcEvent
-    iCcType = p4
-    iCcValue = p5
-    iOrcInstanceIndex = p6
-endin
-
-instr PointSynth_Note
-    iPitch = p4
-    iVelocity = p5 / 127
-    iOrcInstanceIndex = p6
-    iInstrumentTrackIndex = p7
-    aOut = poscil(0.01, cpsmidinn(iPitch))
-    outch(1, aOut)
-endin
-
-giPointSynthCcEventInstrumentNumber = nstrnum("PointSynth_CcEvent")
-giPointSynthNoteInstrumentNumber = nstrnum("PointSynth_Note")
-
-// [i][j]: i = .orc instance, j = MIDI note number. Stored value is note's velocity.
-gkPointSynthActiveNotes[][] init ORC_INSTANCE_COUNT, 128
+iI = 0
+while (iI < ORC_INSTANCE_COUNT) do
+    seed(1 + iI * 1000)
+    iJ = 0
+    while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
+        giPointSynthNextRT[iI][iJ][$R] = giMinDistance + rnd(giMaxDistance - giMinDistance)
+        giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
+        iJ += 1
+    od
+    iI += 1
+od
 
 #endif // #ifndef PointSynth_orc__include_guard
 
@@ -72,39 +66,41 @@ instr INSTRUMENT_ID
 
     iEventType = p4
     if (iEventType == EVENT_CC) then
-        aUnused subinstr giPointSynthCcEventInstrumentNumber, p5, p6, ORC_INSTANCE_INDEX
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        iFadeInTime = 0.02
-        iFadeOutTime = 0.1
+        iFadeInTime = 0.01
+        iFadeOutTime = 0.01
         iTotalTime = iFadeInTime + iFadeOutTime
+        iSeed = iNoteNumber / 128
         if (iNoteNumber < 128) then
-            kI init 1
-            kJ init 0
-            kCountdown init 0.05
+            kI init 0
+            kCountdownNeedsInit init true
+            if (kCountdownNeedsInit == true) then
+                kJ = 0
+                while (kJ < iNoteNumber) do
+                    kCountdown = 0.5 + abs(rand(0.5, iSeed))
+                    kJ += 1
+                od
+                kCountdownNeedsInit = false
+            endif
             kCountdown -= 1 / kr
             if (kCountdown <= 0) then
-
                 // Generate new note.
-                kJ += 1
-                if (kJ == 1000) then
-                    kJ = 1
-                endif
-                kInstrumentNumber = p1 + kJ / 1000000
-                kNoteNumberOffsetDivisor = 2 + abs(rand:k(12, iNoteNumber / 128))
-                log_k_debug("kNoteNumberOffsetDivisor = %f, kI = %d, kJ = %d", kNoteNumberOffsetDivisor, kI, kJ)
-                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
-                    iNoteNumber + 1000 + kI / kNoteNumberOffsetDivisor,
-                    iVelocity - kI)
-                log_k_debug("SEvent = %s", SEvent)
-                scoreline(SEvent, 1)
-                kCountdown = rand(0.2, iNoteNumber / 128) + 0.2
                 kI += 1
-                if (kI > 64) then
+                if (kI == 1000) then
                     kI = 1
                 endif
+                kInstrumentNumber = p1 + kI / 1000000
+                kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
+                kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
+                    kNoteNumber,
+                    kVelocity)
+                log_k_debug("SEvent = %s", SEvent)
+                scoreline(SEvent, 1)
+                kCountdownNeedsInit = true
             endif
             
             #if !IS_PLAYBACK
@@ -112,17 +108,44 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             #endif
-        else ; iNoteNumber >= 128 : Instance was generated recursively.
-            iCPS = cpsmidinn(p5 - 1000)
-            aOut = pluck(0.005 * (iVelocity / 127), k(iCPS), iCPS, 0, 1)
+        else ; iNoteNumber > 127 : Instance was generated recursively.
+            iNoteNumber -= 1000
+            if (iNoteNumber > 127) then
+                log_k_error("Note number is greater than 127 (iNoteNumber = %f.", iNoteNumber)
+                igoto endin
+                turnoff
+            endif
+            iCps = cpsmidinn(p5 - 1000)
+            iAmp = 0.05
 
+            kCps = linseg(iCps, iTotalTime, iCps + 100)
+
+            aOut = oscil(iAmp, kCps)
             aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
             aOut *= aEnvelope
+
+            kR init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$R]
+            kT init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$T]
+            kZ init 10 + 10 * (iNoteNumber / 127)
+            log_i_debug("rtz = (%f, %f, %f)", i(kR), i(kT), i(kZ))
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giMinDistance, giMaxDistance)
+            aOutDistanced = aOut * kDistanceAmp
+
+            giPointSynthNextRTZ_i += 1
+            if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
+                giPointSynthNextRTZ_i = 0
+            endif
+            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
+            a1 = kAmbisonicChannelGains[0] * aOutDistanced
+            a2 = kAmbisonicChannelGains[1] * aOutDistanced
+            a3 = kAmbisonicChannelGains[2] * aOutDistanced
+            a4 = kAmbisonicChannelGains[3] * aOutDistanced
+
             #if IS_PLAYBACK
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + aOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + aOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + aOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + aOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
             #else
@@ -134,9 +157,7 @@ instr INSTRUMENT_ID
                     kReloaded = gkReloaded
                 endif
 
-                ; outc(aOut, aOut, aOut, aOut, aOut, aOut)
-                a0 init 0
-                outc(a0, a0, a0, aOut, aOut, aOut)
+                outc(a1, a2, a3, a4, aOut, aOut)
 
                 if (kReloaded == true) then
                     kFadeTimeLeft -= 1 / kr
@@ -147,6 +168,7 @@ instr INSTRUMENT_ID
             #endif            
         endif
     endif
+endin:
 endin
 
 //----------------------------------------------------------------------------------------------------------------------
