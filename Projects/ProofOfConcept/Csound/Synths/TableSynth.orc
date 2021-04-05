@@ -103,9 +103,9 @@ instr TableSynth_NoteOn
         #endif
     endif
 
-    iAmp = 0.01 * iVelocity
+    kAmp = 0.01 * iVelocity * kRiserTableValue
     kCps = cpsmidinn(kNoteNumber)
-    aOut = vco2(iAmp, kCps, 10, 0.5, 0, 0.5) // square wave: NB 0.5 fattens it up compared to default of 1
+    aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5) // square wave: NB 0.5 fattens it up compared to default of 1
     aOut = tone(aOut, 5000)
     out aOut
 
