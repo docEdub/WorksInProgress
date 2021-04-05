@@ -103,7 +103,7 @@ instr TableSynth_NoteOn
 
     iAmp = 0.01 * iVelocity
     kCps = cpsmidinn(kNoteNumber)
-    aOut = vco2(iAmp, kCps, 10, 0.5, 0, 0.1) // square wave: NB 0.25 fattens it up
+    aOut = vco2(iAmp, kCps, 10, 0.5, 0, 0.5) // square wave: NB 0.25 fattens it up
     aOut = tone(aOut, 5000)
     out aOut
 
