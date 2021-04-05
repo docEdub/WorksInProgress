@@ -54,7 +54,9 @@ instr TableSynth_NoteOn
     // pass, and eventually maxes out at 1. When the max rise time is exceeded, the riser value stays at 1.
     iMaxRiseTime = 10
 
-    iMaxRiseAmount = 12 // 1 octave
+    // Rise from C2 (note #36) to the given note number.
+    iMaxRiseAmount = iNoteNumber - 36
+    iNoteNumber = 36
 
     // The amount of "wobble" the pitch will have when it starts rising. The wobble will decrease from 1 to 0 inversely
     // proportionate to the rise amount until there is zero wobble when the rise amount reaches 1.
