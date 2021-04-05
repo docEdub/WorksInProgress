@@ -52,12 +52,13 @@ instr TableSynth_NoteOn
 
     // Max amount of seconds to keep rising. The riser table is exponentional. It rises slower and slower as time
     // pass, and eventually maxes out at 1. When the max rise time is exceeded, the riser value stays at 1.
-    iMaxRiseTime = 20
+    iMaxRiseTime = 10
 
     iMaxRiseAmount = 12 // 1 octave
 
-    // The amount of "wobble" the pitch will have as it rises.
-    iNoteNumberWobbleAmount = 0.333
+    // The amount of "wobble" the pitch will have when it starts rising. The wobble will decrease from 1 to 0 inversely
+    // proportionate to the rise amount until there is zero wobble when the rise amount reaches 1.
+    iNoteNumberWobbleStartAmp = 1.5
 
     // The speed of the pitch "wobble" LFO in hertz.
     iNoteNumberWobbleSpeed = 5
@@ -68,26 +69,25 @@ instr TableSynth_NoteOn
     iSecondsPerKPass = 1 / kr
     
     // Exponential curve from 0 to 1, slowing when approaching 1.
-    iRiserTableId = ftgenonce(0, 0, iRiserTableSize, 16, 0, iRiserTableSize, -10, 1)
-
+    iRiserTableId = ftgenonce(0, 0, iRiserTableSize + GUARD_POINT_SIZE, 16, 0, iRiserTableSize, -10, 1)
     iRiserTableIncrement_i = iSecondsPerKPass * (iRiserTableSize / iMaxRiseTime)
     kRiserTable_i init 0
     if (kRiserTable_i < iWobbleTableSize) then
         kRiserTable_i += iRiserTableIncrement_i
     endif
+    kRiserTableValue = tablei(kRiserTable_i, iRiserTableId)
 
     // 1 cycle of a sine wave.
     iWobbleTableId = ftgenonce(0, 0, 1024, 10, 1)
-
     iWobbleTableIncrement_i = iNoteNumberWobbleSpeed * (iSecondsPerKPass * iWobbleTableSize)
-    log_i_info("iWobbleTableIncrement_i = %f", iWobbleTableIncrement_i)
     kWobbleTable_i init 0
     kWobbleTable_i += iWobbleTableIncrement_i
     kWobbleTable_i = kWobbleTable_i % iWobbleTableSize
+    kNoteNumberWobbleAmp = iNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
 
     kNoteNumber = iNoteNumber
-    kNoteNumber += tablei(kRiserTable_i, iRiserTableId) * iMaxRiseAmount
-    kNoteNumber += tablei(kWobbleTable_i, iWobbleTableId) * iNoteNumberWobbleAmount
+    kNoteNumber += kRiserTableValue * iMaxRiseAmount
+    kNoteNumber += tablei(kWobbleTable_i, iWobbleTableId) * kNoteNumberWobbleAmp
     if (kNoteNumber > 127) then
         kNoteNumber = 127
         #ifdef LOGGING
