@@ -2,6 +2,8 @@
 #ifndef CsoundCMake_definitions_h
 #define CsoundCMake_definitions_h
 
+#include "csound_definitions.h"
+
 #define false 0
 #define true 1
 
@@ -34,9 +36,6 @@
 
 #define string_i(x) x
 #define string_k(x) sprintfk("%s", x)
-
-#define RAW_TABLE_INDEX        = 0
-#define NORMALIZED_TABLE_INDEX = 1
 
 #define DAW_SERVICE_OSC_ADDRESS "127.0.0.1"
 #define DAW_SERVICE_OSC_PORT 7770
