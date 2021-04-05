@@ -1,7 +1,7 @@
 #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: TableSynth.orc
+// File: PowerLineSynth.orc
 //----------------------------------------------------------------------------------------------------------------------
 
 #ifndef INSTRUMENT_NAME
@@ -11,8 +11,8 @@
 #include "instrument_orc_definitions.h"
 
 
-#ifndef TableSynth_orc__include_guard
-#define TableSynth_orc__include_guard
+#ifndef PowerLineSynth_orc__include_guard
+#define PowerLineSynth_orc__include_guard
 
 ${CSOUND_INCLUDE} "adsr_linesegr.udo.orc"
 
@@ -42,13 +42,13 @@ giMaxDistance = 100
 giMinDistance = 5
 giMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giMinDistance, giMaxDistance)
 
-instr TableSynth_NoteOn
+instr PowerLineSynth_NoteOn
     iNoteNumber = p4
     iVelocity = p5 / 127
     iOrcInstanceIndex = p6
     iInstrumentTrackIndex = p7
 
-    log_i_info("TableSynth_NoteOn ...")
+    log_i_info("PowerLineSynth_NoteOn ...")
 
     // Max amount of seconds to keep rising. The riser table is exponentional. It rises slower and slower as time
     // pass, and eventually maxes out at 1. When the max rise time is exceeded, the riser value stays at 1.
@@ -109,19 +109,19 @@ instr TableSynth_NoteOn
     aOut = tone(aOut, 5000)
     out aOut
 
-    log_i_trace("TableSynth_NoteOn - done")
+    log_i_trace("PowerLineSynth_NoteOn - done")
 endin
 
-instr TableSynth_NoteOff
+instr PowerLineSynth_NoteOff
     iNoteNumber = p4
     iVelocity = p5 / 127
     iOrcInstanceIndex = p6
     iInstrumentTrackIndex = p7
 endin
 
-giTableSynthNoteInstrumentNumber = nstrnum("TableSynth_NoteOn")
+giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
 
-#endif // #ifndef TableSynth_orc__include_guard
+#endif // #ifndef PowerLineSynth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        aOut subinstr giTableSynthNoteInstrumentNumber,
+        aOut subinstr giPowerLineSynthNoteInstrumentNumber,
             iNoteNumber,
             iVelocity,
             ORC_INSTANCE_INDEX,

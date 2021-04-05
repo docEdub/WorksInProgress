@@ -2,7 +2,7 @@
 set(form_width 1000)
 set(form_height 516)
 
-set(InstrumentName "TableSynth")
+set(InstrumentName "PowerLineSynth")
 
 set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
@@ -29,6 +29,6 @@ set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
 configure_file(
-    "${CMAKE_CURRENT_LIST_DIR}/TableSynthSettings.ui"
-    "${CSD_CONFIGURED_FILES_DIR}/TableSynthSettings.ui"
+    "${CMAKE_CURRENT_LIST_DIR}/PowerLineSynthSettings.ui"
+    "${CSD_CONFIGURED_FILES_DIR}/PowerLineSynthSettings.ui"
     )

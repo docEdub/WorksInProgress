@@ -16,8 +16,8 @@ add_csd_targets(
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
         "Synths/PointSynth.csd"
+        "Synths/PowerLineSynth.csd"
         "Synths/SubtractiveSynth.csd"
-        "Synths/TableSynth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
     PLAYBACK_SOURCES

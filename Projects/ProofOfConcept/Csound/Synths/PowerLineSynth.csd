@@ -32,12 +32,12 @@ instr CompileOrc
         turnoff
     endif
 
-    log_i_info("Compiling TableSynth.orc ...")
-    iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/TableSynth.orc")
+    log_i_info("Compiling PowerLineSynth.orc ...")
+    iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PowerLineSynth.orc")
     if (iResult == 0) then
-        log_i_info("Compiling TableSynth.orc - succeeded")
+        log_i_info("Compiling PowerLineSynth.orc - succeeded")
     else
-        log_i_info("Compiling TableSynth.orc - failed")
+        log_i_info("Compiling PowerLineSynth.orc - failed")
     endif
     gkReloaded = true
 endin
@@ -58,7 +58,7 @@ instr 1
     kPreviousModifiedTime init 0
     if (kCurrentTime - kPreviousTime > 1) then
         kPreviousTime = kCurrentTime
-        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSD_PREPROCESSED_FILES_DIR}/TableSynth.orc\"))")
+        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSD_PREPROCESSED_FILES_DIR}/PowerLineSynth.orc\"))")
         if (kPreviousModifiedTime < kModifiedTime) then
             kPreviousModifiedTime = kModifiedTime
             event("i", "CompileOrc", 0, -1)
@@ -261,7 +261,7 @@ ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") vi
 ; Settings tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("settings_tab_content_ui") visible(1) {
     ${group} bounds(${tab_content_rect}) {
-        #include "TableSynthSettings.ui"
+        #include "PowerLineSynthSettings.ui"
     }
 }
 
