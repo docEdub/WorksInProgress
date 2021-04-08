@@ -164,8 +164,8 @@ endop
  * The number of channel gains returned depends on the given ambisonic order.
  *
  * in  k[]: Source position
- * in  k  : Source width in degrees.
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet.
+ * in  k  : Source width in degrees. (k-rate)
+ * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
  *
  * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
  */
@@ -193,7 +193,7 @@ endop
  * in  k  : Source position Y.
  * in  k  : Source position Z.
  * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
+ * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
  *
  * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
  */
