@@ -2,6 +2,8 @@
 #ifndef CsoundCMake_definitions_h
 #define CsoundCMake_definitions_h
 
+#include "csound_definitions.h"
+
 #define false 0
 #define true 1
 
@@ -29,6 +31,8 @@
 #define CSOUND_IFNDEF _(HASH)_(ifndef)
 #define CSOUND_INCLUDE _(HASH)_(include)
 #define CSOUND_UNDEF _(HASH)_(undef)
+
+#define return igoto endin
 
 #define string_i(x) x
 #define string_k(x) sprintfk("%s", x)
@@ -66,6 +70,13 @@
 #define VOLUME_TRACKING_SIGNAL 0.000001
 #define VOLUME_TRACKING_SIGNAL_TO_VOLUME(signal) (signal * VOLUME_TRACKING_DIVISOR)
 
+#define EVENT_ALWAYS_ON      0
+#define EVENT_EFFECT_ON      1
+#define EVENT_NOTE_ON        1
+#define EVENT_NOTE_OFF       2
+#define EVENT_NOTE_GENERATED 3
+#define EVENT_CC             4
+
 #define LOG_TRACE _(${CsoundLog_Level0Trace})
 #define LOG_DEBUG _(${CsoundLog_Level1Debug})
 #define LOG_INFO _(${CsoundLog_Level2Info})
@@ -77,12 +88,6 @@
 #define LOG_FILENAMES _(${CsoundLog_FileNames})
 #define LOG_TO_CSOUND_OUTPUT _(${CsoundLog_ToCsoundOutput})
 #define LOG_TO_DAW_SERVICE _(${CsoundLog_ToDawService})
-
-#define EVENT_ALWAYS_ON 0
-#define EVENT_EFFECT_ON 1
-#define EVENT_NOTE_ON   1
-#define EVENT_NOTE_OFF  2
-#define EVENT_CC        3
 
 #ifdef _MSC_VER
     #define ARGUMENT_COUNT(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))

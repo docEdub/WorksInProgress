@@ -11,6 +11,7 @@ add_custom_target(${PROJECT_NAME})
 set(CsoundCMake_Core_HeaderFiles
     "core_global.h"
     "core_options.h"
+    "csound_definitions.h"
     "definitions.h"
     "instrument_orc_definitions.h"
 )
