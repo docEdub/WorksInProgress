@@ -64,8 +64,9 @@ set(tab_channels "")
 
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
+    get_dependencies(dependencies "${CSD_CONFIGURED_FILES_DIR}/Tab.orc")
     add_preprocess_file_command("${CSD_CONFIGURED_FILES_DIR}/Tab.orc" "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc"
-        DEPENDS CsoundCMake.Cabbage
+        DEPENDS CsoundCMake.Cabbage ${dependencies}
         )
 
     # Add this file's preprocessed file to the .csd file's preprocess target's dependencies.

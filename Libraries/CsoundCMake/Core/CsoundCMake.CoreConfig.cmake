@@ -11,6 +11,7 @@ add_custom_target(${PROJECT_NAME})
 set(CsoundCMake_Core_HeaderFiles
     "core_global.h"
     "core_options.h"
+    "csound_definitions.h"
     "definitions.h"
     "instrument_orc_definitions.h"
 )
@@ -136,9 +137,11 @@ endif()
 
 if(NOT ${Build_InlineIncludes} EQUAL ON)
     foreach(orc_file ${CsoundCMake_Core_OrcFiles})
+        get_dependencies(orc_file_dependencies "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}")
         add_preprocess_file_command(
             "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file}"
             "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}"
+            DEPENDS ${orc_file_dependencies}
         )
         list(APPEND CsoundCMake_Core_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file}")
     endforeach()
@@ -205,7 +208,7 @@ function(add_csd_implementation)
                 "${orc_preprocessed}"
                 DEPENDS
                     ${ARG_DEPENDS}
-                    ${dependenices}
+                    ${dependencies}
             )
 
             list(APPEND ARG_DEPENDS "${orc_preprocessed}")
