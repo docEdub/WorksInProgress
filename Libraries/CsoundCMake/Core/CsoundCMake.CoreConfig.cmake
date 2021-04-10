@@ -48,6 +48,8 @@ macro(set)
 endmacro()
 
 set(Build_InlineIncludes OFF CACHE BOOL)
+set(Build_CsoundErrorChecks ON CACHE BOOL)
+
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
     set(Build_InlineIncludes ON)
 endif()
@@ -232,10 +234,11 @@ function(add_csd_implementation)
     add_preprocess_file_command(
         "${csd_configured}"
         "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${csd_file_name}"
+        CSOUND_ERROR_CHECK
         DEPENDS
             ${ARG_DEPENDS}
             ${dependencies}
-        )
+    )
 endfunction()
 
 function(add_playback_csd)
