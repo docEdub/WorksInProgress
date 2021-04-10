@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core_options.h"
+#include "csd_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -20,7 +20,7 @@ ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} IS_BUS_PLUGIN #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_BUS#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
-${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
+${CSOUND_INCLUDE} "TrackInfo_global.orc"
 
 
 //======================================================================================================================
@@ -31,7 +31,7 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
 
-    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
 
     log_i_info("nchnls_i = %d", nchnls_i)
     log_i_info("nchnls   = %d", nchnls)
@@ -73,7 +73,7 @@ i1 0 z
 ${form} caption("TestBusHead") size(${form_width}, ${form_height}) pluginid("0003")
 
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-#include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "TrackInfo.ui"
 }
 
 ${csoundoutput} bounds(${csoundoutput_group_rect})

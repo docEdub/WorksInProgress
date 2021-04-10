@@ -9,16 +9,20 @@ project("${PROJECT_NAME}")
 include("${ROOT_DIR}/Libraries/CsoundCMake/CsoundCMake.cmake")
 find_package(CsoundCMake.Cabbage REQUIRED)
 
-if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
-    add_csd("Playback.csd")
-else()
-    add_csd("DawService.csd")
-    add_csd_effect("Effects/BusHead.csd")
-    add_csd_effect("Effects/MasterHead.csd")
-    add_csd_effect("Effects/Reverb.csd")
-    add_csd_synth("Synths/PointSynth.csd")
-    add_csd_synth("Synths/SubtractiveSynth.csd")
-endif()
+add_csd_targets(
+    EFFECT_PLUGIN_SOURCES
+        "Effects/BusHead.csd"
+        "Effects/MasterHead.csd"
+        "Effects/Reverb.csd"
+    SYNTH_PLUGIN_SOURCES
+        "Synths/PointSynth.csd"
+        "Synths/PowerLineSynth.csd"
+        "Synths/SubtractiveSynth.csd"
+    STANDALONE_SOURCES
+        "DawService/DawService.csd"
+    PLAYBACK_SOURCES
+        "DawPlayback/DawPlayback.csd"
+)
 
 # If the Build_InlineIncludes options is off, make sure the _.build/inlined/_.configured folder gets made so the
 # DAW service has somehwere to put the files generated for playback.

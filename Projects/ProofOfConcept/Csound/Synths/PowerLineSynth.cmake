@@ -2,7 +2,7 @@
 set(form_width 1000)
 set(form_height 516)
 
-set(InstrumentName "Reverb")
+set(InstrumentName "PowerLineSynth")
 
 set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
@@ -12,10 +12,10 @@ include("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 
-add_tab(reverb_tab "Reverb" 64)
+add_tab(s88_tab "S88" 64)
+add_tab(settings_tab "Settings" 96)
 add_tab(log_tab "Log" 64)
 process_tabs()
-
 
 set(tab_group_y MATH "${TrackInfo_height} + ${padding}")
 set(tab_group_bottom MATH "${tab_group_y} + ${tab_height}")
@@ -28,4 +28,7 @@ set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}
 
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/Reverb.ui" "${CSD_CONFIGURED_FILES_DIR}/Reverb.ui")
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/PowerLineSynthSettings.ui"
+    "${CSD_CONFIGURED_FILES_DIR}/PowerLineSynthSettings.ui"
+    )

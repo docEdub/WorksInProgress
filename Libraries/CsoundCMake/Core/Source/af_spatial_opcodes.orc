@@ -164,8 +164,8 @@ endop
  * The number of channel gains returned depends on the given ambisonic order.
  *
  * in  k[]: Source position
- * in  k  : Source width in degrees.
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet.
+ * in  k  : Source width in degrees. (k-rate)
+ * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
  *
  * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
  */
@@ -193,7 +193,7 @@ endop
  * in  k  : Source position Y.
  * in  k  : Source position Z.
  * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
+ * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
  *
  * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
  */
@@ -238,6 +238,43 @@ opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
         k_channelGains[2] = k_channelGains[2] * k_distance
         k_channelGains[3] = k_channelGains[3] * k_distance
     endif
+
+    xout k_channelGains
+endop
+
+
+/**********************************************************************************************************************
+ * AF_3D_Audio_ChannelGains_RTZ
+ **********************************************************************************************************************
+ * Returns an array of ambisonic channel gains for the given R, T, Z, and source width.
+ * The number of channel gains returned depends on the given ambisonic order.
+ *
+ * in  k  : Source position XY plane radius (needed to calculate the elevation angle).
+ * in  k  : Source position XY plane theta (aka azimuth).
+ * in  k  : Source position Z.
+ * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
+ * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
+ *
+ * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+ */
+opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
+    k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
+
+    // Covert RT to XY.
+    k_sourcePositionX = k_sourcePositionR * cos(k_sourcePositionT)
+    k_sourcePositionY = k_sourcePositionR * sin(k_sourcePositionT)
+    k_elevation = taninv2(k_sourcePositionZ, k_sourcePositionR) * $AF_MATH__RADIANS_TO_DEGREES
+
+    #if LOGGING
+        if (changed(k_sourcePositionX) == true || changed(k_sourcePositionY) == true) then
+            log_k_trace("rtz = (%f, %f, %f), xyz = (%f, %f, %f)",
+                k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ,
+                k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ)
+        endif
+    #endif
+
+    k_channelGains[] = AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
+        i_ambisonicOrder)
 
     xout k_channelGains
 endop

@@ -1,2 +1,3 @@
-**/.build
-**/.output
+**/bounce
+**/build
+**/node_modules

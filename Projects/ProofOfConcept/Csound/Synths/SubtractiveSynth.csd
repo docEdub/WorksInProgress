@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-#include "core_options.h"
+#include "csd_options.h"
 
 </CsOptions>
 <CsInstruments>
@@ -19,7 +19,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
 ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
-${CSOUND_INCLUDE} "ui/TrackInfo_global.orc"
+${CSOUND_INCLUDE} "TrackInfo_global.orc"
 
 
 //======================================================================================================================
@@ -31,7 +31,7 @@ instr 1
     log_i_info("instr %d ...", p1)
     log_i_info("nchnls = %d", nchnls)
 
-    ${CSOUND_INCLUDE} "ui/TrackInfo_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
 
     log_i_info("instr %d - done", p1)
 endin
@@ -41,7 +41,7 @@ endin
 // Main instrument. Triggered by instruments 2 and 3.
 //======================================================================================================================
 
-${CSOUND_INCLUDE} STRINGIZE(Synths/${InstrumentName}.orc)
+${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 
 //======================================================================================================================
@@ -226,8 +226,8 @@ instr HandleWaveformButtons
 endin
 
 
-${CSOUND_INCLUDE} "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Position.orc"
-${CSOUND_INCLUDE} "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/Tab.orc"
+${CSOUND_INCLUDE} "Position.orc"
+${CSOUND_INCLUDE} "Tab.orc"
 
 
 //======================================================================================================================
@@ -253,17 +253,17 @@ ${form} caption("SubtractiveSynth") size(${form_size}) pluginid("0010")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/TrackInfo.ui"
+    #include "TrackInfo.ui"
 }
 
 ; Tabs
 ${group} bounds(${tab_group_rect}) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Tab.ui"
+    #include "Tab.ui"
 }
 
 ; S88 tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(0) {
-    #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/S88.ui"
+    #include "S88.ui"
 }
 
 ; Osc 1 tab content
@@ -311,7 +311,7 @@ ${group} bounds(${tab_content_group_rect}) identchannel("amplitude_tab_content_u
 ; Position tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui") visible(1) {
     ${group} bounds(${tab_content_rect}) {
-        #include "${CSOUND_CMAKE_OUTPUT_SUBDIRECTORY}/ui/Position.ui"
+        #include "Position.ui"
     }
 }
 
