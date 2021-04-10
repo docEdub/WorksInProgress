@@ -22,14 +22,6 @@ set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING " ")
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
 
-set(BuildPlugin_VST3_Export OFF CACHE BOOL)
-set(BuildPlugin_VST3_LinkCsdFiles OFF CACHE BOOL)
-
-if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
-    set(BuildPlugin_VST3_Export OFF)
-    set(BuildPlugin_VST3_LinkCsdFiles OFF)
-endif()
-
 set(Cabbage_LogCabbageOutput OFF CACHE BOOL)
 set(Cabbage_UiGrid OFF CACHE BOOL)
 set(Cabbage_UiOutlineGroups OFF CACHE BOOL)
@@ -120,10 +112,7 @@ function(add_csd_targets)
 
     if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
         foreach(csd IN LISTS ARG_PLAYBACK_SOURCES)
-            # set(PREVIOUS_PREPROCESSOR_INCLUDE_DIR ${PREPROCESSOR_INCLUDE_DIR})
-            # set(PREPROCESSOR_INCLUDE_DIR ${CSOUND_CMAKE_PREPROCESSED_FILES_DIR})
             add_playback_csd("${csd}" DEPENDS ${csd_target_dependencies})
-            # set(PREPROCESSOR_INCLUDE_DIR ${PREVIOUS_PREPROCESSOR_INCLUDE_DIR})
             get_playback_output_csd_file_path(output_csd "${csd}")
             list(APPEND playback_csd_target_dependencies "${output_csd}")
         endforeach()
@@ -474,12 +463,16 @@ endforeach()
 if(NOT ${Build_InlineIncludes} EQUAL ON)
     foreach(orc_file ${CsoundCMake_Cabbage_OrcFiles})
         get_filename_component(orc_file_name "${orc_file}" NAME)
+        get_dependencies(orc_file_dependencies "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file_name}")
         add_preprocess_file_command(
             "${CSOUND_CMAKE_CONFIGURED_FILES_DIR}/${orc_file_name}"
             "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file_name}"
+            DEPENDS ${orc_file_dependencies}
         )
         list(APPEND CsoundCMake_Cabbage_Dependencies "${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}/${orc_file_name}")
     endforeach()
 endif()
 
 add_custom_target(CsoundCMake.Cabbage ALL DEPENDS ${CsoundCMake_Cabbage_Dependencies} CsoundCMake.Core)
+
+mark_as_advanced(FORCE CsoundCMake.Cabbage_DIR)

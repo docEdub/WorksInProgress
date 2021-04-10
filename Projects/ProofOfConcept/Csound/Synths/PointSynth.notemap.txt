@@ -1,0 +1,3 @@
+# MIDI note/CC name map
+67 Test 2
+60 Test 3

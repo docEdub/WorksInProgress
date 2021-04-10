@@ -44,9 +44,17 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 #define InitializeCcValuesInstrument CONCAT(INSTRUMENT_NAME, _InitializeCcValues)
 #define CreateCcIndexesInstrument CONCAT(INSTRUMENT_NAME, _CreateCcIndexes)
 
-
-giCcCount = (lenarray(gSCcInfo) / 4) - 1
-reshapearray(gSCcInfo, giCcCount + 1, 4)
+${CSOUND_IFDEF} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count)
+    // Reshape the gSCcInfo array if it hasn't been reshaped already. This check is required for reloadable instruments
+    // because global arrays retain their shape across reloads.
+    if (lenarray(gSCcInfo) == CONCAT($, CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count))) then
+        giCcCount = (lenarray(gSCcInfo) / 4) - 1
+        reshapearray(gSCcInfo, giCcCount + 1, 4)
+    endif
+${CSOUND_ELSE}
+    giCcCount = (lenarray(gSCcInfo) / 4) - 1
+    reshapearray(gSCcInfo, giCcCount + 1, 4)
+${CSOUND_ENDIF}
 
 opcode ccIndex, i, S
     SChannel xin
