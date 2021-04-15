@@ -15,6 +15,7 @@ add_csd_targets(
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
+        "Synths/CircleSynth.csd"
         "Synths/PointSynth.csd"
         "Synths/PowerLineSynth.csd"
         "Synths/SubtractiveSynth.csd"
