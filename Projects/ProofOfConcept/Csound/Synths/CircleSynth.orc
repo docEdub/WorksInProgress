@@ -47,7 +47,7 @@ instr CircleSynth_NoteOn
     iOrcInstanceIndex = p6
     iInstrumentTrackIndex = p7
 
-    log_i_info("CircleSynth_NoteOn ...")
+    log_i_trace("CircleSynth_NoteOn ...")
 
     aOut = 0
 
@@ -125,7 +125,7 @@ instr INSTRUMENT_ID
             outch(6, aOut)
 
             if (gkReloaded == true) then
-                log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                log_k_trace("Turning off instrument %.04f due to reload.", p1)
                 turnoff
             endif
         #endif

@@ -169,12 +169,9 @@ instr 3
     goto end
 
     mode_1:
-        log_i_info("instr 3, mode_1 ...")
-        log_i_debug("gi_noteId = %d", gi_noteId)
+        log_i_trace("instr 3, mode_1 ...")
 
         i_instrument = nstrnum(STRINGIZE(${InstrumentName})) + gi_noteId / 1000
-        log_i_debug("i_instrument = %.6f", i_instrument)
-
         iNoteNumber = notnum()
         iVelocity = veloc()
         event_i("i", i_instrument, 0, -1, EVENT_NOTE_ON, iNoteNumber, iVelocity)
@@ -185,13 +182,12 @@ instr 3
         if (k_released == true) then
             event("i", -i_instrument, k_releaseDeltaTime, 1)
         endif
-        log_i_info("instr 3, mode_1 - done")
+        log_i_trace("instr 3, mode_1 - done")
         goto end
 
     mode_4:
-        log_i_info("instr 3, mode_4 ...")
+        log_i_trace("instr 3, mode_4 ...")
         xtratim 2 / kr
-        log_i_debug("gi_noteId = %d", gi_noteId)
 
         // Skip to end if track index is -1 due to mode switch lag.
         if (gk_trackIndex == -1) kgoto end
@@ -217,7 +213,7 @@ instr 3
             // duplicate scorelines.
             k_noteOffSent = true
         endif
-        log_i_info("instr 3, mode_4 - done")
+        log_i_trace("instr 3, mode_4 - done")
         goto end
 
     end:
