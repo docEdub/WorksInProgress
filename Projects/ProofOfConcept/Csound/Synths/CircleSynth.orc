@@ -37,14 +37,15 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "adsr_linesegr.udo.orc"
 
 #define CIRCLE_SYNTH_HEIGHT_MIN 1
 #define CIRCLE_SYNTH_HEIGHT_MAX 50
 #define CIRCLE_SYNTH_RADIUS_MIN 1
 #define CIRCLE_SYNTH_RADIUS_MAX 50
-#define CIRCLE_SYNTH_SPREAD_SPEED_MIN 10 // degrees per second.
-#define CIRCLE_SYNTH_SPREAD_SPEED_MAX 180 // degrees per second.
-#define CIRCLE_SYNTH_NOTE_NUMBER_MIN 60
+#define CIRCLE_SYNTH_SPREAD_SPEED_MIN 1 // degrees per second.
+#define CIRCLE_SYNTH_SPREAD_SPEED_MAX 15 // degrees per second.
+#define CIRCLE_SYNTH_NOTE_NUMBER_MIN 24
 #define CIRCLE_SYNTH_NOTE_NUMBER_MAX 96
 
 giCircleSynth_HeightRange init CIRCLE_SYNTH_HEIGHT_MAX - CIRCLE_SYNTH_HEIGHT_MIN
@@ -82,9 +83,14 @@ instr CircleSynth_NoteOn
         giCircleSynth_SpreadSpeedRange)
     kSpread init 1 - iSpreadIncrement
     kSpread = min(kSpread + iSpreadIncrement, 360)
-    //log_k_debug("%d: kSpread = %f", kPass, kSpread)    
+    // log_k_debug("%d: kSpread = %f", kPass, kSpread)    
 
-    aOut = 0
+    kAmp = 0.1 * iVelocity
+    iCps = cpsmidinn(iNoteNumber)
+    aOut = vco2(kAmp, iCps, 10, 0.5, 0, 0.5) // Square wave. NB: 0.5 fattens it up compared to default of 1.
+    aOut *= adsr_linsegr(1, 0, 1, 1)
+    kLowPassCutoff = iCps * 16 + iCps * 16 * kSpread / 360
+    aOut = moogladder(aOut, kLowPassCutoff, 0)
 
     kPosition[] fillarray 0, 0, 0
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
@@ -92,6 +98,7 @@ instr CircleSynth_NoteOn
         k(giCircleSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
+    aOut = aOut * (1 - kSpread / 360)
     kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
     a1 = kAmbisonicChannelGains[0] * aOutDistanced
     a2 = kAmbisonicChannelGains[1] * aOutDistanced
