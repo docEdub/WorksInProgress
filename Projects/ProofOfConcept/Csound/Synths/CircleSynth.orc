@@ -38,8 +38,8 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
-giMaxDistance = 100
-giMinDistance = 5
+giCircleSynth_DistanceMin = 5
+giCircleSynth_DistanceMax = 100
 
 instr CircleSynth_NoteOn
     iNoteNumber = p4
@@ -53,7 +53,7 @@ instr CircleSynth_NoteOn
 
     kPosition[] fillarray 0, 0, 0
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giMinDistance), k(giMaxDistance))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin), k(giCircleSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
     kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
