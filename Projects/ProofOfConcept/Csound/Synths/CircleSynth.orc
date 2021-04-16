@@ -38,6 +38,17 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
+#define CIRCLE_SYNTH_HEIGHT_MIN 1
+#define CIRCLE_SYNTH_HEIGHT_MAX 50
+#define CIRCLE_SYNTH_RADIUS_MIN 1
+#define CIRCLE_SYNTH_RADIUS_MAX 50
+#define CIRCLE_SYNTH_NOTE_NUMBER_MIN 60
+#define CIRCLE_SYNTH_NOTE_NUMBER_MAX 96
+
+giCircleSynth_HeightRange init CIRCLE_SYNTH_HEIGHT_MAX - CIRCLE_SYNTH_HEIGHT_MIN
+giCircleSynth_RadiusRange init CIRCLE_SYNTH_RADIUS_MAX - CIRCLE_SYNTH_RADIUS_MIN
+giCircleSynth_NoteNumberRange init CIRCLE_SYNTH_NOTE_NUMBER_MAX - CIRCLE_SYNTH_NOTE_NUMBER_MIN
+
 giCircleSynth_DistanceMin = 5
 giCircleSynth_DistanceMax = 100
 
@@ -48,6 +59,15 @@ instr CircleSynth_NoteOn
     iInstrumentTrackIndex = p7
 
     log_i_trace("CircleSynth_NoteOn ...")
+
+    if (iNoteNumber < CIRCLE_SYNTH_NOTE_NUMBER_MIN || iNoteNumber > CIRCLE_SYNTH_NOTE_NUMBER_MAX) then
+        goto endin
+    endif
+
+    iNoteNumberNormalized init (iNoteNumber - CIRCLE_SYNTH_NOTE_NUMBER_MIN) / giCircleSynth_NoteNumberRange
+    iHeight init CIRCLE_SYNTH_HEIGHT_MIN + giCircleSynth_HeightRange * iNoteNumberNormalized
+    iRadius init CIRCLE_SYNTH_RADIUS_MAX - giCircleSynth_RadiusRange * iNoteNumberNormalized
+    log_i_debug("iNoteNumberNormalized = %f, iHeight = %f, iRadius = %f", iNoteNumberNormalized, iHeight, iRadius)
 
     aOut = 0
 
