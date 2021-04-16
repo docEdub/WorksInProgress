@@ -61,6 +61,8 @@ instr CircleSynth_NoteOn
     log_i_trace("CircleSynth_NoteOn ...")
 
     if (iNoteNumber < CIRCLE_SYNTH_NOTE_NUMBER_MIN || iNoteNumber > CIRCLE_SYNTH_NOTE_NUMBER_MAX) then
+        log_i_warning("Note number %d not in range [%d, %d]", iNoteNumber, CIRCLE_SYNTH_NOTE_NUMBER_MIN,
+            CIRCLE_SYNTH_NOTE_NUMBER_MAX)
         goto endin
     endif
 
