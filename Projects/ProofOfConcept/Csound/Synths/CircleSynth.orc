@@ -42,11 +42,14 @@ ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 #define CIRCLE_SYNTH_HEIGHT_MAX 50
 #define CIRCLE_SYNTH_RADIUS_MIN 1
 #define CIRCLE_SYNTH_RADIUS_MAX 50
+#define CIRCLE_SYNTH_SPREAD_SPEED_MIN 10 // degrees per second.
+#define CIRCLE_SYNTH_SPREAD_SPEED_MAX 180 // degrees per second.
 #define CIRCLE_SYNTH_NOTE_NUMBER_MIN 60
 #define CIRCLE_SYNTH_NOTE_NUMBER_MAX 96
 
 giCircleSynth_HeightRange init CIRCLE_SYNTH_HEIGHT_MAX - CIRCLE_SYNTH_HEIGHT_MIN
 giCircleSynth_RadiusRange init CIRCLE_SYNTH_RADIUS_MAX - CIRCLE_SYNTH_RADIUS_MIN
+giCircleSynth_SpreadSpeedRange init CIRCLE_SYNTH_SPREAD_SPEED_MAX - CIRCLE_SYNTH_SPREAD_SPEED_MIN
 giCircleSynth_NoteNumberRange init CIRCLE_SYNTH_NOTE_NUMBER_MAX - CIRCLE_SYNTH_NOTE_NUMBER_MIN
 
 giCircleSynth_DistanceMin = 5
@@ -60,6 +63,10 @@ instr CircleSynth_NoteOn
 
     log_i_trace("CircleSynth_NoteOn ...")
 
+    iSecondsPerKPass = 1 / kr
+    kPass init -1
+    kPass += 1
+
     if (iNoteNumber < CIRCLE_SYNTH_NOTE_NUMBER_MIN || iNoteNumber > CIRCLE_SYNTH_NOTE_NUMBER_MAX) then
         log_i_warning("Note number %d not in range [%d, %d]", iNoteNumber, CIRCLE_SYNTH_NOTE_NUMBER_MIN,
             CIRCLE_SYNTH_NOTE_NUMBER_MAX)
@@ -71,6 +78,12 @@ instr CircleSynth_NoteOn
     iRadius init CIRCLE_SYNTH_RADIUS_MAX - giCircleSynth_RadiusRange * iNoteNumberNormalized
     log_i_debug("iNoteNumberNormalized = %f, iHeight = %f, iRadius = %f", iNoteNumberNormalized, iHeight, iRadius)
 
+    iSpreadIncrement init iSecondsPerKPass * (CIRCLE_SYNTH_SPREAD_SPEED_MIN + iVelocity *
+        giCircleSynth_SpreadSpeedRange)
+    kSpread init 1 - iSpreadIncrement
+    kSpread = min(kSpread + iSpreadIncrement, 360)
+    //log_k_debug("%d: kSpread = %f", kPass, kSpread)    
+
     aOut = 0
 
     kPosition[] fillarray 0, 0, 0
@@ -79,7 +92,7 @@ instr CircleSynth_NoteOn
         k(giCircleSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
-    kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
+    kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
     a1 = kAmbisonicChannelGains[0] * aOutDistanced
     a2 = kAmbisonicChannelGains[1] * aOutDistanced
     a3 = kAmbisonicChannelGains[2] * aOutDistanced
