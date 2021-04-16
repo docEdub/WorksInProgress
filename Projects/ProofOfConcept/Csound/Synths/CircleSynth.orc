@@ -75,7 +75,8 @@ instr CircleSynth_NoteOn
 
     kPosition[] fillarray 0, 0, 0
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin), k(giCircleSynth_DistanceMax))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin),
+        k(giCircleSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
     kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
