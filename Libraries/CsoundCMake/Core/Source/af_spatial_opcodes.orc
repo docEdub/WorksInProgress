@@ -274,7 +274,7 @@ opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
     #endif
 
     k_channelGains[] = AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-        i_ambisonicOrder)
+        k_sourceWidth, i_ambisonicOrder)
 
     xout k_channelGains
 endop
