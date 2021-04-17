@@ -37,7 +37,6 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
-${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 #define CIRCLE_SYNTH_HEIGHT_MIN 1
 #define CIRCLE_SYNTH_HEIGHT_MAX 50
