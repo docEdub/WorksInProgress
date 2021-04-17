@@ -43,8 +43,11 @@ function(add_preprocess_file_command)
                         "${error_check_file}"
                         >/dev/null
                     )
-                && ${CMAKE_COMMAND}
-                    -E copy_if_different "${error_check_file}" "${out_file}"
+                # If the error check file is different than the out file, copy the contents to the out file.
+                # NB: We copy the contents only because copying the file itself breaks plugin .csd symlinks.
+                && (${CMAKE_COMMAND} -E compare_files "${error_check_file}" "${out_file}"
+                    || cat "${error_check_file}" >"${out_file}"
+                    )
         )
     else()
         add_custom_command(
