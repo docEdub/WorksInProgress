@@ -17,7 +17,7 @@
 // This section is only included once in the playback .csd. It is shared by all instances of this instrument.
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE} "adsr_linesegr.udo.orc"
+${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 ${CSOUND_DEFINE} Waveform_Saw    #0#
 ${CSOUND_DEFINE} Waveform_Square #1#

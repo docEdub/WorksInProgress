@@ -14,7 +14,7 @@
 #ifndef PowerLineSynth_orc__include_guard
 #define PowerLineSynth_orc__include_guard
 
-${CSOUND_INCLUDE} "adsr_linesegr.udo.orc"
+${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
