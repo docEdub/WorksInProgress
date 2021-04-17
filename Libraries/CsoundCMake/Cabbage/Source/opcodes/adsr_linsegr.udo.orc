@@ -1,8 +1,8 @@
 
 #include "definitions.h"
 
-${CSOUND_IFNDEF} ADSR_LINESEGR_UDO_ORC
-${CSOUND_DEFINE} ADSR_LINESEGR_UDO_ORC ##
+${CSOUND_IFNDEF} ADSR_LINSEGR_UDO_ORC
+${CSOUND_DEFINE} ADSR_LINSEGR_UDO_ORC ##
 
 opcode adsr_linsegr, a, iiii
     iA, iD, iS, iR xin
