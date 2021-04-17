@@ -108,6 +108,16 @@ function(add_csd_targets)
         add_csd_implementation("${csd}" DEPENDS CsoundCMake.Cabbage)
         get_output_csd_file_path(output_csd "${csd}")
         list(APPEND csd_target_dependencies "${output_csd}")
+        string(REPLACE ".csd" "Benchmark.csd" benchmark_csd "${CMAKE_CURRENT_LIST_DIR}/${csd}")
+        if(EXISTS "${benchmark_csd}")
+            string(REPLACE ".csd" "Benchmark.csd" benchmark_output_csd "${output_csd}")
+            list(APPEND csd_target_dependencies "${benchmark_output_csd}")
+            get_filename_component(benchmark_target "${benchmark_csd}" NAME_WE)
+            add_custom_target(${benchmark_target}
+                COMMAND csound "${benchmark_output_csd}" --messagelevel=128
+                DEPENDS "${benchmark_output_csd}"
+                )
+        endif()
     endforeach()
 
     if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
