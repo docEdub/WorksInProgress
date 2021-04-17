@@ -239,6 +239,22 @@ function(add_csd_implementation)
             ${ARG_DEPENDS}
             ${dependencies}
     )
+
+    set(benchmark_csd "${CMAKE_CURRENT_LIST_DIR}/${csd_dir}/${csd_without_extension}Benchmark.csd")
+    if(EXISTS "${benchmark_csd}")
+        get_generated_file_paths(benchmark_csd_configured benchmark_csd_preprocessed "${csd}" "${benchmark_csd}")
+        configure_file("${benchmark_csd}" "${benchmark_csd_configured}")
+        get_dependencies(dependencies "${benchmark_csd_configured}")
+        get_filename_component(benchmark_csd_file_name "${benchmark_csd}" NAME)
+        add_preprocess_file_command(
+            "${benchmark_csd_configured}"
+            "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/${benchmark_csd_file_name}"
+            CSOUND_ERROR_CHECK
+            DEPENDS
+                ${ARG_DEPENDS}
+                ${dependencies}
+        )
+    endif()
 endfunction()
 
 function(add_playback_csd)
