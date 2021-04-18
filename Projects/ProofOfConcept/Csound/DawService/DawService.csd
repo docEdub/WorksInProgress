@@ -46,6 +46,7 @@ giOrcInstanceCounts[] init TRACK_COUNT_MAX
 gkOrcInstanceCounters[] init TRACK_COUNT_MAX
 
 gSPlugins[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
+gSPluginGuids[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
 
 
 opcode clearTracks, 0, 0
@@ -151,16 +152,28 @@ opcode setPlugin, 0, iiS
     // The given plugin index is 1-based. Change it to 0-based for use in the gSPlugins array.
     iPluginIndex -= 1
     gSPlugins[iTrackIndex][iPluginIndex] = SOrcPath
-    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done", iTrackIndex,
-        iPluginIndex, SOrcPath)
+    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done",
+        iTrackIndex, iPluginIndex, SOrcPath)
 endop
 
 
-opcode registerPlugin, 0, SSS
-    STrackIndex, SPluginIndex, SOrcPath xin
-    iInstrumentNumber = nstrnum("RegisterPlugin")
+opcode setPluginGuid, 0, iiS
+    iTrackIndex, iPluginIndex, SGuid xin
+    log_i_info("opcode setPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) ...", iTrackIndex, iPluginIndex,
+        SGuid)
+    // The given plugin index is 1-based. Change it to 0-based for use in the gSPluginGuids array.
+    iPluginIndex -= 1
+    gSPluginGuids[iTrackIndex][iPluginIndex] = SGuid
+    log_i_info("opcode setPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) - done", iTrackIndex,
+        iPluginIndex, SGuid)
+endop
+
+
+opcode registerPlugin, 0, SSSS
+    STrackIndex, SPluginIndex, SOrcPath, SGuid xin
 igoto end
-    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", iInstrumentNumber, STrackIndex, SPluginIndex, SOrcPath), 1)
+    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", nstrnum("RegisterPlugin"), STrackIndex, SPluginIndex, SOrcPath), 1)
+    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", nstrnum("RegisterPluginGuid"), STrackIndex, SPluginIndex, SGuid), 1)
 end:
 endop
 
@@ -402,14 +415,16 @@ instr HandleOscMessages
                 // Plugin registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 3) then
-                        log_k_error("OSC path `%s` requires 3 arguments but was given %d.",
+                    if (k_argCount < 4) then
+                        log_k_error("OSC path `%s` requires 4 arguments but was given %d.",
                             DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = track index
                         // 3 = effect plugin index
                         // 4 = orc path
-                        registerPlugin(S_oscMessages[k(2)], S_oscMessages[k(3)], S_oscMessages[k(4)])
+                        // 5 = guid
+                        registerPlugin(S_oscMessages[k(2)], S_oscMessages[k(3)], S_oscMessages[k(4)],
+                            S_oscMessages[k(5)])
                     endif
                 endif
 
@@ -485,6 +500,20 @@ instr RegisterPlugin
     log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done", i_trackIndex,
         i_pluginIndex, S_orcPath)
 
+    turnoff
+endin
+
+
+instr RegisterPluginGuid
+    i_trackIndex init p4
+    i_pluginIndex init p5
+    SGuid init strget(p6)
+    log_i_info("instr RegisterPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) ...", i_trackIndex,
+        i_pluginIndex, SGuid)
+    setPluginGuid(i_trackIndex, i_pluginIndex, SGuid)
+    log_i_info("instr RegisterPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) - done", i_trackIndex,
+        i_pluginIndex, SGuid)
+
     // Log plugins.
     iI = 0
     iTrackCount = getNextTrackIndex()
@@ -497,8 +526,9 @@ instr RegisterPlugin
         iJ = 0
         while (iJ < PLUGIN_COUNT_MAX) do
             SOrcFilename = gSPlugins[iI][iJ]
+            SPluginGuid = gSPluginGuids[iI][iJ]
             if (strcmp(SOrcFilename, "") != 0) then
-                log_i_debug("   Plugin[%d], SOrcFilename = %s", iJ, SOrcFilename)
+                log_i_debug("   Plugin[%d], SOrcFilename = %s, SPluginGuid = %s", iJ, SOrcFilename, SPluginGuid)
                 iJ += 1
             else
                 // Break out of loop.
