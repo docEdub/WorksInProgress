@@ -24,6 +24,7 @@ set(CsoundCMake_Core_OrcFiles
     "core_global.orc"
     "core_instr_1_head.orc"
     "instrument_cc.orc"
+    "json_opcodes.orc"
     "log.orc"
     "log.orc.h"
     "math.orc"
