@@ -129,18 +129,18 @@ opcode setTrack, 0, iiiSS
 endop
 
 
-opcode registerTrack, 0, SSSS
-    S_port, S_trackType, S_orcPath, S_instrumentName xin
-    i_instrumentNumber =  nstrnum("RegisterTrack")
+opcode registerTrack, 0, SSSSS
+    S_port, S_trackType, S_orcPath, S_instrumentName, SPluginGuid xin
 igoto end
     scoreline(
         sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"",
-            i_instrumentNumber,
+            nstrnum("RegisterTrack"),
             S_port,
             S_trackType,
             S_orcPath,
             S_instrumentName),
         1)
+    scoreline(sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"", nstrnum("RegisterTrackGuid"), S_port, SPluginGuid), 1)
 end:
 endop
 
@@ -395,19 +395,21 @@ instr HandleOscMessages
                 // Track registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 3) then
-                        log_k_error("OSC path `%s` requires 3 arguments but was given %d.",
+                    if (k_argCount < 5) then
+                        log_k_error("OSC path `%s` requires 5 arguments but was given %d.",
                             DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = port
                         // 3 = track type
                         // 4 = orc path
                         // 5 = instrument name
+                        // 6 = guid
                         registerTrack(
                             S_oscMessages[k(2)],
                             S_oscMessages[k(3)],
                             S_oscMessages[k(4)],
-                            S_oscMessages[k(5)])
+                            S_oscMessages[k(5)],
+                            S_oscMessages[k(6)])
                     endif
                 endif
 
@@ -451,6 +453,27 @@ endin
 
 
 instr RegisterTrack
+    i_oscPort init p4
+    i_trackType init p5
+    S_orcPath init strget(p6)
+    S_instrumentName init strget(p7)
+    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s) ...",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+    i_trackIndex = getTrackIndexForPort(i_oscPort)
+    if (i_trackIndex == -1) then
+        i_trackIndex = getNextTrackIndex()
+        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+    endif
+    log_ik_debug("i_trackIndex = %d", i_trackIndex)
+    OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
+        "i", i_trackIndex)
+    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s) - done", i_oscPort, i_trackType,
+        S_orcPath)
+    turnoff
+endin
+
+
+instr RegisterTrackGuid
     i_oscPort init p4
     i_trackType init p5
     S_orcPath init strget(p6)

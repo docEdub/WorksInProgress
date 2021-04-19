@@ -19,6 +19,7 @@ gk_playing init false
 gk_pluginIndex init -1
 gk_trackIndex init -1
 gk_trackRefs[] init TRACK_COUNT_MAX
+gSPluginGuid init ""
 
 
 opcode setTrackIndex, 0, k
@@ -74,6 +75,12 @@ opcode addTrackRef, 0, k
     else
         log_k_error("Track reference index %d is out of range [0, %d].", k_trackRefIndex, min(ksmps, TRACK_COUNT_MAX))
     endif
+endop
+
+
+opcode setPluginGuid, 0, S
+    SPluginGuid xin
+    gSPluginGuid = SPluginGuid
 endop
 
 
@@ -154,8 +161,8 @@ endin
 instr RegisterTrack
     log_ik_info("RegisterTrack ...")
 
-    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iiss",
-        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME")
+    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
+        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginGuid)
 
     log_ik_info("RegisterTrack - done")
     turnoff
@@ -167,7 +174,7 @@ instr RegisterPlugin
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
-        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, "$INSTRUMENT_NAME")
+        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginGuid)
 
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
