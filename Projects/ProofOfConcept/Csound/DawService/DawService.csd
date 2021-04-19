@@ -35,6 +35,7 @@ gi_trackPorts[] init TRACK_COUNT_MAX
 gi_trackTypes[] init TRACK_COUNT_MAX
 gS_trackOrcPaths[] init TRACK_COUNT_MAX
 gS_trackInstrumentNames[] init TRACK_COUNT_MAX
+gSTrackGuids[] init TRACK_COUNT_MAX
 gi_trackRefs[][] init TRACK_COUNT_MAX, TRACK_COUNT_MAX
 gi_masterRefs[] init TRACK_COUNT_MAX
 
@@ -56,6 +57,7 @@ opcode clearTracks, 0, 0
         gi_trackPorts[i_i] = 0
         gi_trackTypes[i_i] = TRACK_TYPE_NONE
         gS_trackOrcPaths[i_i] = ""
+        gSTrackGuids[i_i] = ""
         i_j = 0
         while (i_j < TRACK_COUNT_MAX) do
             gi_trackRefs[i_i][i_j] = false
@@ -75,6 +77,7 @@ opcode clearPlugins, 0, 0
         iJ = 0
         while (iJ < PLUGIN_COUNT_MAX) do
             gSPlugins[iI][iJ] = ""
+            gSPluginGuids[iI][iJ] = ""
             iJ += 1
         od
         iI += 1
@@ -116,21 +119,22 @@ opcode getTrackIndexForPort, i, i
 endop
 
 
-opcode setTrack, 0, iiiSS
-    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName xin
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s) ...",
-        i_trackIndex, i_port, i_trackType, S_orcPath)
+opcode setTrack, 0, iiiSSS
+    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName, SGuid xin
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SGuid = %s) ...",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SGuid)
     gi_trackPorts[i_trackIndex] = i_port
     gi_trackTypes[i_trackIndex] = i_trackType
     gS_trackOrcPaths[i_trackIndex] = S_orcPath
     gS_trackInstrumentNames[i_trackIndex] = S_instrumentName
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s) - done",
-        i_trackIndex, i_port, i_trackType, S_orcPath)
+    gSTrackGuids[i_trackIndex] = SGuid
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SGuid = %s) - done",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SGuid)
 endop
 
 
 opcode registerTrack, 0, SSSSS
-    S_port, S_trackType, S_orcPath, S_instrumentName, SPluginGuid xin
+    S_port, S_trackType, S_orcPath, S_instrumentName, SGuid xin
 igoto end
     scoreline(
         sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"",
@@ -138,42 +142,31 @@ igoto end
             S_port,
             S_trackType,
             S_orcPath,
-            S_instrumentName),
+            S_instrumentName,
+            SGuid),
         1)
-    scoreline(sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"", nstrnum("RegisterTrackGuid"), S_port, SPluginGuid), 1)
 end:
 endop
 
 
-opcode setPlugin, 0, iiS
-    iTrackIndex, iPluginIndex, SOrcPath xin
-    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) ...", iTrackIndex,
-        iPluginIndex, SOrcPath)
+opcode setPlugin, 0, iiSS
+    iTrackIndex, iPluginIndex, SOrcPath, SGuid xin
+    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SGuid = %s) ...", iTrackIndex,
+        iPluginIndex, SOrcPath, SGuid)
     // The given plugin index is 1-based. Change it to 0-based for use in the gSPlugins array.
     iPluginIndex -= 1
     gSPlugins[iTrackIndex][iPluginIndex] = SOrcPath
-    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done",
-        iTrackIndex, iPluginIndex, SOrcPath)
-endop
-
-
-opcode setPluginGuid, 0, iiS
-    iTrackIndex, iPluginIndex, SGuid xin
-    log_i_info("opcode setPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) ...", iTrackIndex, iPluginIndex,
-        SGuid)
-    // The given plugin index is 1-based. Change it to 0-based for use in the gSPluginGuids array.
-    iPluginIndex -= 1
     gSPluginGuids[iTrackIndex][iPluginIndex] = SGuid
-    log_i_info("opcode setPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) - done", iTrackIndex,
-        iPluginIndex, SGuid)
+    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SGuid = %s) - done",
+        iTrackIndex, iPluginIndex, SOrcPath, SGuid)
 endop
 
 
 opcode registerPlugin, 0, SSSS
     STrackIndex, SPluginIndex, SOrcPath, SGuid xin
 igoto end
-    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", nstrnum("RegisterPlugin"), STrackIndex, SPluginIndex, SOrcPath), 1)
-    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", nstrnum("RegisterPluginGuid"), STrackIndex, SPluginIndex, SGuid), 1)
+    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", nstrnum("RegisterPlugin"), STrackIndex, SPluginIndex, SOrcPath, SGuid),
+        1)
 end:
 endop
 
@@ -457,39 +450,21 @@ instr RegisterTrack
     i_trackType init p5
     S_orcPath init strget(p6)
     S_instrumentName init strget(p7)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s) ...",
-        i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+    SGuid init strget(p8)
+    log_ik_info(
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SGuid = %s) ...",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SGuid)
     i_trackIndex = getTrackIndexForPort(i_oscPort)
     if (i_trackIndex == -1) then
         i_trackIndex = getNextTrackIndex()
-        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SGuid)
     endif
     log_ik_debug("i_trackIndex = %d", i_trackIndex)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
         "i", i_trackIndex)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s) - done", i_oscPort, i_trackType,
-        S_orcPath)
-    turnoff
-endin
-
-
-instr RegisterTrackGuid
-    i_oscPort init p4
-    i_trackType init p5
-    S_orcPath init strget(p6)
-    S_instrumentName init strget(p7)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s) ...",
-        i_oscPort, i_trackType, S_orcPath, S_instrumentName)
-    i_trackIndex = getTrackIndexForPort(i_oscPort)
-    if (i_trackIndex == -1) then
-        i_trackIndex = getNextTrackIndex()
-        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName)
-    endif
-    log_ik_debug("i_trackIndex = %d", i_trackIndex)
-    OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
-        "i", i_trackIndex)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s) - done", i_oscPort, i_trackType,
-        S_orcPath)
+    log_ik_info(
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SGuid = %s) - done",
+        i_oscPort, i_trackType, S_orcPath, SGuid)
     turnoff
 endin
 
@@ -517,25 +492,12 @@ instr RegisterPlugin
     i_trackIndex init p4
     i_pluginIndex init p5
     S_orcPath init strget(p6)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) ...", i_trackIndex,
-        i_pluginIndex, S_orcPath)
-    setPlugin(i_trackIndex, i_pluginIndex, S_orcPath)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done", i_trackIndex,
-        i_pluginIndex, S_orcPath)
-
-    turnoff
-endin
-
-
-instr RegisterPluginGuid
-    i_trackIndex init p4
-    i_pluginIndex init p5
-    SGuid init strget(p6)
-    log_i_info("instr RegisterPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) ...", i_trackIndex,
-        i_pluginIndex, SGuid)
-    setPluginGuid(i_trackIndex, i_pluginIndex, SGuid)
-    log_i_info("instr RegisterPluginGuid(i_trackIndex = %d, i_pluginIndex = %d, SGuid = %s) - done", i_trackIndex,
-        i_pluginIndex, SGuid)
+    SGuid init strget(p7)
+    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SGuid = %s) ...",
+        i_trackIndex, i_pluginIndex, S_orcPath, SGuid)
+    setPlugin(i_trackIndex, i_pluginIndex, S_orcPath, SGuid)
+    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SGuid = %s) - done",
+        i_trackIndex, i_pluginIndex, S_orcPath)
 
     // Log plugins.
     iI = 0
@@ -545,13 +507,15 @@ instr RegisterPluginGuid
         iTrackPort = gi_trackPorts[iI]
         iTrackType = gi_trackTypes[iI]
         STrackOrcPath = gS_trackOrcPaths[iI]
-        log_i_debug("Track[%d]: Track port = %d, type = %d, orc = %s", iI, iTrackPort, iTrackType, STrackOrcPath)
+        STrackGuid = gSTrackGuids[iI]
+        log_i_debug("Track[%d]: port = %d, type = %d, orc = %s, guid = %s", iI, iTrackPort, iTrackType, STrackOrcPath,
+            STrackGuid)
         iJ = 0
         while (iJ < PLUGIN_COUNT_MAX) do
             SOrcFilename = gSPlugins[iI][iJ]
             SPluginGuid = gSPluginGuids[iI][iJ]
             if (strcmp(SOrcFilename, "") != 0) then
-                log_i_debug("   Plugin[%d], SOrcFilename = %s, SPluginGuid = %s", iJ, SOrcFilename, SPluginGuid)
+                log_i_debug("   Plugin[%d], orc = %s, guid = %s", iJ, SOrcFilename, SPluginGuid)
                 iJ += 1
             else
                 // Break out of loop.
