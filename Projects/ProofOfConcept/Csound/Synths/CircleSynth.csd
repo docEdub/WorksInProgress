@@ -8,8 +8,6 @@
 </CsOptions>
 <CsInstruments>
 
-pyinit
-
 #define OUT_CHANNEL_COUNT 6
 
 #include "cabbage_synth_global.h"

@@ -119,11 +119,11 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
             // Register/update the plugin index.
             kRegisteredPlugin init false
             if (kModeChanged == true || changed(k_playing) == true || changed(gk_trackIndex) == true
-                    || changed(gSPluginGuid) == true) then
+                    || changed(gSPluginUuid) == true) then
                 kRegisteredPlugin = false
             endif
             if (kRegisteredPlugin == false && gk_trackIndex >= 0 && gk_pluginIndex > 0
-                    && strlenk(gSPluginGuid) > 0) then
+                    && strlenk(gSPluginUuid) > 0) then
                 event("i", "RegisterPlugin", 0, -1)
                 kRegisteredPlugin = true
             endif

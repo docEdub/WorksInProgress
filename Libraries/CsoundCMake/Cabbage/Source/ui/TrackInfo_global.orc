@@ -13,13 +13,16 @@ ${CSOUND_IFNDEF} PLUGIN_TRACK_TYPE
     ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_NONE#
 ${CSOUND_ENDIF}
 
+// Python is used to generate new UUIDs.
+pyinit
+
 // TODO: Rename `gk_mode` to `gk_dawMode`
 gk_mode init 1
 gk_playing init false
 gk_pluginIndex init -1
 gk_trackIndex init -1
 gk_trackRefs[] init TRACK_COUNT_MAX
-gSPluginGuid init ""
+gSPluginUuid init ""
 
 
 opcode setTrackIndex, 0, k
@@ -78,9 +81,9 @@ opcode addTrackRef, 0, k
 endop
 
 
-opcode setPluginGuid, 0, S
-    SPluginGuid xin
-    gSPluginGuid = SPluginGuid
+opcode setPluginUuid, 0, S
+    SPluginUuid xin
+    gSPluginUuid = SPluginUuid
 endop
 
 
@@ -150,7 +153,7 @@ instr GetTrackIndex
                 log_k_debug("No response. Trying again ...")
             endif
             k_lastTime = k_time
-            event "i", "RegisterTrack", 0, 1
+            event "i", "RegisterTrack", 0, 1, 0
         endif
     endif
 
@@ -159,13 +162,33 @@ endin
 
 
 instr RegisterTrack
-    log_ik_info("RegisterTrack ...")
+    iAttempt = p4
+    log_ik_info("RegisterTrack: attempt = %d ...", iAttempt)
+
+    if (iAttempt > 100) then
+        ; pylruni("import os")
+        ; gSPluginUuid = pyevali("str(uuid.uuid4())")
+        ; log_i_debug("gSPluginUuid = %s", gSPluginUuid)
+    elseif (strlen(gSPluginUuid) == 0) then
+        log_i_trace("Getting plugin UUID from channel ...")
+        gSPluginUuid = chnget("PluginUuid")
+        if (strcmp(gSPluginUuid, "soundin.0") == 0) then
+            log_i_trace("gSPluginUuid == 'soundin.0'")
+            gSPluginUuid = ""
+        endif
+        log_i_trace("Plugin UUID = %s", gSPluginUuid)
+        ; if (strlen(gSPluginUuid) == 0) then
+        ;     event("i", nstrnum("RegisterTrack"), 0, 1, iAttempt + 1)
+        ;     igoto end
+        ; endif
+    endif
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
-        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginGuid)
+        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
 
-    log_ik_info("RegisterTrack - done")
+    log_ik_info("RegisterTrack: attempt = %d - done", iAttempt)
     turnoff
+end:
 endin
 
 
@@ -174,7 +197,7 @@ instr RegisterPlugin
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
-        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginGuid)
+        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
 
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
