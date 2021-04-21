@@ -8,13 +8,11 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} TrackInfo_global_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_global_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "uuid.orc"
 
 ${CSOUND_IFNDEF} PLUGIN_TRACK_TYPE
     ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_NONE#
 ${CSOUND_ENDIF}
-
-// Python is used to generate new UUIDs.
-pyinit
 
 // TODO: Rename `gk_mode` to `gk_dawMode`
 gk_mode init 1
@@ -165,30 +163,33 @@ instr RegisterTrack
     iAttempt = p4
     log_ik_info("RegisterTrack: attempt = %d ...", iAttempt)
 
-    if (iAttempt > 100) then
-        ; pylruni("import os")
-        ; gSPluginUuid = pyevali("str(uuid.uuid4())")
-        ; log_i_debug("gSPluginUuid = %s", gSPluginUuid)
+    if (iAttempt >= 5) then
+        gSPluginUuid = uuid()
+        log_i_trace("Plugin UUID generated")
+        log_i_debug("gSPluginUuid = %s", gSPluginUuid)
     elseif (strlen(gSPluginUuid) == 0) then
         log_i_trace("Getting plugin UUID from channel ...")
         gSPluginUuid = chnget("PluginUuid")
+        // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
         if (strcmp(gSPluginUuid, "soundin.0") == 0) then
-            log_i_trace("gSPluginUuid == 'soundin.0'")
             gSPluginUuid = ""
+#if LOGGING
+        else
+            log_i_trace("Plugin UUID set from channel 'PluginUuid' to %s", gSPluginUuid)
+#endif
         endif
-        log_i_trace("Plugin UUID = %s", gSPluginUuid)
-        ; if (strlen(gSPluginUuid) == 0) then
-        ;     event("i", nstrnum("RegisterTrack"), 0, 1, iAttempt + 1)
-        ;     igoto end
-        ; endif
+        if (strlen(gSPluginUuid) == 0) then
+            event_i("i", nstrnum("RegisterTrack"), 1, 1, iAttempt + 1)
+            goto end
+        endif
     endif
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
         gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
 
+end:
     log_ik_info("RegisterTrack: attempt = %d - done", iAttempt)
     turnoff
-end:
 endin
 
 
