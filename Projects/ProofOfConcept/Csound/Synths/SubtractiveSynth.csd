@@ -249,7 +249,7 @@ i"HandleWaveformButtons" 0 z "osc4"
 
 <Cabbage>
 
-${form} caption("SubtractiveSynth") size(${form_size}) pluginid("0010")
+${form} caption("${InstrumentName}") size(${form_size}) pluginid("0010")
 
 ; Track info
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {

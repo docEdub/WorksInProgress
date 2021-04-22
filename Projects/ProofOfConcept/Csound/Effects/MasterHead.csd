@@ -114,7 +114,7 @@ i1 0 z
 </CsoundSynthesizer>
 <Cabbage>
 
-${form} caption("MasterHead") size(${form_width}, ${form_height}) pluginid("0004")
+${form} caption("${InstrumentName}") size(${form_width}, ${form_height}) pluginid("0004")
 
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
     #include "TrackInfo.ui"

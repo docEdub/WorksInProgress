@@ -70,7 +70,7 @@ i1 0 z
 </CsoundSynthesizer>
 <Cabbage>
 
-${form} caption("BusHead") size(${form_width}, ${form_height}) pluginid("0003")
+${form} caption("${InstrumentName}") size(${form_width}, ${form_height}) pluginid("0003")
 
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
     #include "TrackInfo.ui"
