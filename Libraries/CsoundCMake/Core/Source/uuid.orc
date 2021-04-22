@@ -14,7 +14,7 @@ ${CSOUND_INCLUDE} "log.orc"
 pyinit
 
 
-opcode hexCharFromByte_i, S, i
+opcode hexCharFromByte, S, i
     iNumber xin
     SHexChar = ""
 
@@ -54,56 +54,12 @@ opcode hexCharFromByte_i, S, i
         log_i_warning("Invalid hex byte %f", iNumber)
     endif
 
-    ; log_i_debug("hexCharFromByte_i iNumber = %f, SHexChar = %s", iNumber, SHexChar)
+    ; log_i_debug("hexCharFromByte iNumber = %f, SHexChar = %s", iNumber, SHexChar)
     xout SHexChar
 endop
 
 
-opcode hexCharFromByte_k, S, k
-    kNumber xin
-    SHexChar = ""
-
-    if (kNumber == 0) then
-        SHexChar = "0"
-    elseif (kNumber == 1) then
-        SHexChar = "1"
-    elseif (kNumber == 2) then
-        SHexChar = "2"
-    elseif (kNumber == 3) then
-        SHexChar = "3"
-    elseif (kNumber == 4) then
-        SHexChar = "4"
-    elseif (kNumber == 5) then
-        SHexChar = "5"
-    elseif (kNumber == 6) then
-        SHexChar = "6"
-    elseif (kNumber == 7) then
-        SHexChar = "7"
-    elseif (kNumber == 8) then
-        SHexChar = "8"
-    elseif (kNumber == 9) then
-        SHexChar = "9"
-    elseif (kNumber == 10) then
-        SHexChar = "a"
-    elseif (kNumber == 11) then
-        SHexChar = "b"
-    elseif (kNumber == 12) then
-        SHexChar = "c"
-    elseif (kNumber == 13) then
-        SHexChar = "d"
-    elseif (kNumber == 14) then
-        SHexChar = "e"
-    elseif (kNumber == 15) then
-        SHexChar = "f"
-    else
-        log_k_warning("Invalid hex byte %f", kNumber)
-    endif
-
-    xout SHexChar
-endop
-
-
-opcode hexStringFromByteArray_i, S, i[]
+opcode hexStringFromByteArray, S, i[]
     iByteArray[] xin
     SHex = ""
 
@@ -113,8 +69,8 @@ opcode hexStringFromByteArray_i, S, i[]
         iByte = iByteArray[iI]
         iNumber2 = iByte % 16
         iNumber1 = (iByte - iNumber2) / 16
-        SChar1 = hexCharFromByte_i(iNumber1)
-        SChar2 = hexCharFromByte_i(iNumber2)
+        SChar1 = hexCharFromByte(iNumber1)
+        SChar2 = hexCharFromByte(iNumber2)
         SHex = strcat(SHex, SChar1)
         SHex = strcat(SHex, SChar2)
         iI += 1
@@ -124,28 +80,7 @@ opcode hexStringFromByteArray_i, S, i[]
 endop
 
 
-opcode hexStringFromByteArray_k, S, k[]
-    kByteArray[] xin
-    SHex = ""
-
-    kI = 0
-    kByteArrayLength = lenarray(kByteArray)
-    while (kI < kByteArrayLength) do
-        kByte = kByteArray[kI]
-        kNumber2 = kByte % 16
-        kNumber1 = (kByte - kNumber2) / 16
-        SChar1 = hexCharFromByte_k(kNumber1)
-        SChar2 = hexCharFromByte_k(kNumber2)
-        SHex = strcatk(SHex, SChar1)
-        SHex = strcatk(SHex, SChar2)
-        kI += 1
-    od
-
-    xout SHex
-endop
-
-
-opcode uuidStringFromByteArray_i, S, i[]
+opcode uuidStringFromByteArray, S, i[]
     ib[] xin
     SUuid = ""
 
@@ -155,51 +90,21 @@ opcode uuidStringFromByteArray_i, S, i[]
     iUuid4[] fillarray ib[8], ib[9]
     iUuid5[] fillarray ib[10], ib[11], ib[12], ib[13], ib[14], ib[15]
 
-    SUuid = strcat(SUuid, hexStringFromByteArray_i(iUuid1))
+    SUuid = strcat(SUuid, hexStringFromByteArray(iUuid1))
     SUuid = strcat(SUuid, "-")
-    SUuid = strcat(SUuid, hexStringFromByteArray_i(iUuid2))
+    SUuid = strcat(SUuid, hexStringFromByteArray(iUuid2))
     SUuid = strcat(SUuid, "-")
-    SUuid = strcat(SUuid, hexStringFromByteArray_i(iUuid3))
+    SUuid = strcat(SUuid, hexStringFromByteArray(iUuid3))
     SUuid = strcat(SUuid, "-")
-    SUuid = strcat(SUuid, hexStringFromByteArray_i(iUuid4))
+    SUuid = strcat(SUuid, hexStringFromByteArray(iUuid4))
     SUuid = strcat(SUuid, "-")
-    SUuid = strcat(SUuid, hexStringFromByteArray_i(iUuid5))
+    SUuid = strcat(SUuid, hexStringFromByteArray(iUuid5))
 
     xout SUuid
 endop
 
 
-opcode uuidStringFromByteArray_k, S, k[]
-    kb[] xin
-    SUuid = ""
-
-    kUuid1[] init 4
-    kUuid2[] init 2
-    kUuid3[] init 2
-    kUuid4[] init 2
-    kUuid5[] init 6
-
-    kUuid1 = fillarray(kb[0], kb[1], kb[2], kb[3])
-    kUuid2 = fillarray(kb[4], kb[5])
-    kUuid3 = fillarray(kb[6], kb[7])
-    kUuid4 = fillarray(kb[8], kb[9])
-    kUuid5 = fillarray(kb[10], kb[11], kb[12], kb[13], kb[14], kb[15])
-
-    SUuid = strcatk(SUuid, hexStringFromByteArray_k(kUuid1))
-    SUuid = strcatk(SUuid, "-")
-    SUuid = strcatk(SUuid, hexStringFromByteArray_k(kUuid2))
-    SUuid = strcatk(SUuid, "-")
-    SUuid = strcatk(SUuid, hexStringFromByteArray_k(kUuid3))
-    SUuid = strcatk(SUuid, "-")
-    SUuid = strcatk(SUuid, hexStringFromByteArray_k(kUuid4))
-    SUuid = strcatk(SUuid, "-")
-    SUuid = strcatk(SUuid, hexStringFromByteArray_k(kUuid5))
-
-    xout SUuid
-endop
-
-
-opcode uuid_i, S, 0
+opcode uuid, S, 0
     // Generate a new UUID and add its 16 bytes to an array so the pylevali opcode can read them.
     pylruni("import uuid")
     pylruni("id = uuid.uuid4()")
@@ -218,31 +123,7 @@ opcode uuid_i, S, 0
         iI += 1
     od
     
-    SUuid = uuidStringFromByteArray_i(iIdBytes)
-    xout SUuid
-endop
-
-
-opcode uuid_k, S, 0
-    // Generate a new UUID and add its 16 bytes to an array so the pylevali opcode can read them.
-    pylrun("import uuid")
-    pylrun("id = uuid.uuid4()")
-    pylrun("id_bytes = []")
-    pylrun("[ id_bytes.append(float(ord(b))) for b in id.bytes ]")
-
-    // Uncomment the following lines to write the uuid in string form to 'uuid.txt'.
-    ; pylrun("text_file = open('uuid.txt', 'w')")
-    ; pylrun("text_file.write(str(id))")
-    ; pylrun("text_file.close()")
-
-    kIdBytes[] init 16
-    kI init 0
-    while (kI < lenarray(kIdBytes)) do
-        kIdBytes[kI] = pyleval(sprintfk("id_bytes[%d]", kI))
-        kI += 1
-    od
-    
-    SUuid = uuidStringFromByteArray_k(kIdBytes)
+    SUuid = uuidStringFromByteArray(iIdBytes)
     xout SUuid
 endop
 

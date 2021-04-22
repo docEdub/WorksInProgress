@@ -198,7 +198,7 @@ instr GetPluginUuid
 
     if (iAttempt >= 5) then
         log_i_trace("Generating plugin UUID ...")
-        gSPluginUuid = uuid_i()
+        gSPluginUuid = uuid()
         log_i_trace("Generating plugin UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
     // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in TrackInfo_instr_1_head.orc i-pass for k-rate.
