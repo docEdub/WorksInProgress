@@ -104,44 +104,25 @@ endop
 
 
 opcode uuid, S, 0
-    // Generate a new UUID and write its 16 bytes as separate lines in file 'uuid' so the `fini` opcode can read them.
+    // Generate a new UUID and add its 16 bytes to an array so the pylevali opcode can read them.
     pylruni("import uuid")
     pylruni("id = uuid.uuid4()")
-    pylruni("text_file = open('uuid', 'w')")
-    pylruni("[text_file.write(str(ord(b)) + '\\n') for b in id.bytes]")
-    pylruni("text_file.close()")
+    pylruni("id_bytes = []")
+    pylruni("[ id_bytes.append(float(ord(b))) for b in id.bytes ]")
 
     // Uncomment the following lines to write the uuid in string form to 'uuid.txt'.
     ; pylruni("text_file = open('uuid.txt', 'w')")
     ; pylruni("text_file.write(str(id))")
     ; pylruni("text_file.close()")
 
-    iUuid01 init 0
-    iUuid02 init 0
-    iUuid03 init 0
-    iUuid04 init 0
-    iUuid05 init 0
-    iUuid06 init 0
-    iUuid07 init 0
-    iUuid08 init 0
-    iUuid09 init 0
-    iUuid10 init 0
-    iUuid11 init 0
-    iUuid12 init 0
-    iUuid13 init 0
-    iUuid14 init 0
-    iUuid15 init 0
-    iUuid16 init 0
-
-    iUuidHandle = fiopen("uuid", 1)
-    fini(iUuidHandle, 0, 1, iUuid01, iUuid02, iUuid03, iUuid04, iUuid05, iUuid06, iUuid07, iUuid08, iUuid09, iUuid10,
-        iUuid11, iUuid12, iUuid13, iUuid14, iUuid15, iUuid16)
-    ficlose(iUuidHandle)
-
-    iUuidBytes[] fillarray iUuid01, iUuid02, iUuid03, iUuid04, iUuid05, iUuid06, iUuid07, iUuid08, iUuid09, iUuid10, \
-        iUuid11, iUuid12, iUuid13, iUuid14, iUuid15, iUuid16
-    SUuid = uuidStringFromByteArray(iUuidBytes)
-
+    iIdBytes[] init 16
+    iI init 0
+    while (iI < lenarray(iIdBytes)) do
+        iIdBytes[iI] = pylevali(sprintf("id_bytes[%d]", iI))
+        iI += 1
+    od
+    
+    SUuid = uuidStringFromByteArray(iIdBytes)
     xout SUuid
 endop
 
