@@ -146,12 +146,14 @@ instr GetTrackIndex
         endif
         k_time = timeinsts()
         k_lastTime init 0
+        kAttempt init 0
         if (k_lastTime == 0 || (k_time - k_lastTime) > 1) then
             if (k_lastTime > 0) then
                 log_k_debug("No response. Trying again ...")
             endif
             k_lastTime = k_time
-            event "i", "RegisterTrack", 0, 1, 0
+            event "i", "RegisterTrack", 0, 1, kAttempt
+            kAttempt += 1
         endif
     endif
 
@@ -164,8 +166,9 @@ instr RegisterTrack
     log_ik_info("RegisterTrack: attempt = %d ...", iAttempt)
 
     if (iAttempt >= 5) then
+        log_i_trace("Generating track UUID ...")
         gSPluginUuid = uuid()
-        log_i_trace("Plugin UUID generated")
+        log_i_trace("Generating track UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
     elseif (strlen(gSPluginUuid) == 0) then
         log_i_trace("Getting plugin UUID from channel ...")
@@ -179,7 +182,6 @@ instr RegisterTrack
 #endif
         endif
         if (strlen(gSPluginUuid) == 0) then
-            event_i("i", nstrnum("RegisterTrack"), 1, 1, iAttempt + 1)
             goto end
         endif
     endif
