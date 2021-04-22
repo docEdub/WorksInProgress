@@ -13,8 +13,8 @@
 
 #include "cabbage_effect_global.h"
 
-#define INSTRUMENT_NAME TestBusHead
-${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(INSTRUMENT_NAME.orc)#
+${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
+${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} IS_BUS_PLUGIN #1#
@@ -70,7 +70,7 @@ i1 0 z
 </CsoundSynthesizer>
 <Cabbage>
 
-${form} caption("TestBusHead") size(${form_width}, ${form_height}) pluginid("0003")
+${form} caption("BusHead") size(${form_width}, ${form_height}) pluginid("0003")
 
 ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
     #include "TrackInfo.ui"
