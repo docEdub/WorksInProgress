@@ -170,8 +170,9 @@ instr RegisterTrack
         gSPluginUuid = uuid_i()
         log_i_trace("Generating track UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
-    elseif (strlen(gSPluginUuid) == 0) then
-        log_i_trace("Getting plugin UUID from channel ...")
+    // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in TrackInfo_instr_1_head.orc i-pass for k-rate.
+    elseif (strlen(gSPluginUuid) == 0 || strcmp(gSPluginUuid, "ff-ff-ff-ff-ff") == 0) then
+        log_i_trace("Getting track UUID from channel ...")
         gSPluginUuid = chnget("PluginUuid")
         // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
         if (strcmp(gSPluginUuid, "soundin.0") == 0) then
@@ -184,10 +185,14 @@ instr RegisterTrack
         if (strlen(gSPluginUuid) == 0) then
             goto end
         endif
+    else
+        log_i_debug("gsPluginUuid already set to %s", gSPluginUuid)
     endif
 
+    log_k_trace("Sending track registration to DAW ...")
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
         gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
+    log_k_trace("Sending track registration to DAW - done")
 
 end:
     log_ik_info("RegisterTrack: attempt = %d - done", iAttempt)

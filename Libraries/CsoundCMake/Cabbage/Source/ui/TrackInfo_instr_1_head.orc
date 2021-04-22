@@ -61,6 +61,26 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
         if (k_delayPlayingPass == 0) then
             k_playing = true
             log_k_debug("delaying playing - done")
+
+            // Try getting the previously set plugin UUID.
+            log_k_trace("Getting plugin UUID from channel ...")
+            gSPluginUuid = chngetks("PluginUuid")
+            // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
+            // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in i-pass for k-rate.
+            if (strcmpk(gSPluginUuid, "soundin.0") == 0 || strcmpk(gSPluginUuid, "ff-ff-ff-ff-ff") == 0) then
+                gSPluginUuid = ""
+#if LOGGING
+            else
+                log_k_trace("Plugin UUID set from channel 'PluginUuid' to %s", gSPluginUuid)
+#endif
+            endif
+            if (strlenk(gSPluginUuid) == 0) then
+                // No previously set plugin UUID exists. Generate a new one.
+                log_k_trace("Generating plugin UUID ...")
+                gSPluginUuid = uuid_k()
+                log_k_trace("Generating plugin UUID - done")
+                log_k_debug("gSPluginUuid = %s", gSPluginUuid)
+            endif
         endif
     else
         k_playing = gk_playing
@@ -118,11 +138,10 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
 
             // Register/update the plugin index.
             kRegisteredPlugin init false
-            if (kModeChanged == true || changed(k_playing) == true || changed(gk_trackIndex) == true
-                    || changed(gSPluginUuid) == true) then
+            if (kModeChanged == true || changed(k_playing) == true || changed(gk_trackIndex) == true) then
                 kRegisteredPlugin = false
             endif
-            if (kRegisteredPlugin == false && gk_trackIndex >= 0 && gk_pluginIndex > 0
+            if (kRegisteredPlugin == false && gk_trackIndex >= 0 && gk_pluginIndex > 0 \
                     && strlenk(gSPluginUuid) > 0) then
                 event("i", "RegisterPlugin", 0, -1)
                 kRegisteredPlugin = true

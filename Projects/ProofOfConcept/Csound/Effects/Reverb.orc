@@ -46,17 +46,17 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 
 instr INSTRUMENT_ID
-    log_i_debug("p1 = %f", p1)
-    log_i_debug("track index = %d", INSTRUMENT_TRACK_INDEX)
-
     #if LOGGING
         #ifdef INSTRUMENT_ID_DEFINED
             SInstrument = sprintf("%.3f", p1)
         #else
             SInstrument = sprintf("%s.%03d", nstrstr(p1), 1000 * frac(p1))
         #endif
-        log_i_info("%s ...", SInstrument)
+        log_i_trace("%s ...", SInstrument)
     #endif
+
+    log_i_debug("p1 = %f", p1)
+    log_i_debug("track index = %d", INSTRUMENT_TRACK_INDEX)
 
     iOrcInstanceIndex = ORC_INSTANCE_INDEX
 
@@ -135,7 +135,7 @@ instr INSTRUMENT_ID
 #if !IS_PLAYBACK
 end:
 #endif
-    log_i_info("%s - done", SInstrument)
+    log_i_trace("%s - done", SInstrument)
 endin
 
 //----------------------------------------------------------------------------------------------------------------------
