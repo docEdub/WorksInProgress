@@ -165,34 +165,12 @@ instr RegisterTrack
     iAttempt = p4
     log_ik_info("RegisterTrack: attempt = %d ...", iAttempt)
 
-    if (iAttempt >= 5) then
-        log_i_trace("Generating track UUID ...")
-        gSPluginUuid = uuid_i()
-        log_i_trace("Generating track UUID - done")
-        log_i_debug("gSPluginUuid = %s", gSPluginUuid)
-    // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in TrackInfo_instr_1_head.orc i-pass for k-rate.
-    elseif (strlen(gSPluginUuid) == 0 || strcmp(gSPluginUuid, "ff-ff-ff-ff-ff") == 0) then
-        log_i_trace("Getting track UUID from channel ...")
-        gSPluginUuid = chnget("PluginUuid")
-        // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
-        if (strcmp(gSPluginUuid, "soundin.0") == 0) then
-            gSPluginUuid = ""
-#if LOGGING
-        else
-            log_i_trace("Plugin UUID set from channel 'PluginUuid' to %s", gSPluginUuid)
-#endif
-        endif
-        if (strlen(gSPluginUuid) == 0) then
-            goto end
-        endif
-    else
-        log_i_debug("gsPluginUuid already set to %s", gSPluginUuid)
+    if (strlen(gSPluginUuid) != 0) then
+        log_k_trace("Sending track registration to DAW ...")
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
+            gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
+        log_k_trace("Sending track registration to DAW - done")
     endif
-
-    log_k_trace("Sending track registration to DAW ...")
-    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
-        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
-    log_k_trace("Sending track registration to DAW - done")
 
 end:
     log_ik_info("RegisterTrack: attempt = %d - done", iAttempt)
@@ -210,6 +188,47 @@ instr RegisterPlugin
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
 endin
+
+
+instr GetPluginUuid
+    iAttempt = p4
+
+    log_ik_trace("%s attempt = %d...", nstrstr(p1), iAttempt)
+    log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
+
+    if (iAttempt >= 5) then
+        log_i_trace("Generating plugin UUID ...")
+        gSPluginUuid = uuid_i()
+        log_i_trace("Generating plugin UUID - done")
+        log_i_debug("gSPluginUuid = %s", gSPluginUuid)
+    // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in TrackInfo_instr_1_head.orc i-pass for k-rate.
+    elseif (strlen(gSPluginUuid) == 0 || strcmp(gSPluginUuid, "ff-ff-ff-ff-ff") == 0) then
+        log_i_trace("Getting plugin UUID from channel ...")
+        gSPluginUuid = chnget("PluginUuid")
+        // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
+        if (strcmp(gSPluginUuid, "soundin.0") == 0) then
+            gSPluginUuid = ""
+#if LOGGING
+        else
+            log_i_trace("Plugin UUID set from channel 'PluginUuid' to %s", gSPluginUuid)
+#endif
+        endif
+        if (strlen(gSPluginUuid) == 0) then
+            event_i("i", p1, 1, -1, iAttempt + 1)
+            goto end
+        endif
+    else
+        log_i_debug("gsPluginUuid already set to %s", gSPluginUuid)
+    endif
+
+end:
+    log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
+    turnoff
+endin   
+
+
+event_i("i", nstrnum("GetPluginUuid"), 0, -1, 0)
+
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
