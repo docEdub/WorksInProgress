@@ -495,11 +495,11 @@ instr RegisterPlugin
     i_pluginIndex init p5
     S_orcPath init strget(p6)
     SUuid init strget(p7)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) ...",
+
+    log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) ...",
         i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
+    
     setPlugin(i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
-        i_trackIndex, i_pluginIndex, S_orcPath)
 
     // Log plugins.
     iI = 0
@@ -527,6 +527,8 @@ instr RegisterPlugin
         iI += 1
     od
 
+    log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
+        i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
     turnoff
 endin
 
