@@ -167,7 +167,7 @@ instr RegisterTrack
 
     if (iAttempt >= 5) then
         log_i_trace("Generating track UUID ...")
-        gSPluginUuid = uuid()
+        gSPluginUuid = uuid_i()
         log_i_trace("Generating track UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
     elseif (strlen(gSPluginUuid) == 0) then
