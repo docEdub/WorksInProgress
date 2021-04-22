@@ -14,7 +14,7 @@
 #include "cabbage_effect_global.h"
 
 ${CSOUND_DEFINE} INSTRUMENT_NAME #${InstrumentName}#
-${CSOUND_DEFINE} ORC_FILENAME #STRINGIZE(${InstrumentName}.orc)#
+${CSOUND_DEFINE} ORC_FILENAME #"${InstrumentName}.orc"#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} IS_BUS_PLUGIN #1#
