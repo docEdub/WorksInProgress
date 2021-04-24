@@ -146,14 +146,12 @@ instr GetTrackIndex
         endif
         k_time = timeinsts()
         k_lastTime init 0
-        kAttempt init 0
         if (k_lastTime == 0 || (k_time - k_lastTime) > 1) then
             if (k_lastTime > 0) then
                 log_k_debug("No response. Trying again ...")
             endif
             k_lastTime = k_time
-            event "i", "RegisterTrack", 0, 1, kAttempt
-            kAttempt += 1
+            event "i", "RegisterTrack", 0, 1
         endif
     endif
 
@@ -162,8 +160,7 @@ endin
 
 
 instr RegisterTrack
-    iAttempt = p4
-    log_ik_info("RegisterTrack: attempt = %d ...", iAttempt)
+    log_ik_info("RegisterTrack ...")
 
     if (strlen(gSPluginUuid) != 0) then
         log_k_trace("Sending track registration to DAW ...")
@@ -173,7 +170,7 @@ instr RegisterTrack
     endif
 
 end:
-    log_ik_info("RegisterTrack: attempt = %d - done", iAttempt)
+    log_ik_info("RegisterTrack - done")
     turnoff
 endin
 
@@ -193,10 +190,10 @@ endin
 instr GetPluginUuid
     iAttempt = p4
 
-    log_ik_trace("%s attempt = %d...", nstrstr(p1), iAttempt)
+    log_ik_trace("%s attempt = %d ...", nstrstr(p1), iAttempt)
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
-    if (iAttempt >= 5) then
+    if (iAttempt >= 3) then
         log_i_trace("Generating plugin UUID ...")
         gSPluginUuid = uuid()
         log_i_trace("Generating plugin UUID - done")
@@ -204,21 +201,17 @@ instr GetPluginUuid
         chnset(sprintf("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
     elseif (strlen(gSPluginUuid) == 0) then
         log_i_trace("Getting plugin UUID from channel ...")
-        gSPluginUuid = chnget("PluginUuid")
-        // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
-        if (strcmp(gSPluginUuid, "soundin.0") == 0) then
-            gSPluginUuid = ""
-#if LOGGING
-        else
-            log_i_trace("Plugin UUID set from channel 'PluginUuid' to %s", gSPluginUuid)
-#endif
-        endif
+        gSPluginUuid = chnget:S("pluginUuid")
         if (strlen(gSPluginUuid) == 0) then
             event_i("i", p1, 1, -1, iAttempt + 1)
             goto end
+#if LOGGING
+        else
+            log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
+#endif
         endif
     else
-        log_i_debug("gsPluginUuid already set to %s", gSPluginUuid)
+        log_i_warning("gsPluginUuid already set to %s", gSPluginUuid)
     endif
 
 end:
