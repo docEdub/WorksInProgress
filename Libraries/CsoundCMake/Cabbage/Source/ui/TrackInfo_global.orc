@@ -201,6 +201,7 @@ instr GetPluginUuid
         gSPluginUuid = uuid()
         log_i_trace("Generating plugin UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
+        chnset(sprintf("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
     elseif (strlen(gSPluginUuid) == 0) then
         log_i_trace("Getting plugin UUID from channel ...")
         gSPluginUuid = chnget("PluginUuid")
