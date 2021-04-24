@@ -201,8 +201,7 @@ instr GetPluginUuid
         gSPluginUuid = uuid()
         log_i_trace("Generating plugin UUID - done")
         log_i_debug("gSPluginUuid = %s", gSPluginUuid)
-    // Channel "PluginUuid" is being initialized to "ff-ff-ff-ff-ff" in TrackInfo_instr_1_head.orc i-pass for k-rate.
-    elseif (strlen(gSPluginUuid) == 0 || strcmp(gSPluginUuid, "ff-ff-ff-ff-ff") == 0) then
+    elseif (strlen(gSPluginUuid) == 0) then
         log_i_trace("Getting plugin UUID from channel ...")
         gSPluginUuid = chnget("PluginUuid")
         // Channel "PluginUuid" is being set to "soundin.0" by default for some reason, so consider it to be empty.
