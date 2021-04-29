@@ -7,6 +7,8 @@
 ${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_json_opcodes_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_json_opcodes_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
+${CSOUND_IFDEF} IS_GENERATING_JSON
+
 //----------------------------------------------------------------------------------------------------------------------
 // i-time opcodes
 
@@ -264,6 +266,8 @@ opcode json_write_null_k, 0, S0
     endif
     fprintks(SFilename, "null")
 endop
+
+${CSOUND_ENDIF} // IS_GENERATING_JSON
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
