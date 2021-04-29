@@ -8,6 +8,7 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} TrackInfo_global_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_global_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "uuid.orc"
 
 ${CSOUND_IFNDEF} PLUGIN_TRACK_TYPE
     ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_NONE#
@@ -19,6 +20,7 @@ gk_playing init false
 gk_pluginIndex init -1
 gk_trackIndex init -1
 gk_trackRefs[] init TRACK_COUNT_MAX
+gSPluginUuid init ""
 
 
 opcode setTrackIndex, 0, k
@@ -74,6 +76,12 @@ opcode addTrackRef, 0, k
     else
         log_k_error("Track reference index %d is out of range [0, %d].", k_trackRefIndex, min(ksmps, TRACK_COUNT_MAX))
     endif
+endop
+
+
+opcode setPluginUuid, 0, S
+    SPluginUuid xin
+    gSPluginUuid = SPluginUuid
 endop
 
 
@@ -154,9 +162,14 @@ endin
 instr RegisterTrack
     log_ik_info("RegisterTrack ...")
 
-    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iiss",
-        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME")
+    if (strlen(gSPluginUuid) != 0) then
+        log_k_trace("Sending track registration to DAW ...")
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
+            gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
+        log_k_trace("Sending track registration to DAW - done")
+    endif
 
+end:
     log_ik_info("RegisterTrack - done")
     turnoff
 endin
@@ -167,11 +180,48 @@ instr RegisterPlugin
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
-        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, "$INSTRUMENT_NAME")
+        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
 
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
 endin
+
+
+instr GetPluginUuid
+    iAttempt = p4
+
+    log_ik_trace("%s attempt = %d ...", nstrstr(p1), iAttempt)
+    log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
+
+    if (iAttempt >= 3) then
+        log_i_trace("Generating plugin UUID ...")
+        gSPluginUuid = uuid()
+        log_i_trace("Generating plugin UUID - done")
+        log_i_debug("gSPluginUuid = %s", gSPluginUuid)
+        chnset(sprintf("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
+    elseif (strlen(gSPluginUuid) == 0) then
+        log_i_trace("Getting plugin UUID from channel ...")
+        gSPluginUuid = chnget:S("pluginUuid")
+        if (strlen(gSPluginUuid) == 0) then
+            event_i("i", p1, 1, -1, iAttempt + 1)
+            goto end
+#if LOGGING
+        else
+            log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
+#endif
+        endif
+    else
+        log_i_warning("gsPluginUuid already set to %s", gSPluginUuid)
+    endif
+
+end:
+    log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
+    turnoff
+endin   
+
+
+event_i("i", nstrnum("GetPluginUuid"), 0, -1, 0)
+
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
