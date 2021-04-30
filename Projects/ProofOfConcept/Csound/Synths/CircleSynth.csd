@@ -24,6 +24,7 @@ ${CSOUND_INCLUDE} "time.orc"
 
 gkReloaded init false
 
+
 instr CompileOrc
     if (gkReloaded == true) then
         gkReloaded = false
@@ -41,6 +42,36 @@ instr CompileOrc
 endin
 
 
+instr ListenForChangedOrcFile
+    log_i_trace("instr ListenForChangedOrcFile ...")
+
+    kSignal init -1
+    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
+        kSignal)
+    if (kReceived == true) then
+        event("i", "CompileOrc", 0, -1)
+    endif
+
+    log_i_trace("instr ListenForChangedOrcFile - done")
+endin
+
+
+instr WatchOrcFile
+    log_i_trace("instr WatchOrcFile ...")
+    if (gi_oscHandle == -1) then
+        event("i", p1, 1, -1)
+    else
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, "is",
+            gi_oscPort, "${CSD_PREPROCESSED_FILES_DIR}/CircleSynth.orc")
+        event("i", "ListenForChangedOrcFile", 0, -1)
+    endif
+    turnoff
+    log_i_trace("instr WatchOrcFile - done")
+endin
+
+alwayson "WatchOrcFile"
+
+
 //======================================================================================================================
 // Main processing instrument. Always on.
 //======================================================================================================================
@@ -48,20 +79,6 @@ endin
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
-
-    pylruni("import os")
-
-    kPreviousTime init 0
-    kCurrentTime = time_k()
-    kPreviousModifiedTime init 0
-    if (kCurrentTime - kPreviousTime > 1) then
-        kPreviousTime = kCurrentTime
-        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSD_PREPROCESSED_FILES_DIR}/CircleSynth.orc\"))")
-        if (kPreviousModifiedTime < kModifiedTime) then
-            kPreviousModifiedTime = kModifiedTime
-            event("i", "CompileOrc", 0, -1)
-        endif
-    endif
 endin
 
 
