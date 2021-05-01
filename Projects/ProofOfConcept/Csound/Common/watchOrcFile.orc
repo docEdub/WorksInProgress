@@ -1,0 +1,53 @@
+#include "definitions.h"
+
+${CSOUND_INCLUDE} "log.orc"
+
+
+gkReloaded init false
+
+
+instr CompileOrc
+    if (gkReloaded == true) then
+        gkReloaded = false
+        turnoff
+    endif
+
+    log_i_info("Compiling CircleSynth.orc ...")
+    iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/${InstrumentName}.orc")
+    if (iResult == 0) then
+        log_i_info("Compiling CircleSynth.orc - succeeded")
+    else
+        log_i_info("Compiling CircleSynth.orc - failed")
+    endif
+    gkReloaded = true
+endin
+
+
+instr ListenForChangedOrcFile
+    log_i_trace("instr ListenForChangedOrcFile ...")
+
+    kSignal init -1
+    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
+        kSignal)
+    if (kReceived == true) then
+        event("i", "CompileOrc", 0, -1)
+    endif
+
+    log_i_trace("instr ListenForChangedOrcFile - done")
+endin
+
+
+instr WatchOrcFile
+    log_i_trace("instr WatchOrcFile ...")
+    if (gi_oscHandle == -1) then
+        event("i", p1, 1, -1)
+    else
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, "is",
+            gi_oscPort, "${CSD_PREPROCESSED_FILES_DIR}/${InstrumentName}.orc")
+        event("i", "ListenForChangedOrcFile", 0, -1)
+    endif
+    turnoff
+    log_i_trace("instr WatchOrcFile - done")
+endin
+
+alwayson "WatchOrcFile"

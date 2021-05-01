@@ -8,7 +8,6 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} TrackInfo_global_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_global_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 ${CSOUND_INCLUDE} "math.orc"
-${CSOUND_INCLUDE} "uuid.orc"
 
 ${CSOUND_IFNDEF} PLUGIN_TRACK_TYPE
     ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_NONE#
@@ -187,37 +186,68 @@ instr RegisterPlugin
 endin
 
 
+instr ListenForPluginUuid
+    log_i_trace("instr ListenForPluginUuid ...")
+
+    SUuid init ""
+    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, gi_oscPort), "s", SUuid)
+    if (kReceived == true) then
+        gSPluginUuid = sprintfk("%s", SUuid)
+        log_k_debug("gSPluginUuid = %s", gSPluginUuid)
+        chnsetks(sprintfk("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
+        turnoff
+    endif
+
+    log_i_trace("instr ListenForPluginUuid - done")
+endin
+
+
+instr RequestPluginUuid
+    log_i_trace("instr RequestPluginUuid ...")
+
+    if (gi_oscHandle == -1) then
+        event("i", p1, 1, -1)
+    else
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, "i",
+            gi_oscPort)
+        event("i", "ListenForPluginUuid", 0, -1)
+    endif
+
+    turnoff
+    log_i_trace("instr RequestPluginUuid - done")
+endin
+
 instr GetPluginUuid
     iAttempt = p4
 
     log_ik_trace("%s attempt = %d ...", nstrstr(p1), iAttempt)
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
-    if (iAttempt >= 3) then
-        log_i_trace("Generating plugin UUID ...")
-        gSPluginUuid = uuid()
-        log_i_trace("Generating plugin UUID - done")
-        log_i_debug("gSPluginUuid = %s", gSPluginUuid)
-        chnset(sprintf("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
-    elseif (strlen(gSPluginUuid) == 0) then
-        log_i_trace("Getting plugin UUID from channel ...")
-        gSPluginUuid = chnget:S("pluginUuid")
-        if (strlen(gSPluginUuid) == 0) then
-            event_i("i", p1, 1, -1, iAttempt + 1)
-            goto end
-#if LOGGING
+    if (strlen(gSPluginUuid) == 0) then
+        if (iAttempt >= 3) then
+            log_i_trace("Requesting plugin UUID ...")
+            event("i", "RequestPluginUuid", 0, -1)
+            log_i_trace("Requesting plugin UUID - done")
         else
-            log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
+            log_i_trace("Getting plugin UUID from channel ...")
+            gSPluginUuid = chnget:S("pluginUuid")
+            if (strlen(gSPluginUuid) == 0) then
+                event_i("i", p1, 1, -1, iAttempt + 1)
+                goto end
+#if LOGGING
+            else
+                log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
 #endif
+            endif
         endif
     else
-        log_i_warning("gsPluginUuid already set to %s", gSPluginUuid)
+        log_i_warning("gSPluginUuid already set to %s", gSPluginUuid)
     endif
 
 end:
     log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
     turnoff
-endin   
+endin
 
 
 event_i("i", nstrnum("GetPluginUuid"), 0, -1, 0)

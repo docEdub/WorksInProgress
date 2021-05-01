@@ -8,8 +8,6 @@
 </CsOptions>
 <CsInstruments>
 
-pyinit
-
 #define OUT_CHANNEL_COUNT 6
 
 #include "cabbage_synth_global.h"
@@ -23,24 +21,7 @@ ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
 ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
-
-gkReloaded init false
-
-instr CompileOrc
-    if (gkReloaded == true) then
-        gkReloaded = false
-        turnoff
-    endif
-
-    log_i_info("Compiling PowerLineSynth.orc ...")
-    iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/PowerLineSynth.orc")
-    if (iResult == 0) then
-        log_i_info("Compiling PowerLineSynth.orc - succeeded")
-    else
-        log_i_info("Compiling PowerLineSynth.orc - failed")
-    endif
-    gkReloaded = true
-endin
+${CSOUND_INCLUDE} "watchOrcFile.orc"
 
 
 //======================================================================================================================
@@ -50,20 +31,6 @@ endin
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
-
-    pylruni("import os")
-
-    kPreviousTime init 0
-    kCurrentTime = time_k()
-    kPreviousModifiedTime init 0
-    if (kCurrentTime - kPreviousTime > 1) then
-        kPreviousTime = kCurrentTime
-        kModifiedTime = pyleval("float(os.path.getmtime(\"${CSD_PREPROCESSED_FILES_DIR}/PowerLineSynth.orc\"))")
-        if (kPreviousModifiedTime < kModifiedTime) then
-            kPreviousModifiedTime = kModifiedTime
-            event("i", "CompileOrc", 0, -1)
-        endif
-    endif
 endin
 
 

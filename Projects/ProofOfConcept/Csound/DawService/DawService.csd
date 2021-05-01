@@ -18,6 +18,8 @@
 // Override core_global.h ksmps.
 kr = 1000
 
+pyinit
+
 // Turn off redundant OSC logging.
 #define DISABLE_LOGGING_TO_DAW_SERVICE
 
@@ -25,6 +27,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} INSTANCE_NAME #"DawService"#
 ${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
+${CSOUND_INCLUDE} "uuid.orc"
 
 
 // TODO: Rename `gk_mode` to `gk_dawMode`
@@ -249,6 +252,24 @@ opcode addOrcInstance, 0, S
 endop
 
 
+opcode watchOrcFile, 0, SS
+    SPort, SOrcPath xin
+    iInstrumentNumber = nstrnum("WatchOrcFile")
+igoto end
+    scoreline(sprintfk("i%d 0 -1 %s \"%s\"", iInstrumentNumber, SPort, SOrcPath), 1)
+end:
+endop
+
+
+opcode generateUuid, 0, S
+    SPort xin
+    iInstrumentNumber = nstrnum("GenerateUuid")
+igoto end
+    scoreline(sprintfk("i%d 0 -1 %s", iInstrumentNumber, SPort), 1)
+end:
+endop
+
+
 opcode set_mode, 0, k
     k_mode xin
     log_k_info("opcode set_mode(k_mode = %d) ...", k_mode)
@@ -439,6 +460,32 @@ instr HandleOscMessages
                 endif
 
 
+                // Plugin .orc change tracking
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH) == true) then
+                    if (k_argCount < 2) then
+                        log_k_error("OSC path `%s` requires 2 arguments but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        // 3 = .orc file path
+                        watchOrcFile(S_oscMessages[k(2)], S_oscMessages[k(3)])
+                    endif
+                endif
+
+
+                // Plugin UUID generation
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
+                    if (k_argCount < 1) then
+                        log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        generateUuid(S_oscMessages[k(2)])
+                    endif
+                endif
+
             endif
             k_j += 1
         od
@@ -530,6 +577,52 @@ instr RegisterPlugin
     log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
         i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
     turnoff
+endin
+
+
+instr WatchOrcFile
+    iOscPort init p4
+    SOrcPath init strget(p5)
+
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
+
+    log_i_trace("  ... import os ...")
+    pylruni("import os")
+    log_i_trace("  ... import os - done")
+    SPythonCode = sprintf("float(os.path.getmtime(\"%s\"))", SOrcPath)
+
+    kPreviousTime init 0
+    kCurrentTime = time_k()
+    kPreviousModifiedTime init 0
+    kSignal init 1
+    if (kCurrentTime - kPreviousTime > 1) then
+        kPreviousTime = kCurrentTime
+        kModifiedTime = pyleval(SPythonCode)
+        if (kPreviousModifiedTime < kModifiedTime) then
+            if (kPreviousModifiedTime > 0) then
+                log_k_trace("%s changed", SOrcPath)
+                OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
+                    sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
+                kSignal += 1
+            endif
+            kPreviousModifiedTime = kModifiedTime
+        endif
+    endif
+
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+endin
+
+
+instr GenerateUuid
+    iOscPort init p4
+
+    log_i_trace("instr GenerateUuid(iOscPort = %d) ...", iOscPort)
+
+    OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
+        "s", uuid())
+
+    turnoff
+    log_i_trace("instr GenerateUuid(iOscPort = %d) - done", iOscPort)
 endin
 
 

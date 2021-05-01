@@ -45,10 +45,14 @@
 #define DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH "/DawService/track/registration"
 #define DAW_SERVICE_OSC_TRACK_REFERENCING_PATH "/DawService/track/referencing"
 #define DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH "/DawService/plugin/registration"
+#define DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH "/DawService/plugin/request_uuid"
+#define DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH "/DawService/plugin/watch_orc"
 
 #define TRACK_INFO_OSC_ADDRESS "127.0.0.1"
 #define TRACK_INFO_OSC_PORT_MIN 7772
 #define TRACK_INFO_OSC_TRACK_SET_INDEX_PATH "/TrackInfo/track/set_index"
+#define TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH "/TrackInfo/plugin/set_uuid"
+#define TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH "/TrackInfo/plugin/orc_changed"
 
 #define TRACK_COUNT_MAX 1000
 #define PLUGIN_COUNT_MAX 100
