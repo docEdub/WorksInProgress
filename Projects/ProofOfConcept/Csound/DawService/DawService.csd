@@ -27,6 +27,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} INSTANCE_NAME #"DawService"#
 ${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
+${CSOUND_INCLUDE} "uuid.orc"
 
 
 // TODO: Rename `gk_mode` to `gk_dawMode`
@@ -260,6 +261,15 @@ end:
 endop
 
 
+opcode generateUuid, 0, S
+    SPort xin
+    iInstrumentNumber = nstrnum("GenerateUuid")
+igoto end
+    scoreline(sprintfk("i%d 0 -1 %s", iInstrumentNumber, SPort), 1)
+end:
+endop
+
+
 opcode set_mode, 0, k
     k_mode xin
     log_k_info("opcode set_mode(k_mode = %d) ...", k_mode)
@@ -463,6 +473,19 @@ instr HandleOscMessages
                     endif
                 endif
 
+
+                // Plugin UUID generation
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
+                    if (k_argCount < 1) then
+                        log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        generateUuid(S_oscMessages[k(2)])
+                    endif
+                endif
+
             endif
             k_j += 1
         od
@@ -587,6 +610,19 @@ instr WatchOrcFile
     endif
 
     log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+endin
+
+
+instr GenerateUuid
+    iOscPort init p4
+
+    log_i_trace("instr GenerateUuid(iOscPort = %d) ...", iOscPort)
+
+    OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
+        "s", uuid())
+
+    turnoff
+    log_i_trace("instr GenerateUuid(iOscPort = %d) - done", iOscPort)
 endin
 
 
