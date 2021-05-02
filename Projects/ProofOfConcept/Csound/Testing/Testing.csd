@@ -14,14 +14,12 @@
 
 #include "core_global.h"
 
-// Turn off DAW service OSC logging.
 #define DISABLE_LOGGING_TO_DAW_SERVICE
 
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} INSTANCE_NAME #"Testing"#
 ${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "log.orc"
-${CSOUND_INCLUDE} "time.orc"
 
 gSPluginUuids[] fillarray \
     "069e83fd-1c94-47e9-95ec-126e0fbefec3", \
@@ -31,25 +29,22 @@ gSPluginUuids[] fillarray \
 
 giWriteComma init false
 
-instr 1
-    gk_i += 1
-endin
-
 instr Quit
     exitnow
 endin
 
 instr StartJsonArray
-    fprints("test.json", "[")
     turnoff
+    fprints("test.json", "[")
 endin
 
 instr EndJsonArray
-    fprints("test.json", "]")
     turnoff
+    fprints("test.json", "]")
 endin
 
 instr ProcessFolder
+    turnoff
     SFolder = strget(p4)
     SFilePath = sprintf("/Users/andy/-/code/WorksInProgress/Projects/ProofOfConcept/Csound/Testing/%s/exists.json",
         SFolder)
@@ -75,32 +70,28 @@ instr ProcessFolder
         if (iI == -1) then
             log_i_debug("%s - done", SFolder)
         else
+            // Remove trailing newline.
+            if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\n") == 0) then
+                SLine = strsub(SLine, 0, strlen(SLine) - 1)
+            endif
             fprints("test.json", SLine)
+            log_i_debug("%s(%d): %s", SFolder, iI, SLine)
         endif
     od
-
-    turnoff
 endin
 
 instr ProcessFolders
-    log_ik_trace("instr ProcessFolders ...")
+    turnoff
+    log_i_trace("instr ProcessFolders ...")
     iI = 0
-    scoreline_i("i \"StartJsonArray\" 0 1")
+    scoreline_i("i \"StartJsonArray\" 0 0")
     while (iI < lenarray(gSPluginUuids)) do
-        scoreline_i(sprintf("i \"ProcessFolder\" 0 1 \"%s\"", gSPluginUuids[iI]))
+        scoreline_i(sprintf("i \"ProcessFolder\" 0 0 \"%s\"", gSPluginUuids[iI]))
         iI += 1
     od
-    scoreline_i("i \"EndJsonArray\" 0 1")
-
-    kActive = active(k(nstrnum("ProcessFolder")))
-    if (kActive == 0) then
-        log_k_trace("Exiting Csound ...")
-        event("i", "Quit", 0, 0)
-    else
-        log_k_debug("kActive = %d", kActive)
-    endif
-
-    log_ik_trace("instr ProcessFolders - done")
+    scoreline_i("i \"EndJsonArray\" 0 0")
+    scoreline_i("i \"Quit\" 0 0")
+    log_i_trace("instr ProcessFolders - done")
 endin
 
 </CsInstruments>
