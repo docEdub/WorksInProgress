@@ -21,6 +21,7 @@ add_csd_targets(
         "Synths/SubtractiveSynth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
+        "Testing/Testing.csd"
     PLAYBACK_SOURCES
         "DawPlayback/DawPlayback.csd"
 )
