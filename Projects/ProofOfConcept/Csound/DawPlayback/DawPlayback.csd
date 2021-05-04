@@ -227,6 +227,14 @@ instr FinalMixInstrument
 endin
 
 
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    instr GenerateJson
+        prints("instr GenerateJson ...\n")
+        prints("instr GenerateJson - done\n")
+    endin
+${CSOUND_ENDIF}
+
+
 </CsInstruments>
 <CsScore>
 
@@ -250,6 +258,11 @@ endin
 #include "_.mode3_TrackSet.sco"
 #include "_.mode3.sco"
 #include "_.mode4.sco"
+
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    s
+    i "GenerateJson" 0 -1
+${CSOUND_ENDIF}
 
 </CsScore>
 </CsoundSynthesizer>
