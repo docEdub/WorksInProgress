@@ -55,75 +55,75 @@ opcode json_write_string_i, 0, SSo
 endop
 
 opcode json_write_integer_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%d", kInteger)
+    fprints(SFilename, "%d", iNumber)
 endop
 
 opcode json_write_decimal_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%f", kNumber)
+    fprints(SFilename, "%f", iNumber)
 endop
 
 opcode json_write_decimal_1_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.1f", kNumber)
+    fprints(SFilename, "%.1f", iNumber)
 endop
 
 opcode json_write_decimal_2_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.2f", kNumber)
+    fprints(SFilename, "%.2f", iNumber)
 endop
 
 opcode json_write_decimal_3_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.3f", kNumber)
+    fprints(SFilename, "%.3f", iNumber)
 endop
 
 opcode json_write_decimal_4_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.4f", kNumber)
+    fprints(SFilename, "%.4f", iNumber)
 endop
 
 opcode json_write_decimal_5_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.5f", kNumber)
+    fprints(SFilename, "%.5f", iNumber)
 endop
 
 opcode json_write_decimal_6_i, 0, Sio
-    SFilename, kNumber, iAddComma xin
+    SFilename, iNumber, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    fprints(SFilename, "%.6f", kNumber)
+    fprints(SFilename, "%.6f", iNumber)
 endop
 
 opcode json_write_bool_i, 0, Sio
-    SFilename, kBool, iAddComma xin
+    SFilename, iBool, iAddComma xin
     if (iAddComma == true) then
         fprints(SFilename, ",")
     endif
-    if (kBool == true) then
+    if (iBool == true) then
         fprints(SFilename, "true")
     else
         fprints(SFilename, "false")
@@ -188,7 +188,7 @@ opcode json_write_integer_k, 0, SkO
     if (kAddComma == true) then
         fprintks(SFilename, ",")
     endif
-    fprintks(SFilename, "%d", kInteger)
+    fprintks(SFilename, "%d", kNumber)
 endop
 
 opcode json_write_decimal_k, 0, SkO
@@ -259,7 +259,7 @@ opcode json_write_bool_k, 0, SkO
     endif
 endop
 
-opcode json_write_null_k, 0, S0
+opcode json_write_null_k, 0, SO
     SFilename, kAddComma xin
     if (kAddComma == true) then
         fprintks(SFilename, ",")
