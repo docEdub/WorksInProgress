@@ -132,6 +132,98 @@ instr ClearSignals_instrnum
 endin
 
 
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    giWriteComma init false
+    gSPluginUuids[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
+
+    opcode setPluginUuid, 0, iiS
+        iTrackIndex, iPluginIndex, SUuid xin
+        ; if (iPluginIndex > 0 && strlen(gSPluginUuids[iTrackIndex][iPluginIndex]) == 0) then
+        ;     gSPluginUuids[iTrackIndex][iPluginIndex] = "bus-head"
+        ; endif
+        gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
+    endop
+
+    instr StartJsonArray
+        turnoff
+        fprints("DawPlayback.json", "[")
+    endin
+
+    instr EndJsonArray
+        turnoff
+        fprints("DawPlayback.json", "]")
+    endin
+
+    instr StartJsonObject
+        turnoff
+        fprints("DawPlayback.json", "{")
+    endin
+
+    instr EndJsonObject
+        turnoff
+        fprints("DawPlayback.json", "}")
+    endin
+
+    instr GeneratePluginJson
+        turnoff
+        SPluginUuid = strget(p4)
+
+        fprints("DawPlayback.json", sprintf("\"%s\":[", SPluginUuid))
+    
+        iI = 0
+
+        while (true == true) do
+            SFileName = sprintf("%s.%d.json", SPluginUuid, iI)
+
+            iJ = 0
+            while (iJ != -1) do
+                // Csound will delete this instrument if the given file doesn't exist.
+                SLine, iJ readfi SFileName
+
+                if (iJ == -1) then
+                    log_i_debug("%s - done", SFileName)
+                else
+
+                    // A comma isn't needed if the file doesn't exist so we wait to write the comma after Csound is given a
+                    // chance to delete this instrument if the file doesn't exist.
+                    if (giWriteComma == true) then
+                        fprints("DawPlayback.json", ",")
+                    else
+                        giWriteComma = true
+                    endif
+
+                    // Remove trailing newline.
+                    if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\n") == 0) then
+                        SLine = strsub(SLine, 0, strlen(SLine) - 1)
+                    endif
+                    fprints("DawPlayback.json", SLine)
+                    log_i_debug("%s(%d): %s", SFileName, iJ, SLine)
+                endif
+            od
+
+            iI += 1
+        od
+    endin
+
+    instr GenerateJson
+        prints("instr GenerateJson ...\n")
+
+        scoreline_i("i \"StartJsonObject\" 0 0")
+        iI = 0
+        while (iI < TRACK_COUNT_MAX) do
+            if (strlen(gSPluginUuids[iI][0]) == 36) then // 36 == UUID length
+                scoreline_i(sprintf("i \"GeneratePluginJson\" 0 0 \"%s\"", gSPluginUuids[iI][0]))
+                scoreline_i("i \"EndJsonArray\" 0 0")
+            endif
+            iI += 1
+        od
+        scoreline_i("i \"EndJsonObject\" 0 0")
+
+        prints("instr GenerateJson - done\n")
+    endin
+${CSOUND_ENDIF}
+
+
 #define IS_PLAYBACK 1
 #include "_.mode3_TrackSet.orc"
 
@@ -226,15 +318,6 @@ instr FinalMixInstrument
     od
 endin
 
-
-${CSOUND_IFDEF} IS_GENERATING_JSON
-    instr GenerateJson
-        prints("instr GenerateJson ...\n")
-        prints("instr GenerateJson - done\n")
-    endin
-${CSOUND_ENDIF}
-
-
 </CsInstruments>
 <CsScore>
 
@@ -261,7 +344,7 @@ ${CSOUND_ENDIF}
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     s
-    i "GenerateJson" 0 -1
+    i "GenerateJson" 0 1
 ${CSOUND_ENDIF}
 
 </CsScore>

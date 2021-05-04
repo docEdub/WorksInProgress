@@ -57,28 +57,6 @@ giCircleSynth_NoteNumberRange init CIRCLE_SYNTH_NOTE_NUMBER_MAX - CIRCLE_SYNTH_N
 giCircleSynth_DistanceMin = 5
 giCircleSynth_DistanceMax = 100
 
-${CSOUND_IFDEF} IS_GENERATING_JSON
-    giCircleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
-
-    instr CircleSynth_Json
-        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
-        fprints(SJsonFile, "{")
-        fprints(SJsonFile, "\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
-        fprints(SJsonFile, ",\"heightMax\":%d", CIRCLE_SYNTH_HEIGHT_MAX)
-        fprints(SJsonFile, ",\"radiusMin\":%d", CIRCLE_SYNTH_RADIUS_MAX)
-        fprints(SJsonFile, ",\"radiusMax\":%d", CIRCLE_SYNTH_RADIUS_MAX)
-        fprints(SJsonFile, ",\"spreadMax\":%d", CIRCLE_SYNTH_SPREAD_MAX)
-        fprints(SJsonFile, ",\"spreadSpeedMin\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MIN)
-        fprints(SJsonFile, ",\"spreadSpeedMax\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MAX)
-        fprints(SJsonFile, ",\"noteNumberMin\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MIN)
-        fprints(SJsonFile, ",\"noteNumberMax\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MAX)
-        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giCircleSynth_DistanceMin)
-        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giCircleSynth_DistanceMax)
-        fprints(SJsonFile, "}")
-        turnoff
-    endin
-${CSOUND_ENDIF}
-
 instr CircleSynth_NoteOn
     iNoteNumber = p4
     iVelocity = p5 / 127
@@ -157,6 +135,31 @@ giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
 #endif // #ifndef CircleSynth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
+
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+
+    giCircleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+
+    instr CircleSynth_Json
+        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        fprints(SJsonFile, "{")
+        fprints(SJsonFile, "\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
+        fprints(SJsonFile, ",\"heightMax\":%d", CIRCLE_SYNTH_HEIGHT_MAX)
+        fprints(SJsonFile, ",\"radiusMin\":%d", CIRCLE_SYNTH_RADIUS_MAX)
+        fprints(SJsonFile, ",\"radiusMax\":%d", CIRCLE_SYNTH_RADIUS_MAX)
+        fprints(SJsonFile, ",\"spreadMax\":%d", CIRCLE_SYNTH_SPREAD_MAX)
+        fprints(SJsonFile, ",\"spreadSpeedMin\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MIN)
+        fprints(SJsonFile, ",\"spreadSpeedMax\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MAX)
+        fprints(SJsonFile, ",\"noteNumberMin\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MIN)
+        fprints(SJsonFile, ",\"noteNumberMax\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MAX)
+        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giCircleSynth_DistanceMin)
+        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giCircleSynth_DistanceMax)
+        fprints(SJsonFile, "}")
+        turnoff
+    endin
+${CSOUND_ENDIF}
+
 
 instr INSTRUMENT_ID
 
