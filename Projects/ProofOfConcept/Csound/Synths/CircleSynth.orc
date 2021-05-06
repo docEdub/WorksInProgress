@@ -15,7 +15,6 @@
 #define CircleSynth_orc__include_guard
 
 ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
-${CSOUND_INCLUDE} "json_opcodes.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)

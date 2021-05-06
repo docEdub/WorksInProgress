@@ -18,7 +18,6 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
-${CSOUND_INCLUDE} "json_opcodes.orc"
 
 ${CSOUND_DEFINE} Waveform_Saw    #0#
 ${CSOUND_DEFINE} Waveform_Square #1#
