@@ -38,6 +38,7 @@ gi_trackPorts[] init TRACK_COUNT_MAX
 gi_trackTypes[] init TRACK_COUNT_MAX
 gS_trackOrcPaths[] init TRACK_COUNT_MAX
 gS_trackInstrumentNames[] init TRACK_COUNT_MAX
+gSInstanceNames[] init TRACK_COUNT_MAX
 gSTrackUuids[] init TRACK_COUNT_MAX
 gi_trackRefs[][] init TRACK_COUNT_MAX, TRACK_COUNT_MAX
 gi_masterRefs[] init TRACK_COUNT_MAX
@@ -122,31 +123,33 @@ opcode getTrackIndexForPort, i, i
 endop
 
 
-opcode setTrack, 0, iiiSSS
-    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName, SUuid xin
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SUuid = %s) ...",
-        i_trackIndex, i_port, i_trackType, S_orcPath, SUuid)
+opcode setTrack, 0, iiiSSSS
+    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid xin
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SInstanceName = %s, SUuid = %s) ...",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SInstanceName, SUuid)
     gi_trackPorts[i_trackIndex] = i_port
     gi_trackTypes[i_trackIndex] = i_trackType
     gS_trackOrcPaths[i_trackIndex] = S_orcPath
     gS_trackInstrumentNames[i_trackIndex] = S_instrumentName
+    gSInstanceNames[i_trackIndex] = SInstanceName
     gSTrackUuids[i_trackIndex] = SUuid
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SUuid = %s) - done",
-        i_trackIndex, i_port, i_trackType, S_orcPath, SUuid)
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SInstanceName = %s, SUuid = %s) - done",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SInstanceName, SUuid)
 endop
 
 
-opcode registerTrack, 0, SSSSS
-    S_port, S_trackType, S_orcPath, S_instrumentName, SUuid xin
+opcode registerTrack, 0, SSSSSS
+    S_port, S_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid xin
     iInstrumentNumber = nstrnum("RegisterTrack")
 igoto end
     scoreline(
-        sprintfk("i%d 0 1 %s %s \"%s\" \"%s\" \"%s\"",
+        sprintfk("i%d 0 1 %s %s \"%s\" \"%s\" \"%s\" \"%s\"",
             iInstrumentNumber,
             S_port,
             S_trackType,
             S_orcPath,
             S_instrumentName,
+            SInstanceName,
             SUuid),
         1)
 end:
@@ -411,21 +414,23 @@ instr HandleOscMessages
                 // Track registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 5) then
-                        log_k_error("OSC path `%s` requires 5 arguments but was given %d.",
+                    if (k_argCount < 6) then
+                        log_k_error("OSC path `%s` requires 7 arguments but was given %d.",
                             DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = port
                         // 3 = track type
                         // 4 = orc path
                         // 5 = instrument name
-                        // 6 = uuid
+                        // 6 = instance name
+                        // 7 = uuid
                         registerTrack(
                             S_oscMessages[k(2)],
                             S_oscMessages[k(3)],
                             S_oscMessages[k(4)],
                             S_oscMessages[k(5)],
-                            S_oscMessages[k(6)])
+                            S_oscMessages[k(6)],
+                            S_oscMessages[k(7)])
                     endif
                 endif
 
@@ -499,21 +504,22 @@ instr RegisterTrack
     i_trackType init p5
     S_orcPath init strget(p6)
     S_instrumentName init strget(p7)
-    SUuid init strget(p8)
+    SInstanceName init strget(p8)
+    SUuid init strget(p9)
     log_ik_info(
-        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SUuid = %s) ...",
-        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SUuid)
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) ...",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     i_trackIndex = getTrackIndexForPort(i_oscPort)
     if (i_trackIndex == -1) then
         i_trackIndex = getNextTrackIndex()
-        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SUuid)
+        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     endif
     log_ik_debug("i_trackIndex = %d", i_trackIndex)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
         "i", i_trackIndex)
     log_ik_info(
-        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SUuid = %s) - done",
-        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SUuid)
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) - done",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     turnoff
 endin
 
@@ -943,6 +949,7 @@ instr WriteTracksetOrcFile
 
             S_orcFilename = gS_trackOrcPaths[kTrack]
             S_instrumentName = gS_trackInstrumentNames[kTrack]
+            SInstanceName = gSInstanceNames[kTrack]
             kOrcInstanceIndex = getOrcInstanceIndex:k(S_orcFilename)
             log_k_debug("Trackset %d: kOrcInstanceIndex = %d", kI, kOrcInstanceIndex)
             kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
@@ -957,6 +964,7 @@ instr WriteTracksetOrcFile
 
             fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
             fprintks(S_filename, "#define INSTRUMENT_NAME %s // -%d\n", S_instrumentName, 0)
+            fprintks(S_filename, "#define INSTANCE_NAME STRINGIZE(%s) // -%d\n", SInstanceName, 0)
             fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX 0\n")
             SUuidLine = sprintfk("#define INSTRUMENT_PLUGIN_UUID \"%s\"\n", gSTrackUuids[kTrack])
@@ -970,6 +978,7 @@ instr WriteTracksetOrcFile
             fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_UUID\n")
             fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
             fprintks(S_filename, "#undef INSTRUMENT_TRACK_INDEX\n")
+            fprintks(S_filename, "#undef INSTANCE_NAME\n")
             fprintks(S_filename, "#undef INSTRUMENT_NAME\n")
             fprintks(S_filename, "#undef INSTRUMENT_ID\n")
             fprintks(S_filename, "\n")

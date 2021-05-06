@@ -163,8 +163,8 @@ instr RegisterTrack
 
     if (strlen(gSPluginUuid) != 0) then
         log_k_trace("Sending track registration to DAW ...")
-        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iisss",
-            gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gSPluginUuid)
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iissss",
+            gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gS_instanceName, gSPluginUuid)
         log_k_trace("Sending track registration to DAW - done")
     endif
 
