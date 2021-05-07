@@ -168,9 +168,16 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         turnoff
         SPluginUuid = strget(p4)
 
+        if (giWriteComma == true) then
+            fprints("DawPlayback.json", ",")
+        else
+            giWriteComma = true
+        endif
+
         fprints("DawPlayback.json", sprintf("\"%s\":[", SPluginUuid))
     
         iI = 0
+        iWriteComma = false
 
         while (true == true) do
             SFileName = sprintf("%s.%d.json", SPluginUuid, iI)
@@ -186,10 +193,10 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 
                     // A comma isn't needed if the file doesn't exist so we wait to write the comma after Csound is given a
                     // chance to delete this instrument if the file doesn't exist.
-                    if (giWriteComma == true) then
+                    if (iWriteComma == true) then
                         fprints("DawPlayback.json", ",")
                     else
-                        giWriteComma = true
+                        iWriteComma = true
                     endif
 
                     // Remove trailing newline.
