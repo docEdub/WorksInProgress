@@ -781,7 +781,9 @@ instr WriteTracksetFiles
         kTrackPort = gi_trackPorts[kI]
         kTrackType = gi_trackTypes[kI]
         STrackOrcPath = gS_trackOrcPaths[kI]
-        log_k_debug("[%d]: Track port = %d, type = %d, orc = %s", kI, kTrackPort, kTrackType, STrackOrcPath)
+        STrackUuid = gSTrackUuids[kI]
+        log_k_debug("[%d]: Track port = %d, type = %d, orc = %s, uuid = %s", kI, kTrackPort, kTrackType, STrackOrcPath,
+            STrackUuid)
         kI += 1
     od
 
@@ -790,8 +792,8 @@ instr WriteTracksetFiles
     kI = 0
     while (kI < giTracksetCount) do
         kTrackIndex = giTracksetOrder[kI]
-        log_k_debug("[%d]: Track index = %d, type = %d, orc = %s", kI, kTrackIndex, gi_trackTypes[kTrackIndex],
-            gS_trackOrcPaths[kTrackIndex])
+        log_k_debug("[%d]: Track index = %d, type = %d, orc = %s, uuid = %s", kI, kTrackIndex, gi_trackTypes[kTrackIndex],
+            gS_trackOrcPaths[kTrackIndex], gSTrackUuids[kTrackIndex])
         kI += 1 
     od
 
@@ -950,6 +952,7 @@ instr WriteTracksetOrcFile
             S_orcFilename = gS_trackOrcPaths[kTrack]
             S_instrumentName = gS_trackInstrumentNames[kTrack]
             SInstanceName = gSInstanceNames[kTrack]
+            STrackUuid = gSTrackUuids[kTrack]
             kOrcInstanceIndex = getOrcInstanceIndex:k(S_orcFilename)
             log_k_debug("Trackset %d: kOrcInstanceIndex = %d", kI, kOrcInstanceIndex)
             kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
@@ -967,8 +970,7 @@ instr WriteTracksetOrcFile
             fprintks(S_filename, "#define INSTANCE_NAME STRINGIZE(%s) // -%d\n", SInstanceName, 0)
             fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX 0\n")
-            SUuidLine = sprintfk("#define INSTRUMENT_PLUGIN_UUID \"%s\"\n", gSTrackUuids[kTrack])
-            fprintks(S_filename, SUuidLine)
+            fprintks(S_filename, "#define INSTRUMENT_PLUGIN_UUID \"%s\" // -%d\n", STrackUuid, 0)
             fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
             fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
             fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/%s/%s/%s\" // -%d\n", \
@@ -990,6 +992,7 @@ instr WriteTracksetOrcFile
             if (strcmpk(SOrcFilename, "") != 0) then
                 kOrcInstanceIndex = getOrcInstanceIndex:k(SOrcFilename)
                 log_k_debug("   Plugin %d: kOrcInstanceIndex = %d", kJ, kOrcInstanceIndex)
+                STrackUuid = gSPluginUuids[kTrack][kJ]
                 kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
                 gkOrcInstanceCounters[kOrcInstanceIndex] = kOrcInstance + 1
                 log_k_debug("kTrackIndex = %d, kPluginIndex = %d, SOrcFilename = %s", kI, kJ, SOrcFilename)
@@ -1000,15 +1003,12 @@ instr WriteTracksetOrcFile
                 fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
                 fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
                 fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX %d\n", kJ + 1)
-                SUuidLine = sprintfk("#define INSTRUMENT_PLUGIN_UUID \"%s\"\n", gSPluginUuids[kTrack][kJ])
-                fprintks(S_filename, SUuidLine)
                 fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
                 fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
                 fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/Effects/%s/%s\" // -%d\n",
                     SOrcSubDirectory, SOrcFilename, 0)
                 fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
                 fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
-                fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_UUID\n")
                 fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
                 fprintks(S_filename, "#undef INSTRUMENT_TRACK_INDEX\n")
                 fprintks(S_filename, "#undef INSTRUMENT_NAME\n")
