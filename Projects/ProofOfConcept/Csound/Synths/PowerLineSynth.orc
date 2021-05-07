@@ -38,8 +38,33 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
-giMaxDistance = 100
-giMinDistance = 5
+// Max amount of seconds to keep rising. The riser table is exponentional. It rises slower and slower as time
+// passes, and eventually maxes out at 1. When the max rise time is exceeded, the riser value stays at 1.
+giMaxRiseTime = 10
+
+// While the note is held it takes giMaxRiseTime seconds for the position to move from iNoteOnStart to iNoteOnEnd.
+// When the note is released, the position's Z coordinate moves from it's current location to giNoteOffEndZ at a
+// speed determined by how long the note was held. The longer the note is held, the faster it moves to giNoteOffEndZ
+// when the note is released.
+giNoteOnStartPosition[] = fillarray(10, 0, 20)
+giNoteOnEndPosition[] = fillarray(15, 10, 25)
+giNoteOffEndZ = -1000
+
+// The amount of "wobble" the pitch will have when it starts rising. The wobble will decrease from 1 to 0 inversely
+// proportionate to the rise amount until there is zero wobble when the rise amount reaches 1.
+giNoteNumberWobbleStartAmp = 1.5
+
+// The speed of the pitch "wobble" LFO in hertz.
+giNoteNumberWobbleSpeed = 5
+
+giRiserTableSize = 1024
+giWobbleTableSize = 1024
+
+giMinNoteOffSpeed = 50 // per second
+giMaxNoteOffSpeed = 100 // per second
+
+giPowerLineSynth_DistanceMin = 5
+giPowerLineSynth_DistanceMax = 100
 
 instr PowerLineSynth_NoteOn
     iNoteNumber = p4
@@ -51,27 +76,15 @@ instr PowerLineSynth_NoteOn
 
     iSecondsPerKPass = 1 / kr
 
-    // Max amount of seconds to keep rising. The riser table is exponentional. It rises slower and slower as time
-    // passes, and eventually maxes out at 1. When the max rise time is exceeded, the riser value stays at 1.
-    iMaxRiseTime = 10
-
-    // While the note is held it takes iMaxRiseTime seconds for the position to move from iNoteOnStart to iNoteOnEnd.
-    // When the note is released, the position's Z coordinate moves from it's current location to iNoteOffEndZ at a
-    // speed determined by how long the note was held. The longer the note is held, the faster it moves to iNoteOffEndZ
-    // when the note is released.
-    iNoteOnStartPosition[] = fillarray(10, 0, 20)
-    iNoteOnEndPosition[] = fillarray(15, 10, 25)
-    iNoteOffEndZ = -1000
-
     iNoteOnDelta[] fillarray \
-        iNoteOnEndPosition[$X] - iNoteOnStartPosition[$X], \
-        iNoteOnEndPosition[$Y] - iNoteOnStartPosition[$Y], \
-        iNoteOnEndPosition[$Z] - iNoteOnStartPosition[$Z]
-    iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / iMaxRiseTime)
-    iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / iMaxRiseTime)
+        giNoteOnEndPosition[$X] - giNoteOnStartPosition[$X], \
+        giNoteOnEndPosition[$Y] - giNoteOnStartPosition[$Y], \
+        giNoteOnEndPosition[$Z] - giNoteOnStartPosition[$Z]
+    iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / giMaxRiseTime)
+    iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / giMaxRiseTime)
 
-    kPosition[] fillarray iNoteOnStartPosition[$X], iNoteOnStartPosition[$Y], iNoteOnStartPosition[$Z]
-    if (kPosition[$Z] < iNoteOffEndZ) then
+    kPosition[] fillarray giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z]
+    if (kPosition[$Z] < giNoteOffEndZ) then
         kgoto endin
     endif
 
@@ -79,51 +92,38 @@ instr PowerLineSynth_NoteOn
     iMaxRiseAmount = iNoteNumber - 36
     iNoteNumber = 36
 
-    // The amount of "wobble" the pitch will have when it starts rising. The wobble will decrease from 1 to 0 inversely
-    // proportionate to the rise amount until there is zero wobble when the rise amount reaches 1.
-    iNoteNumberWobbleStartAmp = 1.5
-
-    // The speed of the pitch "wobble" LFO in hertz.
-    iNoteNumberWobbleSpeed = 5
-
-    iRiserTableSize = 1024
-    iWobbleTableSize = 1024
-
     kReleased = release()
     
     // Exponential curve from 0 to 1, slowing when approaching 1.
-    iRiserTableId = ftgenonce(0, 0, iRiserTableSize + GUARD_POINT_SIZE, 16, 0, iRiserTableSize, -10, 1)
-    iRiserTableIncrementI = iSecondsPerKPass * (iRiserTableSize / iMaxRiseTime)
+    iRiserTableId = ftgenonce(0, 0, giRiserTableSize + GUARD_POINT_SIZE, 16, 0, giRiserTableSize, -10, 1)
+    iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
     kRiserTableI init 0
-    if (kRiserTableI < iRiserTableSize && kReleased == false) then
+    if (kRiserTableI < giRiserTableSize && kReleased == false) then
         kRiserTableI += iRiserTableIncrementI
     endif
     kRiserTableValue = tablei(kRiserTableI, iRiserTableId)
 
     if (kReleased == false) then
-        // kRiserTableI is less than iRiserTableSize for the entire duration of iMaxRiseTime.
-        if (kRiserTableI < iRiserTableSize) then
+        // kRiserTableI is less than giRiserTableSize for the entire duration of giMaxRiseTime.
+        if (kRiserTableI < giRiserTableSize) then
             kPosition[$X] = kPosition[$X] + iNoteOnIncrementX
-            kPosition[$Y] = iNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
+            kPosition[$Y] = giNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
             kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
         endif
     else
-        iMinNoteOffSpeed = 50 // per second
-        iMaxNoteOffSpeed = 100 // per second
-
         // This is the longest the note off duration can be. If the entire duration is not needed, skip to endin until
         // the instrument times out since a subinstrument can't use the turnoff opcode.
-        iExtraTime = abs(iNoteOffEndZ - iNoteOnStartPosition[$Z]) / iMinNoteOffSpeed
+        iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
         xtratim(iExtraTime)
  
-        kNoteOffSpeed init iMinNoteOffSpeed
-        kNoteOffIncrementZ init iSecondsPerKPass * iMinNoteOffSpeed
+        kNoteOffSpeed init giMinNoteOffSpeed
+        kNoteOffIncrementZ init iSecondsPerKPass * giMinNoteOffSpeed
         kNoteOffSpeedCalculated init false
 
         if (kNoteOffSpeedCalculated == false) then
-            kNoteOffSpeed = iMinNoteOffSpeed +
-                ((iMaxNoteOffSpeed - iMinNoteOffSpeed) * (kRiserTableI / iRiserTableSize))
-            kNoteOffSpeed = min(kNoteOffSpeed, iMaxNoteOffSpeed)
+            kNoteOffSpeed = giMinNoteOffSpeed +
+                ((giMaxNoteOffSpeed - giMinNoteOffSpeed) * (kRiserTableI / giRiserTableSize))
+            kNoteOffSpeed = min(kNoteOffSpeed, giMaxNoteOffSpeed)
             kNoteOffIncrementZ = iSecondsPerKPass * kNoteOffSpeed
             kNoteOffSpeedCalculated = true
         else
@@ -133,11 +133,11 @@ instr PowerLineSynth_NoteOn
 
     // 1 cycle of a sine wave.
     iWobbleTableId = ftgenonce(0, 0, 1024, 10, 1)
-    iWobbleTableIncrementI = iNoteNumberWobbleSpeed * (iSecondsPerKPass * iWobbleTableSize)
+    iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
     kWobbleTableI init 0
     kWobbleTableI += iWobbleTableIncrementI
-    kWobbleTableI = kWobbleTableI % iWobbleTableSize
-    kNoteNumberWobbleAmp = iNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
+    kWobbleTableI = kWobbleTableI % giWobbleTableSize
+    kNoteNumberWobbleAmp = giNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
 
     kNoteNumber = iNoteNumber
     kNoteNumber += kRiserTableValue * iMaxRiseAmount
@@ -157,14 +157,14 @@ instr PowerLineSynth_NoteOn
 
     kAmp = 0.1 * iVelocity * kRiserTableValue
     if (kReleased == true) then
-        kAmp *= (iNoteOffEndZ - kPosition[$Z]) / iNoteOffEndZ
+        kAmp *= (giNoteOffEndZ - kPosition[$Z]) / giNoteOffEndZ
     endif
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5) // Square wave. NB: 0.5 fattens it up compared to default of 1.
     aOut = tone(aOut, 5000)
 
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giMinDistance), k(giMaxDistance))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
     kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
@@ -191,6 +191,30 @@ giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
 
 //----------------------------------------------------------------------------------------------------------------------
 
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+
+    giPowerLineSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+
+    instr PowerLineSynth_Json
+        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        fprints(SJsonFile, "{")
+        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, ",\"maxRiseTime\":%d", giMaxRiseTime)
+        fprints(SJsonFile, ",\"noteOnStartPosition\":[%d,%d,%d]", giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z])
+        fprints(SJsonFile, ",\"noteOnEndPosition\":[%d,%d,%d]", giNoteOnEndPosition[$X], giNoteOnEndPosition[$Y],  giNoteOnEndPosition[$Z])
+        fprints(SJsonFile, ",\"noteOffEndZ\":%d", giNoteOffEndZ)
+        fprints(SJsonFile, ",\"noteNumberWobbleStartAmp\":%.3f", giNoteNumberWobbleStartAmp)
+        fprints(SJsonFile, ",\"noteNumberWobbleSpeed\":%.3f", giNoteNumberWobbleSpeed)
+        fprints(SJsonFile, ",\"minNoteOffSpeed\":%d", giMinNoteOffSpeed)
+        fprints(SJsonFile, ",\"maxNoteOffSpeed\":%d", giMaxNoteOffSpeed)
+        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPowerLineSynth_DistanceMin)
+        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giPowerLineSynth_DistanceMax)
+        fprints(SJsonFile, "}")
+        turnoff
+    endin
+${CSOUND_ENDIF}
+
 instr INSTRUMENT_ID
 
     iEventType = p4
@@ -208,6 +232,22 @@ instr INSTRUMENT_ID
         if (kReleased == true) then
             SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
             scoreline(SOffEvent, 1)
+            turnoff
+        endif
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i("i \"PowerLineSynth_Json\" 0 0")
+            endif
+            giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX])
+            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
+            if (kReleased == true) then
+                fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+            endif
+        ${CSOUND_ENDIF}
+
+        if (kReleased == true) then
             turnoff
         endif
     elseif (iEventType == EVENT_NOTE_GENERATED) then
