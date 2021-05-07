@@ -144,7 +144,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, "\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
+        fprints(SJsonFile, ",\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
         fprints(SJsonFile, ",\"heightMax\":%d", CIRCLE_SYNTH_HEIGHT_MAX)
         fprints(SJsonFile, ",\"radiusMin\":%d", CIRCLE_SYNTH_RADIUS_MAX)
         fprints(SJsonFile, ",\"radiusMax\":%d", CIRCLE_SYNTH_RADIUS_MAX)
