@@ -38,9 +38,9 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
-giMaxDistance = 100
-giMinDistance = 5
-giMinDistanceAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giMinDistance, giMaxDistance)
+giPointSynth_DistanceMin = 5
+giPointSynth_DistanceMax = 100
+giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_RTZ_COUNT #16384#
 giPointSynthNextRT[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
@@ -51,16 +51,33 @@ while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
     while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
-        giPointSynthNextRT[iI][iJ][$R] = giMinDistance + rnd(giMaxDistance - giMinDistance)
+        giPointSynthNextRT[iI][iJ][$R] = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
         giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
         iJ += 1
     od
     iI += 1
 od
 
+giPointSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+
 #endif // #ifndef PointSynth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
+
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+
+    instr PointSynth_Json
+        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        fprints(SJsonFile, "{")
+        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPointSynth_DistanceMin)
+        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giPointSynth_DistanceMax)
+        fprints(SJsonFile, "}")
+        turnoff
+    endin
+${CSOUND_ENDIF}
+
 
 instr INSTRUMENT_ID
 
@@ -124,11 +141,14 @@ instr INSTRUMENT_ID
             aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
             aOut *= aEnvelope
 
-            kR init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$R]
-            kT init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$T]
-            kZ init 10 + 10 * (iNoteNumber / 127)
+            iR init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$R]
+            iT init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$T]
+            iZ init 10 + 10 * (iNoteNumber / 127)
+            kR init iR
+            kT init iT
+            kZ init iZ
             log_i_debug("rtz = (%f, %f, %f)", i(kR), i(kT), i(kZ))
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giMinDistance, giMaxDistance)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextRTZ_i += 1
@@ -165,7 +185,17 @@ instr INSTRUMENT_ID
                         turnoff
                     endif
                 endif
-            #endif            
+            #endif
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                if (giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                    scoreline_i("i \"PointSynth_Json\" 0 0")
+                endif
+                giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+                SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"rtz\":[%.3f,%.3f,%.3f]}}", times(),
+                    iNoteNumber, iR, iT, iZ)
+            ${CSOUND_ENDIF}
         endif
     endif
 endin:
