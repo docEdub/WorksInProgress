@@ -130,6 +130,7 @@ instr CircleSynth_NoteOff
 endin
 
 giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
+giCircleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
 #endif // #ifndef CircleSynth_orc__include_guard
 
@@ -137,8 +138,6 @@ giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
-
-    giCircleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
     instr CircleSynth_Json
         SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)

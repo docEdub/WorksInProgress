@@ -186,6 +186,7 @@ instr PowerLineSynth_NoteOff
 endin
 
 giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
+giPowerLineSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
 #endif // #ifndef PowerLineSynth_orc__include_guard
 
@@ -193,8 +194,6 @@ giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
-
-    giPowerLineSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
     instr PowerLineSynth_Json
         SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
