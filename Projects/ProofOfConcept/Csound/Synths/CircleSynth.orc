@@ -130,10 +130,35 @@ instr CircleSynth_NoteOff
 endin
 
 giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
+giCircleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
 #endif // #ifndef CircleSynth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
+
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+
+    instr CircleSynth_Json
+        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        fprints(SJsonFile, "{")
+        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, ",\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
+        fprints(SJsonFile, ",\"heightMax\":%d", CIRCLE_SYNTH_HEIGHT_MAX)
+        fprints(SJsonFile, ",\"radiusMin\":%d", CIRCLE_SYNTH_RADIUS_MAX)
+        fprints(SJsonFile, ",\"radiusMax\":%d", CIRCLE_SYNTH_RADIUS_MAX)
+        fprints(SJsonFile, ",\"spreadMax\":%d", CIRCLE_SYNTH_SPREAD_MAX)
+        fprints(SJsonFile, ",\"spreadSpeedMin\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MIN)
+        fprints(SJsonFile, ",\"spreadSpeedMax\":%d", CIRCLE_SYNTH_SPREAD_SPEED_MAX)
+        fprints(SJsonFile, ",\"noteNumberMin\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MIN)
+        fprints(SJsonFile, ",\"noteNumberMax\":%d", CIRCLE_SYNTH_NOTE_NUMBER_MAX)
+        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giCircleSynth_DistanceMin)
+        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giCircleSynth_DistanceMax)
+        fprints(SJsonFile, "}")
+        turnoff
+    endin
+${CSOUND_ENDIF}
+
 
 instr INSTRUMENT_ID
 
@@ -152,6 +177,21 @@ instr INSTRUMENT_ID
         if (kReleased == true) then
             SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
             scoreline(SOffEvent, 1)
+        endif
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i("i \"CircleSynth_Json\" 0 0")
+            endif
+            giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] = giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX])
+            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
+            if (kReleased == true) then
+                fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+            endif
+        ${CSOUND_ENDIF}
+
+        if (kReleased == true) then
             turnoff
         endif
     elseif (iEventType == EVENT_NOTE_GENERATED) then

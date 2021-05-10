@@ -29,6 +29,7 @@ set(CsoundCMake_Core_OrcFiles
     "math.orc"
     "string.orc"
     "time.orc"
+    "uuid.orc"
 )
 
 # Override the CMake `set` function to allow defining cache variables without having to set a description string, and to

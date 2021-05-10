@@ -18,6 +18,8 @@
 // Override core_global.h ksmps.
 kr = 1000
 
+pyinit
+
 // Turn off redundant OSC logging.
 #define DISABLE_LOGGING_TO_DAW_SERVICE
 
@@ -25,6 +27,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} INSTANCE_NAME #"DawService"#
 ${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
+${CSOUND_INCLUDE} "uuid.orc"
 
 
 // TODO: Rename `gk_mode` to `gk_dawMode`
@@ -35,6 +38,8 @@ gi_trackPorts[] init TRACK_COUNT_MAX
 gi_trackTypes[] init TRACK_COUNT_MAX
 gS_trackOrcPaths[] init TRACK_COUNT_MAX
 gS_trackInstrumentNames[] init TRACK_COUNT_MAX
+gSInstanceNames[] init TRACK_COUNT_MAX
+gSTrackUuids[] init TRACK_COUNT_MAX
 gi_trackRefs[][] init TRACK_COUNT_MAX, TRACK_COUNT_MAX
 gi_masterRefs[] init TRACK_COUNT_MAX
 
@@ -46,6 +51,7 @@ giOrcInstanceCounts[] init TRACK_COUNT_MAX
 gkOrcInstanceCounters[] init TRACK_COUNT_MAX
 
 gSPlugins[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
+gSPluginUuids[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
 
 
 opcode clearTracks, 0, 0
@@ -55,6 +61,7 @@ opcode clearTracks, 0, 0
         gi_trackPorts[i_i] = 0
         gi_trackTypes[i_i] = TRACK_TYPE_NONE
         gS_trackOrcPaths[i_i] = ""
+        gSTrackUuids[i_i] = ""
         i_j = 0
         while (i_j < TRACK_COUNT_MAX) do
             gi_trackRefs[i_i][i_j] = false
@@ -74,6 +81,7 @@ opcode clearPlugins, 0, 0
         iJ = 0
         while (iJ < PLUGIN_COUNT_MAX) do
             gSPlugins[iI][iJ] = ""
+            gSPluginUuids[iI][iJ] = ""
             iJ += 1
         od
         iI += 1
@@ -115,52 +123,58 @@ opcode getTrackIndexForPort, i, i
 endop
 
 
-opcode setTrack, 0, iiiSS
-    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName xin
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s) ...",
-        i_trackIndex, i_port, i_trackType, S_orcPath)
+opcode setTrack, 0, iiiSSSS
+    i_trackIndex, i_port, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid xin
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SInstanceName = %s, SUuid = %s) ...",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SInstanceName, SUuid)
     gi_trackPorts[i_trackIndex] = i_port
     gi_trackTypes[i_trackIndex] = i_trackType
     gS_trackOrcPaths[i_trackIndex] = S_orcPath
     gS_trackInstrumentNames[i_trackIndex] = S_instrumentName
-    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s) - done",
-        i_trackIndex, i_port, i_trackType, S_orcPath)
+    gSInstanceNames[i_trackIndex] = SInstanceName
+    gSTrackUuids[i_trackIndex] = SUuid
+    log_i_info("opcode setTrack(i_trackIndex = %d, i_port = %d, i_trackType = %d, S_orcPath = %s, SInstanceName = %s, SUuid = %s) - done",
+        i_trackIndex, i_port, i_trackType, S_orcPath, SInstanceName, SUuid)
 endop
 
 
-opcode registerTrack, 0, SSSS
-    S_port, S_trackType, S_orcPath, S_instrumentName xin
-    i_instrumentNumber =  nstrnum("RegisterTrack")
+opcode registerTrack, 0, SSSSSS
+    S_port, S_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid xin
+    iInstrumentNumber = nstrnum("RegisterTrack")
 igoto end
     scoreline(
-        sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"",
-            i_instrumentNumber,
+        sprintfk("i%d 0 1 %s %s \"%s\" \"%s\" \"%s\" \"%s\"",
+            iInstrumentNumber,
             S_port,
             S_trackType,
             S_orcPath,
-            S_instrumentName),
+            S_instrumentName,
+            SInstanceName,
+            SUuid),
         1)
 end:
 endop
 
 
-opcode setPlugin, 0, iiS
-    iTrackIndex, iPluginIndex, SOrcPath xin
-    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) ...", iTrackIndex,
-        iPluginIndex, SOrcPath)
+opcode setPlugin, 0, iiSS
+    iTrackIndex, iPluginIndex, SOrcPath, SUuid xin
+    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) ...", iTrackIndex,
+        iPluginIndex, SOrcPath, SUuid)
     // The given plugin index is 1-based. Change it to 0-based for use in the gSPlugins array.
     iPluginIndex -= 1
     gSPlugins[iTrackIndex][iPluginIndex] = SOrcPath
-    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done", iTrackIndex,
-        iPluginIndex, SOrcPath)
+    gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
+    log_i_info("opcode setPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
+        iTrackIndex, iPluginIndex, SOrcPath, SUuid)
 endop
 
 
-opcode registerPlugin, 0, SSS
-    STrackIndex, SPluginIndex, SOrcPath xin
+opcode registerPlugin, 0, SSSS
+    STrackIndex, SPluginIndex, SOrcPath, SUuid xin
     iInstrumentNumber = nstrnum("RegisterPlugin")
 igoto end
-    scoreline(sprintfk("i%d 0 1 %s %s \"%s\"", iInstrumentNumber, STrackIndex, SPluginIndex, SOrcPath), 1)
+    scoreline(sprintfk("i%d 0 1 %s %s \"%s\" \"%s\"", iInstrumentNumber, STrackIndex, SPluginIndex, SOrcPath,
+        SUuid), 1)
 end:
 endop
 
@@ -238,6 +252,24 @@ opcode addOrcInstance, 0, S
         gSOrcInstances[iIndex] = SOrcFilename
     endif
     giOrcInstanceCounts[iIndex] = giOrcInstanceCounts[iIndex] + 1
+endop
+
+
+opcode watchOrcFile, 0, SS
+    SPort, SOrcPath xin
+    iInstrumentNumber = nstrnum("WatchOrcFile")
+igoto end
+    scoreline(sprintfk("i%d 0 -1 %s \"%s\"", iInstrumentNumber, SPort, SOrcPath), 1)
+end:
+endop
+
+
+opcode generateUuid, 0, S
+    SPort xin
+    iInstrumentNumber = nstrnum("GenerateUuid")
+igoto end
+    scoreline(sprintfk("i%d 0 -1 %s", iInstrumentNumber, SPort), 1)
+end:
 endop
 
 
@@ -382,19 +414,23 @@ instr HandleOscMessages
                 // Track registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 3) then
-                        log_k_error("OSC path `%s` requires 3 arguments but was given %d.",
+                    if (k_argCount < 6) then
+                        log_k_error("OSC path `%s` requires 7 arguments but was given %d.",
                             DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = port
                         // 3 = track type
                         // 4 = orc path
                         // 5 = instrument name
+                        // 6 = instance name
+                        // 7 = uuid
                         registerTrack(
                             S_oscMessages[k(2)],
                             S_oscMessages[k(3)],
                             S_oscMessages[k(4)],
-                            S_oscMessages[k(5)])
+                            S_oscMessages[k(5)],
+                            S_oscMessages[k(6)],
+                            S_oscMessages[k(7)])
                     endif
                 endif
 
@@ -402,14 +438,16 @@ instr HandleOscMessages
                 // Plugin registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 3) then
-                        log_k_error("OSC path `%s` requires 3 arguments but was given %d.",
+                    if (k_argCount < 4) then
+                        log_k_error("OSC path `%s` requires 4 arguments but was given %d.",
                             DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = track index
                         // 3 = effect plugin index
                         // 4 = orc path
-                        registerPlugin(S_oscMessages[k(2)], S_oscMessages[k(3)], S_oscMessages[k(4)])
+                        // 5 = uuid
+                        registerPlugin(S_oscMessages[k(2)], S_oscMessages[k(3)], S_oscMessages[k(4)],
+                            S_oscMessages[k(5)])
                     endif
                 endif
 
@@ -427,6 +465,32 @@ instr HandleOscMessages
                 endif
 
 
+                // Plugin .orc change tracking
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH) == true) then
+                    if (k_argCount < 2) then
+                        log_k_error("OSC path `%s` requires 2 arguments but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        // 3 = .orc file path
+                        watchOrcFile(S_oscMessages[k(2)], S_oscMessages[k(3)])
+                    endif
+                endif
+
+
+                // Plugin UUID generation
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
+                    if (k_argCount < 1) then
+                        log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        generateUuid(S_oscMessages[k(2)])
+                    endif
+                endif
+
             endif
             k_j += 1
         od
@@ -440,18 +504,22 @@ instr RegisterTrack
     i_trackType init p5
     S_orcPath init strget(p6)
     S_instrumentName init strget(p7)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s) ...",
-        i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+    SInstanceName init strget(p8)
+    SUuid init strget(p9)
+    log_ik_info(
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) ...",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     i_trackIndex = getTrackIndexForPort(i_oscPort)
     if (i_trackIndex == -1) then
         i_trackIndex = getNextTrackIndex()
-        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName)
+        setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     endif
     log_ik_debug("i_trackIndex = %d", i_trackIndex)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
         "i", i_trackIndex)
-    log_ik_info("instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s) - done", i_oscPort, i_trackType,
-        S_orcPath)
+    log_ik_info(
+        "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) - done",
+        i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
     turnoff
 endin
 
@@ -479,11 +547,12 @@ instr RegisterPlugin
     i_trackIndex init p4
     i_pluginIndex init p5
     S_orcPath init strget(p6)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) ...", i_trackIndex,
-        i_pluginIndex, S_orcPath)
-    setPlugin(i_trackIndex, i_pluginIndex, S_orcPath)
-    log_i_info("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s) - done", i_trackIndex,
-        i_pluginIndex, S_orcPath)
+    SUuid init strget(p7)
+
+    log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) ...",
+        i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
+    
+    setPlugin(i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
 
     // Log plugins.
     iI = 0
@@ -493,12 +562,15 @@ instr RegisterPlugin
         iTrackPort = gi_trackPorts[iI]
         iTrackType = gi_trackTypes[iI]
         STrackOrcPath = gS_trackOrcPaths[iI]
-        log_i_debug("Track[%d]: Track port = %d, type = %d, orc = %s", iI, iTrackPort, iTrackType, STrackOrcPath)
+        STrackUuid = gSTrackUuids[iI]
+        log_i_debug("Track[%d]: port = %d, type = %d, orc = %s, uuid = %s", iI, iTrackPort, iTrackType, STrackOrcPath,
+            STrackUuid)
         iJ = 0
         while (iJ < PLUGIN_COUNT_MAX) do
             SOrcFilename = gSPlugins[iI][iJ]
+            SPluginUuid = gSPluginUuids[iI][iJ]
             if (strcmp(SOrcFilename, "") != 0) then
-                log_i_debug("   Plugin[%d], SOrcFilename = %s", iJ, SOrcFilename)
+                log_i_debug("   Plugin[%d], orc = %s, uuid = %s", iJ, SOrcFilename, SPluginUuid)
                 iJ += 1
             else
                 // Break out of loop.
@@ -508,7 +580,55 @@ instr RegisterPlugin
         iI += 1
     od
 
+    log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
+        i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
     turnoff
+endin
+
+
+instr WatchOrcFile
+    iOscPort init p4
+    SOrcPath init strget(p5)
+
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
+
+    log_i_trace("  ... import os ...")
+    pylruni("import os")
+    log_i_trace("  ... import os - done")
+    SPythonCode = sprintf("float(os.path.getmtime(\"%s\"))", SOrcPath)
+
+    kPreviousTime init 0
+    kCurrentTime = time_k()
+    kPreviousModifiedTime init 0
+    kSignal init 1
+    if (kCurrentTime - kPreviousTime > 1) then
+        kPreviousTime = kCurrentTime
+        kModifiedTime = pyleval(SPythonCode)
+        if (kPreviousModifiedTime < kModifiedTime) then
+            if (kPreviousModifiedTime > 0) then
+                log_k_trace("%s changed", SOrcPath)
+                OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
+                    sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
+                kSignal += 1
+            endif
+            kPreviousModifiedTime = kModifiedTime
+        endif
+    endif
+
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+endin
+
+
+instr GenerateUuid
+    iOscPort init p4
+
+    log_i_trace("instr GenerateUuid(iOscPort = %d) ...", iOscPort)
+
+    OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
+        "s", uuid())
+
+    turnoff
+    log_i_trace("instr GenerateUuid(iOscPort = %d) - done", iOscPort)
 endin
 
 
@@ -661,7 +781,9 @@ instr WriteTracksetFiles
         kTrackPort = gi_trackPorts[kI]
         kTrackType = gi_trackTypes[kI]
         STrackOrcPath = gS_trackOrcPaths[kI]
-        log_k_debug("[%d]: Track port = %d, type = %d, orc = %s", kI, kTrackPort, kTrackType, STrackOrcPath)
+        STrackUuid = gSTrackUuids[kI]
+        log_k_debug("[%d]: Track port = %d, type = %d, orc = %s, uuid = %s", kI, kTrackPort, kTrackType, STrackOrcPath,
+            STrackUuid)
         kI += 1
     od
 
@@ -670,8 +792,8 @@ instr WriteTracksetFiles
     kI = 0
     while (kI < giTracksetCount) do
         kTrackIndex = giTracksetOrder[kI]
-        log_k_debug("[%d]: Track index = %d, type = %d, orc = %s", kI, kTrackIndex, gi_trackTypes[kTrackIndex],
-            gS_trackOrcPaths[kTrackIndex])
+        log_k_debug("[%d]: Track index = %d, type = %d, orc = %s, uuid = %s", kI, kTrackIndex, gi_trackTypes[kTrackIndex],
+            gS_trackOrcPaths[kTrackIndex], gSTrackUuids[kTrackIndex])
         kI += 1 
     od
 
@@ -829,6 +951,8 @@ instr WriteTracksetOrcFile
 
             S_orcFilename = gS_trackOrcPaths[kTrack]
             S_instrumentName = gS_trackInstrumentNames[kTrack]
+            SInstanceName = gSInstanceNames[kTrack]
+            STrackUuid = gSTrackUuids[kTrack]
             kOrcInstanceIndex = getOrcInstanceIndex:k(S_orcFilename)
             log_k_debug("Trackset %d: kOrcInstanceIndex = %d", kI, kOrcInstanceIndex)
             kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
@@ -843,16 +967,20 @@ instr WriteTracksetOrcFile
 
             fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
             fprintks(S_filename, "#define INSTRUMENT_NAME %s // -%d\n", S_instrumentName, 0)
+            fprintks(S_filename, "#define INSTANCE_NAME STRINGIZE(%s) // -%d\n", SInstanceName, 0)
             fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX 0\n")
+            fprintks(S_filename, "#define INSTRUMENT_PLUGIN_UUID \"%s\" // -%d\n", STrackUuid, 0)
             fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
             fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
             fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/%s/%s/%s\" // -%d\n", \
                 SOrcDirectory, SOrcSubDirectory, S_orcFilename, 0)
             fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
             fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
+            fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_UUID\n")
             fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")
             fprintks(S_filename, "#undef INSTRUMENT_TRACK_INDEX\n")
+            fprintks(S_filename, "#undef INSTANCE_NAME\n")
             fprintks(S_filename, "#undef INSTRUMENT_NAME\n")
             fprintks(S_filename, "#undef INSTRUMENT_ID\n")
             fprintks(S_filename, "\n")
@@ -864,6 +992,7 @@ instr WriteTracksetOrcFile
             if (strcmpk(SOrcFilename, "") != 0) then
                 kOrcInstanceIndex = getOrcInstanceIndex:k(SOrcFilename)
                 log_k_debug("   Plugin %d: kOrcInstanceIndex = %d", kJ, kOrcInstanceIndex)
+                STrackUuid = gSPluginUuids[kTrack][kJ]
                 kOrcInstance = gkOrcInstanceCounters[kOrcInstanceIndex]
                 gkOrcInstanceCounters[kOrcInstanceIndex] = kOrcInstance + 1
                 log_k_debug("kTrackIndex = %d, kPluginIndex = %d, SOrcFilename = %s", kI, kJ, SOrcFilename)

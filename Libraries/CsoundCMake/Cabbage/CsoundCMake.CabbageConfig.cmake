@@ -238,6 +238,7 @@ set(rect "image")
 set(rslider "rslider ${_radial_slider} trackerinsideradius(0.999) trackercolour(${dark_grey}) markerstart(0) markerthickness(100)")
 set(rslider_small "rslider ${_radial_slider} trackerinsideradius(0.499) trackeroutsideradius(0.500) trackercolour(${dark_grey}) markerstart(0) markerthickness(100)")
 set(texteditor "texteditor")
+set(uuid_label "${texteditor} colour(${black}) fontcolour(${grey}) active(0)")
 set(vslider "vslider ${_linear_slider} popuptext(0)")
 set(xypad "xypad")
 
