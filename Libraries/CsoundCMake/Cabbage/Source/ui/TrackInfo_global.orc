@@ -19,6 +19,7 @@ gk_playing init false
 gk_pluginIndex init -1
 gk_trackIndex init -1
 gk_trackRefs[] init TRACK_COUNT_MAX
+gSPluginUuid init ""
 
 
 opcode setTrackIndex, 0, k
@@ -74,6 +75,12 @@ opcode addTrackRef, 0, k
     else
         log_k_error("Track reference index %d is out of range [0, %d].", k_trackRefIndex, min(ksmps, TRACK_COUNT_MAX))
     endif
+endop
+
+
+opcode setPluginUuid, 0, S
+    SPluginUuid xin
+    gSPluginUuid = SPluginUuid
 endop
 
 
@@ -154,9 +161,14 @@ endin
 instr RegisterTrack
     log_ik_info("RegisterTrack ...")
 
-    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iiss",
-        gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME")
+    if (strlen(gSPluginUuid) != 0) then
+        log_k_trace("Sending track registration to DAW ...")
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, "iissss",
+            gi_oscPort, $PLUGIN_TRACK_TYPE, $ORC_FILENAME, "$INSTRUMENT_NAME", gS_instanceName, gSPluginUuid)
+        log_k_trace("Sending track registration to DAW - done")
+    endif
 
+end:
     log_ik_info("RegisterTrack - done")
     turnoff
 endin
@@ -167,11 +179,79 @@ instr RegisterPlugin
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
     OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
-        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, "$INSTRUMENT_NAME")
+        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
 
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
 endin
+
+
+instr ListenForPluginUuid
+    log_i_trace("instr ListenForPluginUuid ...")
+
+    SUuid init ""
+    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, gi_oscPort), "s", SUuid)
+    if (kReceived == true) then
+        gSPluginUuid = sprintfk("%s", SUuid)
+        log_k_debug("gSPluginUuid = %s", gSPluginUuid)
+        chnsetks(sprintfk("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
+        turnoff
+    endif
+
+    log_i_trace("instr ListenForPluginUuid - done")
+endin
+
+
+instr RequestPluginUuid
+    log_i_trace("instr RequestPluginUuid ...")
+
+    if (gi_oscHandle == -1) then
+        event("i", p1, 1, -1)
+    else
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, "i",
+            gi_oscPort)
+        event("i", "ListenForPluginUuid", 0, -1)
+    endif
+
+    turnoff
+    log_i_trace("instr RequestPluginUuid - done")
+endin
+
+instr GetPluginUuid
+    iAttempt = p4
+
+    log_ik_trace("%s attempt = %d ...", nstrstr(p1), iAttempt)
+    log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
+
+    if (strlen(gSPluginUuid) == 0) then
+        if (iAttempt >= 3) then
+            log_i_trace("Requesting plugin UUID ...")
+            event("i", "RequestPluginUuid", 0, -1)
+            log_i_trace("Requesting plugin UUID - done")
+        else
+            log_i_trace("Getting plugin UUID from channel ...")
+            gSPluginUuid = chnget:S("pluginUuid")
+            if (strlen(gSPluginUuid) == 0) then
+                event_i("i", p1, 1, -1, iAttempt + 1)
+                goto end
+#if LOGGING
+            else
+                log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
+#endif
+            endif
+        endif
+    else
+        log_i_warning("gSPluginUuid already set to %s", gSPluginUuid)
+    endif
+
+end:
+    log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
+    turnoff
+endin
+
+
+event_i("i", nstrnum("GetPluginUuid"), 0, -1, 0)
+
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
