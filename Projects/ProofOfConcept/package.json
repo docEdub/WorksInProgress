@@ -1,5 +1,16 @@
 {
+  "scripts": {
+    "build": "webpack --config ./BabylonJs/webpack-dev.js --mode development --progress --color",
+    "start": "webpack serve --config ./BabylonJs/webpack-dev.js --mode development --progress --color --https"
+  },
   "devDependencies": {
-    "node-watch": "^0.7.1"
+    "html-webpack-plugin": "^5.3.1",
+    "node-watch": "^0.7.1",
+    "ts-loader": "^9.2.2",
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0"
+  },
+  "dependencies": {
+    "babylonjs": "^4.2.0"
   }
 }
