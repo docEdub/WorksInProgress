@@ -40,8 +40,8 @@ module.exports = {
                         "experimentalDecorators": true,
                         "noImplicitReturns": true,
                         "noImplicitThis": true,
-                        "noUnusedLocals": true,
-                        "strictNullChecks": true,
+                        "noUnusedLocals": false,
+                        "strictNullChecks": false,
                         "strictFunctionTypes": true,
                         "skipLibCheck": true,
                         "lib": [
