@@ -9,7 +9,7 @@ module.exports = {
     entry: {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
     },
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
@@ -23,7 +23,6 @@ module.exports = {
                         "noImplicitAny": true,
                         "module": "esNext",
                         "target": "es5",
-                        "jsx": "react",
                         "moduleResolution": "node",
                         "importHelpers": true,
                         "experimentalDecorators": true,
@@ -52,6 +51,7 @@ module.exports = {
         path: path.join(__dirname, 'app'),
         publicPath: '/',
         filename: '[name].js',
+        clean: true,
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
@@ -73,7 +73,6 @@ module.exports = {
         contentBase: path.join(__dirname, 'app'),
         host: '0.0.0.0',
         port: 9000,
-        hot: true,
         inline: true,
         noInfo: false,
         mimeTypes: { typeMap: { 'text/javascript': [ 'js' ] }, force: true },
