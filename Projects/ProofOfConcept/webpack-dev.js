@@ -3,22 +3,11 @@
 const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const config = require(path.join(__dirname, 'config'))
-
-console.log("\n======================================================================================================")
-console.log("")
-console.log("config.rootSourcePath = " + config.rootSourcePath)
-console.log("config.rootOutputPath = " + config.rootOutputPath)
-console.log("")
-console.log("config.projectSourcePath = " + config.projectSourcePath)
-console.log("config.projectOutputPath = " + config.projectOutputPath)
-console.log("")
-console.log("======================================================================================================\n")
 
 module.exports = {
-    context: config.projectSourcePath,
+    context: path.join(__dirname, 'app'),
     entry: {
-        [path.join(config.relativeProjectOutputPath, 'index')]: path.join(config.projectSourcePath, 'index.ts'),
+        ['app']: path.join(__dirname, 'BabylonJs', 'index.ts'),
     },
     devtool: 'source-map',
     module: {
@@ -49,7 +38,7 @@ module.exports = {
                             "dom",
                             "es2015.promise",
                             "es2015.collection",
-                            "es2015.iterable"
+                            "es2015.iterable",
                         ],
                     }
                 }
@@ -57,34 +46,31 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [ '.ts', '.tsx', '.js' ]
+        extensions: [ '.ts', '.tsx', '.js' ],
     },
     output: {
-        path: config.rootOutputPath,
+        path: path.join(__dirname, 'app'),
         publicPath: '/',
         filename: '[name].js',
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
-            template: path.join(config.projectSourcePath, 'index.html'),
-            filename: path.join(config.projectOutputPath, 'index.html'),
-        })
+            template: path.join(__dirname, 'BabylonJs', 'index.html'),
+            filename: path.join(__dirname, 'app', 'index.html'),
+        }),
     ],
     externals: {
         "babylonjs": "BABYLON",
     },
     performance: {
-        maxAssetSize: 16384000
+        maxAssetSize: 16384000,
     },
     devServer: {
         allowedHosts: [
             '.github.com',
         ],
-        before(app, server) {
-            server._watch(path.join(config.projectSourcePath, '**'))
-        },
-        contentBase: [config.rootOutputPath],
+        contentBase: path.join(__dirname, 'app'),
         host: '0.0.0.0',
         port: 9000,
         hot: true,
@@ -93,5 +79,5 @@ module.exports = {
         mimeTypes: { typeMap: { 'text/javascript': [ 'js' ] }, force: true },
         useLocalIp: true,
         watchContentBase: true,
-    }
+    },
 }
