@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
     context: path.join(__dirname, 'app'),
     entry: {
-        ['app']: path.join(__dirname, 'BabylonJs', 'index.ts'),
+        ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
     },
     devtool: 'source-map',
     module: {
