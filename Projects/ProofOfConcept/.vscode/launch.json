@@ -5,20 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "http",
+            "name": "https",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:9000",
+            "url": "https://localhost:9000",
             "webRoot": "${workspaceFolder}/app",
-            // "resolveSourceMapLocations": [
-            //     "${workspaceFolder}/**",
-            //     "!**/node_modules/**"
-            // ],
             "sourceMapPathOverrides": {
                 "webpack:///../*": "${workspaceFolder}/*",
             },
-            // "trace": true,
-            // "port": 9222,
         }
     ]
 }
