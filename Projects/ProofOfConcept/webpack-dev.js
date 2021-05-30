@@ -20,7 +20,7 @@ module.exports = {
                     compilerOptions: {
                         "declaration": false,
                         "sourceMap": true,
-                        "noImplicitAny": true,
+                        "noImplicitAny": false,
                         "module": "esNext",
                         "target": "es5",
                         "moduleResolution": "node",
