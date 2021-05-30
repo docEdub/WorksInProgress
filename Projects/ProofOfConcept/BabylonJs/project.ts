@@ -12,7 +12,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     script.type = 'module'
     script.innerText =
         'import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";' +
-        'document.csound = await Csound({ withWorker: true });'
+        'console.log("Csound loading ...");' +
+        'Csound({ withWorker: true }).then(' +
+        '   (csound) => {' +
+        '       document.csound = csound;' +
+        '       console.log("Csound loaded successfully")' +
+        '   },' +
+        '   () => {' +
+        '       console.log("Csound failed to load")' +
+        '   }' +
+        ');'
     document.body.appendChild(script)
 
     // This creates a basic Babylon Scene object (non-mesh)
@@ -44,23 +53,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // XR
     const xrHelper = scene.createDefaultXRExperienceAsync({});
 
-    let csoundLoadedLogged = false
-    let csoundNotLoadedYetLogged = false
 
-    engine.runRenderLoop(() => {
-        if (!document.csound) {
-            if (!csoundNotLoadedYetLogged) {
-                console.log('csound.esm.js loading ...')
-                csoundNotLoadedYetLogged = true
-            }
-        }
-        else {
-            if (!csoundLoadedLogged) {
-                console.log('csound.esm.js loading - done!')
-                csoundLoadedLogged = true
-            }
-        }
-    })
 
     return scene;
 }}
