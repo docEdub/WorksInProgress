@@ -66,6 +66,9 @@ giMaxNoteOffSpeed = 100 // per second
 giPowerLineSynth_DistanceMin = 5
 giPowerLineSynth_DistanceMax = 100
 
+giRiserTableId = ftgen(0, 0, giRiserTableSize + GUARD_POINT_SIZE, 16, 0, giRiserTableSize, -10, 1)
+giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
+
 instr PowerLineSynth_NoteOn
     iNoteNumber = p4
     iVelocity = p5 / 127
@@ -95,13 +98,12 @@ instr PowerLineSynth_NoteOn
     kReleased = release()
     
     // Exponential curve from 0 to 1, slowing when approaching 1.
-    iRiserTableId = ftgenonce(0, 0, giRiserTableSize + GUARD_POINT_SIZE, 16, 0, giRiserTableSize, -10, 1)
     iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
     kRiserTableI init 0
     if (kRiserTableI < giRiserTableSize && kReleased == false) then
         kRiserTableI += iRiserTableIncrementI
     endif
-    kRiserTableValue = tablei(kRiserTableI, iRiserTableId)
+    kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
 
     if (kReleased == false) then
         // kRiserTableI is less than giRiserTableSize for the entire duration of giMaxRiseTime.
@@ -132,7 +134,6 @@ instr PowerLineSynth_NoteOn
     endif
 
     // 1 cycle of a sine wave.
-    iWobbleTableId = ftgenonce(0, 0, 1024, 10, 1)
     iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
     kWobbleTableI init 0
     kWobbleTableI += iWobbleTableIncrementI
@@ -141,7 +142,7 @@ instr PowerLineSynth_NoteOn
 
     kNoteNumber = iNoteNumber
     kNoteNumber += kRiserTableValue * iMaxRiseAmount
-    kNoteNumber += tablei(kWobbleTableI, iWobbleTableId) * kNoteNumberWobbleAmp
+    kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
     if (kNoteNumber > 127) then
         kNoteNumber = 127
         #ifdef LOGGING
