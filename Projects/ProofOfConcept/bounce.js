@@ -18,13 +18,37 @@ if (os.type() === 'Darwin') {
         if (err) {
             return console.log(err);
         }
-        var result = data.replace(/\\/g, '\\\\');
 
-        fs.writeFile(csoundDir + '/build/bounce/DawPlayback.js.csd', result, 'ascii', function (err) {
+        // Remove "-+rtmidi=null" option.
+        data = data.replace('-+rtmidi=null', '')
+
+        // Remove Cabbage xml element.
+        data = data.replace('<Cabbage>', '')
+        data = data.replace('</Cabbage>', '')
+
+        // Escape backslashes.
+        data = data.replace(/\\/g, '\\\\');
+
+        // Remove lines starting with "//"".
+        data = data.replace(/\s*\/\/.*\n/g, '\n')
+
+        // Remove lines starting with ";".
+        data = data.replace(/\s*;.*\n/g, '\n')
+
+        // Remove blank lines.
+        data = data.replace(/\s*\n/g, '\n')
+
+        // Add 8 spaces before each line.
+        data = data.replace(/\n/g, '\n        ');
+
+        // Wrap with Javascript multiline string variable named `csdText`.
+        var output = '    const csdText = `' + data + '`\n'
+
+        fs.writeFile(csoundDir + '/build/bounce/DawPlayback.csd.js', output, 'ascii', function (err) {
             if (err) {
                 return console.log(err);
             }
-            console.log('-- Generating ../bounce/DawPlayback.js.csd done')
+            console.log('-- Generating ../bounce/DawPlayback.csd.js done')
         });
     });
 }
