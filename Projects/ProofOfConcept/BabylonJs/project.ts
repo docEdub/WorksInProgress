@@ -12,20 +12,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     let script = document.createElement('script');
     script.type = 'module'
-    script.innerText =
-        'console.log("Csound loading ...");' +
-        'import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";' +
-        'document.csoundLoadStarted = true;' +
-        'Csound({ withWorker: true }).then(' +
-        '   (csound) => {' +
-        '       document.csound = csound;' +
-        '       console.log("Csound loaded successfully")' +
-        '   },' +
-        '   () => {' +
-        '       document.csoundLoadFailed = true;' +
-        '       console.error("Csound failed to load")' +
-        '   }' +
-        ');'
+    script.innerText = `
+        console.log("Csound loading ...");
+        import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
+        document.csoundLoadStarted = true;
+        Csound({ withWorker: true }).then(
+           (csound) => {
+               document.csound = csound;
+               console.log("Csound loaded successfully");
+           },
+           () => {
+               document.csoundLoadFailed = true;
+               console.error("Csound failed to load");
+           }
+        )
+    `
     document.body.appendChild(script)
 
     // This creates a basic Babylon Scene object (non-mesh)
