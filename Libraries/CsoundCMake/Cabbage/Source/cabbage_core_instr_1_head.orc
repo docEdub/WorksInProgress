@@ -29,7 +29,7 @@
     #if LOG_INFO
         if (ksmps < gk_i && k_instanceNameChanged == true) then
             k_instanceNameChanged = false
-            log_k_info("Instance name changed to `%s`", gS_instanceName)
+            log_k_info("Instance name changed to '%s'", gS_instanceName)
             if (k_isCsdInfoLogged == false) then
                 k_isCsdInfoLogged = true
                 if (gk_isPlugin == true) then

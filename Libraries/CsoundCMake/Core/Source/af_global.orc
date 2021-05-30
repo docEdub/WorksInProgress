@@ -13,7 +13,7 @@ ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
 
 // The sample rate, control rate, and number of channels are all set by the Csound WASM WebAudio node.
-// TODO: Set `ksmps` programatically based on the sample rate. This currently assumes a sample rate of 48000.
+// TODO: Set 'ksmps' programatically based on the sample rate. This currently assumes a sample rate of 48000.
 //ksmps = 120
 
 

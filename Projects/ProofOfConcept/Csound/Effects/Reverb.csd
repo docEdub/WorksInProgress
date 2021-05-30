@@ -45,7 +45,7 @@ instr 1
     a_signal[] init nchnls
 
     // For each output channel that has a matching input channel, read the host DAW input channel into the signal array.
-    // Note that the `k_chnl` variable used in the `inch` opcode is always less than `nchnls_i`.
+    // Note that the 'k_chnl' variable used in the 'inch' opcode is always less than 'nchnls_i'.
     k_chnl = 0
     while (k_chnl < kMaxChannel && k_chnl < nchnls_i) do
         a_signal[k_chnl] = inch(k_chnl + 1)

@@ -100,8 +100,8 @@ endop
  *
  * in  i  : Instrument's p1 value.
  *
- * out S  : Instrument's p1 value formatted as a string enclosed in square brackets, i.e. "[i,s]" where `i` is the
- *          instrument number and `s` is the sub-instrument number.
+ * out S  : Instrument's p1 value formatted as a string enclosed in square brackets, i.e. "[i,s]" where 'i' is the
+ *          instrument number and 's' is the sub-instrument number.
  */
 opcode AF_GetInstrumentId, S, 0
     xout sprintf("[%.0f,%d]", p1, (p1 - floor(p1)) * 1000)
@@ -111,7 +111,7 @@ endop
 /**********************************************************************************************************************
  * AF_SendInstrumentOnMessage
  **********************************************************************************************************************
- * Sends an instrument `on` message to Javascript.
+ * Sends an instrument 'on' message to Javascript.
  *
  * in  S  : Instrument's id.
  * in  i  : Instrument's start time.

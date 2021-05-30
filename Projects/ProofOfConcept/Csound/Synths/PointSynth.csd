@@ -108,7 +108,7 @@ massign 0, 3
 
 // Disable MIDI program change messages.
 // NB: The Apple Logic DAW sends MIDI program change messages on each MIDI track at startup. If they are not disabled,
-// Csound will route MIDI messages to instruments other than the one set using `massign`.
+// Csound will route MIDI messages to instruments other than the one set using 'massign'.
 pgmassign 0, 0
 
 gi_noteId init 0
@@ -180,7 +180,7 @@ instr 3
             sendScoreMessage_k(sprintfk("i CONCAT(-%s_%d, .%03d) %.03f NoteOff", STRINGIZE(${InstrumentName}),
                 gk_trackIndex, i_noteId, elapsedTime() + k_releaseDeltaTime))
             ; turnoff
-            // N.B. The `turnoff` opcode isn't working as expected here so a `k_noteOffSent` flag is used to prevent
+            // N.B. The 'turnoff' opcode isn't working as expected here so a 'k_noteOffSent' flag is used to prevent
             // duplicate scorelines.
             k_noteOffSent = true
         endif

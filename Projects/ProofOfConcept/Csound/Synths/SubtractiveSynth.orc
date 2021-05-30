@@ -893,7 +893,7 @@ instr SubtractiveSynth_Note
         outch(5, aReverbSendSignal)
         outch(6, aReverbSendSignal)
     else
-        // All channel configurations other than 6 are not supported, yet, so just copy the `aOut` signal to all
+        // All channel configurations other than 6 are not supported, yet, so just copy the 'aOut' signal to all
         // output channels for now.
         kI = 0
         while (kI < nchnls) do

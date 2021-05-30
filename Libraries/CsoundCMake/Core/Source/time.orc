@@ -9,7 +9,7 @@
 ${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_time_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
-// The Csound `times` opcode does not work as expected when called from a user defined opcode. This opcode uses the
+// The Csound 'times' opcode does not work as expected when called from a user defined opcode. This opcode uses the
 // global k cycle counter to calculate the time. Note that at i time the global cycle counter hasn't been incremented,
 // yet, so this opcode returns the time at the next global k cycle.
 opcode time_i, i, 0

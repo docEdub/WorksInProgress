@@ -303,7 +303,7 @@ instr FinalMixInstrument
     od
 
     // Mix aux tracks into master.
-    // NB: `kTrack` is not reset before entering the next loop. This is intentional.
+    // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
     kAux = 0
     while (kAux < gi_auxCount) do
         kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]

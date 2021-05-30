@@ -7,11 +7,11 @@
 ${CSOUND_INCLUDE_GUARD_IFNDEF} TrackInfo_instr_1_head_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
-    log_i_trace("Calling instr `ReadMode` ...")
+    log_i_trace("Calling instr 'ReadMode' ...")
     event_i("i", "ReadMode", 0, -1)
 
     ${CSOUND_IFDEF} IS_FIRST_PLUGIN_IN_TRACK
-        log_i_trace("Calling instr `GetTrackIndex` ...")
+        log_i_trace("Calling instr 'GetTrackIndex' ...")
         if (gk_i == 0) then
             event("i", "GetTrackIndex", 0, -1)
             setPluginIndex(0)
