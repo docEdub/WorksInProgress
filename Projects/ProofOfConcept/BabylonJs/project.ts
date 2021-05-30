@@ -10,9 +10,9 @@ declare global {
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
-    let script = document.createElement('script');
-    script.type = 'module'
-    script.innerText = `
+    let csoundImportScript = document.createElement('script');
+    csoundImportScript.type = 'module'
+    csoundImportScript.innerText = `
         console.log("Csound loading ...");
         import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
         document.csoundLoadStarted = true;
@@ -27,7 +27,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
            }
         )
     `
-    document.body.appendChild(script)
+    document.body.appendChild(csoundImportScript)
 
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
