@@ -8,9 +8,9 @@ ${CSOUND_INCLUDE} "af_opcodes.orc"
 ${CSOUND_INCLUDE} "log.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
-/**********************************************************************************************************************
- * File: af_spatial_opcodes.orc
- *********************************************************************************************************************/
+//---------------------------------------------------------------------------------------------------------------------
+// File: af_spatial_opcodes.orc
+//---------------------------------------------------------------------------------------------------------------------
 
 
 ${CSOUND_DEFINE} AF_3D_AUDIO__AMBISONIC_ORDER_MAX #3#
@@ -23,15 +23,15 @@ ${CSOUND_DEFINE} AF_3D_AUDIO__SPEED_OF_SOUND #343# // Meters per second at 20 °
 gk_AF_3D_ListenerPosition[] init 3
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_AzimuthLookupTableRow
- **********************************************************************************************************************
- * Returns the given azimuth's spherical harmonics lookup table row.
- *
- * in  k  : Azimuth in degrees.
- *
- * out k  : Azimuth spherical harmonics lookup table row.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_AzimuthLookupTableRow
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the given azimuth's spherical harmonics lookup table row.
+//
+// in  k  : Azimuth in degrees.
+//
+// out k  : Azimuth spherical harmonics lookup table row.
+//
  opcode AF_3D_Audio_AzimuthLookupTableRow, k, k
     k_azimuth xin
     k_azimuth = round(k_azimuth % 360)
@@ -44,49 +44,49 @@ gk_AF_3D_ListenerPosition[] init 3
  endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ElevationLookupTableRow
- **********************************************************************************************************************
- * Returns the given elevation's spherical harmonics lookup table row.
- *
- * in  k  : Elevation in degrees.
- *
- * out k  : Elevation spherical harmonics lookup table row.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ElevationLookupTableRow
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the given elevation's spherical harmonics lookup table row.
+//
+// in  k  : Elevation in degrees.
+//
+// out k  : Elevation spherical harmonics lookup table row.
+//
  opcode AF_3D_Audio_ElevationLookupTableRow, k, k
     k_elevation xin
     xout min(round(min(90, max(-90, k_elevation))) + 90, 179)
  endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_MaxReWeightsLookupTableRow
- **********************************************************************************************************************
- * Returns the given source width's max re weights lookup table row index.
- *
- * in  k  : Source width in degrees.
- *
- * out k  : Max re weights lookup table row.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_MaxReWeightsLookupTableRow
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the given source width's max re weights lookup table row index.
+//
+// in  k  : Source width in degrees.
+//
+// out k  : Max re weights lookup table row.
+//
  opcode AF_3D_Audio_MaxReWeightsLookupTableRow, k, k
     k_sourceWidth xin
     xout min(max(0, round(k_sourceWidth)), 359)
  endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ChannelGains
- **********************************************************************************************************************
- * Returns an array of ambisonic channel gains for the given azimuth, elevation, and source width.
- * The number of channel gains returned depends on the given ambisonic order.
- *
- * in  k  : Azimuth in degrees.
- * in  k  : Elevation in degrees.
- * in  k  : Source width in degrees.
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1.
- *
- * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ChannelGains
+//---------------------------------------------------------------------------------------------------------------------
+// Returns an array of ambisonic channel gains for the given azimuth, elevation, and source width.
+// The number of channel gains returned depends on the given ambisonic order.
+//
+// in  k  : Azimuth in degrees.
+// in  k  : Elevation in degrees.
+// in  k  : Source width in degrees.
+// in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1.
+//
+// out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+//
 opcode AF_3D_Audio_ChannelGains, k[], kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
 
@@ -131,18 +131,18 @@ opcode AF_3D_Audio_ChannelGains, k[], kkkp
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ChannelGains
- **********************************************************************************************************************
- * Returns an array of ambisonic channel gains for the given position and source width.
- * The number of channel gains returned depends on the given ambisonic order.
- *
- * in  i[]: Source position
- * in  k  : Source width in degrees.
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet.
- *
- * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ChannelGains
+//---------------------------------------------------------------------------------------------------------------------
+// Returns an array of ambisonic channel gains for the given position and source width.
+// The number of channel gains returned depends on the given ambisonic order.
+//
+// in  i[]: Source position
+// in  k  : Source width in degrees.
+// in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet.
+//
+// out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+//
 opcode AF_3D_Audio_ChannelGains, k[], i[]kp
     i_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
     
@@ -157,18 +157,18 @@ opcode AF_3D_Audio_ChannelGains, k[], i[]kp
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ChannelGains
- **********************************************************************************************************************
- * Returns an array of ambisonic channel gains for the given position and source width.
- * The number of channel gains returned depends on the given ambisonic order.
- *
- * in  k[]: Source position
- * in  k  : Source width in degrees. (k-rate)
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
- *
- * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ChannelGains
+//---------------------------------------------------------------------------------------------------------------------
+// Returns an array of ambisonic channel gains for the given position and source width.
+// The number of channel gains returned depends on the given ambisonic order.
+//
+// in  k[]: Source position
+// in  k  : Source width in degrees. (k-rate)
+// in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
+//
+// out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+//
 opcode AF_3D_Audio_ChannelGains, k[], k[]kp
     k_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
     
@@ -183,20 +183,20 @@ opcode AF_3D_Audio_ChannelGains, k[], k[]kp
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ChannelGains_XYZ
- **********************************************************************************************************************
- * Returns an array of ambisonic channel gains for the given position and source width.
- * The number of channel gains returned depends on the given ambisonic order.
- *
- * in  k  : Source position X.
- * in  k  : Source position Y.
- * in  k  : Source position Z.
- * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
- *
- * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ChannelGains_XYZ
+//---------------------------------------------------------------------------------------------------------------------
+// Returns an array of ambisonic channel gains for the given position and source width.
+// The number of channel gains returned depends on the given ambisonic order.
+//
+// in  k  : Source position X.
+// in  k  : Source position Y.
+// in  k  : Source position Z.
+// in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
+// in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
+//
+// out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+//
 opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
     k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
 
@@ -243,20 +243,20 @@ opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_ChannelGains_RTZ
- **********************************************************************************************************************
- * Returns an array of ambisonic channel gains for the given R, T, Z, and source width.
- * The number of channel gains returned depends on the given ambisonic order.
- *
- * in  k  : Source position XY plane radius (needed to calculate the elevation angle).
- * in  k  : Source position XY plane theta (aka azimuth).
- * in  k  : Source position Z.
- * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
- * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
- *
- * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_ChannelGains_RTZ
+//---------------------------------------------------------------------------------------------------------------------
+// Returns an array of ambisonic channel gains for the given R, T, Z, and source width.
+// The number of channel gains returned depends on the given ambisonic order.
+//
+// in  k  : Source position XY plane radius (needed to calculate the elevation angle).
+// in  k  : Source position XY plane theta (aka azimuth).
+// in  k  : Source position Z.
+// in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
+// in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
+//
+// out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
+//
 opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
     k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
 
@@ -280,17 +280,17 @@ opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_DistanceAttenuation
- **********************************************************************************************************************
- * Returns the logarithmic attenuation for the given distance.
- *
- * in  k  : Distance.
- * in  k  : Minimum distance.
- * in  k  : Maximum distance.
- *
- * out k  : Attenuation.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_DistanceAttenuation
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the logarithmic attenuation for the given distance.
+//
+// in  k  : Distance.
+// in  k  : Minimum distance.
+// in  k  : Maximum distance.
+//
+// out k  : Attenuation.
+//
 opcode AF_3D_Audio_DistanceAttenuation, k, kkk
     // TODO: Try changing this opcode to use a predefined curve instead of a logarithmic spike when objects are close.
     // Objects passing directly thru the camera are zippering and popping. Try a predefined curve instead of raw math.
@@ -311,17 +311,17 @@ opcode AF_3D_Audio_DistanceAttenuation, k, kkk
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_DistanceAttenuation
- **********************************************************************************************************************
- * Returns the logarithmic attenuation for the given distance.
- *
- * in  i  : Distance.
- * in  i  : Minimum distance.
- * in  i  : Maximum distance.
- *
- * out i  : Attenuation.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_DistanceAttenuation
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the logarithmic attenuation for the given distance.
+//
+// in  i  : Distance.
+// in  i  : Minimum distance.
+// in  i  : Maximum distance.
+//
+// out i  : Attenuation.
+//
 opcode AF_3D_Audio_DistanceAttenuation_i, i, iii
     // TODO: Try changing this opcode to use a predefined curve instead of a logarithmic spike when objects are close.
     // Objects passing directly thru the camera are zippering and popping. Try a predefined curve instead of raw math.
@@ -342,15 +342,15 @@ opcode AF_3D_Audio_DistanceAttenuation_i, i, iii
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_SourceDistance
- **********************************************************************************************************************
- * Returns the distance and direction from the listener to the given source position.
- *
- * in  i[]: Source's position [x, y, z].
- *
- * out k  : Distance from listener to given source position.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
+// in  i[]: Source's position [x, y, z].
+//
+// out k  : Distance from listener to given source position.
+//
 opcode AF_3D_Audio_SourceDistance, k, i[]
     i_sourcePosition[] xin
 
@@ -363,15 +363,15 @@ opcode AF_3D_Audio_SourceDistance, k, i[]
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_SourceDistance
- **********************************************************************************************************************
- * Returns the distance and direction from the listener to the given source position.
- *
- * in  k[]: Source's position [x, y, z].
- *
- * out k  : Distance from listener to given source position.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
+// in  k[]: Source's position [x, y, z].
+//
+// out k  : Distance from listener to given source position.
+//
 opcode AF_3D_Audio_SourceDistance, k, k[]
     k_sourcePosition[] xin
 
@@ -384,15 +384,15 @@ opcode AF_3D_Audio_SourceDistance, k, k[]
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_SourceDirection
- **********************************************************************************************************************
- * Returns the direction from the listener to the given source position.
- *
- * in  k[]: Source's position [x, y, z].
- *
- * out k[]: Normalized direction vector from listener to given source position.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDirection
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the direction from the listener to the given source position.
+//
+// in  k[]: Source's position [x, y, z].
+//
+// out k[]: Normalized direction vector from listener to given source position.
+//
 opcode AF_3D_Audio_SourceDirection, k[], k[]
     k_sourcePosition[] xin
     
@@ -412,16 +412,16 @@ opcode AF_3D_Audio_SourceDirection, k[], k[]
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_Audio_DopplerShift
- **********************************************************************************************************************
- *
- * in  k  : The previous distance between the sound source and the listener.
- * in  k  : The current distance between the sound source and the listener.
- * in  k  : The time in seconds it took to move from the previous distance to the current distance.
- *
- * out k  : The amount of doppler shift calculated by comparing the given distance to the previously given distance.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_DopplerShift
+//---------------------------------------------------------------------------------------------------------------------
+//
+// in  k  : The previous distance between the sound source and the listener.
+// in  k  : The current distance between the sound source and the listener.
+// in  k  : The time in seconds it took to move from the previous distance to the current distance.
+//
+// out k  : The amount of doppler shift calculated by comparing the given distance to the previously given distance.
+//
 opcode AF_3D_Audio_DopplerShift, k, kkk
     k_previousDistance, k_currentDistance, k_deltaTime xin
 

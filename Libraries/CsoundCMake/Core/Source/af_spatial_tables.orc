@@ -4,16 +4,16 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_af_spatial_tables_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_spatial_tables_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 
-/**********************************************************************************************************************
- * File: af_spatial_tables.orc
- *********************************************************************************************************************/
+//---------------------------------------------------------------------------------------------------------------------
+// File: af_spatial_tables.orc
+//---------------------------------------------------------------------------------------------------------------------
 
 
 // Pre-computed lookup tables for encoding ambisonic sources.
-//
-// The resonance audio lookup tables were copied from https://github.com/resonance-audio/resonance-audio-web-sdk.
-// The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
-//
+/*
+ * The resonance audio lookup tables were copied from https://github.com/resonance-audio/resonance-audio-web-sdk.
+ * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
+ */
 // In the resonance audio web sdk the azimuth and elevation tables are in a multidimensional javascript array with each
 // row having a different number of columns. In Csound we separate the azimuth and elevation tables because
 // multidimensional arrays can't have a different number of columns.
@@ -25,18 +25,16 @@ gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_180_359[][] init 180, 6
 gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[][] init 180, 9
 gi_AF_3D_Audio_MaxReWeightsLookupTable[][] init 360, 4
 
-/**
- * Pre-computed Spherical Harmonics Coefficients.
- *
- * This function generates an efficient lookup table of SH coefficients. It
- * exploits the way SHs are generated (i.e. Ylm = Nlm * Plm * Em). Since Nlm
- * & Plm coefficients only depend on theta, and Em only depends on phi, we
- * can separate the equation along these lines. Em does not depend on
- * degree, so we only need to compute (2 * l) per azimuth Em total and
- * Nlm * Plm is symmetrical across indexes, so only positive indexes are
- * computed ((l + 1) * (l + 2) / 2 - 1) per elevation.
- */
-
+// Pre-computed Spherical Harmonics Coefficients.
+//
+// This function generates an efficient lookup table of SH coefficients. It
+// exploits the way SHs are generated (i.e. Ylm = Nlm * Plm * Em). Since Nlm
+// & Plm coefficients only depend on theta, and Em only depends on phi, we
+// can separate the equation along these lines. Em does not depend on
+// degree, so we only need to compute (2 * l) per azimuth Em total and
+// Nlm * Plm is symmetrical across indexes, so only positive indexes are
+// computed ((l + 1) * (l + 2) / 2 - 1) per elevation.
+//
 gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_000_179 fillarray _(\)
 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000,
 0.052336, 0.034899, 0.017452, 0.999848, 0.999391, 0.998630,
@@ -585,11 +583,9 @@ gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable fillarray _(\)
 1.000000, 0.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000, 0.000000
 
 
-/**
- * Pre-computed per-band weighting coefficients for producing energy-preserving
- * Max-Re sources.
- */
-
+// Pre-computed per-band weighting coefficients for producing energy-preserving
+// Max-Re sources.
+//
 gi_AF_3D_Audio_MaxReWeightsLookupTable fillarray _(\)
 1.000000, 1.000000, 1.000000, 1.000000,
 1.000000, 1.000000, 1.000000, 1.000000,

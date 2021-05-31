@@ -37,7 +37,7 @@
                 else
                     S_isPlugin = string_k("false")
                 endif
-                // --->                         # 1  2  3  4  5  6  7  8  9  10 11
+                /* --->                         # 1  2  3  4  5  6  7  8  9  10 11 */
                 S_info = sprintfk("CSD info ...\n %s %s %s %s %s %s %s %s %s %s %s",
                     /*  1 */ "--------------------------------------------------------------------------------------\n",
                     /*  2 */ sprintfk(" csd    = %s\n", gS_csdFileName),

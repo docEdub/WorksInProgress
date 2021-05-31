@@ -447,24 +447,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         endin
         event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
-        /**********************************************************************************************************************
-         * File: af_spatial_tables.orc
-         *********************************************************************************************************************/
+        /*
+         * The resonance audio lookup tables were copied from https:
+         * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
+         */
         gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_000_179[][] init 180, 6
         gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_180_359[][] init 180, 6
         gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[][] init 180, 9
         gi_AF_3D_Audio_MaxReWeightsLookupTable[][] init 360, 4
-        /**
-         * Pre-computed Spherical Harmonics Coefficients.
-         *
-         * This function generates an efficient lookup table of SH coefficients. It
-         * exploits the way SHs are generated (i.e. Ylm = Nlm * Plm * Em). Since Nlm
-         * & Plm coefficients only depend on theta, and Em only depends on phi, we
-         * can separate the equation along these lines. Em does not depend on
-         * degree, so we only need to compute (2 * l) per azimuth Em total and
-         * Nlm * Plm is symmetrical across indexes, so only positive indexes are
-         * computed ((l + 1) * (l + 2) / 2 - 1) per elevation.
-         */
         gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_000_179 fillarray \\
         0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000,
         0.052336, 0.034899, 0.017452, 0.999848, 0.999391, 0.998630,
@@ -1009,10 +999,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         0.999391, 0.034899, 0.998173, 0.060411, 0.001055, 0.996348, 0.085356, 0.002357, 0.000034,
         0.999848, 0.017452, 0.999543, 0.030224, 0.000264, 0.999086, 0.042733, 0.000590, 0.000004,
         1.000000, 0.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000, 0.000000
-        /**
-         * Pre-computed per-band weighting coefficients for producing energy-preserving
-         * Max-Re sources.
-         */
         gi_AF_3D_Audio_MaxReWeightsLookupTable fillarray \\
         1.000000, 1.000000, 1.000000, 1.000000,
         1.000000, 1.000000, 1.000000, 1.000000,
@@ -1374,9 +1360,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         2.397469, 0.000001, 0.000000, 0.000000,
         2.397469, 0.000001, 0.000000, 0.000000,
         2.397469, 0.000001, 0.000000, 0.000000
-        /**********************************************************************************************************************
-         * File: af_opcodes.orc
-         *********************************************************************************************************************/
          #define X #0#
          #define Y #1#
          #define Z #2#
@@ -1393,16 +1376,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #define AF_MATH__RADIANS_TO_DEGREES #$AF_MATH__180_OVER_PI#
          #define AF_3D_FRAME_DURATION #0.01666667#
          #define AF_3D_FRAME_DURATION_OVER_2 #0.05#
-        /**********************************************************************************************************************
-         * AF_FuzzyEqual
-         **********************************************************************************************************************
-         * Returns $AF_TRUE if the given values are close to equal
-         *
-         * in  k  : Value to compare with other value.
-         * in  k  : Value to compare with other value.
-         *
-         * out k  : $AF_TRUE if the given values are close to equal
-         */
         opcode AF_FuzzyEqual, k, kk
             k_a, k_b xin
             k_equal = $AF_TRUE
@@ -1411,26 +1384,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_equal
         endop
-        /**********************************************************************************************************************
-         * AF_Math_RadiansFromDegrees
-         **********************************************************************************************************************
-         *
-         * in  k  : Degrees.
-         *
-         * out k  : Radians.
-         */
         opcode AF_Math_RadiansFromDegrees, k, k
             k_degrees xin
             xout k_degrees * $AF_MATH__DEGREES_TO_RADIANS
         endop
-        /**********************************************************************************************************************
-         * AF_Math_DegreesFromRadians
-         **********************************************************************************************************************
-         *
-         * in  k  : Radians.
-         *
-         * out k  : Degrees.
-         */
         opcode AF_Math_DegreesFromRadians, k, k
             k_radians xin
             xout k_radians * $AF_MATH__DEGREES_TO_RADIANS
@@ -1443,28 +1400,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             k_degrees xin
             xout cos(AF_Math_RadiansFromDegrees(k_degrees))
         endop
-        /**********************************************************************************************************************
-         * AF_GetInstrumentId
-         **********************************************************************************************************************
-         * Returns the given float input as an instrument id string.
-         *
-         * in  i  : Instrument's p1 value.
-         *
-         * out S  : Instrument's p1 value formatted as a string enclosed in square brackets, i.e. "[i,s]" where 'i' is the
-         *          instrument number and 's' is the sub-instrument number.
-         */
         opcode AF_GetInstrumentId, S, 0
             xout sprintf("[%.0f,%d]", p1, (p1 - floor(p1)) * 1000)
         endop
-        /**********************************************************************************************************************
-         * AF_SendInstrumentOnMessage
-         **********************************************************************************************************************
-         * Sends an instrument 'on' message to Javascript.
-         *
-         * in  S  : Instrument's id.
-         * in  i  : Instrument's start time.
-         * in  j  : Instrument's duration. Defaults to -1.
-         */
         opcode AF_SendInstrumentOnMessage, 0, Sij
             S_instrumentId, i_startTime, i_duration xin
             if (-1 == i_duration) then
@@ -1474,59 +1412,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     i_startTime, i_duration)
             endif
         endop
-        /**********************************************************************************************************************
-         * AF_CreateKChannel
-         **********************************************************************************************************************
-         * Creates a k channel with the given channel name.
-         *
-         * in  S  : Channel name.
-         * in  o  : Optional default value. Zero if not set.
-         */
         opcode AF_CreateKChannel, 0, So
             S_channelName, i_defaultValue xin
             chn_k S_channelName, 3, 0, i_defaultValue
         endop
-        /**********************************************************************************************************************
-         * AF_GetKChannel
-         **********************************************************************************************************************
-         * Get the specified k channel's value.
-         *
-         * in  S  : Channel name.
-         *
-         * out k  : Channel value.
-         */
         opcode AF_GetKChannel, k, S
             S_channelName xin
             k_channelValue chnget S_channelName
             xout k_channelValue
         endop
-        /**********************************************************************************************************************
-         * AF_SetKChannel
-         **********************************************************************************************************************
-         * Set the specified k channel's value to the given value.
-         *
-         * in  S  : Channel name.
-         * in  k  : Channel value.
-         */
         opcode AF_SetKChannel, 0, Sk
             S_channelName, k_channelValue xin
             chnset k_channelValue, S_channelName
         endop
-        /**********************************************************************************************************************
-         * File: af_spatial_opcodes.orc
-         *********************************************************************************************************************/
          #define AF_3D_AUDIO__AMBISONIC_ORDER_MAX #3#
          #define AF_3D_AUDIO__SPEED_OF_SOUND #343#
         gk_AF_3D_ListenerPosition[] init 3
-        /**********************************************************************************************************************
-         * AF_3D_Audio_AzimuthLookupTableRow
-         **********************************************************************************************************************
-         * Returns the given azimuth's spherical harmonics lookup table row.
-         *
-         * in  k  : Azimuth in degrees.
-         *
-         * out k  : Azimuth spherical harmonics lookup table row.
-         */
          opcode AF_3D_Audio_AzimuthLookupTableRow, k, k
             k_azimuth xin
             k_azimuth = round(k_azimuth % 360)
@@ -1537,45 +1438,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_azimuth
          endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ElevationLookupTableRow
-         **********************************************************************************************************************
-         * Returns the given elevation's spherical harmonics lookup table row.
-         *
-         * in  k  : Elevation in degrees.
-         *
-         * out k  : Elevation spherical harmonics lookup table row.
-         */
          opcode AF_3D_Audio_ElevationLookupTableRow, k, k
             k_elevation xin
             xout min(round(min(90, max(-90, k_elevation))) + 90, 179)
          endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_MaxReWeightsLookupTableRow
-         **********************************************************************************************************************
-         * Returns the given source width's max re weights lookup table row index.
-         *
-         * in  k  : Source width in degrees.
-         *
-         * out k  : Max re weights lookup table row.
-         */
          opcode AF_3D_Audio_MaxReWeightsLookupTableRow, k, k
             k_sourceWidth xin
             xout min(max(0, round(k_sourceWidth)), 359)
          endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ChannelGains
-         **********************************************************************************************************************
-         * Returns an array of ambisonic channel gains for the given azimuth, elevation, and source width.
-         * The number of channel gains returned depends on the given ambisonic order.
-         *
-         * in  k  : Azimuth in degrees.
-         * in  k  : Elevation in degrees.
-         * in  k  : Source width in degrees.
-         * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1.
-         *
-         * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
-         */
         opcode AF_3D_Audio_ChannelGains, k[], kkkp
             k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
             k_azimuth = 360 - k_azimuth
@@ -1612,18 +1482,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             od
             xout k_channelGains
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ChannelGains
-         **********************************************************************************************************************
-         * Returns an array of ambisonic channel gains for the given position and source width.
-         * The number of channel gains returned depends on the given ambisonic order.
-         *
-         * in  i[]: Source position
-         * in  k  : Source width in degrees.
-         * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet.
-         *
-         * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
-         */
         opcode AF_3D_Audio_ChannelGains, k[], i[]kp
             i_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -1634,18 +1492,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
             xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ChannelGains
-         **********************************************************************************************************************
-         * Returns an array of ambisonic channel gains for the given position and source width.
-         * The number of channel gains returned depends on the given ambisonic order.
-         *
-         * in  k[]: Source position
-         * in  k  : Source width in degrees. (k-rate)
-         * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
-         *
-         * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
-         */
         opcode AF_3D_Audio_ChannelGains, k[], k[]kp
             k_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -1656,20 +1502,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
             xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ChannelGains_XYZ
-         **********************************************************************************************************************
-         * Returns an array of ambisonic channel gains for the given position and source width.
-         * The number of channel gains returned depends on the given ambisonic order.
-         *
-         * in  k  : Source position X.
-         * in  k  : Source position Y.
-         * in  k  : Source position Z.
-         * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
-         * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (i-time)
-         *
-         * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
-         */
         opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
             k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(k_sourcePositionX - gk_AF_3D_ListenerPosition[$X],
@@ -1696,20 +1528,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_channelGains
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_ChannelGains_RTZ
-         **********************************************************************************************************************
-         * Returns an array of ambisonic channel gains for the given R, T, Z, and source width.
-         * The number of channel gains returned depends on the given ambisonic order.
-         *
-         * in  k  : Source position XY plane radius (needed to calculate the elevation angle).
-         * in  k  : Source position XY plane theta (aka azimuth).
-         * in  k  : Source position Z.
-         * in  P  : Source width in degrees. Optional. Defaults to 1. (k-rate)
-         * in  p  : Ambisonic order (1, 2, or 3). Optional. Defaults to 1. Orders 2 and 3 are not implemented, yet. (k-rate)
-         *
-         * out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
-         */
         opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
             k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
             k_sourcePositionX = k_sourcePositionR * cos(k_sourcePositionT)
@@ -1719,17 +1537,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 k_sourceWidth, i_ambisonicOrder)
             xout k_channelGains
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_DistanceAttenuation
-         **********************************************************************************************************************
-         * Returns the logarithmic attenuation for the given distance.
-         *
-         * in  k  : Distance.
-         * in  k  : Minimum distance.
-         * in  k  : Maximum distance.
-         *
-         * out k  : Attenuation.
-         */
         opcode AF_3D_Audio_DistanceAttenuation, k, kkk
             k_distance, k_minDistance, k_maxDistance xin
             k_linearFadeOutDistance = k_maxDistance - 1
@@ -1746,17 +1553,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_gain
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_DistanceAttenuation
-         **********************************************************************************************************************
-         * Returns the logarithmic attenuation for the given distance.
-         *
-         * in  i  : Distance.
-         * in  i  : Minimum distance.
-         * in  i  : Maximum distance.
-         *
-         * out i  : Attenuation.
-         */
         opcode AF_3D_Audio_DistanceAttenuation_i, i, iii
             i_distance, i_minDistance, i_maxDistance xin
             i_linearFadeOutDistance = i_maxDistance - 1
@@ -1773,15 +1569,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout i_gain
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_SourceDistance
-         **********************************************************************************************************************
-         * Returns the distance and direction from the listener to the given source position.
-         *
-         * in  i[]: Source's position [x, y, z].
-         *
-         * out k  : Distance from listener to given source position.
-         */
         opcode AF_3D_Audio_SourceDistance, k, i[]
             i_sourcePosition[] xin
             k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -1789,15 +1576,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 i_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
             xout sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y] + k_direction[$Z] * k_direction[$Z])
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_SourceDistance
-         **********************************************************************************************************************
-         * Returns the distance and direction from the listener to the given source position.
-         *
-         * in  k[]: Source's position [x, y, z].
-         *
-         * out k  : Distance from listener to given source position.
-         */
         opcode AF_3D_Audio_SourceDistance, k, k[]
             k_sourcePosition[] xin
             k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -1805,15 +1583,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 k_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
             xout sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y] + k_direction[$Z] * k_direction[$Z])
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_SourceDirection
-         **********************************************************************************************************************
-         * Returns the direction from the listener to the given source position.
-         *
-         * in  k[]: Source's position [x, y, z].
-         *
-         * out k[]: Normalized direction vector from listener to given source position.
-         */
         opcode AF_3D_Audio_SourceDirection, k[], k[]
             k_sourcePosition[] xin
             k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -1825,16 +1594,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_direction
         endop
-        /**********************************************************************************************************************
-         * AF_3D_Audio_DopplerShift
-         **********************************************************************************************************************
-         *
-         * in  k  : The previous distance between the sound source and the listener.
-         * in  k  : The current distance between the sound source and the listener.
-         * in  k  : The time in seconds it took to move from the previous distance to the current distance.
-         *
-         * out k  : The amount of doppler shift calculated by comparing the given distance to the previously given distance.
-         */
         opcode AF_3D_Audio_DopplerShift, k, kkk
             k_previousDistance, k_currentDistance, k_deltaTime xin
             k_dopplerShift init 1

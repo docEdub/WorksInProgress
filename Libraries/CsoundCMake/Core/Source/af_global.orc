@@ -7,9 +7,9 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_global_orc ${CSOUND_INCLUDE_GUARD_
 // vice-versa.
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 
-/**********************************************************************************************************************
- * File: af_global.orc
- *********************************************************************************************************************/
+//---------------------------------------------------------------------------------------------------------------------
+// File: af_global.orc
+//---------------------------------------------------------------------------------------------------------------------
 
 
 // The sample rate, control rate, and number of channels are all set by the Csound WASM WebAudio node.
@@ -32,14 +32,14 @@ gi_AF_3D_ListenerMatrixTableNumber ftgen 1, 0, 16, -2,   1, 0, 0, 0,   0, 1, 0, 
 gk_AF_3D_ListenerRotationMatrix[] init 9
 
 
-/**********************************************************************************************************************
- * AF_3D_UpdateListenerRotationMatrix
- **********************************************************************************************************************
- * Sets the global listener rotation matrix to the global listener matrix table updated by Javascript, applying the
- * given portamento to account for the frame rate being lower than the k-rate.
- *
- * in  j  : Half-time of portamento, in seconds.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_UpdateListenerRotationMatrix
+//---------------------------------------------------------------------------------------------------------------------
+// Sets the global listener rotation matrix to the global listener matrix table updated by Javascript, applying the
+// given portamento to account for the frame rate being lower than the k-rate.
+//
+// in  j  : Half-time of portamento, in seconds.
+//
 opcode AF_3D_UpdateListenerRotationMatrix, 0, i
     i_portamento_halftime xin
     gk_AF_3D_ListenerRotationMatrix[0] = port(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
@@ -54,14 +54,14 @@ opcode AF_3D_UpdateListenerRotationMatrix, 0, i
 endop
 
 
-/**********************************************************************************************************************
- * AF_3D_UpdateListenerPosition
- **********************************************************************************************************************
- * Sets the global listener position vector to the global listener matrix table updated by Javascript, applying the
- * given portamento to account for the frame rate being lower than the k-rate.
- *
- * in  j  : Half-time of portamento, in seconds.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_UpdateListenerPosition
+//---------------------------------------------------------------------------------------------------------------------
+// Sets the global listener position vector to the global listener matrix table updated by Javascript, applying the
+// given portamento to account for the frame rate being lower than the k-rate.
+//
+// in  j  : Half-time of portamento, in seconds.
+//
 opcode AF_3D_UpdateListenerPosition, 0, i
     i_portamento_halftime xin
     gk_AF_3D_ListenerPosition[0] = port(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
@@ -75,15 +75,15 @@ endop
 ga_AF_3D_AmbisonicOutput[] init 4
 
 
-/**********************************************************************************************************************
- * AF_Ambisonics_Send
- **********************************************************************************************************************
- * Calculates the given signal's ambisonic outputs and adds them to the global ambisonic send variable.
- *
- * in  a  : Signal to send.
- * in  i[]: Signal's position
- * in  P  : Signal's width in degrees. Optional. Defaults to 1.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_Ambisonics_Send
+//---------------------------------------------------------------------------------------------------------------------
+// Calculates the given signal's ambisonic outputs and adds them to the global ambisonic send variable.
+//
+// in  a  : Signal to send.
+// in  i[]: Signal's position
+// in  P  : Signal's width in degrees. Optional. Defaults to 1.
+//
 opcode AF_Ambisonics_Send, 0, ai[]P
     a_signal, i_position[], k_width xin
     
@@ -98,15 +98,15 @@ opcode AF_Ambisonics_Send, 0, ai[]P
 endop
 
 
-/**********************************************************************************************************************
- * AF_Ambisonics_Send
- **********************************************************************************************************************
- * Calculates the given signal's ambisonic outputs and adds them to the global ambisonic send variable.
- *
- * in  a  : Signal to send.
- * in  k[]: Signal's position
- * in  P  : Signal's width in degrees. Optional. Defaults to 1.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_Ambisonics_Send
+//---------------------------------------------------------------------------------------------------------------------
+// Calculates the given signal's ambisonic outputs and adds them to the global ambisonic send variable.
+//
+// in  a  : Signal to send.
+// in  k[]: Signal's position
+// in  P  : Signal's width in degrees. Optional. Defaults to 1.
+//
 opcode AF_Ambisonics_Send, 0, ak[]P
     a_signal, k_position[], k_width xin
     
@@ -125,13 +125,13 @@ endop
 ga_AF_Reverb_Send init 0
 
 
-/**********************************************************************************************************************
- * AF_Reverb
- **********************************************************************************************************************
- * Adds the given signal to the global reverb send variable.
- *
- * in  a  : Signal to reverberate.
- */
+//---------------------------------------------------------------------------------------------------------------------
+// AF_Reverb
+//---------------------------------------------------------------------------------------------------------------------
+// Adds the given signal to the global reverb send variable.
+//
+// in  a  : Signal to reverberate.
+//
 opcode AF_Reverb_Send, 0, a
     a_signal xin
     ga_AF_Reverb_Send += a_signal
