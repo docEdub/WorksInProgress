@@ -1,8 +1,9 @@
 import * as BABYLON from "babylonjs";
+import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
     interface Document {
-        csound: any
+        csound: CSOUND.CsoundObj
         csoundLoadStarted: boolean
         csoundLoadFailed: boolean
     }

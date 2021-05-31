@@ -62,6 +62,7 @@ module.exports = {
     ],
     externals: {
         "babylonjs": "BABYLON",
+        "./@doc.e.dub/csound-browser": "CSOUND",
     },
     performance: {
         maxAssetSize: 16384000,
