@@ -4,26 +4,22 @@ import * as CSOUND from "./@doc.e.dub/csound-browser";
 declare global {
     interface Document {
         audioContext: AudioContext
-        Csound: any
-        csound: CSOUND.CsoundObj
-        csoundLoadStarted: boolean
-        csoundLoadFailed: boolean
+        Csound: CSOUND.Csound
     }
 }
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
-    BABYLON.Engine.audioEngine.lock()    
+    BABYLON.Engine.audioEngine.lock()
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
 
     let csoundImportScript = document.createElement('script');
     csoundImportScript.type = 'module'
     csoundImportScript.innerText = `
-        console.log("Csound loading ...");
+        console.log("Csound importing ...");
         import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
         document.Csound = Csound;
-        document.csoundLoadStarted = true;
     `
     document.body.appendChild(csoundImportScript)
 
@@ -57,68 +53,59 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const xrHelper = scene.createDefaultXRExperienceAsync({});
 
     const csoundLoadTimer = setInterval(() => {
-        if (!!document.csoundLoadStarted && !document.csoundLoadFailed && !document.Csound) {
-            console.log('Waiting for Csound to load ...')
-        }
-        else if (!!document.Csound) {
-            onCsdCompiled()
+        if (!!document.Csound) {
+            console.log('Csound imported successfully')
             clearInterval(csoundLoadTimer)
+            onCsoundLoaded()
+        }
+        else {
+            console.log('Waiting for Csound import ...')
         }
     }, 1000)
 
     let isAudioEngineUnlocked = false
-    let isCsdCompiled = false
+    let isCsoundLoaded = false
 
     const onAudioEngineUnlocked = () => {
         document.audioContext.resume()
         isAudioEngineUnlocked = true
         console.log('Audio engine unlocked')
-        startCsoundPerformance()
+        startCsound()
     }
     
-    const onCsdCompiled = () => {
-            let csound = document.csound
+    const onCsoundLoaded = () => {
         let csdData = JSON.parse(csdJson)
         console.log('csdData =', csdData)
-        isCsdCompiled = true
-        console.log('CSD compiled')
-        startCsoundPerformance()
+        isCsoundLoaded = true
+        startCsound()
     }
 
-    const startCsoundPerformance = () => {
+    const startCsound = async () => {
         if (!isAudioEngineUnlocked) return
-        if (!isCsdCompiled) return
-        console.log('Csound performance starting ...')
-
-        document.Csound({ audioContext: document.audioContext, withWorker: true }).then((csound) => {
-            document.csound = csound;
-            console.log("Csound loaded successfully");
-            clearInterval(csoundLoadTimer)
-            console.log('Compiling csd ...')
-            csound.compileCsdText(csdText).then((csoundErrorCode) => {
-                if (csoundErrorCode == 0) {
-                    console.log('Compiling csd succeeded')
-                    console.log('Csound starting ...')
-                    csound.start()
-                }
-                else {
-                    console.error('Compiling csd failed due to compile error')
-                }
-            },
-            () => {
-                console.error('Compiling csd failed')
-            })
-        },
-        () => {
-            document.csoundLoadFailed = true;
-            console.error("Csound failed to load");
-        })
+        if (!isCsoundLoaded) return
+        console.log('Csound initializing ...')
+        const csound = await document.Csound({ audioContext: new AudioContext({ sampleRate: 44100 })})
+        if (!csound) {
+            console.error('Csound failed to initialize')
+            return
+        }
+        console.log('Csound initialized successfully');
+        await csound.setOption('--iobufsamps=8192')
+        console.log('Csound csd compiling ...')
+        let csoundErrorCode = await csound.compileCsdText(csdText)
+        if (csoundErrorCode != 0) {
+            console.error('Csound csd compile failed')
+            return
+        }
+        console.log('Csound csd compile succeeded')
+        console.log('Csound starting ...')
+        csound.start()
     }
 
     const csdText = `
         <CsoundSynthesizer>
         <CsOptions>
-        -n
+        -odac
         -d
         -m0d        
         </CsOptions>
@@ -131,7 +118,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         endin	
         </CsInstruments>
         <CsScore>
-        i1 0 10
+        i1 0 100
         </CsScore>
         </CsoundSynthesizer>
         `
