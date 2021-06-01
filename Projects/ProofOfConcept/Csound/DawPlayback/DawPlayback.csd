@@ -12,8 +12,16 @@
 </CsOptions>
 <CsInstruments>
 
+${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT
+${CSOUND_DEFINE} OUTPUT_CHANNEL_COUNT #2#
+${CSOUND_ENDIF}
+
+${CSOUND_IFNDEF} INTERNAL_CHANNEL_COUNT
+${CSOUND_DEFINE} INTERNAL_CHANNEL_COUNT #6#
+${CSOUND_ENDIF}
+
 ksmps = 64
-nchnls = 6
+nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 
 #define Init_instrnum 1
@@ -30,18 +38,18 @@ ${CSOUND_INCLUDE} "time.orc"
 
 gi_instrumentCount = 1
 gi_instrumentIndexOffset = 0
-gaInstrumentSignals[][] init gi_instrumentCount, nchnls
+gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
 
 gi_auxCount = 1
 gi_auxIndexOffset = 0
 giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2 // 3rd column contains { [0]: low index, [1]: high index }
-ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, nchnls
-ga_auxSignals[][] init gi_auxCount, nchnls
+ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+ga_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
 
 gi_trackCount = gi_instrumentCount + gi_auxCount
 giMasterChannelIndexRanges[][] init gi_trackCount, 2 // 2nd column contains { [0]: low index, [1]: high index }
-ga_masterVolumes[][] init gi_trackCount, nchnls
-ga_masterSignals[] init nchnls
+ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
+ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
 
 
 instr Init_instrnum
@@ -51,7 +59,7 @@ instr Init_instrnum
     gi_auxIndexOffset = p7
     gi_trackCount = gi_instrumentCount + gi_auxCount
 
-    a_instrumentSignals[][] init gi_instrumentCount, nchnls
+    a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
     gaInstrumentSignals = a_instrumentSignals
 
     // TODO: Make the DAW service set these using score lines.
@@ -61,17 +69,17 @@ instr Init_instrnum
         iJ = 0
         while (iJ < gi_instrumentCount) do
             iAuxChannelIndexRanges[iI][iJ][LOW_CHANNEL_COUNT_INDEX] = 0
-            iAuxChannelIndexRanges[iI][iJ][HIGH_CHANNEL_COUNT_INDEX] = nchnls - 1
+            iAuxChannelIndexRanges[iI][iJ][HIGH_CHANNEL_COUNT_INDEX] = $INTERNAL_CHANNEL_COUNT - 1
             iJ += 1
         od
         iI += 1
     od
     giAuxChannelIndexRanges = iAuxChannelIndexRanges
 
-    a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, nchnls
+    a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
     ga_auxVolumes = a_auxVolumes
 
-    a_auxSignals[][] init gi_auxCount, nchnls
+    a_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
     ga_auxSignals = a_auxSignals
 
 
@@ -80,15 +88,15 @@ instr Init_instrnum
     iI = 0
     while (iI < gi_trackCount) do
         iMasterChannelIndexRanges[iI][LOW_CHANNEL_COUNT_INDEX] = 0
-        iMasterChannelIndexRanges[iI][HIGH_CHANNEL_COUNT_INDEX] = nchnls - 1
+        iMasterChannelIndexRanges[iI][HIGH_CHANNEL_COUNT_INDEX] = $INTERNAL_CHANNEL_COUNT - 1
         iI += 1
     od
     giMasterChannelIndexRanges = iMasterChannelIndexRanges
 
-    a_masterVolumes[][] init gi_trackCount, nchnls
+    a_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
     ga_masterVolumes = a_masterVolumes
 
-    a_masterSignals[] init nchnls
+    a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     ga_masterSignals = a_masterSignals
 
     event_i("i", ClearSignals_instrnum, 0, -1)      // clear signals
@@ -107,7 +115,7 @@ instr ClearSignals_instrnum
     k_instrument = 0
     while (k_instrument < gi_instrumentCount) do
         k_channel = 0
-        while (k_channel < nchnls) do
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
             gaInstrumentSignals[k_instrument][k_channel] = 0
             k_channel += 1
         od
@@ -117,7 +125,7 @@ instr ClearSignals_instrnum
     k_bus = 0
     while (k_bus < gi_auxCount) do
         k_channel = 0
-        while (k_channel < nchnls) do
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
             ga_auxSignals[k_bus][k_channel] = 0
             k_channel += 1
         od
@@ -125,7 +133,7 @@ instr ClearSignals_instrnum
     od
 
     k_channel = 0
-    while (k_channel < nchnls) do
+    while (k_channel < $INTERNAL_CHANNEL_COUNT) do
         ga_masterSignals[k_channel] = 0
         k_channel += 1
     od
@@ -284,7 +292,7 @@ endin
 //
 instr FinalMixInstrument
     kChannel = 0
-    while (kChannel < nchnls) do
+    while (kChannel < $INTERNAL_CHANNEL_COUNT) do
         ga_masterSignals[kChannel] = 0
         kChannel += 1
     od
@@ -318,11 +326,15 @@ instr FinalMixInstrument
     od
 
     // Output master.
-    kChannel = 0
-    while (kChannel < nchnls) do
-        outch(kChannel + 1, ga_masterSignals[kChannel])
-        kChannel += 1
-    od
+    ; kChannel = 0
+    ; while (kChannel < $INTERNAL_CHANNEL_COUNT) do
+    ;     outch(kChannel + 1, ga_masterSignals[kChannel])
+    ;     kChannel += 1
+    ; od
+    // For now just output the reverb channels.
+    // TODO: Add spatial audio conversion from ambisonic to stereo.
+    outch(1, ga_masterSignals[4])
+    outch(2, ga_masterSignals[5])
 endin
 
 </CsInstruments>
