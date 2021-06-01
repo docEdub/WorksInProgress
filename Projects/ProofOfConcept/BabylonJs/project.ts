@@ -86,7 +86,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.log('Csound initializing ...')
         const csound = await document.Csound({
             audioContext: new AudioContext({
-                latencyHint: 0.05,
+                latencyHint: 0.10,
                 sampleRate: 44100
             }),
             useSAB: false
