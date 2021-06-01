@@ -169,11 +169,22 @@ instr PowerLineSynth_NoteOn
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
     kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
-    a1 = kAmbisonicChannelGains[0] * aOutDistanced
-    a2 = kAmbisonicChannelGains[1] * aOutDistanced
-    a3 = kAmbisonicChannelGains[2] * aOutDistanced
-    a4 = kAmbisonicChannelGains[3] * aOutDistanced
-    outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut)
+
+    #if IS_PLAYBACK
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + kAmbisonicChannelGains[0] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + kAmbisonicChannelGains[1] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + kAmbisonicChannelGains[2] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + kAmbisonicChannelGains[3] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+    #else
+        outch(
+            1, kAmbisonicChannelGains[0] * aOutDistanced,
+            2, kAmbisonicChannelGains[1] * aOutDistanced,
+            3, kAmbisonicChannelGains[2] * aOutDistanced,
+            4, kAmbisonicChannelGains[3] * aOutDistanced,
+            5, aOut)
+    #endif
 
     log_i_trace("PowerLineSynth_NoteOn - done")
 endin:
@@ -254,26 +265,20 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
-            iNoteNumber,
-            iVelocity,
-            ORC_INSTANCE_INDEX,
-            INSTRUMENT_TRACK_INDEX
-
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+            aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+                iNoteNumber,
+                iVelocity,
+                ORC_INSTANCE_INDEX,
+                INSTRUMENT_TRACK_INDEX
         #else
-            outch(1, a1)
-            outch(2, a2)
-            outch(3, a3)
-            outch(4, a4)
-            outch(5, aOut)
-            outch(6, aOut)
+            a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
+                iNoteNumber,
+                iVelocity,
+                ORC_INSTANCE_INDEX,
+                INSTRUMENT_TRACK_INDEX
+
+            outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut, 6, aOut)
 
             if (gkReloaded == true) then
                 log_k_debug("Turning off instrument %.04f due to reload.", p1)
