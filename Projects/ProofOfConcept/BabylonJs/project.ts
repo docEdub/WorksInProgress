@@ -84,7 +84,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
         console.log('Csound initializing ...')
-        const csound = await document.Csound({ audioContext: new AudioContext({ sampleRate: 44100 })})
+        const csound = await document.Csound({
+            audioContext: new AudioContext({
+                latencyHint: 0.05,
+                sampleRate: 44100
+            }),
+            useSAB: false
+        })
         if (!csound) {
             console.error('Csound failed to initialize')
             return
