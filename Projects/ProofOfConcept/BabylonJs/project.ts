@@ -1682,11 +1682,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             aOutDistanced = aOut * kDistanceAttenuation
             aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
             kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
-            a1 = kAmbisonicChannelGains[0] * aOutDistanced
-            a2 = kAmbisonicChannelGains[1] * aOutDistanced
-            a3 = kAmbisonicChannelGains[2] * aOutDistanced
-            a4 = kAmbisonicChannelGains[3] * aOutDistanced
-            outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut)
+                gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + kAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + kAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + kAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + kAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
+                gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
         endin:
         endin
         instr CircleSynth_NoteOff
@@ -1750,17 +1751,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                a1, a2, a3, a4, aOut subinstr giCircleSynthNoteInstrumentNumber,
-                    iNoteNumber,
-                    iVelocity,
-                    0,
-                    0
-                    gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + a1
-                    gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + a2
-                    gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + a3
-                    gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + a4
-                    gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
-                    gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
+                    aDummy subinstr giCircleSynthNoteInstrumentNumber,
+                        iNoteNumber,
+                        iVelocity,
+                        0,
+                        0
             endif
         endin:
         endin
@@ -2196,11 +2191,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             aOutDistanced = aOut * kDistanceAttenuation
             aOut = aOut * (2 * kDistanceAttenuation)
             kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
-            a1 = kAmbisonicChannelGains[0] * aOutDistanced
-            a2 = kAmbisonicChannelGains[1] * aOutDistanced
-            a3 = kAmbisonicChannelGains[2] * aOutDistanced
-            a4 = kAmbisonicChannelGains[3] * aOutDistanced
-            outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut)
+                gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + kAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + kAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + kAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + kAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
+                gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
         endin:
         endin
         instr PowerLineSynth_NoteOff
@@ -2264,17 +2260,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
-                    iNoteNumber,
-                    iVelocity,
-                    0,
-                    2
-                    gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + a1
-                    gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + a2
-                    gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + a3
-                    gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + a4
-                    gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
-                    gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
+                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+                        iNoteNumber,
+                        iVelocity,
+                        0,
+                        2
             endif
         endin:
         endin
