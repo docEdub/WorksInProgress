@@ -1086,7 +1086,7 @@ instr WriteTracksetScoFile
                     kI, kJ)
                 // NB: A fractional instrument is used here so it doesn't get turned off by the non-fractional CC event
                 // score lines.
-                fprintks(S_filename, "i %s.1 0 -1 EVENT_EFFECT_ON Unused(%d)\n", SInstrumentName, 0)
+                fprintks(S_filename, "i CONCAT(%s, .1) 0 -1 EVENT_EFFECT_ON Unused(%d)\n", SInstrumentName, 0)
                 kJ += 1
             else
                 // Break out of loop.
