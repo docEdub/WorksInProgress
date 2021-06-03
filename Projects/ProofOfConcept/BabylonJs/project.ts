@@ -385,48 +385,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             xout kOut
         endop
          #end
-        gSCcInfo_CircleSynth[] = fillarray( \\
+        gSCcInfo_PointSynth[] = fillarray( \\
         \\
             "example", "bool", "false", "synced", \\
         \\
             "", "", "", "")
-         #define gSCcInfo_CircleSynth_Count #8#
+         #define gSCcInfo_PointSynth_Count #8#
          #define CC_INFO_CHANNEL #0#
          #define CC_INFO_TYPE #1#
          #define CC_INFO_VALUE #2#
          #define CC_INFO_SYNC_TYPE #3#
          #define CC_NO_SYNC #0#
          #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_CircleSynth_Count
-            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
-                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+         #ifdef gSCcInfo_PointSynth_Count
+            if (lenarray(gSCcInfo_PointSynth) == $gSCcInfo_PointSynth_Count) then
+                giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
+                reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
             endif
          #else
-            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+            giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
+            reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
          #end
-        opcode ccIndex_CircleSynth, i, S
+        opcode ccIndex_PointSynth, i, S
             SChannel xin
             kgoto end
             iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+            while (iI < giCcCount_PointSynth) do
+                if (strcmp(gSCcInfo_PointSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
                 iI += 1
             od
             iI = -1
         end:
             xout iI
         endop
-        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
-        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
-        instr CircleSynth_InitializeCcValues
+        giCcValueDefaults_PointSynth[] init giCcCount_PointSynth
+        giCcValues_PointSynth[][] init 1, giCcCount_PointSynth
+        gkCcValues_PointSynth[][] init 1, giCcCount_PointSynth
+        gkCcSyncTypes_PointSynth[][] init 1, giCcCount_PointSynth
+        instr PointSynth_InitializeCcValues
             iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
+            while (iI < giCcCount_PointSynth) do
+                SType = gSCcInfo_PointSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PointSynth[iI][$CC_INFO_VALUE]
                 iJ = 0
                 while (iJ < 1) do
                     iValue = -1
@@ -439,18 +439,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
                         iValue = strtod(SValue)
                     endif
-                    giCcValueDefaults_CircleSynth[iI] = iValue
-                    giCcValues_CircleSynth[iJ][iI] = iValue
+                    giCcValueDefaults_PointSynth[iI] = iValue
+                    giCcValues_PointSynth[iJ][iI] = iValue
                     iJ += 1
                 od
                 iI += 1
             od
             igoto end
             kI = 0
-            while (kI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
+            while (kI < giCcCount_PointSynth) do
+                SType = gSCcInfo_PointSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PointSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_PointSynth[kI][$CC_INFO_SYNC_TYPE]
                 kJ = 0
                 while (kJ < 1) do
                     kValue = -1
@@ -463,10 +463,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
                         kValue = strtodk(SValue)
                     endif
-                    gkCcValues_CircleSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
+                    gkCcValues_PointSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_PointSynth[kJ][kI] = $CC_NO_SYNC
                     if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                        gkCcSyncTypes_PointSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
                     endif
                     kJ += 1
                 od
@@ -475,12 +475,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         end:
         endin
-        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
-        instr CircleSynth_CreateCcIndexes
-            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
+        event_i("i", "PointSynth_InitializeCcValues", 0, -1)
+        instr PointSynth_CreateCcIndexes
+            giCc_PointSynth_example init ccIndex_PointSynth("example")
             turnoff
         endin
-        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
+        event_i("i", "PointSynth_CreateCcIndexes", 0, -1)
         /*
          * The resonance audio lookup tables were copied from https:
          * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
@@ -1639,247 +1639,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_dopplerShift
         endop
-        giCircleSynth_HeightRange init 50 - 1
-        giCircleSynth_RadiusRange init 50 - 1
-        giCircleSynth_SpreadSpeedRange init 15 - 1
-        giCircleSynth_NoteNumberRange init 96 - 24
-        giCircleSynth_DistanceMin = 5
-        giCircleSynth_DistanceMax = 100
-        instr CircleSynth_NoteOn
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
-            iSecondsPerKPass = 1 / kr
-            kPass init -1
-            kPass += 1
-            if (iNoteNumber < 24 || iNoteNumber > 96) then
-                goto endin
-            endif
-            iCps = cpsmidinn(iNoteNumber)
-            iLowPassCutoffBase = iCps * 16
-            iLowPassCutoffBaseOver360 = iLowPassCutoffBase / 260
-            iNoteNumberNormalized init (iNoteNumber - 24) / giCircleSynth_NoteNumberRange
-            iHeight init 1 + giCircleSynth_HeightRange * iNoteNumberNormalized
-            iRadius init 50 - giCircleSynth_RadiusRange * iNoteNumberNormalized
-            iSpreadIncrement init iSecondsPerKPass * (1 + iVelocity *
-                giCircleSynth_SpreadSpeedRange)
-            iSpreadAttenuationDecrement = iSpreadIncrement / (260 / 2)
-            kSpread init 1 - iSpreadIncrement
-            kSpreadAttenuation init 1 + iSpreadAttenuationDecrement
-            kIsFullSpread init 0
-            if (kIsFullSpread == 0) then
-                kSpread += iSpreadIncrement
-                kSpreadAttenuation -= iSpreadAttenuationDecrement
-                if (kSpreadAttenuation < 0) then
-                    kSpreadAttenuation = 0
-                    kSpread = 260
-                    kIsFullSpread = 1
-                endif
-                kLowPassCutoff = iLowPassCutoffBase + kSpread * iLowPassCutoffBaseOver360
-            endif
-            kAmp = 0.1 * iVelocity * adsr_linsegr:k(1, 0, 1, 1)
-            aOut = vco2(kAmp, iCps, 10, 0.5, 0, 0.5)
-            aOut = moogladder(aOut, kLowPassCutoff, 0)
-            kPosition[] fillarray 0, 0, 0
-            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin),
-                k(giCircleSynth_DistanceMax))
-            aOutDistanced = aOut * kDistanceAttenuation
-            aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
-                gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + kAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + kAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + kAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + kAmbisonicChannelGains[3] * aOutDistanced
-                gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
-                gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
-        endin:
-        endin
-        instr CircleSynth_NoteOff
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
-        endin
-        giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
-        giCircleSynth_NoteIndex[] init 1
-         #ifdef IS_GENERATING_JSON
-            setPluginUuid(0, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
-            instr CircleSynth_Json
-                SJsonFile = sprintf("%s.0.json", "baeea327-af4b-4b10-a843-6614c20ea958")
-                fprints(SJsonFile, "{")
-                fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "CircleSynth 1"))
-                fprints(SJsonFile, ",\\"heightMin\\":%d", 1)
-                fprints(SJsonFile, ",\\"heightMax\\":%d", 50)
-                fprints(SJsonFile, ",\\"radiusMin\\":%d", 50)
-                fprints(SJsonFile, ",\\"radiusMax\\":%d", 50)
-                fprints(SJsonFile, ",\\"spreadMax\\":%d", 260)
-                fprints(SJsonFile, ",\\"spreadSpeedMin\\":%d", 1)
-                fprints(SJsonFile, ",\\"spreadSpeedMax\\":%d", 15)
-                fprints(SJsonFile, ",\\"noteNumberMin\\":%d", 24)
-                fprints(SJsonFile, ",\\"noteNumberMax\\":%d", 96)
-                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giCircleSynth_DistanceMin)
-                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giCircleSynth_DistanceMax)
-                fprints(SJsonFile, "}")
-                turnoff
-            endin
-         #end
-        instr 3
-            iEventType = p4
-            if (iEventType == 4) then
-                turnoff
-            elseif (iEventType == 1) then
-                iNoteNumber = p5
-                iVelocity = p6
-                iInstrumentNumber = p1 + 0.0001
-                SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
-                scoreline_i(SOnEvent)
-                kReleased = release()
-                if (kReleased == 1) then
-                    SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-                    scoreline(SOffEvent, 1)
-                endif
-                #ifdef IS_GENERATING_JSON
-                    if (giCircleSynth_NoteIndex[0] == 0) then
-                        scoreline_i("i \\"CircleSynth_Json\\" 0 0")
-                    endif
-                    giCircleSynth_NoteIndex[0] = giCircleSynth_NoteIndex[0] + 1
-                    SJsonFile = sprintf("%s.%d.json", "baeea327-af4b-4b10-a843-6614c20ea958", giCircleSynth_NoteIndex[0])
-                    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
-                    if (kReleased == 1) then
-                        fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
-                    endif
-                #end
-                if (kReleased == 1) then
-                    turnoff
-                endif
-            elseif (iEventType == 3) then
-                iNoteNumber = p5
-                iVelocity = p6
-                    aDummy subinstr giCircleSynthNoteInstrumentNumber,
-                        iNoteNumber,
-                        iVelocity,
-                        0,
-                        0
-            endif
-        endin:
-        endin
-         #ifndef ADSR_LINSEGR_UDO_ORC
-         #define ADSR_LINSEGR_UDO_ORC ##
-        opcode adsr_linsegr, a, iiii
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout aOut
-        endop
-        opcode adsr_linsegr, k, kkkk
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout kOut
-        endop
-         #end
-        gSCcInfo_PointSynth[] = fillarray( \\
-        \\
-            "example", "bool", "false", "synced", \\
-        \\
-            "", "", "", "")
-         #define gSCcInfo_PointSynth_Count #8#
-         #define CC_INFO_CHANNEL #0#
-         #define CC_INFO_TYPE #1#
-         #define CC_INFO_VALUE #2#
-         #define CC_INFO_SYNC_TYPE #3#
-         #define CC_NO_SYNC #0#
-         #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_PointSynth_Count
-            if (lenarray(gSCcInfo_PointSynth) == $gSCcInfo_PointSynth_Count) then
-                giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
-                reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
-            endif
-         #else
-            giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
-            reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
-         #end
-        opcode ccIndex_PointSynth, i, S
-            SChannel xin
-            kgoto end
-            iI = 0
-            while (iI < giCcCount_PointSynth) do
-                if (strcmp(gSCcInfo_PointSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
-                iI += 1
-            od
-            iI = -1
-        end:
-            xout iI
-        endop
-        giCcValueDefaults_PointSynth[] init giCcCount_PointSynth
-        giCcValues_PointSynth[][] init 1, giCcCount_PointSynth
-        gkCcValues_PointSynth[][] init 1, giCcCount_PointSynth
-        gkCcSyncTypes_PointSynth[][] init 1, giCcCount_PointSynth
-        instr PointSynth_InitializeCcValues
-            iI = 0
-            while (iI < giCcCount_PointSynth) do
-                SType = gSCcInfo_PointSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PointSynth[iI][$CC_INFO_VALUE]
-                iJ = 0
-                while (iJ < 1) do
-                    iValue = -1
-                    if (strcmp(SType, "bool") == 0) then
-                        if (strcmp(SValue, "false") == 0) then
-                            iValue = 0
-                        else
-                            iValue = 1
-                        endif
-                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
-                        iValue = strtod(SValue)
-                    endif
-                    giCcValueDefaults_PointSynth[iI] = iValue
-                    giCcValues_PointSynth[iJ][iI] = iValue
-                    iJ += 1
-                od
-                iI += 1
-            od
-            igoto end
-            kI = 0
-            while (kI < giCcCount_PointSynth) do
-                SType = gSCcInfo_PointSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PointSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_PointSynth[kI][$CC_INFO_SYNC_TYPE]
-                kJ = 0
-                while (kJ < 1) do
-                    kValue = -1
-                    if (strcmpk(SType, "bool") == 0) then
-                        if (strcmpk(SValue, "false") == 0) then
-                            kValue = 0
-                        else
-                            kValue = 1
-                        endif
-                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
-                        kValue = strtodk(SValue)
-                    endif
-                    gkCcValues_PointSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_PointSynth[kJ][kI] = $CC_NO_SYNC
-                    if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_PointSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
-                    endif
-                    kJ += 1
-                od
-                kI += 1
-            od
-            turnoff
-        end:
-        endin
-        event_i("i", "PointSynth_InitializeCcValues", 0, -1)
-        instr PointSynth_CreateCcIndexes
-            giCc_PointSynth_example init ccIndex_PointSynth("example")
-            turnoff
-        endin
-        event_i("i", "PointSynth_CreateCcIndexes", 0, -1)
         giPointSynth_DistanceMin = 5
         giPointSynth_DistanceMax = 100
         giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
@@ -1899,7 +1658,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         od
         giPointSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
-            setPluginUuid(1, 0, "b4f7a35c-6198-422f-be6e-fa126f31b007")
+            setPluginUuid(0, 0, "b4f7a35c-6198-422f-be6e-fa126f31b007")
             instr PointSynth_Json
                 SJsonFile = sprintf("%s.0.json", "b4f7a35c-6198-422f-be6e-fa126f31b007")
                 fprints(SJsonFile, "{")
@@ -1910,7 +1669,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        instr 4
+        instr 3
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
@@ -1976,12 +1735,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a2 = kAmbisonicChannelGains[1] * aOutDistanced
                     a3 = kAmbisonicChannelGains[2] * aOutDistanced
                     a4 = kAmbisonicChannelGains[3] * aOutDistanced
-                        gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + a1
-                        gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + a2
-                        gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + a3
-                        gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + a4
-                        gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aOut
-                        gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aOut
+                        gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + a1
+                        gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + a2
+                        gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + a3
+                        gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + a4
+                        gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
+                        gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
                     #ifdef IS_GENERATING_JSON
                         if (giPointSynth_NoteIndex[0] == 0) then
                             scoreline_i("i \\"PointSynth_Json\\" 0 0")
@@ -1992,6 +1751,247 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                             iNoteNumber, iR, iT, iZ)
                     #end
                 endif
+            endif
+        endin:
+        endin
+         #ifndef ADSR_LINSEGR_UDO_ORC
+         #define ADSR_LINSEGR_UDO_ORC ##
+        opcode adsr_linsegr, a, iiii
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout aOut
+        endop
+        opcode adsr_linsegr, k, kkkk
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout kOut
+        endop
+         #end
+        gSCcInfo_CircleSynth[] = fillarray( \\
+        \\
+            "example", "bool", "false", "synced", \\
+        \\
+            "", "", "", "")
+         #define gSCcInfo_CircleSynth_Count #8#
+         #define CC_INFO_CHANNEL #0#
+         #define CC_INFO_TYPE #1#
+         #define CC_INFO_VALUE #2#
+         #define CC_INFO_SYNC_TYPE #3#
+         #define CC_NO_SYNC #0#
+         #define CC_SYNC_TO_CHANNEL #1#
+         #ifdef gSCcInfo_CircleSynth_Count
+            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
+                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+            endif
+         #else
+            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+         #end
+        opcode ccIndex_CircleSynth, i, S
+            SChannel xin
+            kgoto end
+            iI = 0
+            while (iI < giCcCount_CircleSynth) do
+                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+                iI += 1
+            od
+            iI = -1
+        end:
+            xout iI
+        endop
+        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
+        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
+        instr CircleSynth_InitializeCcValues
+            iI = 0
+            while (iI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
+                iJ = 0
+                while (iJ < 1) do
+                    iValue = -1
+                    if (strcmp(SType, "bool") == 0) then
+                        if (strcmp(SValue, "false") == 0) then
+                            iValue = 0
+                        else
+                            iValue = 1
+                        endif
+                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
+                        iValue = strtod(SValue)
+                    endif
+                    giCcValueDefaults_CircleSynth[iI] = iValue
+                    giCcValues_CircleSynth[iJ][iI] = iValue
+                    iJ += 1
+                od
+                iI += 1
+            od
+            igoto end
+            kI = 0
+            while (kI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
+                kJ = 0
+                while (kJ < 1) do
+                    kValue = -1
+                    if (strcmpk(SType, "bool") == 0) then
+                        if (strcmpk(SValue, "false") == 0) then
+                            kValue = 0
+                        else
+                            kValue = 1
+                        endif
+                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
+                        kValue = strtodk(SValue)
+                    endif
+                    gkCcValues_CircleSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
+                    if (strcmpk(SSyncType, "synced") == 0) then
+                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                    endif
+                    kJ += 1
+                od
+                kI += 1
+            od
+            turnoff
+        end:
+        endin
+        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
+        instr CircleSynth_CreateCcIndexes
+            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
+            turnoff
+        endin
+        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
+        giCircleSynth_HeightRange init 50 - 1
+        giCircleSynth_RadiusRange init 50 - 1
+        giCircleSynth_SpreadSpeedRange init 15 - 1
+        giCircleSynth_NoteNumberRange init 96 - 24
+        giCircleSynth_DistanceMin = 5
+        giCircleSynth_DistanceMax = 100
+        instr CircleSynth_NoteOn
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
+            iSecondsPerKPass = 1 / kr
+            kPass init -1
+            kPass += 1
+            if (iNoteNumber < 24 || iNoteNumber > 96) then
+                goto endin
+            endif
+            iCps = cpsmidinn(iNoteNumber)
+            iLowPassCutoffBase = iCps * 16
+            iLowPassCutoffBaseOver360 = iLowPassCutoffBase / 260
+            iNoteNumberNormalized init (iNoteNumber - 24) / giCircleSynth_NoteNumberRange
+            iHeight init 1 + giCircleSynth_HeightRange * iNoteNumberNormalized
+            iRadius init 50 - giCircleSynth_RadiusRange * iNoteNumberNormalized
+            iSpreadIncrement init iSecondsPerKPass * (1 + iVelocity *
+                giCircleSynth_SpreadSpeedRange)
+            iSpreadAttenuationDecrement = iSpreadIncrement / (260 / 2)
+            kSpread init 1 - iSpreadIncrement
+            kSpreadAttenuation init 1 + iSpreadAttenuationDecrement
+            kIsFullSpread init 0
+            if (kIsFullSpread == 0) then
+                kSpread += iSpreadIncrement
+                kSpreadAttenuation -= iSpreadAttenuationDecrement
+                if (kSpreadAttenuation < 0) then
+                    kSpreadAttenuation = 0
+                    kSpread = 260
+                    kIsFullSpread = 1
+                endif
+                kLowPassCutoff = iLowPassCutoffBase + kSpread * iLowPassCutoffBaseOver360
+            endif
+            kAmp = 0.1 * iVelocity * adsr_linsegr:k(1, 0, 1, 1)
+            aOut = vco2(kAmp, iCps, 10, 0.5, 0, 0.5)
+            aOut = moogladder(aOut, kLowPassCutoff, 0)
+            kPosition[] fillarray 0, 0, 0
+            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
+            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin),
+                k(giCircleSynth_DistanceMax))
+            aOutDistanced = aOut * kDistanceAttenuation
+            aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
+            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
+                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + kAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + kAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + kAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + kAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aOut
+                gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aOut
+        endin:
+        endin
+        instr CircleSynth_NoteOff
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
+        endin
+        giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
+        giCircleSynth_NoteIndex[] init 1
+         #ifdef IS_GENERATING_JSON
+            setPluginUuid(1, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
+            instr CircleSynth_Json
+                SJsonFile = sprintf("%s.0.json", "baeea327-af4b-4b10-a843-6614c20ea958")
+                fprints(SJsonFile, "{")
+                fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "CircleSynth 1"))
+                fprints(SJsonFile, ",\\"heightMin\\":%d", 1)
+                fprints(SJsonFile, ",\\"heightMax\\":%d", 50)
+                fprints(SJsonFile, ",\\"radiusMin\\":%d", 50)
+                fprints(SJsonFile, ",\\"radiusMax\\":%d", 50)
+                fprints(SJsonFile, ",\\"spreadMax\\":%d", 260)
+                fprints(SJsonFile, ",\\"spreadSpeedMin\\":%d", 1)
+                fprints(SJsonFile, ",\\"spreadSpeedMax\\":%d", 15)
+                fprints(SJsonFile, ",\\"noteNumberMin\\":%d", 24)
+                fprints(SJsonFile, ",\\"noteNumberMax\\":%d", 96)
+                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giCircleSynth_DistanceMin)
+                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giCircleSynth_DistanceMax)
+                fprints(SJsonFile, "}")
+                turnoff
+            endin
+         #end
+        instr 4
+            iEventType = p4
+            if (iEventType == 4) then
+                turnoff
+            elseif (iEventType == 1) then
+                iNoteNumber = p5
+                iVelocity = p6
+                iInstrumentNumber = p1 + 0.0001
+                SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
+                scoreline_i(SOnEvent)
+                kReleased = release()
+                if (kReleased == 1) then
+                    SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                    scoreline(SOffEvent, 1)
+                endif
+                #ifdef IS_GENERATING_JSON
+                    if (giCircleSynth_NoteIndex[0] == 0) then
+                        scoreline_i("i \\"CircleSynth_Json\\" 0 0")
+                    endif
+                    giCircleSynth_NoteIndex[0] = giCircleSynth_NoteIndex[0] + 1
+                    SJsonFile = sprintf("%s.%d.json", "baeea327-af4b-4b10-a843-6614c20ea958", giCircleSynth_NoteIndex[0])
+                    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
+                    if (kReleased == 1) then
+                        fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                    endif
+                #end
+                if (kReleased == 1) then
+                    turnoff
+                endif
+            elseif (iEventType == 3) then
+                iNoteNumber = p5
+                iVelocity = p6
+                    aDummy subinstr giCircleSynthNoteInstrumentNumber,
+                        iNoteNumber,
+                        iVelocity,
+                        0,
+                        1
             endif
         endin:
         endin
@@ -2497,19 +2497,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         </CsInstruments>
         <CsScore>
         i 1 0 -1 3 0 1 3
-        i 8 .1 0 -1 1
-        i 7 0.004 1 3 0 0 0.46
-        i 7 0.004 1 3 0 1 0.46
-        i 7 0.004 1 3 0 2 0.46
-        i 7 0.004 1 3 0 3 0.46
-        i 7 0.004 1 3 0 4 0.48
-        i 7 0.004 1 3 0 5 0.48
-        i 7 0.004 1 3 1 0 0.04
-        i 7 0.004 1 3 1 1 0.04
-        i 7 0.004 1 3 1 2 0.04
-        i 7 0.004 1 3 1 3 0.04
-        i 7 0.004 1 3 1 4 1.00
-        i 7 0.004 1 3 1 5 1.00
+        i 8.1 0 -1 1
+        i 7 0.004 1 3 0 0 0.04
+        i 7 0.004 1 3 0 1 0.04
+        i 7 0.004 1 3 0 2 0.04
+        i 7 0.004 1 3 0 3 0.04
+        i 7 0.004 1 3 0 4 1.00
+        i 7 0.004 1 3 0 5 1.00
+        i 7 0.004 1 3 1 0 0.46
+        i 7 0.004 1 3 1 1 0.46
+        i 7 0.004 1 3 1 2 0.46
+        i 7 0.004 1 3 1 3 0.46
+        i 7 0.004 1 3 1 4 0.48
+        i 7 0.004 1 3 1 5 0.48
         i 7 0.004 1 3 2 0 0.46
         i 7 0.004 1 3 2 1 0.46
         i 7 0.004 1 3 2 2 0.46
@@ -2525,60 +2525,60 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 8 0.01 1 4 0 1.00
         i 8 0.01 1 4 1 0.98
         i 8 0.01 1 4 5 1.00
-        i 4.006 2.000 -1 1 92 68
+        i 3.004 2.000 -1 1 92 68
         i 5.004 2.000 -1 1 48 96
-        i 3.011 2.000 -1 1 24 45
-        i 3.012 2.000 -1 1 36 63
-        i 4.007 9.437 -1 1 91 68
-        i -3.011 10.000 0
-        i -3.012 10.000 0
-        i 3.013 10.000 -1 1 31 45
-        i 3.014 10.000 -1 1 43 63
-        i 4.008 15.375 -1 1 93 67
-        i -3.013 18.000 0
-        i -3.014 18.000 0
-        i 3.015 18.000 -1 1 29 45
-        i 3.016 18.000 -1 1 41 63
-        i 4.009 22.249 -1 1 90 68
-        i -3.015 26.000 0
-        i -3.016 26.000 0
-        i 3.017 26.000 -1 1 33 45
-        i 3.018 26.000 -1 1 45 63
-        i 4.010 28.500 -1 1 94 68
-        i -3.017 34.000 0
-        i -3.018 34.000 0
-        i 3.019 34.000 -1 1 31 45
-        i 3.020 34.000 -1 1 43 63
-        i 4.011 34.500 -1 1 89 64
-        i 4.012 40.437 -1 1 95 64
-        i 4.013 46.187 -1 1 88 59
+        i 4.007 2.000 -1 1 24 45
+        i 4.008 2.000 -1 1 36 63
+        i 3.005 9.437 -1 1 91 68
+        i -4.007 10.000 0
+        i -4.008 10.000 0
+        i 4.009 10.000 -1 1 31 45
+        i 4.010 10.000 -1 1 43 63
+        i 3.006 15.375 -1 1 93 67
+        i -4.009 18.000 0
+        i -4.010 18.000 0
+        i 4.011 18.000 -1 1 29 45
+        i 4.012 18.000 -1 1 41 63
+        i 3.007 22.249 -1 1 90 68
+        i -4.011 26.000 0
+        i -4.012 26.000 0
+        i 4.013 26.000 -1 1 33 45
+        i 4.014 26.000 -1 1 45 63
+        i 3.008 28.500 -1 1 94 68
+        i -4.013 34.000 0
+        i -4.014 34.000 0
+        i 4.015 34.000 -1 1 31 45
+        i 4.016 34.000 -1 1 43 63
+        i 3.009 34.500 -1 1 89 64
+        i 3.010 40.437 -1 1 95 64
+        i 3.011 46.187 -1 1 88 59
         i -5.004 47.999 0
-        i -3.019 47.999 0
-        i -3.020 47.999 0
-        i 4.014 63.000 -1 1 96 63
-        i 4.015 63.000 -1 1 97 63
-        i 4.016 63.000 -1 1 98 63
-        i 4.017 63.061 -1 1 99 63
-        i 4.018 63.124 -1 1 100 63
-        i 4.019 63.187 -1 1 101 63
-        i 4.020 63.249 -1 1 102 63
-        i 4.021 63.312 -1 1 103 63
-        i -4.012 63.687 0
-        i -4.013 63.687 0
-        i -4.011 63.749 0
-        i -4.010 63.812 0
-        i -4.009 63.875 0
-        i -4.014 63.875 0
-        i -4.008 63.937 0
-        i -4.015 63.937 0
-        i -4.006 63.999 0
-        i -4.007 63.999 0
-        i -4.016 63.999 0
-        i -4.017 63.999 0
-        i -4.018 63.999 0
-        i -4.019 63.999 0
-        i -4.020 63.999 0
-        i -4.021 63.999 0
+        i -4.015 47.999 0
+        i -4.016 47.999 0
+        i 3.012 63.000 -1 1 96 63
+        i 3.013 63.000 -1 1 97 63
+        i 3.014 63.000 -1 1 98 63
+        i 3.015 63.061 -1 1 99 63
+        i 3.016 63.124 -1 1 100 63
+        i 3.017 63.187 -1 1 101 63
+        i 3.018 63.249 -1 1 102 63
+        i 3.019 63.312 -1 1 103 63
+        i -3.010 63.687 0
+        i -3.011 63.687 0
+        i -3.009 63.749 0
+        i -3.008 63.812 0
+        i -3.007 63.875 0
+        i -3.012 63.875 0
+        i -3.006 63.937 0
+        i -3.013 63.937 0
+        i -3.004 63.999 0
+        i -3.005 63.999 0
+        i -3.014 63.999 0
+        i -3.015 63.999 0
+        i -3.016 63.999 0
+        i -3.017 63.999 0
+        i -3.018 63.999 0
+        i -3.019 63.999 0
          #ifdef IS_GENERATING_JSON
             s
             i "GenerateJson" 0 1
