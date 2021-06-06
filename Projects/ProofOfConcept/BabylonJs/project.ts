@@ -8,8 +8,8 @@ declare global {
     }
 }
 
-// var ConsoleLogHTML = require('console-log-html')
-// ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
+var ConsoleLogHTML = require('console-log-html')
+ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
@@ -1763,6 +1763,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
+        prealloc(3, 32)
         instr 3
             iEventType = p4
             if (iEventType == 4) then
@@ -2028,6 +2029,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             iInstrumentTrackIndex = p7
         endin
         giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
+        prealloc(giCircleSynthNoteInstrumentNumber, 32)
         giCircleSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
             setPluginUuid(1, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
@@ -2050,6 +2052,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
+        prealloc(4, 32)
         instr 4
             iEventType = p4
             if (iEventType == 4) then
@@ -2307,6 +2310,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             iInstrumentTrackIndex = p7
         endin
         giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
+        prealloc(giPowerLineSynthNoteInstrumentNumber, 32)
         giPowerLineSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
             setPluginUuid(2, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
@@ -2328,6 +2332,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
+        prealloc(5, 32)
         instr 5
             iEventType = p4
             if (iEventType == 4) then
