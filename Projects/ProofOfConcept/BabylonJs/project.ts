@@ -13,14 +13,28 @@ declare global {
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
+    document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
     BABYLON.Engine.audioEngine.lock()
-    document.audioContext = BABYLON.Engine.audioEngine.audioContext
+    
+    const originalConsoleDebug = console.debug
+    console.debug = (message) => {
+        // originalConsoleDebug(message)
+    }
+
+    const originalConsoleLog = console.log
+    console.log = function() {
+        if (arguments[0] === 'csd:started') {
+            isCsoundStarted = true
+            return
+        }
+        originalConsoleLog.apply(console, arguments)
+    }
 
     let csoundImportScript = document.createElement('script');
     csoundImportScript.type = 'module'
     csoundImportScript.innerText = `
-        console.log("Csound importing ...");
+        console.debug("Csound importing ...");
         import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
         document.Csound = Csound;
     `
@@ -44,51 +58,80 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 
-    // Our built-in 'sphere' shape.
-    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
-
-    // Move the sphere upward 1/2 its height
-    sphere.position.y = 1;
-
-    scene.createDefaultEnvironment();
+    // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
+    const environmentSettings = scene.createDefaultEnvironment({
+        groundColor: BABYLON.Color3.BlackReadOnly,
+        groundOpacity: 0,
+        groundSize: 999,
+        skyboxColor: BABYLON.Color3.BlackReadOnly,
+        skyboxSize: 999
+    });
 
     // XR
     const xrHelper = scene.createDefaultXRExperienceAsync({});
 
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
-        console.log('csdData =', csdData)
+        console.debug('csdData =', csdData)
 
+        // Add point synth mesh instance template.
+        const pointSynthMesh = BABYLON.Mesh.CreateSphere('', 8, 0.25, scene)
+        pointSynthMesh.isVisible = false
+        const pointSynthMeshMaterial = new BABYLON.StandardMaterial('', scene)
+        pointSynthMeshMaterial.emissiveColor = BABYLON.Color3.White()
+        pointSynthMeshMaterial.disableLighting = true
+        pointSynthMeshMaterial.freeze()
+        pointSynthMesh.material = pointSynthMeshMaterial
+
+        // Initialize point synth notes.
         const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
         const pointSynthHeader = pointSynthData[0]
-        console.log('pointSynthHeader =', pointSynthHeader)
+        console.debug('pointSynthHeader =', pointSynthHeader)
         for (let i = 1; i < pointSynthData.length; i++) {
-            let noteOnEvent = pointSynthData[i].noteOn
-            noteOnEvent.offTime = noteOnEvent.time + 0.1
-            console.log('note event ', i, '=', noteOnEvent)
+            let noteOn = pointSynthData[i].noteOn
+            console.debug('noteOn event ', i, '=', noteOn)
+            let mesh = pointSynthMesh.createInstance('')
+            mesh.isVisible = false // false
+            mesh.position = new BABYLON.Vector3(
+                -10 + (20 * i / 500), //noteOn.rtz[0] * Math.sin(noteOn.rtz[1]),
+                100 * (noteOn.rtz[2] / 127) - 20, //0, //noteOn.rtz[2], // Put them on the ground for now. TODO: Update Csound note positions to 0, too?
+                20, //noteOn.rtz[0] * Math.cos(noteOn.rtz[1])
+            )
+            noteOn.mesh = mesh
+            noteOn.offTime = noteOn.time + 0.1
         }
+
+        // Incremented as elapsed time passes.
         let nextPointSynthNoteOnIndex = 1
         let nextPointSynthNoteOffIndex = 1
 
-        const latency = 0.285759637188209 //  = 8192 / 44100 + 0.1  = iobufsamps / sr + latencyHint
-        let elapsedTime = -2 * latency
+        // Naive latency calculation.
+        //const latency = 0.285759637188209 //  = 8192 / 44100 + 0.1  = iobufsamps / sr + latencyHint
+        let clockStarted = false
+        let clock = 0
 
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 return
             }
 
-            elapsedTime += engine.getDeltaTime() / 1000
+            if (!clockStarted) {
+                const latency = 8192 / 44100
+                clock -= latency
+                clockStarted = true
+                return
+            }
+            clock += engine.getDeltaTime() / 1000
 
             while (nextPointSynthNoteOnIndex < pointSynthData.length
-                    && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= elapsedTime) {
-                console.log('pointSynth note', nextPointSynthNoteOnIndex, 'on at', elapsedTime)
+                    && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= clock) {
+                pointSynthData[nextPointSynthNoteOnIndex].noteOn.mesh.isVisible = true
                 nextPointSynthNoteOnIndex++
             }
 
             while (nextPointSynthNoteOffIndex < pointSynthData.length
-                    && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= elapsedTime) {
-                console.log('pointSynth note', nextPointSynthNoteOffIndex, 'off at', elapsedTime)
+                    && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= clock) {
+                pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false
                 nextPointSynthNoteOffIndex++
             }
         })
@@ -96,12 +139,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const csoundLoadTimer = setInterval(() => {
         if (!!document.Csound) {
-            console.log('Csound imported successfully')
+            console.debug('Csound imported successfully')
             clearInterval(csoundLoadTimer)
             onCsoundLoaded()
         }
         else {
-            console.log('Waiting for Csound import ...')
+            console.debug('Waiting for Csound import ...')
         }
     }, 1000)
 
@@ -124,7 +167,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const startCsound = async () => {
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
-        console.log('Csound initializing ...')
+        console.debug('Csound initializing ...')
         const csound = await document.Csound({
             audioContext: new AudioContext({
                 latencyHint: 0.10,
@@ -136,24 +179,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.error('Csound failed to initialize')
             return
         }
-        console.log('Csound initialized successfully');
+        const audioContext = await csound.getAudioContext()
+        console.log('audioContext =', audioContext)
+        console.log('audioContext.audioWorklet =', audioContext.audioWorklet)
+        console.log('audioContext.baseLatency =', audioContext.baseLatency)
+        console.log('audioContext.outputLatency =', audioContext.outputLatency)
+        console.log('audioContext.sampleRate =', audioContext.sampleRate)
+        console.log('audioContext.state =', audioContext.state)
+        document.audioContext = audioContext
+        console.debug('Csound initialized successfully');
         await csound.setOption('--iobufsamps=8192')
-        console.log('Csound csd compiling ...')
+        console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
         if (csoundErrorCode != 0) {
             console.error('Csound csd compile failed')
             return
         }
-        console.log('Csound csd compile succeeded')
-        console.log('Csound starting ...')
+        console.debug('Csound csd compile succeeded')
+        console.debug('Csound starting ...')
         csound.start()
-        isCsoundStarted = true
     }
 
     const csdText = `
         <CsoundSynthesizer>
         <CsOptions>
-        --messagelevel=135
+        --messagelevel=0
         --midi-device=0
         --nodisplays
         --nosound
@@ -165,7 +215,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #ifndef INTERNAL_CHANNEL_COUNT
          #define INTERNAL_CHANNEL_COUNT #6#
          #end
-        ksmps = 64
+        //ksmps = 64
+        kr = 441
         nchnls = $OUTPUT_CHANNEL_COUNT
         0dbfs = 1
          #define INSTANCE_NAME #"TestSynth playback"#
@@ -272,6 +323,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
         ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
         instr 1
+            prints("csd:started\\n")
             gi_instrumentCount = p4
             gi_instrumentIndexOffset = p5
             gi_auxCount = p6
@@ -1749,6 +1801,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         kCountdownNeedsInit = 1
                     endif
                 else
+                    // prints("PointSynth note %f\\n", frac(p1))
                     iNoteNumber -= 1000
                     if (iNoteNumber > 127) then
                         igoto endin

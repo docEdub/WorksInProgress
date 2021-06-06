@@ -7,7 +7,10 @@ const createScene = async () => {
     const canvas = <HTMLCanvasElement>document.getElementById('BabylonCanvas')
     
     // This creates a Babylon engine object
-    const engine = new BABYLON.Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
+    const engine = new BABYLON.Engine(canvas, true, {
+        // preserveDrawingBuffer: true,
+        // stencil: true
+    });
 
     // This resizes the BabylonJS window when the browser window is resized
     window.addEventListener('resize', function() {
