@@ -8,6 +8,9 @@ declare global {
     }
 }
 
+// var ConsoleLogHTML = require('console-log-html')
+// ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
+
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
