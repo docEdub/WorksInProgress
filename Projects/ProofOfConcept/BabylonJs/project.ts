@@ -170,8 +170,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('Csound initializing ...')
         const csound = await document.Csound({
             audioContext: new AudioContext({
-                latencyHint: 0.10,
-                sampleRate: 44100
+                latencyHint: 0.17066666667,
+                sampleRate: 48000
             }),
             useSAB: false
         })
@@ -180,15 +180,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return
         }
         const audioContext = await csound.getAudioContext()
+
+        // const audioContext = document.audioContext
+        // const audioContext = new AudioContext({
+        //     sampleRate: 48000,
+        //     latencyHint: 0.17066666667
+        // })
         console.log('audioContext =', audioContext)
         console.log('audioContext.audioWorklet =', audioContext.audioWorklet)
         console.log('audioContext.baseLatency =', audioContext.baseLatency)
         console.log('audioContext.outputLatency =', audioContext.outputLatency)
         console.log('audioContext.sampleRate =', audioContext.sampleRate)
         console.log('audioContext.state =', audioContext.state)
+
         document.audioContext = audioContext
         console.debug('Csound initialized successfully');
-        await csound.setOption('--iobufsamps=8192')
+        await csound.setOption('--iobufsamps=16384')
         console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
         if (csoundErrorCode != 0) {
@@ -199,6 +206,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('Csound starting ...')
         csound.start()
     }
+    // startCsound()
 
     const csdText = `
         <CsoundSynthesizer>
@@ -216,7 +224,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #define INTERNAL_CHANNEL_COUNT #6#
          #end
         //ksmps = 64
-        kr = 441
+        sr = 48000
+        kr = 480
         nchnls = $OUTPUT_CHANNEL_COUNT
         0dbfs = 1
          #define INSTANCE_NAME #"TestSynth playback"#
@@ -2085,11 +2094,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                    aDummy subinstr giCircleSynthNoteInstrumentNumber,
-                        iNoteNumber,
-                        iVelocity,
-                        0,
-                        1
+                    // aDummy subinstr giCircleSynthNoteInstrumentNumber,
+                    //     iNoteNumber,
+                    //     iVelocity,
+                    //     0,
+                    //     1
             endif
         endin:
         endin
@@ -2366,11 +2375,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
-                        iNoteNumber,
-                        iVelocity,
-                        0,
-                        2
+                    // aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+                    //     iNoteNumber,
+                    //     iVelocity,
+                    //     0,
+                    //     2
             endif
         endin:
         endin
@@ -2503,16 +2512,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kI += 1
                 od
                 if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-                    aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
+                    ; aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
+                    aOut[0] = nreverb(aIn[0], 5, 0)
                     kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
                     aOut[0] = aOut[0] * kDryWet
-                    aOut[1] = aOut[1] * kDryWet
+                    ; aOut[1] = aOut[1] * kDryWet
                     kWetDry = 1 - kDryWet
                     aOut[0] = aOut[0] + aIn[0] * kWetDry
-                    aOut[1] = aOut[1] + aIn[1] * kWetDry
+                    ; aOut[1] = aOut[1] + aIn[1] * kWetDry
                     kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
                     aOut[0] = aOut[0] * kVolume
-                    aOut[1] = aOut[1] * kVolume
+                    ; aOut[1] = aOut[1] * kVolume
+                    aOut[1] = aOut[0]
                 else
                     aOut[0] = aIn[0]
                     aOut[1] = aIn[1]
