@@ -1839,7 +1839,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kR init iR
                     kT init iT
                     kZ init iZ
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+                    if (changed(kR, kT, kZ) == 1) then
+                        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+                    endif
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextRTZ_i += 1
                     if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
