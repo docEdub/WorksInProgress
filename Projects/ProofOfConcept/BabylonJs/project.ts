@@ -2522,18 +2522,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kI += 1
                 od
                 if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-                    ; aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
-                    aOut[0] = nreverb(aIn[0], 5, 0)
-                    kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
-                    aOut[0] = aOut[0] * kDryWet
-                    ; aOut[1] = aOut[1] * kDryWet
-                    kWetDry = 1 - kDryWet
-                    aOut[0] = aOut[0] + aIn[0] * kWetDry
-                    ; aOut[1] = aOut[1] + aIn[1] * kWetDry
+                    aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
                     kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
-                    aOut[0] = aOut[0] * kVolume
-                    ; aOut[1] = aOut[1] * kVolume
-                    aOut[1] = aOut[0]
+                    kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
+                    kWetDry = 1 - kDryWet
+                    kDryWet *= kVolume
+                    kWetDry *= kVolume
+                    aOut[0] = aOut[0] * kDryWet + aIn[0] * kWetDry
+                    aOut[1] = aOut[1] * kDryWet + aIn[1] * kWetDry
                 else
                     aOut[0] = aIn[0]
                     aOut[1] = aIn[1]
