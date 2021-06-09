@@ -204,7 +204,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         console.debug('Csound csd compile succeeded')
 
-        const csoundStartDelay = 5 // seconds
+        const csoundStartDelay = 4 // seconds
         let currentStartDelay = 0
         const csoundLoadTimer = setInterval(() => {
             currentStartDelay += 1
@@ -231,34 +231,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         kr = 480
         nchnls = 2
         0dbfs = 1
-        prealloc(1, 25)
         instr 1
             kamp = .6
             kcps = 440
             ifn  = p4
-            aL = 0.02 * oscil(kamp, kcps, ifn)
-            // aL, aR reverbsc aL, aL, 0.9, 20000
-            // outs(aL, aR)
-            outs(aL, aL)
-        endin
-        instr 2
-            scoreline_i {{
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-                i 1 0 9999 1
-            }}
+            asig oscil kamp, kcps, ifn
+            outs asig,asig    
         endin
         </CsInstruments>
         <CsScore>
         f1 0 16384 10 1
-        i 2 1 9999
+        i 1 0 9999 1
         </CsScore>
         </CsoundSynthesizer>
         `
