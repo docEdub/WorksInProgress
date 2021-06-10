@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---messagelevel=${CSOUND_MESSAGE_LEVEL}
+--messagelevel=0
 --midi-device=0
 --nodisplays
 --nosound
@@ -20,7 +20,8 @@ ${CSOUND_IFNDEF} INTERNAL_CHANNEL_COUNT
 ${CSOUND_DEFINE} INTERNAL_CHANNEL_COUNT #6#
 ${CSOUND_ENDIF}
 
-ksmps = 64
+sr = 48000
+kr = 200
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 

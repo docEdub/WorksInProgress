@@ -233,7 +233,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #ifndef INTERNAL_CHANNEL_COUNT
          #define INTERNAL_CHANNEL_COUNT #6#
          #end
-        //ksmps = 64
         sr = 48000
         kr = 200
         nchnls = $OUTPUT_CHANNEL_COUNT
@@ -1752,6 +1751,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_dopplerShift
         endop
+        opcode math_roundFloat_k, k, ki
+            k_inputFloat, i_decimalPlaces xin
+            k_outputFloat = k_inputFloat
+            if (i_decimalPlaces == 0) then
+                k_outputFloat = round(k_inputFloat)
+            else
+                i_10ToTheDecimalPlacesPower = pow(10, i_decimalPlaces)
+                k_outputFloat = int(k_inputFloat)
+                k_outputFloat += int(round(frac(k_inputFloat) * i_10ToTheDecimalPlacesPower)) / i_10ToTheDecimalPlacesPower
+            endif
+            xout k_outputFloat
+        endop
+        giFastSquareMaxI init 101
+        giFastSquareTable ftgen 0, 0, giFastSquareMaxI, 2, 0
+        instr math_InitFastSquareTable
+            iI = 0
+            while (iI < giFastSquareMaxI) do
+                tablew(iI * iI, iI, giFastSquareTable)
+                iI += 1
+            od
+            turnoff
+        endin
+        scoreline_i("i \\"math_InitFastSquareTable\\" 0 -1")
+        opcode math_fastSquare, k, k
+            kI xin
+            xout tablei(kI, giFastSquareTable)
+        endop
+        giFastSqrtMaxI init 10001
+        giFastSqrtTable ftgen 0, 0, giFastSqrtMaxI, 2, 0
+        instr math_InitFastSqrtTable
+            iI = 0
+            while (iI < giFastSqrtMaxI) do
+                tablew(sqrt(iI), iI, giFastSqrtTable)
+                iI += 1
+            od
+            turnoff
+        endin
+        scoreline_i("i \\"math_InitFastSqrtTable\\" 0 -1")
+        opcode math_fastSqrt, k, k
+            kI xin
+            xout tablei(kI, giFastSqrtTable)
+        endop
         giPointSynth_DistanceMin = 5
         giPointSynth_DistanceMax = 100
         giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
@@ -1839,9 +1880,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kR init iR
                     kT init iT
                     kZ init iZ
-                    if (changed(kR, kT, kZ) == 1) then
-                        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-                    endif
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
+                        giPointSynth_DistanceMin, giPointSynth_DistanceMax)
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextRTZ_i += 1
                     if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then

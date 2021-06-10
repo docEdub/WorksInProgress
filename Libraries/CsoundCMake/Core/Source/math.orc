@@ -20,6 +20,44 @@ opcode math_roundFloat_k, k, ki
     xout k_outputFloat
 endop
 
+giFastSquareMaxI init 101
+giFastSquareTable ftgen 0, 0, giFastSquareMaxI, 2, 0
+
+instr math_InitFastSquareTable
+    iI = 0
+    while (iI < giFastSquareMaxI) do
+        tablew(iI * iI, iI, giFastSquareTable)
+        iI += 1
+    od
+    turnoff
+endin
+
+scoreline_i("i \"math_InitFastSquareTable\" 0 -1")
+
+opcode math_fastSquare, k, k
+    kI xin
+    xout tablei(kI, giFastSquareTable)
+endop
+
+giFastSqrtMaxI init 10001
+giFastSqrtTable ftgen 0, 0, giFastSqrtMaxI, 2, 0
+
+instr math_InitFastSqrtTable
+    iI = 0
+    while (iI < giFastSqrtMaxI) do
+        tablew(sqrt(iI), iI, giFastSqrtTable)
+        iI += 1
+    od
+    turnoff
+endin
+
+scoreline_i("i \"math_InitFastSqrtTable\" 0 -1")
+
+opcode math_fastSqrt, k, k
+    kI xin
+    xout tablei(kI, giFastSqrtTable)
+endop
+
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
 //----------------------------------------------------------------------------------------------------------------------

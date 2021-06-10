@@ -37,6 +37,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "math.orc"
 
 giPointSynth_DistanceMin = 5
 giPointSynth_DistanceMax = 100
@@ -148,7 +149,8 @@ instr INSTRUMENT_ID
             kT init iT
             kZ init iZ
             log_i_debug("rtz = (%f, %f, %f)", i(kR), i(kT), i(kZ))
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
+                giPointSynth_DistanceMin, giPointSynth_DistanceMax)
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextRTZ_i += 1
