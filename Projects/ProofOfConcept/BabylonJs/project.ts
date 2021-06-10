@@ -383,30 +383,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         endin
         instr 2
-            gk_i += 1
-            k_instrument = 0
-            while (k_instrument < gi_instrumentCount) do
-                k_channel = 0
-                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                    gaInstrumentSignals[k_instrument][k_channel] = 0
-                    k_channel += 1
-                od
-                k_instrument += 1
-            od
-            k_bus = 0
-            while (k_bus < gi_auxCount) do
-                k_channel = 0
-                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                    ga_auxSignals[k_bus][k_channel] = 0
-                    k_channel += 1
-                od
-                k_bus += 1
-            od
-            k_channel = 0
-            while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                ga_masterSignals[k_channel] = 0
-                k_channel += 1
-            od
         endin
          #ifdef IS_GENERATING_JSON
             giWriteComma init 0
@@ -1823,7 +1799,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        prealloc(3, 32)
         instr 3
             iEventType = p4
             if (iEventType == 4) then
@@ -1831,8 +1806,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 1) then
                 iNoteNumber = p5
                 iVelocity = p6
-                iFadeInTime = 0.01
-                iFadeOutTime = 0.01
+                iFadeInTime = 0.25
+                iFadeOutTime = 0.25
                 iTotalTime = iFadeInTime + iFadeOutTime
                 iSeed = iNoteNumber / 128
                 if (iNoteNumber < 128) then
@@ -1862,7 +1837,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         kCountdownNeedsInit = 1
                     endif
                 else
-                    // prints("PointSynth note %f\\n", frac(p1))
                     iNoteNumber -= 1000
                     if (iNoteNumber > 127) then
                         igoto endin
@@ -1880,8 +1854,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kR init iR
                     kT init iT
                     kZ init iZ
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
-                        giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+                    // kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
+                    //     giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+                    kDistanceAmp init 1
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextRTZ_i += 1
                     if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
@@ -1892,12 +1867,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a2 = kAmbisonicChannelGains[1] * aOutDistanced
                     a3 = kAmbisonicChannelGains[2] * aOutDistanced
                     a4 = kAmbisonicChannelGains[3] * aOutDistanced
-                        gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + a1
-                        gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + a2
-                        gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + a3
-                        gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + a4
-                        gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
-                        gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
+                        outs(aOut, aOut)
                     #ifdef IS_GENERATING_JSON
                         if (giPointSynth_NoteIndex[0] == 0) then
                             scoreline_i("i \\"PointSynth_Json\\" 0 0")
@@ -2090,7 +2060,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             iInstrumentTrackIndex = p7
         endin
         giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
-        prealloc(giCircleSynthNoteInstrumentNumber, 32)
         giCircleSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
             setPluginUuid(1, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
@@ -2113,7 +2082,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        prealloc(4, 32)
         instr 4
             iEventType = p4
             if (iEventType == 4) then
@@ -2146,11 +2114,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                    // aDummy subinstr giCircleSynthNoteInstrumentNumber,
-                    //     iNoteNumber,
-                    //     iVelocity,
-                    //     0,
-                    //     1
             endif
         endin:
         endin
@@ -2371,7 +2334,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             iInstrumentTrackIndex = p7
         endin
         giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
-        prealloc(giPowerLineSynthNoteInstrumentNumber, 32)
         giPowerLineSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
             setPluginUuid(2, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
@@ -2393,7 +2355,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        prealloc(5, 32)
         instr 5
             iEventType = p4
             if (iEventType == 4) then
@@ -2427,11 +2388,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iNoteNumber = p5
                 iVelocity = p6
-                    // aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
-                    //     iNoteNumber,
-                    //     iVelocity,
-                    //     0,
-                    //     2
             endif
         endin:
         endin
@@ -2540,71 +2496,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         endin
         event_i("i", "Reverb_CreateCcIndexes", 0, -1)
         instr 8
-            iOrcInstanceIndex = 0
-            iEventType = p4
-            if (iEventType == 4) then
-                iCcType = p5
-                iCcValue = p6
-                giCcValues_Reverb[0][iCcType] = iCcValue
-                gkCcValues_Reverb[0][iCcType] = iCcValue
-                turnoff
-            elseif (iEventType == 1) then
-                aIn[] init 2
-                aOut[] init 2
-                kI = 0
-                kJ = 4
-                while (kI < 2) do
-                        if (3 < gi_instrumentCount) then
-                            aIn[kI] = gaInstrumentSignals[3][kJ]
-                        else
-                            iAuxTrackIndex = 3 - gi_instrumentCount
-                            aIn[kI] = ga_auxSignals[iAuxTrackIndex][kJ]
-                        endif
-                        kJ += 1
-                    kI += 1
-                od
-                if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-                    aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
-                    kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
-                    kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
-                    kWetDry = 1 - kDryWet
-                    kDryWet *= kVolume
-                    kWetDry *= kVolume
-                    aOut[0] = aOut[0] * kDryWet + aIn[0] * kWetDry
-                    aOut[1] = aOut[1] * kDryWet + aIn[1] * kWetDry
-                else
-                    aOut[0] = aIn[0]
-                    aOut[1] = aIn[1]
-                endif
-                kI = 0
-                kJ = 4
-                while (kI < 2) do
-                        iAuxTrackIndex = 3
-                        if (iAuxTrackIndex >= gi_instrumentCount) then
-                            iAuxTrackIndex -= gi_instrumentCount
-                        endif
-                        ga_auxSignals[iAuxTrackIndex][kJ] = aOut[kI]
-                        kJ += 1
-                    kI += 1
-                od
-            endif
         endin
         instr 6
-            kAux = 0
-            while (kAux < gi_auxCount) do
-                kInstrument = 0
-                while (kInstrument < gi_instrumentCount) do
-                    kChannel = giAuxChannelIndexRanges[kAux][kInstrument][0]
-                    kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][1]
-                    while (kChannel <= kMaxChannel) do
-                        ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-                            ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
-                        kChannel += 1
-                    od
-                    kInstrument += 1
-                od
-                kAux += 1
-            od
         endin
         instr 7
             k_aux = p4 - gi_auxIndexOffset
@@ -2622,36 +2515,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         endin
         instr 10
-            kChannel = 0
-            while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-                ga_masterSignals[kChannel] = 0
-                kChannel += 1
-            od
-            kTrack = 0
-            while (kTrack < gi_instrumentCount) do
-                kChannel = giMasterChannelIndexRanges[kTrack][0]
-                kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
-                while (kChannel <= kChannelHigh) do
-                    ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
-                        ga_masterVolumes[kTrack][kChannel]
-                    kChannel += 1
-                od
-                kTrack += 1
-            od
-            kAux = 0
-            while (kAux < gi_auxCount) do
-                kChannel = giMasterChannelIndexRanges[kTrack][0]
-                kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
-                while (kChannel <= kChannelHigh) do
-                    ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
-                        ga_masterVolumes[kTrack][kChannel]
-                    kChannel += 1
-                od
-                kTrack += 1
-                kAux += 1
-            od
-            outch(1, ga_masterSignals[4])
-            outch(2, ga_masterSignals[5])
         endin
         </CsInstruments>
         <CsScore>
