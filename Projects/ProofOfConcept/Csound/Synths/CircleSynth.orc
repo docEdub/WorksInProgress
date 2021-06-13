@@ -210,11 +210,11 @@ instr INSTRUMENT_ID
         iVelocity = p6
 
         #if IS_PLAYBACK
-            ; aDummy subinstr giCircleSynthNoteInstrumentNumber,
-            ;     iNoteNumber,
-            ;     iVelocity,
-            ;     ORC_INSTANCE_INDEX,
-            ;     INSTRUMENT_TRACK_INDEX
+            aDummy subinstr giCircleSynthNoteInstrumentNumber,
+                iNoteNumber,
+                iVelocity,
+                ORC_INSTANCE_INDEX,
+                INSTRUMENT_TRACK_INDEX
         #else
             a1, a2, a3, a4, aOut subinstr giCircleSynthNoteInstrumentNumber,
                 iNoteNumber,

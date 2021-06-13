@@ -111,33 +111,33 @@ endin
 // Clear signals instrument. All included instruments should have instrument numbers higher than this instrument.
 //
 instr ClearSignals_instrnum
-    ; gk_i += 1
+    gk_i += 1
 
-    ; k_instrument = 0
-    ; while (k_instrument < gi_instrumentCount) do
-    ;     k_channel = 0
-    ;     while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-    ;         gaInstrumentSignals[k_instrument][k_channel] = 0
-    ;         k_channel += 1
-    ;     od
-    ;     k_instrument += 1
-    ; od
+    k_instrument = 0
+    while (k_instrument < gi_instrumentCount) do
+        k_channel = 0
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+            gaInstrumentSignals[k_instrument][k_channel] = 0
+            k_channel += 1
+        od
+        k_instrument += 1
+    od
 
-    ; k_bus = 0
-    ; while (k_bus < gi_auxCount) do
-    ;     k_channel = 0
-    ;     while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-    ;         ga_auxSignals[k_bus][k_channel] = 0
-    ;         k_channel += 1
-    ;     od
-    ;     k_bus += 1
-    ; od
+    k_bus = 0
+    while (k_bus < gi_auxCount) do
+        k_channel = 0
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+            ga_auxSignals[k_bus][k_channel] = 0
+            k_channel += 1
+        od
+        k_bus += 1
+    od
 
-    ; k_channel = 0
-    ; while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-    ;     ga_masterSignals[k_channel] = 0
-    ;     k_channel += 1
-    ; od
+    k_channel = 0
+    while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+        ga_masterSignals[k_channel] = 0
+        k_channel += 1
+    od
 endin
 
 
@@ -249,22 +249,22 @@ ${CSOUND_ENDIF}
 // All aux instruments should have instrument numbers higher than this instrument.
 //
 instr AuxMixInstrument
-    ; // Mix instruments into auxes.
-    ; kAux = 0
-    ; while (kAux < gi_auxCount) do
-    ;     kInstrument = 0
-    ;     while (kInstrument < gi_instrumentCount) do
-    ;         kChannel = giAuxChannelIndexRanges[kAux][kInstrument][LOW_CHANNEL_COUNT_INDEX]
-    ;         kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][HIGH_CHANNEL_COUNT_INDEX]
-    ;         while (kChannel <= kMaxChannel) do
-    ;             ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-    ;                 ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
-    ;             kChannel += 1
-    ;         od
-    ;         kInstrument += 1
-    ;     od
-    ;     kAux += 1
-    ; od
+    // Mix instruments into auxes.
+    kAux = 0
+    while (kAux < gi_auxCount) do
+        kInstrument = 0
+        while (kInstrument < gi_instrumentCount) do
+            kChannel = giAuxChannelIndexRanges[kAux][kInstrument][LOW_CHANNEL_COUNT_INDEX]
+            kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][HIGH_CHANNEL_COUNT_INDEX]
+            while (kChannel <= kMaxChannel) do
+                ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
+                    ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+                kChannel += 1
+            od
+            kInstrument += 1
+        od
+        kAux += 1
+    od
 endin
 
 
@@ -292,50 +292,50 @@ endin
 // Mixer instrument. All included instruments should have instrument numbers lower than this instrument.
 //
 instr FinalMixInstrument
+    kChannel = 0
+    while (kChannel < $INTERNAL_CHANNEL_COUNT) do
+        ga_masterSignals[kChannel] = 0
+        kChannel += 1
+    od
+
+    // Mix instrument tracks into master.
+    kTrack = 0
+    while (kTrack < gi_instrumentCount) do
+        kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
+        kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
+        while (kChannel <= kChannelHigh) do
+            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
+                ga_masterVolumes[kTrack][kChannel]
+            kChannel += 1
+        od
+        kTrack += 1
+    od
+
+    // Mix aux tracks into master.
+    // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
+    kAux = 0
+    while (kAux < gi_auxCount) do
+        kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
+        kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
+        while (kChannel <= kChannelHigh) do
+            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
+                ga_masterVolumes[kTrack][kChannel]
+            kChannel += 1
+        od
+        kTrack += 1
+        kAux += 1
+    od
+
+    // Output master.
     ; kChannel = 0
     ; while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-    ;     ga_masterSignals[kChannel] = 0
+    ;     outch(kChannel + 1, ga_masterSignals[kChannel])
     ;     kChannel += 1
     ; od
-
-    ; // Mix instrument tracks into master.
-    ; kTrack = 0
-    ; while (kTrack < gi_instrumentCount) do
-    ;     kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
-    ;     kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
-    ;     while (kChannel <= kChannelHigh) do
-    ;         ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
-    ;             ga_masterVolumes[kTrack][kChannel]
-    ;         kChannel += 1
-    ;     od
-    ;     kTrack += 1
-    ; od
-
-    ; // Mix aux tracks into master.
-    ; // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
-    ; kAux = 0
-    ; while (kAux < gi_auxCount) do
-    ;     kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
-    ;     kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
-    ;     while (kChannel <= kChannelHigh) do
-    ;         ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
-    ;             ga_masterVolumes[kTrack][kChannel]
-    ;         kChannel += 1
-    ;     od
-    ;     kTrack += 1
-    ;     kAux += 1
-    ; od
-
-    ; // Output master.
-    ; ; kChannel = 0
-    ; ; while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-    ; ;     outch(kChannel + 1, ga_masterSignals[kChannel])
-    ; ;     kChannel += 1
-    ; ; od
-    ; // For now just output the reverb channels.
-    ; // TODO: Add spatial audio conversion from ambisonic to stereo.
-    ; outch(1, ga_masterSignals[4])
-    ; outch(2, ga_masterSignals[5])
+    // For now just output the reverb channels.
+    // TODO: Add spatial audio conversion from ambisonic to stereo.
+    outch(1, ga_masterSignals[4])
+    outch(2, ga_masterSignals[5])
 endin
 
 </CsInstruments>
