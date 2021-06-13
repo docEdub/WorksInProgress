@@ -1568,15 +1568,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             k_sourceWidth xin
             xout min(max(0, round(k_sourceWidth)), 359)
          endop
-        opcode AF_3D_Audio_ChannelGains, k[], kkkp
+         gkAmbisonicChannelGains[] init 4
+        opcode AF_3D_Audio_ChannelGains, 0, kkkp
             k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
             k_azimuth = 360 - k_azimuth
             k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
             k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
             k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
-            i_channelCount = (i_ambisonicOrder + 1) * (i_ambisonicOrder + 1)
-            k_channelGains[] init i_channelCount
-            k_channelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
+            gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
             k_i = 0
             while (k_i <= i_ambisonicOrder) do
                 k_degreeWeight = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][k_i]
@@ -1597,14 +1596,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                             k_gain *= gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_180_359 [k_azimuthRow - 180][k_azimuthColumn]
                         endif
                     endif
-                    k_channelGains[k_channel] = k_degreeWeight * k_gain
+                    gkAmbisonicChannelGains[k_channel] = k_degreeWeight * k_gain
                     k_j += 1
                 od
                 k_i += 1
             od
-            xout k_channelGains
         endop
-        opcode AF_3D_Audio_ChannelGains, k[], i[]kp
+        opcode AF_3D_Audio_ChannelGains, 0, i[]kp
             i_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
                 i_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
@@ -1612,9 +1610,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
             k_elevation = taninv2(k_direction[$Z],
                 sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
-            xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+            AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
         endop
-        opcode AF_3D_Audio_ChannelGains, k[], k[]kp
+        opcode AF_3D_Audio_ChannelGains, 0, k[]kp
             k_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
                 k_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
@@ -1622,42 +1620,40 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
             k_elevation = taninv2(k_direction[$Z],
                 sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
-            xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+            AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
         endop
-        opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
+        opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
             k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
             k_direction[] = fillarray(k_sourcePositionX - gk_AF_3D_ListenerPosition[$X],
                 k_sourcePositionY - gk_AF_3D_ListenerPosition[$Y],
                 k_sourcePositionZ - gk_AF_3D_ListenerPosition[$Z])
             k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
             k_elevation = 0
-            k_channelGains[] = AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+            AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
             i_minW = 0.79021
             i_maxW = 1.25
             i_diffW = i_maxW - i_minW
             k_distance = sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])
             if (k_distance <= 1) then
-                k_channelGains[0] = i_maxW
-                k_channelGains[1] = 0
-                k_channelGains[2] = 0
-                k_channelGains[3] = 0
+                gkAmbisonicChannelGains[0] = i_maxW
+                gkAmbisonicChannelGains[1] = 0
+                gkAmbisonicChannelGains[2] = 0
+                gkAmbisonicChannelGains[3] = 0
             elseif (k_distance <= 2) then
                 k_distance -= 1
-                k_channelGains[0] = i_minW + (i_diffW * (1 - k_distance))
-                k_channelGains[1] = k_channelGains[1] * k_distance
-                k_channelGains[2] = k_channelGains[2] * k_distance
-                k_channelGains[3] = k_channelGains[3] * k_distance
+                gkAmbisonicChannelGains[0] = i_minW + (i_diffW * (1 - k_distance))
+                gkAmbisonicChannelGains[1] = gkAmbisonicChannelGains[1] * k_distance
+                gkAmbisonicChannelGains[2] = gkAmbisonicChannelGains[2] * k_distance
+                gkAmbisonicChannelGains[3] = gkAmbisonicChannelGains[3] * k_distance
             endif
-            xout k_channelGains
         endop
-        opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
+        opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp
             k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
             k_sourcePositionX = k_sourcePositionR * cos(k_sourcePositionT)
             k_sourcePositionY = k_sourcePositionR * sin(k_sourcePositionT)
             k_elevation = taninv2(k_sourcePositionZ, k_sourcePositionR) * $AF_MATH__RADIANS_TO_DEGREES
-            k_channelGains[] = AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-                k_sourceWidth, i_ambisonicOrder)
-            xout k_channelGains
+            AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth,
+                i_ambisonicOrder)
         endop
         opcode AF_3D_Audio_DistanceAttenuation, k, kkk
             k_distance, k_minDistance, k_maxDistance xin
@@ -1806,8 +1802,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 1) then
                 iNoteNumber = p5
                 iVelocity = p6
-                iFadeInTime = 0.25
-                iFadeOutTime = 0.25
+                iFadeInTime = 0.5
+                iFadeOutTime = 0.5
                 iTotalTime = iFadeInTime + iFadeOutTime
                 iSeed = iNoteNumber / 128
                 if (iNoteNumber < 128) then
@@ -1854,19 +1850,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     kR init iR
                     kT init iT
                     kZ init iZ
-                    // kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
-                    //     giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-                    kDistanceAmp init 1
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
+                        giPointSynth_DistanceMin, giPointSynth_DistanceMax)
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextRTZ_i += 1
                     if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
                         giPointSynthNextRTZ_i = 0
                     endif
-                    kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
-                    a1 = kAmbisonicChannelGains[0] * aOutDistanced
-                    a2 = kAmbisonicChannelGains[1] * aOutDistanced
-                    a3 = kAmbisonicChannelGains[2] * aOutDistanced
-                    a4 = kAmbisonicChannelGains[3] * aOutDistanced
+                    AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
+                    a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+                    a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+                    a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+                    a4 = gkAmbisonicChannelGains[3] * aOutDistanced
                         outs(aOut, aOut)
                     #ifdef IS_GENERATING_JSON
                         if (giPointSynth_NoteIndex[0] == 0) then
@@ -2044,11 +2039,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 k(giCircleSynth_DistanceMax))
             aOutDistanced = aOut * kDistanceAttenuation
             aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, kSpread)
-                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + kAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + kAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + kAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + kAmbisonicChannelGains[3] * aOutDistanced
+            AF_3D_Audio_ChannelGains(kPosition, kSpread)
+                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + gkAmbisonicChannelGains[3] * aOutDistanced
                 gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aOut
                 gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aOut
         endin:
@@ -2318,11 +2313,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
             aOutDistanced = aOut * kDistanceAttenuation
             aOut = aOut * (2 * kDistanceAttenuation)
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
-                gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + kAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + kAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + kAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + kAmbisonicChannelGains[3] * aOutDistanced
+            AF_3D_Audio_ChannelGains(kPosition, 1)
+                gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + gkAmbisonicChannelGains[3] * aOutDistanced
                 gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
                 gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
         endin:

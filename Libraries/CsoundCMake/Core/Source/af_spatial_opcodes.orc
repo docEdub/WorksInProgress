@@ -74,6 +74,9 @@ gk_AF_3D_ListenerPosition[] init 3
  endop
 
 
+ gkAmbisonicChannelGains[] init 4 // first order ambisonics { i_channelCount = (i_ambisonicOrder + 1) * (i_ambisonicOrder + 1) }
+
+
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_ChannelGains
 //---------------------------------------------------------------------------------------------------------------------
@@ -87,7 +90,7 @@ gk_AF_3D_ListenerPosition[] init 3
 //
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
-opcode AF_3D_Audio_ChannelGains, k[], kkkp
+opcode AF_3D_Audio_ChannelGains, 0, kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
 
     k_azimuth = 360 - k_azimuth
@@ -95,10 +98,7 @@ opcode AF_3D_Audio_ChannelGains, k[], kkkp
     k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
     
-    i_channelCount = (i_ambisonicOrder + 1) * (i_ambisonicOrder + 1)
-
-    k_channelGains[] init i_channelCount
-    k_channelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
+    gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 0
     while (k_i <= i_ambisonicOrder) do
         k_degreeWeight = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][k_i]
@@ -121,13 +121,11 @@ opcode AF_3D_Audio_ChannelGains, k[], kkkp
                         [k_azimuthRow - 180][k_azimuthColumn]
                 endif
             endif
-            k_channelGains[k_channel] = k_degreeWeight * k_gain
+            gkAmbisonicChannelGains[k_channel] = k_degreeWeight * k_gain
             k_j += 1
         od
         k_i += 1
     od
-
-    xout k_channelGains
 endop
 
 
@@ -143,7 +141,7 @@ endop
 //
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
-opcode AF_3D_Audio_ChannelGains, k[], i[]kp
+opcode AF_3D_Audio_ChannelGains, 0, i[]kp
     i_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
     
     k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -153,7 +151,7 @@ opcode AF_3D_Audio_ChannelGains, k[], i[]kp
     k_elevation = taninv2(k_direction[$Z],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
 
-    xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+    AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
 
@@ -169,7 +167,7 @@ endop
 //
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
-opcode AF_3D_Audio_ChannelGains, k[], k[]kp
+opcode AF_3D_Audio_ChannelGains, 0, k[]kp
     k_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
     
     k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
@@ -179,7 +177,7 @@ opcode AF_3D_Audio_ChannelGains, k[], k[]kp
     k_elevation = taninv2(k_direction[$Z],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
 
-    xout AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+    AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
 
@@ -197,7 +195,7 @@ endop
 //
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
-opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
+opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
 
     k_direction[] = fillarray(k_sourcePositionX - gk_AF_3D_ListenerPosition[$X],
@@ -219,7 +217,7 @@ opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
         endif
     #endif
 
-    k_channelGains[] = AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
+    AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 
     // Smooth out crossing over zero on the x and y axes.
     i_minW = 0.79021
@@ -227,19 +225,17 @@ opcode AF_3D_Audio_ChannelGains_XYZ, k[], kkkPp
     i_diffW = i_maxW - i_minW
     k_distance = sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])
     if (k_distance <= 1) then
-        k_channelGains[0] = i_maxW
-        k_channelGains[1] = 0
-        k_channelGains[2] = 0
-        k_channelGains[3] = 0
+        gkAmbisonicChannelGains[0] = i_maxW
+        gkAmbisonicChannelGains[1] = 0
+        gkAmbisonicChannelGains[2] = 0
+        gkAmbisonicChannelGains[3] = 0
     elseif (k_distance <= 2) then
         k_distance -= 1
-        k_channelGains[0] = i_minW + (i_diffW * (1 - k_distance))
-        k_channelGains[1] = k_channelGains[1] * k_distance
-        k_channelGains[2] = k_channelGains[2] * k_distance
-        k_channelGains[3] = k_channelGains[3] * k_distance
+        gkAmbisonicChannelGains[0] = i_minW + (i_diffW * (1 - k_distance))
+        gkAmbisonicChannelGains[1] = gkAmbisonicChannelGains[1] * k_distance
+        gkAmbisonicChannelGains[2] = gkAmbisonicChannelGains[2] * k_distance
+        gkAmbisonicChannelGains[3] = gkAmbisonicChannelGains[3] * k_distance
     endif
-
-    xout k_channelGains
 endop
 
 
@@ -257,7 +253,7 @@ endop
 //
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
-opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
+opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp
     k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
 
     // Covert RT to XY.
@@ -273,10 +269,8 @@ opcode AF_3D_Audio_ChannelGains_RTZ, k[], kkkPp
         endif
     #endif
 
-    k_channelGains[] = AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-        k_sourceWidth, i_ambisonicOrder)
-
-    xout k_channelGains
+    AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth,
+        i_ambisonicOrder)
 endop
 
 

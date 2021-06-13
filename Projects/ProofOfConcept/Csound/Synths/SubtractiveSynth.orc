@@ -872,19 +872,22 @@ instr SubtractiveSynth_Note
 
         // Output ambisonic channels 1-4.
         if (iPositionEnabled == true) then
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_XYZ(
+            AF_3D_Audio_ChannelGains_XYZ(
                 CC_VALUE_k(calculatedPositionX),
                 CC_VALUE_k(calculatedPositionY),
                 CC_VALUE_k(calculatedPositionZ))
         else
-            kAmbisonicChannelGains[] = fillarray(1, 1, 1, 1)
+            gkAmbisonicChannelGains[0] = 1
+            gkAmbisonicChannelGains[1] = 1
+            gkAmbisonicChannelGains[2] = 1
+            gkAmbisonicChannelGains[3] = 1
         endif
         kI = 0
         while (kI < 4) do
-            // NB: kAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
+            // NB: gkAmbisonicChannelGains[kI] causes a Csound compile error if it's put in the outch opcode,
             // but it works fine if it's assigned to a k variable that's put in the outch opcode.
             // TODO: File bug report?
-            kAmbisonicChannelGain = kAmbisonicChannelGains[kI]
+            kAmbisonicChannelGain = gkAmbisonicChannelGains[kI]
             kI += 1
             outch(kI, kAmbisonicChannelGain * aOut)
         od

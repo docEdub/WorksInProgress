@@ -168,21 +168,21 @@ instr PowerLineSynth_NoteOn
     kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
-    kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
+    AF_3D_Audio_ChannelGains(kPosition, 1)
 
     #if IS_PLAYBACK
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + kAmbisonicChannelGains[0] * aOutDistanced
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + kAmbisonicChannelGains[1] * aOutDistanced
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + kAmbisonicChannelGains[2] * aOutDistanced
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + kAmbisonicChannelGains[3] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + gkAmbisonicChannelGains[3] * aOutDistanced
         gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
         gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
     #else
         outch(
-            1, kAmbisonicChannelGains[0] * aOutDistanced,
-            2, kAmbisonicChannelGains[1] * aOutDistanced,
-            3, kAmbisonicChannelGains[2] * aOutDistanced,
-            4, kAmbisonicChannelGains[3] * aOutDistanced,
+            1, gkAmbisonicChannelGains[0] * aOutDistanced,
+            2, gkAmbisonicChannelGains[1] * aOutDistanced,
+            3, gkAmbisonicChannelGains[2] * aOutDistanced,
+            4, gkAmbisonicChannelGains[3] * aOutDistanced,
             5, aOut)
     #endif
 

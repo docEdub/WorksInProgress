@@ -157,11 +157,11 @@ instr INSTRUMENT_ID
             if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
                 giPointSynthNextRTZ_i = 0
             endif
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
-            a1 = kAmbisonicChannelGains[0] * aOutDistanced
-            a2 = kAmbisonicChannelGains[1] * aOutDistanced
-            a3 = kAmbisonicChannelGains[2] * aOutDistanced
-            a4 = kAmbisonicChannelGains[3] * aOutDistanced
+            AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
+            a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+            a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+            a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+            a4 = gkAmbisonicChannelGains[3] * aOutDistanced
 
             #if IS_PLAYBACK
                 ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1

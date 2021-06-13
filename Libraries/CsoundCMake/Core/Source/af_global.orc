@@ -88,13 +88,13 @@ opcode AF_Ambisonics_Send, 0, ai[]P
     a_signal, i_position[], k_width xin
     
     // Get the ambisonic channel gains.
-    k_ambisonicChannelGains[] = AF_3D_Audio_ChannelGains(i_position, k_width)
+    AF_3D_Audio_ChannelGains(i_position, k_width)
     
     // Mix the ambisonic channel gains into the global ambisonic outputs.
-    ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (k_ambisonicChannelGains[0] * a_signal)
-    ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (k_ambisonicChannelGains[1] * a_signal)
-    ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (k_ambisonicChannelGains[2] * a_signal)
-    ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (k_ambisonicChannelGains[3] * a_signal)
+    ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
+    ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
+    ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (gkAmbisonicChannelGains[2] * a_signal)
+    ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (gkAmbisonicChannelGains[3] * a_signal)
 endop
 
 
@@ -111,13 +111,13 @@ opcode AF_Ambisonics_Send, 0, ak[]P
     a_signal, k_position[], k_width xin
     
     // Get the ambisonic channel gains.
-    k_ambisonicChannelGains[] = AF_3D_Audio_ChannelGains(k_position, k_width)
+    AF_3D_Audio_ChannelGains(k_position, k_width)
     
     // Mix the ambisonic channel gains into the global ambisonic outputs.
-    ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (k_ambisonicChannelGains[0] * a_signal)
-    ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (k_ambisonicChannelGains[1] * a_signal)
-    ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (k_ambisonicChannelGains[2] * a_signal)
-    ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (k_ambisonicChannelGains[3] * a_signal)
+    ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
+    ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
+    ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (gkAmbisonicChannelGains[2] * a_signal)
+    ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (gkAmbisonicChannelGains[3] * a_signal)
 endop
 
 
