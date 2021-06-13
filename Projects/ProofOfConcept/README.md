@@ -52,6 +52,6 @@ output working.
   - Plug Quest into Mac with USB-C cable (Oculus power cable works).
   - On Quest, respond to permissions prompt(s).
   - On Mac, run command `adb devices`. If device is listed as `unauthorized`, go back on Quest and respond to another permissions prompt.
-  - On Mac, run `adb tcp:9000 tcp:9000` to setup port forwarding from Quest to Mac.
+  - On Mac, run `adb reverse tcp:9000 tcp:9000` to setup port forwarding from Quest to Mac.
   - On Quest browser, open `https://localhost:9000`
   - On Mac, open Chrome tab to `chrome://inspect/#devices` and select `Quest 2 -> ProofOfConcept -> inspect`. This should open a dev tools window on Mac with a screen view on the left and the usual Chrome dev tools on the right (Console, Elements, etc...).
