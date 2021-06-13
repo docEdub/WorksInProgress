@@ -210,8 +210,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             currentStartDelay += 1
             console.log('Csound starting in', csoundStartDelay - currentStartDelay)
             if (currentStartDelay >= csoundStartDelay) {
-        console.debug('Csound starting ...')
-        csound.start()
+                console.debug('Csound starting ...')
+                csound.start()
                 clearInterval(csoundLoadTimer)
             }
         }, 1000)
