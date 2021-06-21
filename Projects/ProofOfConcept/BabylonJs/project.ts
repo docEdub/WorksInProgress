@@ -221,7 +221,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csdText = `
         <CsoundSynthesizer>
         <CsOptions>
-        --messagelevel=0
         --midi-device=0
         --nodisplays
         --nosound
@@ -341,7 +340,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
         ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
         instr 1
-            prints("csd:started\\n")
             gi_instrumentCount = p4
             gi_instrumentIndexOffset = p5
             gi_auxCount = p6
@@ -497,48 +495,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             xout kOut
         endop
          #end
-        gSCcInfo_PointSynth[] = fillarray( \\
+        gSCcInfo_PowerLineSynth[] = fillarray( \\
         \\
             "example", "bool", "false", "synced", \\
         \\
             "", "", "", "")
-         #define gSCcInfo_PointSynth_Count #8#
+         #define gSCcInfo_PowerLineSynth_Count #8#
          #define CC_INFO_CHANNEL #0#
          #define CC_INFO_TYPE #1#
          #define CC_INFO_VALUE #2#
          #define CC_INFO_SYNC_TYPE #3#
          #define CC_NO_SYNC #0#
          #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_PointSynth_Count
-            if (lenarray(gSCcInfo_PointSynth) == $gSCcInfo_PointSynth_Count) then
-                giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
-                reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
+         #ifdef gSCcInfo_PowerLineSynth_Count
+            if (lenarray(gSCcInfo_PowerLineSynth) == $gSCcInfo_PowerLineSynth_Count) then
+                giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
+                reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
             endif
          #else
-            giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
-            reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
+            giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
+            reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
          #end
-        opcode ccIndex_PointSynth, i, S
+        opcode ccIndex_PowerLineSynth, i, S
             SChannel xin
             kgoto end
             iI = 0
-            while (iI < giCcCount_PointSynth) do
-                if (strcmp(gSCcInfo_PointSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+            while (iI < giCcCount_PowerLineSynth) do
+                if (strcmp(gSCcInfo_PowerLineSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
                 iI += 1
             od
             iI = -1
         end:
             xout iI
         endop
-        giCcValueDefaults_PointSynth[] init giCcCount_PointSynth
-        giCcValues_PointSynth[][] init 1, giCcCount_PointSynth
-        gkCcValues_PointSynth[][] init 1, giCcCount_PointSynth
-        gkCcSyncTypes_PointSynth[][] init 1, giCcCount_PointSynth
-        instr PointSynth_InitializeCcValues
+        giCcValueDefaults_PowerLineSynth[] init giCcCount_PowerLineSynth
+        giCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        gkCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        gkCcSyncTypes_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        instr PowerLineSynth_InitializeCcValues
             iI = 0
-            while (iI < giCcCount_PointSynth) do
-                SType = gSCcInfo_PointSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PointSynth[iI][$CC_INFO_VALUE]
+            while (iI < giCcCount_PowerLineSynth) do
+                SType = gSCcInfo_PowerLineSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PowerLineSynth[iI][$CC_INFO_VALUE]
                 iJ = 0
                 while (iJ < 1) do
                     iValue = -1
@@ -551,18 +549,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
                         iValue = strtod(SValue)
                     endif
-                    giCcValueDefaults_PointSynth[iI] = iValue
-                    giCcValues_PointSynth[iJ][iI] = iValue
+                    giCcValueDefaults_PowerLineSynth[iI] = iValue
+                    giCcValues_PowerLineSynth[iJ][iI] = iValue
                     iJ += 1
                 od
                 iI += 1
             od
             igoto end
             kI = 0
-            while (kI < giCcCount_PointSynth) do
-                SType = gSCcInfo_PointSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PointSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_PointSynth[kI][$CC_INFO_SYNC_TYPE]
+            while (kI < giCcCount_PowerLineSynth) do
+                SType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PowerLineSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_SYNC_TYPE]
                 kJ = 0
                 while (kJ < 1) do
                     kValue = -1
@@ -575,10 +573,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
                         kValue = strtodk(SValue)
                     endif
-                    gkCcValues_PointSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_PointSynth[kJ][kI] = $CC_NO_SYNC
+                    gkCcValues_PowerLineSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_NO_SYNC
                     if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_PointSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                        gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
                     endif
                     kJ += 1
                 od
@@ -587,12 +585,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         end:
         endin
-        event_i("i", "PointSynth_InitializeCcValues", 0, -1)
-        instr PointSynth_CreateCcIndexes
-            giCc_PointSynth_example init ccIndex_PointSynth("example")
+        event_i("i", "PowerLineSynth_InitializeCcValues", 0, -1)
+        instr PowerLineSynth_CreateCcIndexes
+            giCc_PowerLineSynth_example init ccIndex_PowerLineSynth("example")
             turnoff
         endin
-        event_i("i", "PointSynth_CreateCcIndexes", 0, -1)
+        event_i("i", "PowerLineSynth_CreateCcIndexes", 0, -1)
         /*
          * The resonance audio lookup tables were copied from https:
          * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
@@ -1747,74 +1745,125 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_dopplerShift
         endop
-        opcode math_roundFloat_k, k, ki
-            k_inputFloat, i_decimalPlaces xin
-            k_outputFloat = k_inputFloat
-            if (i_decimalPlaces == 0) then
-                k_outputFloat = round(k_inputFloat)
-            else
-                i_10ToTheDecimalPlacesPower = pow(10, i_decimalPlaces)
-                k_outputFloat = int(k_inputFloat)
-                k_outputFloat += int(round(frac(k_inputFloat) * i_10ToTheDecimalPlacesPower)) / i_10ToTheDecimalPlacesPower
+        giMaxRiseTime = 10
+        giNoteOnStartPosition[] = fillarray(10, 0, 20)
+        giNoteOnEndPosition[] = fillarray(15, 10, 25)
+        giNoteOffEndZ = -1000
+        giNoteNumberWobbleStartAmp = 1.5
+        giNoteNumberWobbleSpeed = 5
+        giRiserTableSize = 1024
+        giWobbleTableSize = 1024
+        giMinNoteOffSpeed = 50
+        giMaxNoteOffSpeed = 100
+        giPowerLineSynth_DistanceMin = 5
+        giPowerLineSynth_DistanceMax = 100
+        giRiserTableId = ftgen(0, 0, giRiserTableSize + 1, 16, 0, giRiserTableSize, -10, 1)
+        giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
+        instr PowerLineSynth_NoteOn
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
+            iSecondsPerKPass = 1 / kr
+            iNoteOnDelta[] fillarray giNoteOnEndPosition[$X] - giNoteOnStartPosition[$X], giNoteOnEndPosition[$Y] - giNoteOnStartPosition[$Y], giNoteOnEndPosition[$Z] - giNoteOnStartPosition[$Z]
+            iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / giMaxRiseTime)
+            iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / giMaxRiseTime)
+            kPosition[] fillarray giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z]
+            if (kPosition[$Z] < giNoteOffEndZ) then
+                kgoto endin
             endif
-            xout k_outputFloat
-        endop
-        giFastSquareMaxI init 101
-        giFastSquareTable ftgen 0, 0, giFastSquareMaxI, 2, 0
-        instr math_InitFastSquareTable
-            iI = 0
-            while (iI < giFastSquareMaxI) do
-                tablew(iI * iI, iI, giFastSquareTable)
-                iI += 1
-            od
-            turnoff
+            iMaxRiseAmount = iNoteNumber - 36
+            iNoteNumber = 36
+            kReleased = release()
+            iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
+            kRiserTableI init 0
+            if (kRiserTableI < giRiserTableSize && kReleased == 0) then
+                kRiserTableI += iRiserTableIncrementI
+            endif
+            kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
+            if (kReleased == 0) then
+                if (kRiserTableI < giRiserTableSize) then
+                    kPosition[$X] = kPosition[$X] + iNoteOnIncrementX
+                    kPosition[$Y] = giNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
+                    kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
+                endif
+            else
+                iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
+                xtratim(iExtraTime)
+                kNoteOffSpeed init giMinNoteOffSpeed
+                kNoteOffIncrementZ init iSecondsPerKPass * giMinNoteOffSpeed
+                kNoteOffSpeedCalculated init 0
+                if (kNoteOffSpeedCalculated == 0) then
+                    kNoteOffSpeed = giMinNoteOffSpeed +
+                        ((giMaxNoteOffSpeed - giMinNoteOffSpeed) * (kRiserTableI / giRiserTableSize))
+                    kNoteOffSpeed = min(kNoteOffSpeed, giMaxNoteOffSpeed)
+                    kNoteOffIncrementZ = iSecondsPerKPass * kNoteOffSpeed
+                    kNoteOffSpeedCalculated = 1
+                else
+                    kPosition[$Z] = kPosition[$Z] - kNoteOffIncrementZ
+                endif
+            endif
+            iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
+            kWobbleTableI init 0
+            kWobbleTableI += iWobbleTableIncrementI
+            kWobbleTableI = kWobbleTableI % giWobbleTableSize
+            kNoteNumberWobbleAmp = giNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
+            kNoteNumber = iNoteNumber
+            kNoteNumber += kRiserTableValue * iMaxRiseAmount
+            kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
+            if (kNoteNumber > 127) then
+                kNoteNumber = 127
+                    kLoggedNoteNumberWarning init 0
+                    if (kLoggedNoteNumberWarning == 0) then
+                        kLoggedNoteNumberWarning = 1
+                    endif
+            else
+                    kLoggedNoteNumberWarning = 0
+            endif
+            kAmp = 0.1 * iVelocity * kRiserTableValue
+            if (kReleased == 1) then
+                kAmp *= (giNoteOffEndZ - kPosition[$Z]) / giNoteOffEndZ
+            endif
+            kCps = cpsmidinn(kNoteNumber)
+            aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5)
+            aOut = tone(aOut, 5000)
+            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
+            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
+            aOutDistanced = aOut * kDistanceAttenuation
+            aOut = aOut * (2 * kDistanceAttenuation)
+            AF_3D_Audio_ChannelGains(kPosition, 1)
+                gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + gkAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
+                gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
+        endin:
         endin
-        scoreline_i("i \\"math_InitFastSquareTable\\" 0 -1")
-        opcode math_fastSquare, k, k
-            kI xin
-            xout tablei(kI, giFastSquareTable)
-        endop
-        giFastSqrtMaxI init 10001
-        giFastSqrtTable ftgen 0, 0, giFastSqrtMaxI, 2, 0
-        instr math_InitFastSqrtTable
-            iI = 0
-            while (iI < giFastSqrtMaxI) do
-                tablew(sqrt(iI), iI, giFastSqrtTable)
-                iI += 1
-            od
-            turnoff
+        instr PowerLineSynth_NoteOff
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
         endin
-        scoreline_i("i \\"math_InitFastSqrtTable\\" 0 -1")
-        opcode math_fastSqrt, k, k
-            kI xin
-            xout tablei(kI, giFastSqrtTable)
-        endop
-        giPointSynth_DistanceMin = 5
-        giPointSynth_DistanceMax = 100
-        giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-         #define POINT_SYNTH_NEXT_RTZ_COUNT #16384#
-        giPointSynthNextRT[][][] init 1, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
-        giPointSynthNextRTZ_i init 0
-        iI = 0
-        while (iI < 1) do
-            seed(1 + iI * 1000)
-            iJ = 0
-            while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
-                giPointSynthNextRT[iI][iJ][$R] = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
-                giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
-                iJ += 1
-            od
-            iI += 1
-        od
-        giPointSynth_NoteIndex[] init 1
+        giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
+        giPowerLineSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
-            setPluginUuid(0, 0, "b4f7a35c-6198-422f-be6e-fa126f31b007")
-            instr PointSynth_Json
-                SJsonFile = sprintf("%s.0.json", "b4f7a35c-6198-422f-be6e-fa126f31b007")
+            setPluginUuid(0, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
+            instr PowerLineSynth_Json
+                SJsonFile = sprintf("%s.0.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3")
                 fprints(SJsonFile, "{")
                 fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPointSynth_DistanceMin)
-                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPointSynth_DistanceMax)
+                fprints(SJsonFile, ",\\"maxRiseTime\\":%d", giMaxRiseTime)
+                fprints(SJsonFile, ",\\"noteOnStartPosition\\":[%d,%d,%d]", giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z])
+                fprints(SJsonFile, ",\\"noteOnEndPosition\\":[%d,%d,%d]", giNoteOnEndPosition[$X], giNoteOnEndPosition[$Y], giNoteOnEndPosition[$Z])
+                fprints(SJsonFile, ",\\"noteOffEndZ\\":%d", giNoteOffEndZ)
+                fprints(SJsonFile, ",\\"noteNumberWobbleStartAmp\\":%.3f", giNoteNumberWobbleStartAmp)
+                fprints(SJsonFile, ",\\"noteNumberWobbleSpeed\\":%.3f", giNoteNumberWobbleSpeed)
+                fprints(SJsonFile, ",\\"minNoteOffSpeed\\":%d", giMinNoteOffSpeed)
+                fprints(SJsonFile, ",\\"maxNoteOffSpeed\\":%d", giMaxNoteOffSpeed)
+                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPowerLineSynth_DistanceMin)
+                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPowerLineSynth_DistanceMax)
                 fprints(SJsonFile, "}")
                 turnoff
             endin
@@ -1826,82 +1875,36 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 1) then
                 iNoteNumber = p5
                 iVelocity = p6
-                iFadeInTime = 0.01
-                iFadeOutTime = 0.01
-                iTotalTime = iFadeInTime + iFadeOutTime
-                iSeed = iNoteNumber / 128
-                if (iNoteNumber < 128) then
-                    kI init 0
-                    kCountdownNeedsInit init 1
-                    if (kCountdownNeedsInit == 1) then
-                        kJ = 0
-                        while (kJ < iNoteNumber) do
-                            kCountdown = 0.5 + abs(rand(0.5, iSeed))
-                            kJ += 1
-                        od
-                        kCountdownNeedsInit = 0
+                kReleased = release()
+                    iInstrumentNumber = p1 + 0.0001
+                    SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
+                    scoreline_i(SOnEvent)
+                    if (kReleased == 1) then
+                        SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                        scoreline(SOffEvent, 1)
                     endif
-                    kCountdown -= 1 / kr
-                    if (kCountdown <= 0) then
-                        kI += 1
-                        if (kI == 1000) then
-                            kI = 1
-                        endif
-                        kInstrumentNumber = p1 + kI / 1000000
-                        kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
-                        kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
-                        SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
-                            kNoteNumber,
-                            kVelocity)
-                        scoreline(SEvent, 1)
-                        kCountdownNeedsInit = 1
-                    endif
-                else
-                    iNoteNumber -= 1000
-                    if (iNoteNumber > 127) then
-                        igoto endin
-                        turnoff
-                    endif
-                    iCps = cpsmidinn(p5 - 1000)
-                    iAmp = 0.05
-                    kCps = linseg(iCps, iTotalTime, iCps + 100)
-                    aOut = oscil(iAmp, kCps)
-                    aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
-                    aOut *= aEnvelope
-                    iR init giPointSynthNextRT[0][giPointSynthNextRTZ_i][$R]
-                    iT init giPointSynthNextRT[0][giPointSynthNextRTZ_i][$T]
-                    iZ init 10 + 10 * (iNoteNumber / 127)
-                    kR init iR
-                    kT init iT
-                    kZ init iZ
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
-                        giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-                    aOutDistanced = aOut * kDistanceAmp
-                    giPointSynthNextRTZ_i += 1
-                    if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
-                        giPointSynthNextRTZ_i = 0
-                    endif
-                    AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
-                    a1 = gkAmbisonicChannelGains[0] * aOutDistanced
-                    a2 = gkAmbisonicChannelGains[1] * aOutDistanced
-                    a3 = gkAmbisonicChannelGains[2] * aOutDistanced
-                    a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-                        gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + a1
-                        gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + a2
-                        gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + a3
-                        gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + a4
-                        gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
-                        gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
                     #ifdef IS_GENERATING_JSON
-                        if (giPointSynth_NoteIndex[0] == 0) then
-                            scoreline_i("i \\"PointSynth_Json\\" 0 0")
+                        if (giPowerLineSynth_NoteIndex[0] == 0) then
+                            scoreline_i("i \\"PowerLineSynth_Json\\" 0 0")
                         endif
-                        giPointSynth_NoteIndex[0] = giPointSynth_NoteIndex[0] + 1
-                        SJsonFile = sprintf("%s.%d.json", "b4f7a35c-6198-422f-be6e-fa126f31b007", giPointSynth_NoteIndex[0])
-                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"rtz\\":[%.3f,%.3f,%.3f]}}", times(),
-                            iNoteNumber, iR, iT, iZ)
+                        giPowerLineSynth_NoteIndex[0] = giPowerLineSynth_NoteIndex[0] + 1
+                        SJsonFile = sprintf("%s.%d.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3", giPowerLineSynth_NoteIndex[0])
+                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
+                        if (kReleased == 1) then
+                            fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                        endif
                     #end
+                if (kReleased == 1) then
+                    turnoff
                 endif
+            elseif (iEventType == 3) then
+                iNoteNumber = p5
+                iVelocity = p6
+                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+                        iNoteNumber,
+                        iVelocity,
+                        0,
+                        0
             endif
         endin:
         endin
@@ -2113,25 +2116,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 1) then
                 iNoteNumber = p5
                 iVelocity = p6
-                iInstrumentNumber = p1 + 0.0001
-                SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
-                scoreline_i(SOnEvent)
                 kReleased = release()
-                if (kReleased == 1) then
-                    SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-                    scoreline(SOffEvent, 1)
-                endif
-                #ifdef IS_GENERATING_JSON
-                    if (giCircleSynth_NoteIndex[0] == 0) then
-                        scoreline_i("i \\"CircleSynth_Json\\" 0 0")
-                    endif
-                    giCircleSynth_NoteIndex[0] = giCircleSynth_NoteIndex[0] + 1
-                    SJsonFile = sprintf("%s.%d.json", "baeea327-af4b-4b10-a843-6614c20ea958", giCircleSynth_NoteIndex[0])
-                    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
+                    iInstrumentNumber = p1 + 0.0001
+                    SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
+                    scoreline_i(SOnEvent)
                     if (kReleased == 1) then
-                        fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                        SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                        scoreline(SOffEvent, 1)
                     endif
-                #end
+                    #ifdef IS_GENERATING_JSON
+                        if (giCircleSynth_NoteIndex[0] == 0) then
+                            scoreline_i("i \\"CircleSynth_Json\\" 0 0")
+                        endif
+                        giCircleSynth_NoteIndex[0] = giCircleSynth_NoteIndex[0] + 1
+                        SJsonFile = sprintf("%s.%d.json", "baeea327-af4b-4b10-a843-6614c20ea958", giCircleSynth_NoteIndex[0])
+                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
+                        if (kReleased == 1) then
+                            fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                        endif
+                    #end
                 if (kReleased == 1) then
                     turnoff
                 endif
@@ -2165,48 +2168,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             xout kOut
         endop
          #end
-        gSCcInfo_PowerLineSynth[] = fillarray( \\
+        gSCcInfo_PointSynth[] = fillarray( \\
         \\
             "example", "bool", "false", "synced", \\
         \\
             "", "", "", "")
-         #define gSCcInfo_PowerLineSynth_Count #8#
+         #define gSCcInfo_PointSynth_Count #8#
          #define CC_INFO_CHANNEL #0#
          #define CC_INFO_TYPE #1#
          #define CC_INFO_VALUE #2#
          #define CC_INFO_SYNC_TYPE #3#
          #define CC_NO_SYNC #0#
          #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_PowerLineSynth_Count
-            if (lenarray(gSCcInfo_PowerLineSynth) == $gSCcInfo_PowerLineSynth_Count) then
-                giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
-                reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+         #ifdef gSCcInfo_PointSynth_Count
+            if (lenarray(gSCcInfo_PointSynth) == $gSCcInfo_PointSynth_Count) then
+                giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
+                reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
             endif
          #else
-            giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
-            reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+            giCcCount_PointSynth = (lenarray(gSCcInfo_PointSynth) / 4) - 1
+            reshapearray(gSCcInfo_PointSynth, giCcCount_PointSynth + 1, 4)
          #end
-        opcode ccIndex_PowerLineSynth, i, S
+        opcode ccIndex_PointSynth, i, S
             SChannel xin
             kgoto end
             iI = 0
-            while (iI < giCcCount_PowerLineSynth) do
-                if (strcmp(gSCcInfo_PowerLineSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+            while (iI < giCcCount_PointSynth) do
+                if (strcmp(gSCcInfo_PointSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
                 iI += 1
             od
             iI = -1
         end:
             xout iI
         endop
-        giCcValueDefaults_PowerLineSynth[] init giCcCount_PowerLineSynth
-        giCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        gkCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        gkCcSyncTypes_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        instr PowerLineSynth_InitializeCcValues
+        giCcValueDefaults_PointSynth[] init giCcCount_PointSynth
+        giCcValues_PointSynth[][] init 1, giCcCount_PointSynth
+        gkCcValues_PointSynth[][] init 1, giCcCount_PointSynth
+        gkCcSyncTypes_PointSynth[][] init 1, giCcCount_PointSynth
+        instr PointSynth_InitializeCcValues
             iI = 0
-            while (iI < giCcCount_PowerLineSynth) do
-                SType = gSCcInfo_PowerLineSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PowerLineSynth[iI][$CC_INFO_VALUE]
+            while (iI < giCcCount_PointSynth) do
+                SType = gSCcInfo_PointSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PointSynth[iI][$CC_INFO_VALUE]
                 iJ = 0
                 while (iJ < 1) do
                     iValue = -1
@@ -2219,18 +2222,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
                         iValue = strtod(SValue)
                     endif
-                    giCcValueDefaults_PowerLineSynth[iI] = iValue
-                    giCcValues_PowerLineSynth[iJ][iI] = iValue
+                    giCcValueDefaults_PointSynth[iI] = iValue
+                    giCcValues_PointSynth[iJ][iI] = iValue
                     iJ += 1
                 od
                 iI += 1
             od
             igoto end
             kI = 0
-            while (kI < giCcCount_PowerLineSynth) do
-                SType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PowerLineSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_SYNC_TYPE]
+            while (kI < giCcCount_PointSynth) do
+                SType = gSCcInfo_PointSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PointSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_PointSynth[kI][$CC_INFO_SYNC_TYPE]
                 kJ = 0
                 while (kJ < 1) do
                     kValue = -1
@@ -2243,10 +2246,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
                         kValue = strtodk(SValue)
                     endif
-                    gkCcValues_PowerLineSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_NO_SYNC
+                    gkCcValues_PointSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_PointSynth[kJ][kI] = $CC_NO_SYNC
                     if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                        gkCcSyncTypes_PointSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
                     endif
                     kJ += 1
                 od
@@ -2255,131 +2258,82 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         end:
         endin
-        event_i("i", "PowerLineSynth_InitializeCcValues", 0, -1)
-        instr PowerLineSynth_CreateCcIndexes
-            giCc_PowerLineSynth_example init ccIndex_PowerLineSynth("example")
+        event_i("i", "PointSynth_InitializeCcValues", 0, -1)
+        instr PointSynth_CreateCcIndexes
+            giCc_PointSynth_example init ccIndex_PointSynth("example")
             turnoff
         endin
-        event_i("i", "PowerLineSynth_CreateCcIndexes", 0, -1)
-        giMaxRiseTime = 10
-        giNoteOnStartPosition[] = fillarray(10, 0, 20)
-        giNoteOnEndPosition[] = fillarray(15, 10, 25)
-        giNoteOffEndZ = -1000
-        giNoteNumberWobbleStartAmp = 1.5
-        giNoteNumberWobbleSpeed = 5
-        giRiserTableSize = 1024
-        giWobbleTableSize = 1024
-        giMinNoteOffSpeed = 50
-        giMaxNoteOffSpeed = 100
-        giPowerLineSynth_DistanceMin = 5
-        giPowerLineSynth_DistanceMax = 100
-        giRiserTableId = ftgen(0, 0, giRiserTableSize + 1, 16, 0, giRiserTableSize, -10, 1)
-        giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
-        instr PowerLineSynth_NoteOn
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
-            iSecondsPerKPass = 1 / kr
-            iNoteOnDelta[] fillarray giNoteOnEndPosition[$X] - giNoteOnStartPosition[$X], giNoteOnEndPosition[$Y] - giNoteOnStartPosition[$Y], giNoteOnEndPosition[$Z] - giNoteOnStartPosition[$Z]
-            iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / giMaxRiseTime)
-            iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / giMaxRiseTime)
-            kPosition[] fillarray giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z]
-            if (kPosition[$Z] < giNoteOffEndZ) then
-                kgoto endin
-            endif
-            iMaxRiseAmount = iNoteNumber - 36
-            iNoteNumber = 36
-            kReleased = release()
-            iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
-            kRiserTableI init 0
-            if (kRiserTableI < giRiserTableSize && kReleased == 0) then
-                kRiserTableI += iRiserTableIncrementI
-            endif
-            kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
-            if (kReleased == 0) then
-                if (kRiserTableI < giRiserTableSize) then
-                    kPosition[$X] = kPosition[$X] + iNoteOnIncrementX
-                    kPosition[$Y] = giNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
-                    kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
-                endif
+        event_i("i", "PointSynth_CreateCcIndexes", 0, -1)
+        opcode math_roundFloat_k, k, ki
+            k_inputFloat, i_decimalPlaces xin
+            k_outputFloat = k_inputFloat
+            if (i_decimalPlaces == 0) then
+                k_outputFloat = round(k_inputFloat)
             else
-                iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
-                xtratim(iExtraTime)
-                kNoteOffSpeed init giMinNoteOffSpeed
-                kNoteOffIncrementZ init iSecondsPerKPass * giMinNoteOffSpeed
-                kNoteOffSpeedCalculated init 0
-                if (kNoteOffSpeedCalculated == 0) then
-                    kNoteOffSpeed = giMinNoteOffSpeed +
-                        ((giMaxNoteOffSpeed - giMinNoteOffSpeed) * (kRiserTableI / giRiserTableSize))
-                    kNoteOffSpeed = min(kNoteOffSpeed, giMaxNoteOffSpeed)
-                    kNoteOffIncrementZ = iSecondsPerKPass * kNoteOffSpeed
-                    kNoteOffSpeedCalculated = 1
-                else
-                    kPosition[$Z] = kPosition[$Z] - kNoteOffIncrementZ
-                endif
+                i_10ToTheDecimalPlacesPower = pow(10, i_decimalPlaces)
+                k_outputFloat = int(k_inputFloat)
+                k_outputFloat += int(round(frac(k_inputFloat) * i_10ToTheDecimalPlacesPower)) / i_10ToTheDecimalPlacesPower
             endif
-            iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
-            kWobbleTableI init 0
-            kWobbleTableI += iWobbleTableIncrementI
-            kWobbleTableI = kWobbleTableI % giWobbleTableSize
-            kNoteNumberWobbleAmp = giNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
-            kNoteNumber = iNoteNumber
-            kNoteNumber += kRiserTableValue * iMaxRiseAmount
-            kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
-            if (kNoteNumber > 127) then
-                kNoteNumber = 127
-                    kLoggedNoteNumberWarning init 0
-                    if (kLoggedNoteNumberWarning == 0) then
-                        kLoggedNoteNumberWarning = 1
-                    endif
-            else
-                    kLoggedNoteNumberWarning = 0
-            endif
-            kAmp = 0.1 * iVelocity * kRiserTableValue
-            if (kReleased == 1) then
-                kAmp *= (giNoteOffEndZ - kPosition[$Z]) / giNoteOffEndZ
-            endif
-            kCps = cpsmidinn(kNoteNumber)
-            aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5)
-            aOut = tone(aOut, 5000)
-            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
-            aOutDistanced = aOut * kDistanceAttenuation
-            aOut = aOut * (2 * kDistanceAttenuation)
-            AF_3D_Audio_ChannelGains(kPosition, 1)
-                gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + gkAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + gkAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + gkAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + gkAmbisonicChannelGains[3] * aOutDistanced
-                gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
-                gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
-        endin:
+            xout k_outputFloat
+        endop
+        giFastSquareMaxI init 101
+        giFastSquareTable ftgen 0, 0, giFastSquareMaxI, 2, 0
+        instr math_InitFastSquareTable
+            iI = 0
+            while (iI < giFastSquareMaxI) do
+                tablew(iI * iI, iI, giFastSquareTable)
+                iI += 1
+            od
+            turnoff
         endin
-        instr PowerLineSynth_NoteOff
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
+        scoreline_i("i \\"math_InitFastSquareTable\\" 0 -1")
+        opcode math_fastSquare, k, k
+            kI xin
+            xout tablei(kI, giFastSquareTable)
+        endop
+        giFastSqrtMaxI init 10001
+        giFastSqrtTable ftgen 0, 0, giFastSqrtMaxI, 2, 0
+        instr math_InitFastSqrtTable
+            iI = 0
+            while (iI < giFastSqrtMaxI) do
+                tablew(sqrt(iI), iI, giFastSqrtTable)
+                iI += 1
+            od
+            turnoff
         endin
-        giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
-        giPowerLineSynth_NoteIndex[] init 1
+        scoreline_i("i \\"math_InitFastSqrtTable\\" 0 -1")
+        opcode math_fastSqrt, k, k
+            kI xin
+            xout tablei(kI, giFastSqrtTable)
+        endop
+        giPointSynth_DistanceMin = 5
+        giPointSynth_DistanceMax = 100
+        giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+         #define POINT_SYNTH_NEXT_RTZ_COUNT #16384#
+        giPointSynthNextRT[][][] init 1, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
+        giPointSynthNextRTZ_i init 0
+        iI = 0
+        while (iI < 1) do
+            seed(1 + iI * 1000)
+            iJ = 0
+            while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
+                giPointSynthNextRT[iI][iJ][$R] = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+                giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
+                iJ += 1
+            od
+            iI += 1
+        od
+        giPointSynth_NoteIndex[] init 1
+        gkPointSynth_InstrumentNumberFraction[] init 1
+        gkPointSynth_LastNoteOnTime[] init 1
          #ifdef IS_GENERATING_JSON
-            setPluginUuid(2, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
-            instr PowerLineSynth_Json
-                SJsonFile = sprintf("%s.0.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3")
+            setPluginUuid(2, 0, "b4f7a35c-6198-422f-be6e-fa126f31b007")
+            instr PointSynth_Json
+                SJsonFile = sprintf("%s.0.json", "b4f7a35c-6198-422f-be6e-fa126f31b007")
                 fprints(SJsonFile, "{")
                 fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-                fprints(SJsonFile, ",\\"maxRiseTime\\":%d", giMaxRiseTime)
-                fprints(SJsonFile, ",\\"noteOnStartPosition\\":[%d,%d,%d]", giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z])
-                fprints(SJsonFile, ",\\"noteOnEndPosition\\":[%d,%d,%d]", giNoteOnEndPosition[$X], giNoteOnEndPosition[$Y], giNoteOnEndPosition[$Z])
-                fprints(SJsonFile, ",\\"noteOffEndZ\\":%d", giNoteOffEndZ)
-                fprints(SJsonFile, ",\\"noteNumberWobbleStartAmp\\":%.3f", giNoteNumberWobbleStartAmp)
-                fprints(SJsonFile, ",\\"noteNumberWobbleSpeed\\":%.3f", giNoteNumberWobbleSpeed)
-                fprints(SJsonFile, ",\\"minNoteOffSpeed\\":%d", giMinNoteOffSpeed)
-                fprints(SJsonFile, ",\\"maxNoteOffSpeed\\":%d", giMaxNoteOffSpeed)
-                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPowerLineSynth_DistanceMin)
-                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPowerLineSynth_DistanceMax)
+                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPointSynth_DistanceMin)
+                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPointSynth_DistanceMax)
                 fprints(SJsonFile, "}")
                 turnoff
             endin
@@ -2391,39 +2345,55 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 1) then
                 iNoteNumber = p5
                 iVelocity = p6
-                iInstrumentNumber = p1 + 0.0001
-                SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
-                scoreline_i(SOnEvent)
-                kReleased = release()
-                if (kReleased == 1) then
-                    SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-                    scoreline(SOffEvent, 1)
-                    turnoff
-                endif
-                #ifdef IS_GENERATING_JSON
-                    if (giPowerLineSynth_NoteIndex[0] == 0) then
-                        scoreline_i("i \\"PowerLineSynth_Json\\" 0 0")
+                iFadeInTime = 0.01
+                iFadeOutTime = 0.01
+                iTotalTime = iFadeInTime + iFadeOutTime
+                    iNoteNumber -= 1000
+                    if (iNoteNumber > 127) then
+                        igoto end
+                        turnoff
                     endif
-                    giPowerLineSynth_NoteIndex[0] = giPowerLineSynth_NoteIndex[0] + 1
-                    SJsonFile = sprintf("%s.%d.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3", giPowerLineSynth_NoteIndex[0])
-                    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
-                    if (kReleased == 1) then
-                        fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                    iCps = cpsmidinn(p5 - 1000)
+                    iAmp = 0.05
+                    kCps = linseg(iCps, iTotalTime, iCps + 100)
+                    aOut = oscil(iAmp, kCps)
+                    aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
+                    aOut *= aEnvelope
+                    iR init giPointSynthNextRT[0][giPointSynthNextRTZ_i][$R]
+                    iT init giPointSynthNextRT[0][giPointSynthNextRTZ_i][$T]
+                    iZ init 10 + 10 * (iNoteNumber / 127)
+                    kR init iR
+                    kT init iT
+                    kZ init iZ
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
+                        giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+                    aOutDistanced = aOut * kDistanceAmp
+                    giPointSynthNextRTZ_i += 1
+                    if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
+                        giPointSynthNextRTZ_i = 0
                     endif
-                #end
-                if (kReleased == 1) then
-                    turnoff
-                endif
-            elseif (iEventType == 3) then
-                iNoteNumber = p5
-                iVelocity = p6
-                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
-                        iNoteNumber,
-                        iVelocity,
-                        0,
-                        2
+                    AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
+                    a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+                    a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+                    a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+                    a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+                        gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + a1
+                        gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + a2
+                        gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + a3
+                        gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + a4
+                        gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
+                        gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
+                    #ifdef IS_GENERATING_JSON
+                        if (giPointSynth_NoteIndex[0] == 0) then
+                            scoreline_i("i \\"PointSynth_Json\\" 0 0")
+                        endif
+                        giPointSynth_NoteIndex[0] = giPointSynth_NoteIndex[0] + 1
+                        SJsonFile = sprintf("%s.%d.json", "b4f7a35c-6198-422f-be6e-fa126f31b007", giPointSynth_NoteIndex[0])
+                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"rtz\\":[%.3f,%.3f,%.3f]}}", times(),
+                            iNoteNumber, iR, iT, iZ)
+                    #end
             endif
-        endin:
+        end:
         endin
         gSCcInfo_Reverb[] = fillarray( \\
         \\
@@ -2649,10 +2619,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         <CsScore>
         i 1 0 -1 3 0 1 3
         i 8.1 0 -1 1
-        i 7 0.004 1 3 0 0 0.04
-        i 7 0.004 1 3 0 1 0.04
-        i 7 0.004 1 3 0 2 0.04
-        i 7 0.004 1 3 0 3 0.04
+        i 7 0.004 1 3 0 0 0.46
+        i 7 0.004 1 3 0 1 0.46
+        i 7 0.004 1 3 0 2 0.46
+        i 7 0.004 1 3 0 3 0.46
         i 7 0.004 1 3 0 4 1.00
         i 7 0.004 1 3 0 5 1.00
         i 7 0.004 1 3 1 0 0.46
@@ -2661,10 +2631,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 7 0.004 1 3 1 3 0.46
         i 7 0.004 1 3 1 4 0.48
         i 7 0.004 1 3 1 5 0.48
-        i 7 0.004 1 3 2 0 0.46
-        i 7 0.004 1 3 2 1 0.46
-        i 7 0.004 1 3 2 2 0.46
-        i 7 0.004 1 3 2 3 0.46
+        i 7 0.004 1 3 2 0 0.04
+        i 7 0.004 1 3 2 1 0.04
+        i 7 0.004 1 3 2 2 0.04
+        i 7 0.004 1 3 2 3 0.04
         i 7 0.004 1 3 2 4 1.00
         i 7 0.004 1 3 2 5 1.00
         i 9 0.004 1 3 0 1.00
@@ -2676,124 +2646,450 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 8 0.01 1 4 0 1.00
         i 8 0.01 1 4 1 0.98
         i 8 0.01 1 4 5 1.00
-        i 3.004 2.000 -1 1 92 68
-        i 5.004 2.000 -1 1 48 96
-        i 4.007 2.000 -1 1 24 45
-        i 4.008 2.000 -1 1 36 63
-        i 3.005 9.437 -1 1 91 68
-        i -4.007 10.000 0
-        i -4.008 10.000 0
-        i 4.009 10.000 -1 1 31 45
-        i 4.010 10.000 -1 1 43 63
-        i 3.006 15.375 -1 1 93 67
-        i -4.009 18.000 0
-        i -4.010 18.000 0
-        i 4.011 18.000 -1 1 29 45
-        i 4.012 18.000 -1 1 41 63
-        i 3.007 22.249 -1 1 90 68
-        i -4.011 26.000 0
-        i -4.012 26.000 0
-        i 4.013 26.000 -1 1 33 45
-        i 4.014 26.000 -1 1 45 63
-        i 3.008 28.500 -1 1 94 68
-        i -4.013 34.000 0
-        i -4.014 34.000 0
-        i 4.015 34.000 -1 1 31 45
-        i 4.016 34.000 -1 1 43 63
-        i 3.009 34.500 -1 1 89 64
-        i 3.010 40.437 -1 1 95 64
-        i 3.011 46.187 -1 1 88 59
-        i -5.004 47.999 0
-        i -4.015 47.999 0
-        i -4.016 47.999 0
-        i 3.012 63.000 -1 1 96 63
-        i 3.013 63.000 -1 1 97 63
-        i 3.014 63.000 -1 1 98 63
-        i 3.015 63.061 -1 1 99 63
-        i 3.016 63.124 -1 1 100 63
-        i 3.017 63.187 -1 1 101 63
-        i 3.018 63.249 -1 1 102 63
-        i 3.019 63.312 -1 1 103 63
-        i -3.010 63.687 0
-        i -3.011 63.687 0
-        i -3.009 63.749 0
-        i -3.008 63.812 0
-        i -3.007 63.875 0
-        i -3.012 63.875 0
-        i -3.006 63.937 0
-        i -3.013 63.937 0
-        i -3.004 63.999 0
-        i -3.005 63.999 0
-        i -3.014 63.999 0
-        i -3.015 63.999 0
-        i -3.016 63.999 0
-        i -3.017 63.999 0
-        i -3.018 63.999 0
-        i -3.019 63.999 0
+        i 4.000 2.001 -1 3 24 45
+        i 4.000 2.001 -1 3 36 63
+        i 3.000 2.001 -1 3 48 96
+        i 5.003 2.853 0.020 1 1098 76
+        i 5.004 3.825 0.020 1 1095 79
+        i 5.005 4.621 0.020 1 1103 52
+        i 5.006 5.243 0.020 1 1103 78
+        i 5.007 5.799 0.020 1 1095 71
+        i 5.008 6.531 0.020 1 1097 58
+        i 5.009 7.439 0.020 1 1097 78
+        i 5.010 8.356 0.020 1 1095 72
+        i 5.011 9.097 0.020 1 1103 52
+        i 5.012 9.664 0.020 1 1102 79
+        i 4.000 10.001 -1 3 31 45
+        i 4.000 10.001 -1 3 43 63
+        i 4.000 10.001 0
+        i 4.000 10.001 0
+        i 5.013 10.237 0.020 1 1096 74
+        i 5.014 10.277 0.020 1 1096 77
+        i 5.015 10.852 0.020 1 1094 69
+        i 5.016 11.061 0.020 1 1098 74
+        i 5.017 11.380 0.020 1 1102 57
+        i 5.018 12.024 0.020 1 1096 76
+        i 5.019 12.321 0.020 1 1101 58
+        i 5.020 12.887 0.020 1 1094 55
+        i 5.021 13.176 0.020 1 1095 82
+        i 5.022 13.573 0.020 1 1104 76
+        i 5.023 13.911 0.020 1 1097 60
+        i 5.024 14.085 0.020 1 1102 59
+        i 5.025 14.732 0.020 1 1095 62
+        i 5.026 14.772 0.020 1 1096 73
+        i 5.027 15.325 0.020 1 1093 64
+        i 5.028 15.592 0.020 1 1099 61
+        i 5.029 15.832 0.020 1 1103 75
+        i 5.030 15.969 0.020 1 1099 76
+        i 5.031 16.576 0.020 1 1095 69
+        i 5.032 16.641 0.020 1 1097 56
+        i 5.033 16.752 0.020 1 1101 61
+        i 5.034 17.207 0.020 1 1103 79
+        i 5.035 17.384 0.020 1 1093 72
+        i 5.036 17.585 0.020 1 1096 74
+        i 5.037 17.908 0.020 1 1105 65
+        i 4.000 18.001 -1 3 29 45
+        i 4.000 18.001 -1 3 41 63
+        i 4.000 18.001 0
+        i 4.000 18.001 0
+        i 5.038 18.016 0.020 1 1103 69
+        i 5.039 18.341 0.020 1 1098 78
+        i 5.040 18.444 0.020 1 1095 59
+        i 5.041 18.560 0.020 1 1101 75
+        i 5.042 19.175 0.020 1 1097 55
+        i 5.043 19.215 0.020 1 1094 79
+        i 5.044 19.280 0.020 1 1097 83
+        i 5.045 19.681 0.020 1 1099 60
+        i 5.046 19.756 0.020 1 1092 81
+        i 5.047 20.176 0.020 1 1099 57
+        i 5.048 20.272 0.020 1 1102 53
+        i 5.049 20.441 0.020 1 1097 79
+        i 5.050 20.965 0.020 1 1104 60
+        i 5.051 21.105 0.020 1 1094 59
+        i 5.052 21.171 0.020 1 1100 75
+        i 5.053 21.755 0.020 1 1104 64
+        i 5.054 21.859 0.020 1 1092 74
+        i 5.055 21.981 0.020 1 1096 56
+        i 5.056 22.308 0.020 1 1096 79
+        i 5.057 22.436 0.020 1 1102 78
+        i 5.058 22.759 0.020 1 1098 67
+        i 5.059 23.005 0.020 1 1094 73
+        i 5.060 23.045 0.020 1 1100 56
+        i 5.061 23.127 0.020 1 1098 69
+        i 5.062 23.623 0.020 1 1093 58
+        i 5.063 23.709 0.020 1 1098 72
+        i 5.064 23.749 0.020 1 1092 59
+        i 5.065 23.809 0.020 1 1098 67
+        i 5.066 24.173 0.020 1 1091 68
+        i 5.067 24.509 0.020 1 1102 62
+        i 5.068 24.556 0.020 1 1096 60
+        i 5.069 24.711 0.020 1 1101 64
+        i 5.070 24.760 0.020 1 1100 68
+        i 5.071 25.168 0.020 1 1104 66
+        i 5.072 25.249 0.020 1 1100 69
+        i 5.073 25.587 0.020 1 1099 61
+        i 5.074 25.635 0.020 1 1094 82
+        i 4.000 26.001 -1 3 33 45
+        i 4.000 26.001 -1 3 45 63
+        i 4.000 26.001 0
+        i 4.000 26.001 0
+        i 5.075 26.013 0.020 1 1095 61
+        i 5.076 26.053 0.020 1 1103 75
+        i 5.077 26.333 0.020 1 1092 80
+        i 5.078 26.376 0.020 1 1097 84
+        i 5.079 26.685 0.020 1 1097 57
+        i 5.080 26.749 0.020 1 1097 62
+        i 5.081 26.856 0.020 1 1101 56
+        i 5.082 27.175 0.020 1 1099 65
+        i 5.083 27.509 0.020 1 1099 68
+        i 5.084 27.549 0.020 1 1093 79
+        i 5.085 27.591 0.020 1 1099 54
+        i 5.086 28.060 0.020 1 1093 65
+        i 5.087 28.248 0.020 1 1091 56
+        i 5.088 28.288 0.020 1 1097 79
+        i 5.089 28.339 0.020 1 1099 55
+        i 5.090 28.589 0.020 1 1092 72
+        i 5.091 29.019 0.020 1 1101 66
+        i 5.092 29.059 0.020 1 1101 78
+        i 5.093 29.148 0.020 1 1100 59
+        i 5.094 29.196 0.020 1 1095 75
+        i 5.095 29.335 0.020 1 1101 75
+        i 5.096 29.728 0.020 1 1099 67
+        i 5.097 29.768 0.020 1 1099 75
+        i 5.098 29.896 0.020 1 1105 74
+        i 5.099 30.003 0.020 1 1098 76
+        i 5.100 30.155 0.020 1 1093 52
+        i 5.101 30.521 0.020 1 1095 71
+        i 5.102 30.561 0.020 1 1103 75
+        i 5.103 30.771 0.020 1 1098 54
+        i 5.104 30.811 0.020 1 1093 52
+        i 5.105 30.860 0.020 1 1103 56
+        i 5.106 31.245 0.020 1 1098 81
+        i 5.107 31.332 0.020 1 1101 57
+        i 5.108 31.541 0.020 1 1105 54
+        i 5.109 31.589 0.020 1 1097 81
+        i 5.110 31.629 0.020 1 1100 78
+        i 5.111 32.024 0.020 1 1092 82
+        i 5.112 32.064 0.020 1 1098 82
+        i 5.113 32.416 0.020 1 1095 82
+        i 5.114 32.497 0.020 1 1092 75
+        i 5.115 32.583 0.020 1 1100 80
+        i 5.116 32.744 0.020 1 1090 75
+        i 5.117 32.924 0.020 1 1100 82
+        i 5.118 33.005 0.020 1 1092 80
+        i 5.119 33.144 0.020 1 1097 55
+        i 5.120 33.341 0.020 1 1096 83
+        i 5.121 33.527 0.020 1 1100 62
+        i 5.122 33.587 0.020 1 1100 55
+        i 5.123 33.725 0.020 1 1101 76
+        i 5.124 33.865 0.020 1 1102 61
+        i 4.000 34.001 -1 3 31 45
+        i 4.000 34.001 -1 3 43 63
+        i 4.000 34.001 0
+        i 4.000 34.001 0
+        i 5.125 34.243 0.020 1 1098 59
+        i 5.126 34.292 0.020 1 1098 57
+        i 5.127 34.332 0.020 1 1094 75
+        i 5.128 34.420 0.020 1 1097 58
+        i 5.129 34.631 0.020 1 1092 81
+        i 5.130 35.004 0.020 1 1104 71
+        i 5.131 35.044 0.020 1 1096 71
+        i 5.132 35.108 0.020 1 1104 64
+        i 5.133 35.167 0.020 1 1099 60
+        i 5.134 35.220 0.020 1 1094 80
+        i 5.135 35.309 0.020 1 1092 68
+        i 5.136 35.741 0.020 1 1098 73
+        i 5.137 35.808 0.020 1 1100 74
+        i 5.138 35.863 0.020 1 1106 83
+        i 5.139 36.008 0.020 1 1101 55
+        i 5.140 36.057 0.020 1 1102 67
+        i 5.141 36.209 0.020 1 1090 77
+        i 5.142 36.532 0.020 1 1092 79
+        i 5.143 36.572 0.020 1 1098 74
+        i 5.144 36.720 0.020 1 1100 63
+        i 5.145 36.859 0.020 1 1096 83
+        i 5.146 36.899 0.020 1 1098 79
+        i 5.147 36.939 0.020 1 1091 63
+        i 5.148 37.240 0.020 1 1091 64
+        i 5.149 37.301 0.020 1 1098 77
+        i 5.150 37.451 0.020 1 1093 54
+        i 5.151 37.511 0.020 1 1100 56
+        i 5.152 37.708 0.020 1 1098 66
+        i 5.153 37.795 0.020 1 1100 57
+        i 5.154 38.035 0.020 1 1099 59
+        i 5.155 38.075 0.020 1 1099 74
+        i 5.156 38.131 0.020 1 1094 68
+        i 5.157 38.397 0.020 1 1103 78
+        i 5.158 38.437 0.020 1 1100 70
+        i 5.159 38.641 0.020 1 1095 56
+        i 5.160 38.740 0.020 1 1097 78
+        i 5.161 38.865 0.020 1 1097 74
+        i 5.162 38.905 0.020 1 1097 60
+        i 5.163 38.967 0.020 1 1098 68
+        i 5.164 39.108 0.020 1 1093 56
+        i 5.165 39.532 0.020 1 1093 80
+        i 5.166 39.572 0.020 1 1097 52
+        i 5.167 39.612 0.020 1 1105 58
+        i 5.168 39.652 0.020 1 1100 73
+        i 5.169 39.692 0.020 1 1095 68
+        i 5.170 39.732 0.020 1 1091 60
+        i 5.171 40.240 0.020 1 1099 73
+        i 5.172 40.285 0.020 1 1099 74
+        i 5.173 40.325 0.020 1 1105 60
+        i 5.174 40.408 0.020 1 1103 56
+        i 5.175 40.453 0.020 1 1102 75
+        i 5.176 40.668 0.020 1 1089 76
+        i 5.177 41.043 0.020 1 1091 72
+        i 5.178 41.104 0.020 1 1097 55
+        i 5.179 41.180 0.020 1 1097 76
+        i 5.180 41.220 0.020 1 1099 53
+        i 5.181 41.269 0.020 1 1101 77
+        i 5.182 41.403 0.020 1 1092 77
+        i 5.183 41.443 0.020 1 1103 75
+        i 5.184 41.740 0.020 1 1091 69
+        i 5.185 41.831 0.020 1 1097 53
+        i 5.186 41.940 0.020 1 1094 84
+        i 5.187 42.097 0.020 1 1101 52
+        i 5.188 42.151 0.020 1 1099 81
+        i 5.189 42.191 0.020 1 1099 81
+        i 5.190 42.381 0.020 1 1101 74
+        i 5.191 42.547 0.020 1 1098 72
+        i 5.192 42.587 0.020 1 1098 77
+        i 5.193 42.627 0.020 1 1095 63
+        i 5.194 42.929 0.020 1 1103 54
+        i 5.195 42.975 0.020 1 1099 60
+        i 5.196 43.015 0.020 1 1103 66
+        i 5.197 43.055 0.020 1 1101 62
+        i 5.198 43.240 0.020 1 1096 64
+        i 5.199 43.308 0.020 1 1097 49
+        i 5.200 43.355 0.020 1 1096 68
+        i 5.201 43.585 0.020 1 1094 64
+        i 5.202 43.644 0.020 1 1105 70
+        i 5.203 43.684 0.020 1 1097 80
+        i 5.204 43.941 0.020 1 1095 73
+        i 5.205 44.051 0.020 1 1098 73
+        i 5.206 44.091 0.020 1 1100 65
+        i 5.207 44.131 0.020 1 1096 53
+        i 5.208 44.183 0.020 1 1105 80
+        i 5.209 44.223 0.020 1 1091 49
+        i 5.210 44.428 0.020 1 1095 67
+        i 5.211 44.740 0.020 1 1100 56
+        i 5.212 44.780 0.020 1 1093 81
+        i 5.213 44.820 0.020 1 1105 71
+        i 5.214 44.860 0.020 1 1098 58
+        i 5.215 44.943 0.020 1 1102 62
+        i 5.216 45.155 0.020 1 1098 49
+        i 5.217 45.196 0.020 1 1090 65
+        i 5.218 45.555 0.020 1 1090 67
+        i 5.219 45.595 0.020 1 1098 81
+        i 5.220 45.677 0.020 1 1096 74
+        i 5.221 45.717 0.020 1 1102 71
+        i 5.222 45.777 0.020 1 1098 67
+        i 5.223 45.915 0.020 1 1093 71
+        i 5.224 45.988 0.020 1 1102 55
+        i 5.225 46.240 0.020 1 1092 80
+        i 5.226 46.449 0.020 1 1096 71
+        i 5.227 46.489 0.020 1 1095 74
+        i 5.228 46.529 0.020 1 1100 73
+        i 5.229 46.569 0.020 1 1100 57
+        i 5.230 46.631 0.020 1 1102 84
+        i 5.231 46.825 0.020 1 1090 62
+        i 5.232 46.879 0.020 1 1100 61
+        i 5.233 47.059 0.020 1 1098 54
+        i 5.234 47.119 0.020 1 1097 63
+        i 5.235 47.188 0.020 1 1096 50
+        i 5.236 47.368 0.020 1 1088 62
+        i 5.237 47.408 0.020 1 1104 81
+        i 5.238 47.448 0.020 1 1098 77
+        i 5.239 47.488 0.020 1 1104 76
+        i 5.240 47.528 0.020 1 1100 58
+        i 5.241 47.740 0.020 1 1096 80
+        i 5.242 47.836 0.020 1 1098 75
+        i 5.243 47.888 0.020 1 1095 83
+        i 5.244 47.937 0.020 1 1106 65
+        i 3.000 48.000 0
+        i 4.000 48.000 0
+        i 4.000 48.000 0
+        i 5.245 48.009 0.020 1 1094 67
+        i 5.246 48.091 0.020 1 1098 63
+        i 5.247 48.217 0.020 1 1096 78
+        i 5.248 48.257 0.020 1 1102 78
+        i 5.249 48.561 0.020 1 1099 65
+        i 5.250 48.601 0.020 1 1101 79
+        i 5.251 48.641 0.020 1 1096 73
+        i 5.252 48.780 0.020 1 1090 64
+        i 5.253 48.869 0.020 1 1106 52
+        i 5.254 48.909 0.020 1 1096 50
+        i 5.255 48.993 0.020 1 1096 52
+        i 5.256 49.197 0.020 1 1094 83
+        i 5.257 49.239 0.020 1 1101 67
+        i 5.258 49.337 0.020 1 1097 64
+        i 5.259 49.377 0.020 1 1104 81
+        i 5.260 49.476 0.020 1 1103 72
+        i 5.261 49.747 0.020 1 1090 56
+        i 5.262 49.787 0.020 1 1098 58
+        i 5.263 49.912 0.020 1 1094 75
+        i 5.264 49.952 0.020 1 1094 74
+        i 5.265 50.017 0.020 1 1098 61
+        i 5.266 50.064 0.020 1 1091 74
+        i 5.267 50.265 0.020 1 1095 53
+        i 5.268 50.372 0.020 1 1097 50
+        i 5.269 50.435 0.020 1 1102 64
+        i 5.270 50.475 0.020 1 1093 65
+        i 5.271 50.653 0.020 1 1096 57
+        i 5.272 50.737 0.020 1 1093 56
+        i 5.273 50.807 0.020 1 1101 80
+        i 5.274 50.861 0.020 1 1102 70
+        i 5.275 51.049 0.020 1 1096 61
+        i 5.276 51.089 0.020 1 1095 60
+        i 5.277 51.164 0.020 1 1103 73
+        i 5.278 51.204 0.020 1 1099 70
+        i 5.279 51.244 0.020 1 1089 72
+        i 5.280 51.547 0.020 1 1099 79
+        i 5.281 51.587 0.020 1 1097 59
+        i 5.282 51.716 0.020 1 1096 65
+        i 5.283 51.756 0.020 1 1097 64
+        i 5.284 51.796 0.020 1 1097 49
+        i 5.285 51.836 0.020 1 1089 63
+        i 5.286 51.879 0.020 1 1105 77
+        i 5.287 51.919 0.020 1 1103 62
+        i 5.288 52.236 0.020 1 1095 66
+        i 5.289 52.385 0.020 1 1099 76
+        i 5.290 52.433 0.020 1 1095 62
+        i 5.291 52.473 0.020 1 1094 72
+        i 5.292 52.513 0.020 1 1101 78
+        i 5.293 52.553 0.020 1 1107 72
+        i 5.294 52.635 0.020 1 1097 71
+        i 5.295 52.675 0.020 1 1095 81
+        i 5.296 53.064 0.020 1 1097 77
+        i 5.297 53.104 0.020 1 1099 64
+        i 5.298 53.144 0.020 1 1103 62
+        i 5.299 53.184 0.020 1 1102 65
+        i 5.300 53.375 0.020 1 1089 75
+        i 5.301 53.435 0.020 1 1105 58
+        i 5.302 53.475 0.020 1 1097 57
+        i 5.303 53.615 0.020 1 1095 62
+        i 5.304 53.735 0.020 1 1102 57
+        i 5.305 53.871 0.020 1 1097 70
+        i 5.306 54.013 0.020 1 1093 72
+        i 5.307 54.053 0.020 1 1102 69
+        i 5.308 54.093 0.020 1 1103 57
+        i 5.309 54.296 0.020 1 1091 63
+        i 5.310 54.405 0.020 1 1099 72
+        i 5.311 54.456 0.020 1 1095 55
+        i 5.312 54.572 0.020 1 1092 74
+        i 5.313 54.612 0.020 1 1099 77
+        i 5.314 54.652 0.020 1 1095 62
+        i 5.315 54.853 0.020 1 1094 82
+        i 5.316 54.929 0.020 1 1101 67
+        i 5.317 54.969 0.020 1 1097 49
+        i 5.318 55.040 0.020 1 1094 54
+        i 5.319 55.117 0.020 1 1097 48
+        i 5.320 55.233 0.020 1 1094 56
+        i 5.321 55.273 0.020 1 1101 83
+        i 5.322 55.503 0.020 1 1101 52
+        i 5.323 55.543 0.020 1 1099 48
+        i 5.324 55.636 0.020 1 1089 47
+        i 5.325 55.676 0.020 1 1096 83
+        i 5.326 55.716 0.020 1 1104 72
+        i 5.327 55.756 0.020 1 1095 80
+        i 5.328 56.065 0.020 1 1097 63
+        i 5.329 56.105 0.020 1 1096 80
+        i 5.330 56.145 0.020 1 1099 58
+        i 5.331 56.329 0.020 1 1096 57
+        i 5.332 56.369 0.020 1 1089 54
+        i 5.333 56.409 0.020 1 1102 64
+        i 5.334 56.449 0.020 1 1105 49
+        i 5.335 56.489 0.020 1 1098 55
+        i 5.336 56.732 0.020 1 1094 62
+        i 5.337 56.875 0.020 1 1096 83
+        i 5.338 56.933 0.020 1 1101 57
+        i 5.339 56.973 0.020 1 1100 62
+        i 5.340 57.025 0.020 1 1094 80
+        i 5.341 57.065 0.020 1 1093 53
+        i 5.342 57.176 0.020 1 1106 49
+        i 5.343 57.216 0.020 1 1096 71
+        i 5.344 57.501 0.020 1 1104 67
+        i 5.345 57.560 0.020 1 1098 79
+        i 5.346 57.600 0.020 1 1100 74
+        i 5.347 57.696 0.020 1 1103 72
+        i 5.348 57.904 0.020 1 1090 56
+        i 5.349 57.944 0.020 1 1104 55
+        i 5.350 57.984 0.020 1 1098 76
+        i 5.351 58.156 0.020 1 1094 50
+        i 5.352 58.231 0.020 1 1102 78
+        i 5.353 58.305 0.020 1 1094 62
+        i 5.354 58.421 0.020 1 1096 56
+        i 5.355 58.645 0.020 1 1101 83
+        i 5.356 58.685 0.020 1 1102 67
+        i 5.357 58.743 0.020 1 1100 61
+        i 5.358 58.783 0.020 1 1092 76
+        i 5.359 58.844 0.020 1 1096 76
+        i 5.360 58.920 0.020 1 1096 60
+        i 5.361 59.080 0.020 1 1092 54
+        i 5.362 59.269 0.020 1 1100 68
+        i 5.363 59.375 0.020 1 1100 66
+        i 5.364 59.415 0.020 1 1094 59
+        i 5.365 59.496 0.020 1 1096 49
+        i 5.366 59.536 0.020 1 1098 44
+        i 5.367 59.611 0.020 1 1095 67
+        i 5.368 59.651 0.020 1 1100 82
+        i 5.369 59.731 0.020 1 1095 80
+        i 5.370 59.816 0.020 1 1102 66
+        i 5.371 59.948 0.020 1 1098 76
+        i 5.372 60.101 0.020 1 1088 48
+        i 5.373 60.141 0.020 1 1098 75
+        i 5.374 60.181 0.020 1 1104 76
+        i 5.375 60.233 0.020 1 1097 56
+        i 5.376 60.303 0.020 1 1094 66
+        i 5.377 60.509 0.020 1 1096 55
+        i 5.378 60.584 0.020 1 1095 84
+        i 5.379 60.788 0.020 1 1101 65
+        i 5.380 60.873 0.020 1 1102 70
+        i 5.381 60.913 0.020 1 1090 46
+        i 5.382 60.953 0.020 1 1098 66
+        i 5.383 60.993 0.020 1 1106 68
+        i 5.384 61.033 0.020 1 1095 80
+        i 5.385 61.231 0.020 1 1093 79
+        i 5.386 61.349 0.020 1 1094 72
+        i 5.387 61.389 0.020 1 1097 73
+        i 5.388 61.429 0.020 1 1104 60
+        i 5.389 61.469 0.020 1 1101 75
+        i 5.390 61.648 0.020 1 1093 84
+        i 5.391 61.836 0.020 1 1096 72
+        i 5.392 61.892 0.020 1 1106 57
+        i 5.393 62.088 0.020 1 1101 74
+        i 5.394 62.128 0.020 1 1099 69
+        i 5.395 62.168 0.020 1 1094 79
+        i 5.396 62.265 0.020 1 1102 57
+        i 5.397 62.336 0.020 1 1103 69
+        i 5.398 62.376 0.020 1 1091 49
+        i 5.399 62.492 0.020 1 1099 70
+        i 5.400 62.661 0.020 1 1097 62
+        i 5.401 62.701 0.020 1 1093 73
+        i 5.402 62.741 0.020 1 1101 58
+        i 5.403 63.008 0.020 1 1095 74
+        i 5.404 63.149 0.020 1 1101 67
+        i 5.405 63.189 0.020 1 1093 54
+        i 5.406 63.229 0.020 1 1101 54
+        i 5.407 63.269 0.020 1 1100 56
+        i 5.408 63.348 0.020 1 1099 70
+        i 5.409 63.388 0.020 1 1097 45
+        i 5.410 63.592 0.020 1 1093 66
+        i 5.411 63.632 0.020 1 1107 76
+        i 5.412 63.676 0.020 1 1109 77
+        i 5.413 63.833 0.020 1 1111 78
+        i 5.414 63.873 0.020 1 1112 48
+        i 5.415 63.913 0.020 1 1112 51
+        i 5.416 63.953 0.020 1 1093 80
+        i 5.417 63.993 0.020 1 1097 53
          #ifdef IS_GENERATING_JSON
             s
             i "GenerateJson" 0 1
          #end
-         s
-         i 3.004 2.000 -1 1 92 68
-         i 5.004 2.000 -1 1 48 96
-         i 4.007 2.000 -1 1 24 45
-         i 4.008 2.000 -1 1 36 63
-         i 3.005 9.437 -1 1 91 68
-         i -4.007 10.000 0
-         i -4.008 10.000 0
-         i 4.009 10.000 -1 1 31 45
-         i 4.010 10.000 -1 1 43 63
-         i 3.006 15.375 -1 1 93 67
-         i -4.009 18.000 0
-         i -4.010 18.000 0
-         i 4.011 18.000 -1 1 29 45
-         i 4.012 18.000 -1 1 41 63
-         i 3.007 22.249 -1 1 90 68
-         i -4.011 26.000 0
-         i -4.012 26.000 0
-         i 4.013 26.000 -1 1 33 45
-         i 4.014 26.000 -1 1 45 63
-         i 3.008 28.500 -1 1 94 68
-         i -4.013 34.000 0
-         i -4.014 34.000 0
-         i 4.015 34.000 -1 1 31 45
-         i 4.016 34.000 -1 1 43 63
-         i 3.009 34.500 -1 1 89 64
-         i 3.010 40.437 -1 1 95 64
-         i 3.011 46.187 -1 1 88 59
-         i -5.004 47.999 0
-         i -4.015 47.999 0
-         i -4.016 47.999 0
-         i 3.012 63.000 -1 1 96 63
-         i 3.013 63.000 -1 1 97 63
-         i 3.014 63.000 -1 1 98 63
-         i 3.015 63.061 -1 1 99 63
-         i 3.016 63.124 -1 1 100 63
-         i 3.017 63.187 -1 1 101 63
-         i 3.018 63.249 -1 1 102 63
-         i 3.019 63.312 -1 1 103 63
-         i -3.010 63.687 0
-         i -3.011 63.687 0
-         i -3.009 63.749 0
-         i -3.008 63.812 0
-         i -3.007 63.875 0
-         i -3.012 63.875 0
-         i -3.006 63.937 0
-         i -3.013 63.937 0
-         i -3.004 63.999 0
-         i -3.005 63.999 0
-         i -3.014 63.999 0
-         i -3.015 63.999 0
-         i -3.016 63.999 0
-         i -3.017 63.999 0
-         i -3.018 63.999 0
-         i -3.019 63.999 0
- 
         </CsScore>
         </CsoundSynthesizer>
         `
-
     const csdJson = `
         {"069e83fd-1c94-47e9-95ec-126e0fbefec3":[{"instanceName":"","maxRiseTime":10,"noteOnStartPosition":[10,0,20],"noteOnEndPosition":[15,10,25],"noteOffEndZ":-1000,"noteNumberWobbleStartAmp":1.500,"noteNumberWobbleSpeed":5.000,"minNoteOffSpeed":50,"maxNoteOffSpeed":100,"soundDistanceMin":5,"soundDistanceMax":100},{"noteOn":{"time":2.000,"note":48.000,"velocity":96.000},"noteOff":{"time":48.000}},{"noteOn":{"time":2.000,"note":36.000,"velocity":63.000},"noteOff":{"time":10.002}},{"noteOn":{"time":10.001,"note":31.000,"velocity":45.000},"noteOff":{"time":18.001}},{"noteOn":{"time":10.001,"note":43.000,"velocity":63.000},"noteOff":{"time":18.001}},{"noteOn":{"time":18.000,"note":29.000,"velocity":45.000},"noteOff":{"time":26.002}},{"noteOn":{"time":18.000,"note":41.000,"velocity":63.000},"noteOff":{"time":26.002}},{"noteOn":{"time":26.001,"note":33.000,"velocity":45.000},"noteOff":{"time":34.001}},{"noteOn":{"time":26.001,"note":45.000,"velocity":63.000},"noteOff":{"time":34.001}},{"noteOn":{"time":34.000,"note":31.000,"velocity":45.000},"noteOff":{"time":48.000}},{"noteOn":{"time":34.000,"note":43.000,"velocity":63.000},"noteOff":{"time":48.000}}],"baeea327-af4b-4b10-a843-6614c20ea958":[{"instanceName":"CircleSynth 1","heightMin":1,"heightMax":50,"radiusMin":50,"radiusMax":50,"spreadMax":260,"spreadSpeedMin":1,"spreadSpeedMax":15,"noteNumberMin":24,"noteNumberMax":96,"soundDistanceMin":5,"soundDistanceMax":100},{"noteOn":{"time":2.000,"note":24.000,"velocity":45.000},"noteOff":{"time":10.002}},{"noteOn":{"time":2.000,"note":36.000,"velocity":63.000},"noteOff":{"time":10.002}},{"noteOn":{"time":10.001,"note":31.000,"velocity":45.000},"noteOff":{"time":18.001}},{"noteOn":{"time":10.001,"note":43.000,"velocity":63.000},"noteOff":{"time":18.001}},{"noteOn":{"time":18.000,"note":29.000,"velocity":45.000},"noteOff":{"time":26.002}},{"noteOn":{"time":18.000,"note":41.000,"velocity":63.000},"noteOff":{"time":26.002}},{"noteOn":{"time":26.001,"note":33.000,"velocity":45.000},"noteOff":{"time":34.001}},{"noteOn":{"time":26.001,"note":45.000,"velocity":63.000},"noteOff":{"time":34.001}},{"noteOn":{"time":34.000,"note":31.000,"velocity":45.000},"noteOff":{"time":48.000}},{"noteOn":{"time":34.000,"note":43.000,"velocity":63.000},"noteOff":{"time":48.000}}],"b4f7a35c-6198-422f-be6e-fa126f31b007":[{"instanceName":"","soundDistanceMin":5,"soundDistanceMax":100},{"noteOn":{"time":2.853,"note":97.625,"rtz":[97.483,50.185,17.687]}},{"noteOn":{"time":3.825,"note":95.493,"rtz":[78.101,189.001,17.519]}},{"noteOn":{"time":4.622,"note":102.640,"rtz":[64.153,349.023,18.082]}},{"noteOn":{"time":5.243,"note":103.227,"rtz":[73.098,340.247,18.128]}},{"noteOn":{"time":5.799,"note":94.906,"rtz":[17.742,75.556,17.473]}},{"noteOn":{"time":6.532,"note":97.039,"rtz":[27.420,1.279,17.641]}},{"noteOn":{"time":7.441,"note":96.828,"rtz":[40.762,317.710,17.624]}},{"noteOn":{"time":8.358,"note":94.696,"rtz":[52.645,48.639,17.456]}},{"noteOn":{"time":9.099,"note":103.437,"rtz":[34.853,105.488,18.145]}},{"noteOn":{"time":9.665,"note":102.430,"rtz":[9.261,270.852,18.065]}},{"noteOn":{"time":10.237,"note":95.782,"rtz":[72.572,128.955,17.542]}},{"noteOn":{"time":10.276,"note":95.703,"rtz":[95.375,283.861,17.536]}},{"noteOn":{"time":10.852,"note":93.649,"rtz":[56.289,71.592,17.374]}},{"noteOn":{"time":11.063,"note":97.836,"rtz":[11.600,129.770,17.704]}},{"noteOn":{"time":11.381,"note":102.484,"rtz":[23.150,86.891,18.070]}},{"noteOn":{"time":12.025,"note":96.032,"rtz":[59.324,210.027,17.562]}},{"noteOn":{"time":12.323,"note":101.383,"rtz":[82.004,315.736,17.983]}},{"noteOn":{"time":12.889,"note":93.899,"rtz":[92.451,190.114,17.394]}},{"noteOn":{"time":13.177,"note":94.750,"rtz":[95.268,240.929,17.461]}},{"noteOn":{"time":13.576,"note":103.766,"rtz":[90.977,318.219,18.171]}},{"noteOn":{"time":13.912,"note":96.882,"rtz":[66.879,3.563,17.629]}},{"noteOn":{"time":14.087,"note":101.633,"rtz":[9.616,53.159,18.003]}},{"noteOn":{"time":14.733,"note":94.985,"rtz":[66.239,106.456,17.479]}},{"noteOn":{"time":14.753,"note":96.500,"rtz":[36.338,341.630,17.598]}},{"noteOn":{"time":15.327,"note":92.852,"rtz":[56.406,118.703,17.311]}},{"noteOn":{"time":15.595,"note":98.632,"rtz":[93.748,350.831,17.766]}},{"noteOn":{"time":15.833,"note":102.719,"rtz":[28.630,127.198,18.088]}},{"noteOn":{"time":15.970,"note":99.469,"rtz":[46.228,352.357,17.832]}},{"noteOn":{"time":16.579,"note":95.235,"rtz":[71.295,336.536,17.499]}},{"noteOn":{"time":16.641,"note":97.336,"rtz":[8.968,153.196,17.664]}},{"noteOn":{"time":16.753,"note":100.586,"rtz":[13.094,9.590,17.920]}},{"noteOn":{"time":17.206,"note":102.797,"rtz":[83.112,40.792,18.094]}},{"noteOn":{"time":17.387,"note":93.102,"rtz":[5.480,192.732,17.331]}},{"noteOn":{"time":17.586,"note":95.547,"rtz":[73.463,126.815,17.523]}},{"noteOn":{"time":17.907,"note":104.929,"rtz":[35.532,18.146,18.262]}},{"noteOn":{"time":18.020,"note":102.969,"rtz":[37.320,15.967,18.108]}},{"noteOn":{"time":18.342,"note":97.679,"rtz":[71.415,24.613,17.691]}},{"noteOn":{"time":18.442,"note":95.062,"rtz":[28.124,283.993,17.485]}},{"noteOn":{"time":18.564,"note":100.836,"rtz":[59.959,105.043,17.940]}},{"noteOn":{"time":19.172,"note":97.195,"rtz":[91.821,297.246,17.653]}},{"noteOn":{"time":19.185,"note":94.188,"rtz":[50.497,266.088,17.416]}},{"noteOn":{"time":19.284,"note":97.297,"rtz":[34.368,270.915,17.661]}},{"noteOn":{"time":19.679,"note":98.672,"rtz":[74.331,115.062,17.769]}},{"noteOn":{"time":19.757,"note":92.055,"rtz":[86.947,140.339,17.248]}},{"noteOn":{"time":20.181,"note":99.429,"rtz":[33.628,333.655,17.829]}},{"noteOn":{"time":20.274,"note":101.922,"rtz":[23.424,196.768,18.025]}},{"noteOn":{"time":20.438,"note":96.539,"rtz":[91.299,87.479,17.601]}},{"noteOn":{"time":20.962,"note":103.593,"rtz":[75.752,325.560,18.157]}},{"noteOn":{"time":21.110,"note":94.438,"rtz":[82.099,354.035,17.436]}},{"noteOn":{"time":21.172,"note":99.789,"rtz":[23.226,117.339,17.857]}},{"noteOn":{"time":21.751,"note":104.274,"rtz":[55.589,150.576,18.211]}},{"noteOn":{"time":21.863,"note":92.305,"rtz":[34.860,108.144,17.268]}},{"noteOn":{"time":21.983,"note":96.343,"rtz":[83.513,201.611,17.586]}},{"noteOn":{"time":22.304,"note":95.859,"rtz":[36.714,132.657,17.548]}},{"noteOn":{"time":22.441,"note":102.172,"rtz":[8.854,107.157,18.045]}},{"noteOn":{"time":22.760,"note":98.476,"rtz":[55.926,286.092,17.754]}},{"noteOn":{"time":23.005,"note":93.938,"rtz":[23.642,284.369,17.397]}},{"noteOn":{"time":23.040,"note":100.039,"rtz":[70.483,10.514,17.877]}},{"noteOn":{"time":23.123,"note":97.992,"rtz":[13.952,354.113,17.716]}},{"noteOn":{"time":23.623,"note":93.391,"rtz":[25.408,273.544,17.354]}},{"noteOn":{"time":23.706,"note":97.875,"rtz":[52.818,118.058,17.707]}},{"noteOn":{"time":23.750,"note":91.805,"rtz":[75.704,306.568,17.229]}},{"noteOn":{"time":23.815,"note":98.093,"rtz":[26.125,201.316,17.724]}},{"noteOn":{"time":24.173,"note":91.258,"rtz":[28.470,62.649,17.186]}},{"noteOn":{"time":24.509,"note":101.672,"rtz":[46.562,126.412,18.006]}},{"noteOn":{"time":24.554,"note":95.743,"rtz":[24.266,174.907,17.539]}},{"noteOn":{"time":24.712,"note":101.125,"rtz":[50.096,105.260,17.963]}},{"noteOn":{"time":24.766,"note":100.226,"rtz":[97.896,216.200,17.892]}},{"noteOn":{"time":25.166,"note":104.390,"rtz":[64.575,158.423,18.220]}},{"noteOn":{"time":25.249,"note":99.539,"rtz":[64.248,26.952,17.838]}},{"noteOn":{"time":25.588,"note":98.993,"rtz":[93.519,259.045,17.795]}},{"noteOn":{"time":25.641,"note":93.641,"rtz":[27.474,22.859,17.373]}},{"noteOn":{"time":26.012,"note":94.593,"rtz":[74.105,24.332,17.448]}},{"noteOn":{"time":26.043,"note":103.477,"rtz":[20.274,12.299,18.148]}},{"noteOn":{"time":26.340,"note":92.492,"rtz":[63.870,235.305,17.283]}},{"noteOn":{"time":26.378,"note":97.140,"rtz":[28.744,172.681,17.649]}},{"noteOn":{"time":26.684,"note":96.656,"rtz":[82.882,308.346,17.611]}},{"noteOn":{"time":26.748,"note":96.726,"rtz":[75.832,357.733,17.616]}},{"noteOn":{"time":26.864,"note":101.375,"rtz":[31.608,242.618,17.982]}},{"noteOn":{"time":27.176,"note":99.273,"rtz":[43.196,215.005,17.817]}},{"noteOn":{"time":27.516,"note":93.141,"rtz":[31.183,72.156,17.334]}},{"noteOn":{"time":27.519,"note":99.243,"rtz":[27.354,334.796,17.814]}},{"noteOn":{"time":27.590,"note":98.789,"rtz":[55.345,52.525,17.779]}},{"noteOn":{"time":28.061,"note":92.594,"rtz":[48.501,185.011,17.291]}},{"noteOn":{"time":28.249,"note":91.008,"rtz":[47.609,186.712,17.166]}},{"noteOn":{"time":28.260,"note":97.078,"rtz":[95.143,190.797,17.644]}},{"noteOn":{"time":28.349,"note":98.890,"rtz":[19.356,3.751,17.787]}},{"noteOn":{"time":28.591,"note":91.539,"rtz":[14.864,0.328,17.208]}},{"noteOn":{"time":29.019,"note":100.875,"rtz":[14.170,81.787,17.943]}},{"noteOn":{"time":29.041,"note":101.313,"rtz":[11.629,141.538,17.977]}},{"noteOn":{"time":29.150,"note":100.328,"rtz":[67.153,113.335,17.900]}},{"noteOn":{"time":29.195,"note":94.946,"rtz":[38.664,195.442,17.476]}},{"noteOn":{"time":29.344,"note":101.023,"rtz":[54.235,326.885,17.955]}},{"noteOn":{"time":29.729,"note":99.180,"rtz":[24.141,124.827,17.809]}},{"noteOn":{"time":29.748,"note":98.743,"rtz":[74.954,5.229,17.775]}},{"noteOn":{"time":29.894,"note":104.813,"rtz":[56.192,32.823,18.253]}},{"noteOn":{"time":30.005,"note":98.196,"rtz":[67.683,326.088,17.732]}},{"noteOn":{"time":30.164,"note":92.844,"rtz":[96.857,158.983,17.311]}},{"noteOn":{"time":30.523,"note":95.390,"rtz":[79.898,190.438,17.511]}},{"noteOn":{"time":30.563,"note":102.953,"rtz":[9.322,295.084,18.107]}},{"noteOn":{"time":30.772,"note":97.937,"rtz":[85.057,101.489,17.712]}},{"noteOn":{"time":30.809,"note":93.289,"rtz":[87.452,343.077,17.346]}},{"noteOn":{"time":30.859,"note":102.680,"rtz":[96.862,161.132,18.085]}},{"noteOn":{"time":31.247,"note":97.523,"rtz":[44.969,206.920,17.679]}},{"noteOn":{"time":31.341,"note":100.578,"rtz":[90.129,337.920,17.920]}},{"noteOn":{"time":31.543,"note":105.086,"rtz":[47.684,216.831,18.274]}},{"noteOn":{"time":31.588,"note":97.453,"rtz":[82.232,47.222,17.673]}},{"noteOn":{"time":31.592,"note":100.070,"rtz":[90.236,20.655,17.880]}},{"noteOn":{"time":32.026,"note":92.344,"rtz":[12.470,119.051,17.271]}},{"noteOn":{"time":32.049,"note":98.446,"rtz":[8.454,306.578,17.752]}},{"noteOn":{"time":32.418,"note":95.218,"rtz":[26.408,315.075,17.497]}},{"noteOn":{"time":32.499,"note":91.797,"rtz":[73.968,329.488,17.228]}},{"noteOn":{"time":32.582,"note":99.586,"rtz":[96.921,184.611,17.841]}},{"noteOn":{"time":32.746,"note":90.211,"rtz":[36.402,7.293,17.103]}},{"noteOn":{"time":32.933,"note":99.687,"rtz":[18.896,179.016,17.849]}},{"noteOn":{"time":33.007,"note":92.336,"rtz":[69.976,166.813,17.271]}},{"noteOn":{"time":33.146,"note":97.351,"rtz":[13.819,300.590,17.665]}},{"noteOn":{"time":33.341,"note":96.282,"rtz":[48.976,15.636,17.581]}},{"noteOn":{"time":33.530,"note":100.078,"rtz":[62.161,269.055,17.880]}},{"noteOn":{"time":33.588,"note":99.532,"rtz":[22.327,116.699,17.837]}},{"noteOn":{"time":33.728,"note":100.516,"rtz":[37.698,167.505,17.915]}},{"noteOn":{"time":33.875,"note":101.820,"rtz":[33.153,142.841,18.017]}},{"noteOn":{"time":34.247,"note":97.946,"rtz":[8.592,2.088,17.712]}},{"noteOn":{"time":34.294,"note":98.383,"rtz":[63.368,33.936,17.747]}},{"noteOn":{"time":34.319,"note":94.149,"rtz":[98.781,211.573,17.413]}},{"noteOn":{"time":34.422,"note":97.399,"rtz":[30.227,48.021,17.669]}},{"noteOn":{"time":34.640,"note":92.047,"rtz":[17.597,17.559,17.248]}},{"noteOn":{"time":35.007,"note":103.750,"rtz":[20.914,269.304,18.169]}},{"noteOn":{"time":35.033,"note":96.187,"rtz":[29.294,33.731,17.574]}},{"noteOn":{"time":35.107,"note":104.016,"rtz":[93.048,69.871,18.190]}},{"noteOn":{"time":35.170,"note":98.734,"rtz":[58.470,227.284,17.774]}},{"noteOn":{"time":35.229,"note":94.086,"rtz":[89.481,77.592,17.408]}},{"noteOn":{"time":35.310,"note":92.094,"rtz":[84.329,169.377,17.251]}},{"noteOn":{"time":35.746,"note":98.320,"rtz":[85.501,279.912,17.742]}},{"noteOn":{"time":35.817,"note":99.782,"rtz":[40.864,358.753,17.857]}},{"noteOn":{"time":35.866,"note":105.882,"rtz":[60.127,172.602,18.337]}},{"noteOn":{"time":36.011,"note":100.867,"rtz":[80.664,137.764,17.942]}},{"noteOn":{"time":36.056,"note":101.883,"rtz":[56.661,220.898,18.022]}},{"noteOn":{"time":36.210,"note":89.961,"rtz":[5.942,18.327,17.084]}},{"noteOn":{"time":36.537,"note":91.547,"rtz":[42.381,247.977,17.208]}},{"noteOn":{"time":36.580,"note":97.649,"rtz":[98.017,264.871,17.689]}},{"noteOn":{"time":36.721,"note":99.828,"rtz":[95.334,267.419,17.860]}},{"noteOn":{"time":36.862,"note":96.015,"rtz":[71.598,97.941,17.560]}},{"noteOn":{"time":36.873,"note":98.250,"rtz":[83.271,104.367,17.736]}},{"noteOn":{"time":36.940,"note":91.000,"rtz":[72.929,272.240,17.165]}},{"noteOn":{"time":37.245,"note":90.586,"rtz":[16.370,244.734,17.133]}},{"noteOn":{"time":37.303,"note":97.696,"rtz":[7.364,228.953,17.693]}},{"noteOn":{"time":37.455,"note":93.132,"rtz":[41.150,113.556,17.333]}},{"noteOn":{"time":37.519,"note":100.484,"rtz":[44.845,157.184,17.912]}},{"noteOn":{"time":37.711,"note":98.148,"rtz":[29.590,152.623,17.728]}},{"noteOn":{"time":37.793,"note":100.382,"rtz":[92.077,39.959,17.904]}},{"noteOn":{"time":38.040,"note":99.282,"rtz":[77.179,178.605,17.817]}},{"noteOn":{"time":38.058,"note":98.735,"rtz":[58.481,231.863,17.774]}},{"noteOn":{"time":38.132,"note":94.437,"rtz":[27.492,30.219,17.436]}},{"noteOn":{"time":38.406,"note":102.617,"rtz":[89.884,239.377,18.080]}},{"noteOn":{"time":38.413,"note":99.719,"rtz":[47.586,177.586,17.852]}},{"noteOn":{"time":38.639,"note":95.485,"rtz":[30.003,318.448,17.519]}},{"noteOn":{"time":38.745,"note":97.149,"rtz":[73.273,50.516,17.650]}},{"noteOn":{"time":38.870,"note":96.602,"rtz":[87.346,300.518,17.606]}},{"noteOn":{"time":38.870,"note":96.570,"rtz":[46.967,288.953,17.604]}},{"noteOn":{"time":38.969,"note":97.586,"rtz":[8.647,24.391,17.684]}},{"noteOn":{"time":39.117,"note":92.750,"rtz":[21.943,322.135,17.303]}},{"noteOn":{"time":39.531,"note":93.352,"rtz":[81.344,50.971,17.351]}},{"noteOn":{"time":39.544,"note":96.984,"rtz":[5.054,21.742,17.637]}},{"noteOn":{"time":39.561,"note":104.547,"rtz":[42.860,80.089,18.232]}},{"noteOn":{"time":39.596,"note":99.531,"rtz":[59.149,139.941,17.837]}},{"noteOn":{"time":39.652,"note":94.882,"rtz":[22.519,193.645,17.471]}},{"noteOn":{"time":39.725,"note":91.297,"rtz":[98.995,297.348,17.189]}},{"noteOn":{"time":40.245,"note":99.117,"rtz":[53.356,333.951,17.804]}},{"noteOn":{"time":40.295,"note":98.985,"rtz":[31.721,287.857,17.794]}},{"noteOn":{"time":40.300,"note":105.321,"rtz":[73.006,303.427,18.293]}},{"noteOn":{"time":40.406,"note":103.219,"rtz":[33.307,204.817,18.127]}},{"noteOn":{"time":40.459,"note":101.664,"rtz":[31.335,133.214,18.005]}},{"noteOn":{"time":40.670,"note":89.164,"rtz":[24.426,239.084,17.021]}},{"noteOn":{"time":41.047,"note":90.750,"rtz":[39.379,122.625,17.146]}},{"noteOn":{"time":41.114,"note":96.852,"rtz":[13.390,128.579,17.626]}},{"noteOn":{"time":41.183,"note":96.812,"rtz":[84.859,22.184,17.623]}},{"noteOn":{"time":41.205,"note":99.032,"rtz":[55.234,8.286,17.798]}},{"noteOn":{"time":41.266,"note":101.086,"rtz":[46.663,166.900,17.960]}},{"noteOn":{"time":41.410,"note":91.797,"rtz":[16.234,190.067,17.228]}},{"noteOn":{"time":41.424,"note":103.157,"rtz":[93.963,77.273,18.123]}},{"noteOn":{"time":41.744,"note":91.382,"rtz":[75.420,192.277,17.195]}},{"noteOn":{"time":41.832,"note":96.899,"rtz":[60.741,59.005,17.630]}},{"noteOn":{"time":41.947,"note":93.929,"rtz":[39.683,244.574,17.396]}},{"noteOn":{"time":42.108,"note":101.281,"rtz":[97.868,204.920,17.975]}},{"noteOn":{"time":42.154,"note":98.945,"rtz":[34.231,215.565,17.791]}},{"noteOn":{"time":42.172,"note":99.047,"rtz":[46.831,234.643,17.799]}},{"noteOn":{"time":42.381,"note":101.024,"rtz":[10.214,293.490,17.955]}},{"noteOn":{"time":42.551,"note":98.485,"rtz":[40.481,204.918,17.755]}},{"noteOn":{"time":42.571,"note":97.938,"rtz":[34.155,185.358,17.712]}},{"noteOn":{"time":42.616,"note":95.234,"rtz":[57.308,120.899,17.499]}},{"noteOn":{"time":42.940,"note":103.414,"rtz":[60.125,171.896,18.143]}},{"noteOn":{"time":42.979,"note":98.922,"rtz":[60.913,128.106,17.789]}},{"noteOn":{"time":42.983,"note":103.109,"rtz":[71.629,110.420,18.119]}},{"noteOn":{"time":43.003,"note":101.179,"rtz":[52.148,209.102,17.967]}},{"noteOn":{"time":43.244,"note":96.352,"rtz":[56.143,13.150,17.587]}},{"noteOn":{"time":43.310,"note":97.367,"rtz":[87.639,58.133,17.667]}},{"noteOn":{"time":43.362,"note":95.805,"rtz":[15.310,179.445,17.544]}},{"noteOn":{"time":43.595,"note":93.547,"rtz":[81.984,307.752,17.366]}},{"noteOn":{"time":43.643,"note":105.242,"rtz":[59.238,175.663,18.287]}},{"noteOn":{"time":43.656,"note":96.789,"rtz":[71.240,314.346,17.621]}},{"noteOn":{"time":43.938,"note":94.688,"rtz":[53.582,64.758,17.456]}},{"noteOn":{"time":44.054,"note":97.781,"rtz":[10.528,59.340,17.699]}},{"noteOn":{"time":44.066,"note":100.328,"rtz":[49.057,48.155,17.900]}},{"noteOn":{"time":44.116,"note":95.679,"rtz":[21.329,75.793,17.534]}},{"noteOn":{"time":44.188,"note":105.343,"rtz":[34.039,138.507,18.295]}},{"noteOn":{"time":44.209,"note":90.500,"rtz":[77.409,270.951,17.126]}},{"noteOn":{"time":44.427,"note":95.375,"rtz":[75.321,152.908,17.510]}},{"noteOn":{"time":44.740,"note":93.445,"rtz":[5.061,24.362,17.358]}},{"noteOn":{"time":44.743,"note":99.914,"rtz":[21.126,354.206,17.867]}},{"noteOn":{"time":44.804,"note":104.524,"rtz":[28.011,238.640,18.230]}},{"noteOn":{"time":44.813,"note":98.188,"rtz":[26.960,176.654,17.731]}},{"noteOn":{"time":44.949,"note":102.461,"rtz":[98.937,274.118,18.068]}},{"noteOn":{"time":45.153,"note":97.507,"rtz":[68.889,90.426,17.678]}},{"noteOn":{"time":45.199,"note":89.632,"rtz":[63.155,308.185,17.058]}},{"noteOn":{"time":45.558,"note":90.047,"rtz":[71.329,350.143,17.090]}},{"noteOn":{"time":45.568,"note":97.609,"rtz":[9.395,324.322,17.686]}},{"noteOn":{"time":45.685,"note":96.055,"rtz":[47.506,145.640,17.563]}},{"noteOn":{"time":45.704,"note":102.422,"rtz":[86.842,98.019,18.065]}},{"noteOn":{"time":45.780,"note":98.235,"rtz":[85.445,257.481,17.735]}},{"noteOn":{"time":45.920,"note":92.593,"rtz":[78.739,85.084,17.291]}},{"noteOn":{"time":45.986,"note":102.360,"rtz":[8.806,88.097,18.060]}},{"noteOn":{"time":46.243,"note":92.179,"rtz":[93.050,70.419,17.258]}},{"noteOn":{"time":46.452,"note":96.102,"rtz":[73.785,255.846,17.567]}},{"noteOn":{"time":46.478,"note":100.289,"rtz":[33.022,90.253,17.897]}},{"noteOn":{"time":46.478,"note":99.742,"rtz":[58.334,172.858,17.854]}},{"noteOn":{"time":46.479,"note":94.726,"rtz":[87.812,127.797,17.459]}},{"noteOn":{"time":46.639,"note":102.078,"rtz":[62.982,238.747,18.038]}},{"noteOn":{"time":46.826,"note":90.250,"rtz":[29.969,304.774,17.106]}},{"noteOn":{"time":46.877,"note":100.227,"rtz":[70.970,205.893,17.892]}},{"noteOn":{"time":47.061,"note":97.688,"rtz":[61.422,332.311,17.692]}},{"noteOn":{"time":47.125,"note":97.141,"rtz":[80.852,213.382,17.649]}},{"noteOn":{"time":47.190,"note":96.031,"rtz":[80.794,190.195,17.561]}},{"noteOn":{"time":47.369,"note":88.118,"rtz":[97.535,71.423,16.938]}},{"noteOn":{"time":47.415,"note":103.789,"rtz":[6.864,28.266,18.172]}},{"noteOn":{"time":47.422,"note":98.125,"rtz":[35.282,277.625,17.726]}},{"noteOn":{"time":47.430,"note":103.906,"rtz":[71.916,225.504,18.182]}},{"noteOn":{"time":47.470,"note":99.843,"rtz":[39.714,256.916,17.862]}},{"noteOn":{"time":47.743,"note":95.555,"rtz":[62.933,219.289,17.524]}},{"noteOn":{"time":47.839,"note":98.164,"rtz":[55.961,300.037,17.729]}},{"noteOn":{"time":47.894,"note":95.008,"rtz":[33.518,289.461,17.481]}},{"noteOn":{"time":47.935,"note":106.039,"rtz":[22.851,326.851,18.350]}},{"noteOn":{"time":48.016,"note":94.343,"rtz":[23.191,103.573,17.429]}},{"noteOn":{"time":48.091,"note":97.985,"rtz":[50.723,357.119,17.715]}},{"noteOn":{"time":48.215,"note":101.976,"rtz":[14.437,188.995,18.030]}},{"noteOn":{"time":48.221,"note":95.993,"rtz":[63.971,275.847,17.559]}},{"noteOn":{"time":48.565,"note":98.578,"rtz":[22.215,71.378,17.762]}},{"noteOn":{"time":48.576,"note":101.125,"rtz":[5.622,249.840,17.963]}},{"noteOn":{"time":48.592,"note":96.476,"rtz":[55.099,314.057,17.597]}},{"noteOn":{"time":48.784,"note":89.703,"rtz":[45.490,56.209,17.063]}},{"noteOn":{"time":48.872,"note":105.860,"rtz":[56.508,159.776,18.335]}},{"noteOn":{"time":48.872,"note":96.172,"rtz":[7.068,110.070,17.573]}},{"noteOn":{"time":48.994,"note":95.852,"rtz":[42.373,244.724,17.547]}},{"noteOn":{"time":49.194,"note":93.891,"rtz":[7.064,108.695,17.393]}},{"noteOn":{"time":49.242,"note":100.711,"rtz":[98.922,268.136,17.930]}},{"noteOn":{"time":49.344,"note":97.391,"rtz":[91.634,222.257,17.669]}},{"noteOn":{"time":49.377,"note":103.727,"rtz":[43.925,147.690,18.167]}},{"noteOn":{"time":49.482,"note":102.743,"rtz":[49.156,87.968,18.090]}},{"noteOn":{"time":49.750,"note":90.429,"rtz":[89.444,62.809,17.120]}},{"noteOn":{"time":49.753,"note":98.304,"rtz":[51.023,117.580,17.740]}},{"noteOn":{"time":49.908,"note":94.242,"rtz":[62.339,340.620,17.421]}},{"noteOn":{"time":49.914,"note":94.281,"rtz":[28.170,302.414,17.424]}},{"noteOn":{"time":50.020,"note":98.406,"rtz":[99.973,330.143,17.749]}},{"noteOn":{"time":50.068,"note":90.843,"rtz":[20.243,359.981,17.153]}},{"noteOn":{"time":50.271,"note":95.258,"rtz":[94.467,279.428,17.501]}},{"noteOn":{"time":50.376,"note":97.438,"rtz":[27.342,330.030,17.672]}},{"noteOn":{"time":50.432,"note":101.563,"rtz":[17.094,175.514,17.997]}},{"noteOn":{"time":50.474,"note":93.390,"rtz":[67.076,82.416,17.354]}},{"noteOn":{"time":50.654,"note":96.414,"rtz":[29.199,355.671,17.592]}},{"noteOn":{"time":50.741,"note":92.976,"rtz":[68.965,120.803,17.321]}},{"noteOn":{"time":50.810,"note":100.539,"rtz":[57.462,182.591,17.916]}},{"noteOn":{"time":50.859,"note":101.625,"rtz":[74.949,3.466,18.002]}},{"noteOn":{"time":51.055,"note":95.523,"rtz":[6.917,49.606,17.521]}},{"noteOn":{"time":51.093,"note":95.305,"rtz":[61.901,164.924,17.504]}},{"noteOn":{"time":51.168,"note":99.430,"rtz":[55.990,311.663,17.829]}},{"noteOn":{"time":51.170,"note":102.875,"rtz":[73.578,172.731,18.100]}},{"noteOn":{"time":51.215,"note":89.453,"rtz":[84.273,146.879,17.044]}},{"noteOn":{"time":51.544,"note":99.493,"rtz":[26.484,345.654,17.834]}},{"noteOn":{"time":51.572,"note":96.891,"rtz":[73.917,308.885,17.629]}},{"noteOn":{"time":51.721,"note":96.344,"rtz":[90.910,291.619,17.586]}},{"noteOn":{"time":51.744,"note":97.328,"rtz":[83.182,68.894,17.664]}},{"noteOn":{"time":51.786,"note":96.828,"rtz":[31.168,65.976,17.624]}},{"noteOn":{"time":51.836,"note":88.679,"rtz":[44.573,48.044,16.983]}},{"noteOn":{"time":51.876,"note":104.703,"rtz":[18.217,266.452,18.244]}},{"noteOn":{"time":51.892,"note":102.993,"rtz":[44.558,41.945,18.110]}},{"noteOn":{"time":52.241,"note":94.758,"rtz":[37.715,174.410,17.461]}},{"noteOn":{"time":52.390,"note":98.961,"rtz":[36.216,292.854,17.792]}},{"noteOn":{"time":52.439,"note":95.140,"rtz":[22.693,263.319,17.491]}},{"noteOn":{"time":52.464,"note":100.640,"rtz":[51.947,128.567,17.924]}},{"noteOn":{"time":52.468,"note":94.211,"rtz":[84.514,243.611,17.418]}},{"noteOn":{"time":52.526,"note":106.836,"rtz":[70.957,200.450,18.412]}},{"noteOn":{"time":52.637,"note":97.188,"rtz":[99.247,38.757,17.653]}},{"noteOn":{"time":52.664,"note":95.196,"rtz":[43.577,8.223,17.496]}},{"noteOn":{"time":53.071,"note":97.273,"rtz":[44.901,179.582,17.659]}},{"noteOn":{"time":53.075,"note":99.375,"rtz":[85.799,39.330,17.825]}},{"noteOn":{"time":53.120,"note":102.773,"rtz":[59.595,318.811,18.092]}},{"noteOn":{"time":53.129,"note":101.922,"rtz":[83.404,157.936,18.025]}},{"noteOn":{"time":53.378,"note":89.093,"rtz":[50.622,316.374,17.015]}},{"noteOn":{"time":53.435,"note":96.968,"rtz":[15.296,173.692,17.635]}},{"noteOn":{"time":53.438,"note":105.063,"rtz":[16.139,152.069,18.273]}},{"noteOn":{"time":53.616,"note":95.055,"rtz":[76.593,303.570,17.485]}},{"noteOn":{"time":53.741,"note":101.507,"rtz":[37.301,8.259,17.993]}},{"noteOn":{"time":53.878,"note":96.594,"rtz":[45.908,223.732,17.606]}},{"noteOn":{"time":54.011,"note":93.094,"rtz":[85.177,149.795,17.330]}},{"noteOn":{"time":54.056,"note":101.946,"rtz":[13.017,338.787,18.027]}},{"noteOn":{"time":54.065,"note":102.930,"rtz":[71.915,225.444,18.105]}},{"noteOn":{"time":54.300,"note":91.226,"rtz":[38.025,298.903,17.183]}},{"noteOn":{"time":54.401,"note":99.101,"rtz":[96.815,142.182,17.803]}},{"noteOn":{"time":54.458,"note":95.078,"rtz":[85.175,148.960,17.486]}},{"noteOn":{"time":54.579,"note":91.640,"rtz":[84.671,306.615,17.216]}},{"noteOn":{"time":54.586,"note":99.203,"rtz":[27.435,7.289,17.811]}},{"noteOn":{"time":54.638,"note":95.039,"rtz":[18.783,133.798,17.483]}},{"noteOn":{"time":54.860,"note":94.461,"rtz":[40.769,320.551,17.438]}},{"noteOn":{"time":54.925,"note":100.766,"rtz":[37.078,278.967,17.934]}},{"noteOn":{"time":54.970,"note":96.641,"rtz":[14.443,191.022,17.610]}},{"noteOn":{"time":55.043,"note":94.187,"rtz":[25.639,6.410,17.416]}},{"noteOn":{"time":55.120,"note":97.211,"rtz":[89.215,330.838,17.654]}},{"noteOn":{"time":55.240,"note":93.773,"rtz":[39.672,240.120,17.384]}},{"noteOn":{"time":55.253,"note":101.336,"rtz":[68.342,230.564,17.979]}},{"noteOn":{"time":55.500,"note":100.828,"rtz":[86.191,196.830,17.939]}},{"noteOn":{"time":55.507,"note":98.633,"rtz":[93.033,63.625,17.766]}},{"noteOn":{"time":55.639,"note":88.657,"rtz":[73.843,279.335,16.981]}},{"noteOn":{"time":55.644,"note":96.320,"rtz":[24.741,5.820,17.584]}},{"noteOn":{"time":55.703,"note":103.672,"rtz":[72.717,187.317,18.163]}},{"noteOn":{"time":55.732,"note":94.508,"rtz":[17.064,163.452,17.442]}},{"noteOn":{"time":56.067,"note":96.532,"rtz":[14.853,355.642,17.601]}},{"noteOn":{"time":56.082,"note":96.094,"rtz":[68.162,158.422,17.566]}},{"noteOn":{"time":56.098,"note":98.696,"rtz":[64.209,11.358,17.771]}},{"noteOn":{"time":56.332,"note":95.547,"rtz":[37.546,106.604,17.523]}},{"noteOn":{"time":56.339,"note":89.476,"rtz":[40.473,201.878,17.045]}},{"noteOn":{"time":56.369,"note":105.500,"rtz":[44.172,246.966,18.307]}},{"noteOn":{"time":56.371,"note":102.196,"rtz":[69.751,76.274,18.047]}},{"noteOn":{"time":56.381,"note":97.625,"rtz":[47.480,135.040,17.687]}},{"noteOn":{"time":56.739,"note":93.961,"rtz":[75.504,226.300,17.399]}},{"noteOn":{"time":56.880,"note":95.937,"rtz":[61.965,190.577,17.554]}},{"noteOn":{"time":56.931,"note":101.437,"rtz":[13.221,60.405,17.987]}},{"noteOn":{"time":56.940,"note":99.757,"rtz":[78.820,117.423,17.855]}},{"noteOn":{"time":57.028,"note":94.399,"rtz":[57.945,16.697,17.433]}},{"noteOn":{"time":57.057,"note":93.414,"rtz":[91.818,295.881,17.355]}},{"noteOn":{"time":57.173,"note":106.368,"rtz":[12.323,59.998,18.375]}},{"noteOn":{"time":57.217,"note":96.391,"rtz":[67.449,232.231,17.590]}},{"noteOn":{"time":57.498,"note":103.570,"rtz":[37.778,199.827,18.155]}},{"noteOn":{"time":57.565,"note":98.070,"rtz":[81.823,243.098,17.722]}},{"noteOn":{"time":57.585,"note":100.172,"rtz":[56.606,198.788,17.888]}},{"noteOn":{"time":57.697,"note":102.718,"rtz":[52.787,105.869,18.088]}},{"noteOn":{"time":57.908,"note":89.890,"rtz":[19.931,234.432,17.078]}},{"noteOn":{"time":57.922,"note":104.266,"rtz":[99.330,71.820,18.210]}},{"noteOn":{"time":57.928,"note":97.765,"rtz":[17.977,170.108,17.698]}},{"noteOn":{"time":58.160,"note":94.258,"rtz":[10.922,217.712,17.422]}},{"noteOn":{"time":58.240,"note":101.696,"rtz":[11.847,229.063,18.008]}},{"noteOn":{"time":58.302,"note":93.703,"rtz":[44.203,259.278,17.378]}},{"noteOn":{"time":58.426,"note":95.797,"rtz":[33.968,110.100,17.543]}},{"noteOn":{"time":58.646,"note":101.149,"rtz":[43.215,222.570,17.964]}},{"noteOn":{"time":58.670,"note":102.133,"rtz":[52.692,67.648,18.042]}},{"noteOn":{"time":58.741,"note":99.898,"rtz":[91.315,94.209,17.866]}},{"noteOn":{"time":58.784,"note":92.023,"rtz":[73.927,312.854,17.246]}},{"noteOn":{"time":58.841,"note":95.836,"rtz":[11.868,237.444,17.546]}},{"noteOn":{"time":58.924,"note":95.875,"rtz":[88.521,52.177,17.549]}},{"noteOn":{"time":59.089,"note":92.437,"rtz":[38.783,243.230,17.279]}},{"noteOn":{"time":59.270,"note":100.000,"rtz":[60.294,239.669,17.874]}},{"noteOn":{"time":59.372,"note":99.969,"rtz":[55.727,206.231,17.872]}},{"noteOn":{"time":59.391,"note":93.664,"rtz":[70.876,168.080,17.375]}},{"noteOn":{"time":59.500,"note":95.844,"rtz":[49.233,118.886,17.547]}},{"noteOn":{"time":59.507,"note":98.007,"rtz":[98.847,237.938,17.717]}},{"noteOn":{"time":59.611,"note":94.984,"rtz":[7.338,218.798,17.479]}},{"noteOn":{"time":59.614,"note":100.032,"rtz":[42.221,183.538,17.877]}},{"noteOn":{"time":59.739,"note":94.570,"rtz":[6.420,210.110,17.446]}},{"noteOn":{"time":59.818,"note":102.132,"rtz":[84.327,168.400,18.042]}},{"noteOn":{"time":59.945,"note":97.836,"rtz":[58.168,105.888,17.704]}},{"noteOn":{"time":60.105,"note":88.140,"rtz":[20.459,86.570,16.940]}},{"noteOn":{"time":60.124,"note":97.899,"rtz":[50.346,205.490,17.709]}},{"noteOn":{"time":60.180,"note":103.532,"rtz":[50.157,129.852,18.152]}},{"noteOn":{"time":60.234,"note":97.117,"rtz":[25.434,283.773,17.647]}},{"noteOn":{"time":60.307,"note":93.711,"rtz":[53.801,152.731,17.379]}},{"noteOn":{"time":60.511,"note":95.735,"rtz":[95.099,173.180,17.538]}},{"noteOn":{"time":60.592,"note":95.297,"rtz":[96.815,142.045,17.504]}},{"noteOn":{"time":60.793,"note":101.399,"rtz":[81.338,48.430,17.984]}},{"noteOn":{"time":60.868,"note":102.234,"rtz":[29.019,283.107,18.050]}},{"noteOn":{"time":60.881,"note":90.273,"rtz":[35.186,239.045,17.108]}},{"noteOn":{"time":60.910,"note":98.422,"rtz":[38.298,48.416,17.750]}},{"noteOn":{"time":60.931,"note":106.297,"rtz":[28.643,132.417,18.370]}},{"noteOn":{"time":60.944,"note":94.750,"rtz":[97.156,279.285,17.461]}},{"noteOn":{"time":61.238,"note":93.164,"rtz":[23.329,158.966,17.336]}},{"noteOn":{"time":61.351,"note":94.398,"rtz":[79.417,357.112,17.433]}},{"noteOn":{"time":61.357,"note":96.734,"rtz":[14.254,115.442,17.617]}},{"noteOn":{"time":61.389,"note":104.367,"rtz":[97.577,88.295,18.218]}},{"noteOn":{"time":61.424,"note":100.554,"rtz":[98.580,130.704,17.918]}},{"noteOn":{"time":61.649,"note":92.618,"rtz":[49.258,128.965,17.293]}},{"noteOn":{"time":61.838,"note":95.594,"rtz":[95.637,29.286,17.527]}},{"noteOn":{"time":61.890,"note":105.571,"rtz":[63.774,196.777,18.313]}},{"noteOn":{"time":62.096,"note":100.968,"rtz":[91.552,189.377,17.950]}},{"noteOn":{"time":62.097,"note":98.867,"rtz":[74.668,250.553,17.785]}},{"noteOn":{"time":62.105,"note":94.500,"rtz":[75.034,37.478,17.441]}},{"noteOn":{"time":62.267,"note":102.485,"rtz":[7.813,49.284,18.070]}},{"noteOn":{"time":62.337,"note":103.469,"rtz":[52.891,147.416,18.147]}},{"noteOn":{"time":62.347,"note":90.687,"rtz":[41.501,254.495,17.141]}},{"noteOn":{"time":62.491,"note":98.562,"rtz":[90.263,31.840,17.761]}},{"noteOn":{"time":62.655,"note":96.632,"rtz":[40.194,89.860,17.609]}},{"noteOn":{"time":62.703,"note":93.461,"rtz":[47.343,80.172,17.359]}},{"noteOn":{"time":62.739,"note":100.899,"rtz":[61.465,349.779,17.945]}},{"noteOn":{"time":63.013,"note":95.000,"rtz":[94.225,182.266,17.480]}},{"noteOn":{"time":63.148,"note":100.695,"rtz":[65.844,307.813,17.929]}},{"noteOn":{"time":63.179,"note":92.820,"rtz":[60.923,131.992,17.309]}},{"noteOn":{"time":63.206,"note":101.336,"rtz":[85.273,188.086,17.979]}},{"noteOn":{"time":63.238,"note":100.352,"rtz":[38.562,154.618,17.902]}},{"noteOn":{"time":63.341,"note":99.235,"rtz":[52.864,136.423,17.814]}},{"noteOn":{"time":63.388,"note":96.672,"rtz":[19.157,283.990,17.612]}},{"noteOn":{"time":63.599,"note":93.234,"rtz":[59.876,71.716,17.341]}},{"noteOn":{"time":63.621,"note":106.844,"rtz":[15.066,81.174,18.413]}},{"noteOn":{"time":63.675,"note":108.688,"rtz":[89.500,85.163,18.558]}},{"noteOn":{"time":63.833,"note":110.532,"rtz":[11.026,259.298,18.703]}},{"noteOn":{"time":63.842,"note":111.625,"rtz":[34.530,335.677,18.789]}},{"noteOn":{"time":63.869,"note":112.093,"rtz":[79.964,216.954,18.826]}},{"noteOn":{"time":63.922,"note":97.102,"rtz":[85.659,343.110,17.646]}},{"noteOn":{"time":63.923,"note":92.868,"rtz":[97.771,166.151,17.312]}}]}
         `
