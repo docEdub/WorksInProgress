@@ -60,6 +60,8 @@ while (iI < ORC_INSTANCE_COUNT) do
 od
 
 giPointSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+gkPointSynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
+gkPointSynth_LastNoteOnTime[] init ORC_INSTANCE_COUNT
 
 #endif // #ifndef PointSynth_orc__include_guard
 
@@ -91,9 +93,11 @@ instr INSTRUMENT_ID
         iFadeInTime = 0.01
         iFadeOutTime = 0.01
         iTotalTime = iFadeInTime + iFadeOutTime
-        iSeed = iNoteNumber / 128
+
+#if !IS_PLAYBACK
         if (iNoteNumber < 128) then
-            kI init 0
+            iSeed = iNoteNumber / 128
+
             kCountdownNeedsInit init true
             if (kCountdownNeedsInit == true) then
                 kJ = 0
@@ -105,32 +109,49 @@ instr INSTRUMENT_ID
             endif
             kCountdown -= 1 / kr
             if (kCountdown <= 0) then
+                kCountdownNeedsInit = true
+
                 // Generate new note.
-                kI += 1
-                if (kI == 1000) then
-                    kI = 1
+                gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] + 1
+                if (gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] == 1000) then
+                    gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = 1
                 endif
-                kInstrumentNumber = p1 + kI / 1000000
                 kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
                 kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
-                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
+                if (i(gk_mode) == 4) then
+                    kInstrumentNumberFraction = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX]
+                    // Skip to end if track index is -1 due to mode switch lag.
+                    if (gk_trackIndex == -1) kgoto end
+
+                    // The Oculus Quest 2 can't handle 2 note on events at the same time, even if this instrument is
+                    // preallocated with the prealloc opcode. This spaces them out so there's never 2 instances playitng
+                    // at the same time.
+                    kNoteOnTime = elapsedTime_k()
+                    if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (iTotalTime + iTotalTime)) then
+                        kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + iTotalTime + iTotalTime
+                    endif
+                    gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] = kNoteOnTime
+
+                    sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
+                        STRINGIZE(${InstrumentName}), gk_trackIndex, kInstrumentNumberFraction, kNoteOnTime, iTotalTime, kNoteNumber, kVelocity))
+                    goto end
+                endif
+                kInstrumentNumberFraction = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] / 1000000
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", p1 + kInstrumentNumberFraction, iTotalTime, p4,
                     kNoteNumber,
                     kVelocity)
-                log_k_debug("SEvent = %s", SEvent)
                 scoreline(SEvent, 1)
-                kCountdownNeedsInit = true
             endif
             
-            #if !IS_PLAYBACK
-                if (gkReloaded == true) then
-                    turnoff
-                endif
-            #endif
+            if (gkReloaded == true) then
+                turnoff
+            endif
         else ; iNoteNumber > 127 : Instance was generated recursively.
+#endif // #if !IS_PLAYBACK
             iNoteNumber -= 1000
             if (iNoteNumber > 127) then
                 log_k_error("Note number is greater than 127 (iNoteNumber = %f.", iNoteNumber)
-                igoto endin
+                igoto end
                 turnoff
             endif
             iCps = cpsmidinn(p5 - 1000)
@@ -198,9 +219,11 @@ instr INSTRUMENT_ID
                 fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"rtz\":[%.3f,%.3f,%.3f]}}", times(),
                     iNoteNumber, iR, iT, iZ)
             ${CSOUND_ENDIF}
+#if !IS_PLAYBACK
         endif
+#endif
     endif
-endin:
+end:
 endin
 
 //----------------------------------------------------------------------------------------------------------------------

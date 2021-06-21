@@ -234,29 +234,42 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-
-        iInstrumentNumber = p1 + 0.0001
-        SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, EVENT_NOTE_GENERATED, iNoteNumber, iVelocity)
-        scoreline_i(SOnEvent)
-
         kReleased = release()
-        if (kReleased == true) then
-            SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-            scoreline(SOffEvent, 1)
-            turnoff
-        endif
+#if !IS_PLAYBACK
+        if (i(gk_mode) == 1) then
+#endif
+            iInstrumentNumber = p1 + 0.0001
+            SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, EVENT_NOTE_GENERATED, iNoteNumber, iVelocity)
+            scoreline_i(SOnEvent)
 
-        ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"PowerLineSynth_Json\" 0 0")
-            endif
-            giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
             if (kReleased == true) then
-                fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+                SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                scoreline(SOffEvent, 1)
             endif
-        ${CSOUND_ENDIF}
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                    scoreline_i("i \"PowerLineSynth_Json\" 0 0")
+                endif
+                giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+                SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
+                if (kReleased == true) then
+                    fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+                endif
+            ${CSOUND_ENDIF}
+#if !IS_PLAYBACK
+        elseif (i(gk_mode) == 4) then
+            iInstrumentNumberFraction = frac(p1 + 0.0001)
+            sendScoreMessage_i(sprintf("i  CONCAT(%s_%d, .%03d) %.03f -1 EVENT_NOTE_GENERATED Note(%d) Velocity(%d)",
+                STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_i(), iNoteNumber, iVelocity))
+
+            if (kReleased == true) then
+                sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f NoteOff",
+                    STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_k()))
+            endif
+        endif
+#endif
 
         if (kReleased == true) then
             turnoff

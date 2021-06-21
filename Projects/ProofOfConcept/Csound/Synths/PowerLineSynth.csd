@@ -132,7 +132,7 @@ instr 3
     endif
 
     if (i(gk_mode) == 1) goto mode_1
-    if (i(gk_mode) == 4) goto mode_4
+    if (i(gk_mode) == 4) goto mode_1
     goto end
 
     mode_1:
