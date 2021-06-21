@@ -196,13 +196,13 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
                                     log_k_debug("Master: track %d, channel %d set to %.2f", k_track, k_channel,
                                         k_volume)
                                     sendScoreMessage_k(sprintfk(
-                                        "i MasterInstrument %.03f 1 Track(%d) Channel(%d) Volume(%.2f)", elapsedTime(),
+                                        "i MasterInstrument %.03f 1 Track(%d) Channel(%d) Volume(%.2f)", elapsedTime_k(),
                                         k_track, k_channel, k_volume))
                                 ${CSOUND_ELSE}
                                     log_k_debug("Bus: track %d, channel %d set to %.2f", k_track, k_channel, k_volume)
                                     sendScoreMessage_k(sprintfk(
                                         "i AuxInstrument %.03f 1 Aux(%d) Track(%d) Channel(%d) Volume(%.2f)",
-                                        elapsedTime(), gk_trackIndex, k_track, k_channel, k_volume))
+                                        elapsedTime_k(), gk_trackIndex, k_track, k_channel, k_volume))
                                 ${CSOUND_ENDIF}
                                 if (isReferencingTrack(k_track) == false) then
                                     addTrackRef(k_track)

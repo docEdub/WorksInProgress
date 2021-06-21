@@ -85,7 +85,7 @@ instr 2
 
                 if (gk_mode == 4) then
                     SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
-                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime(), "Cc", kI, kValue)
+                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
                     sendScoreMessage_k(SScoreLine)
                 else
                     SInstrument = "\"${InstrumentName}\""

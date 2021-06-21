@@ -85,7 +85,7 @@ instr 2
 
                 if (gk_mode == 4) then
                     SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
-                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime(), "Cc", kI, kValue)
+                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
                     sendScoreMessage_k(SScoreLine)
                 else
                     SInstrument = "\"${InstrumentName}\""
@@ -162,7 +162,7 @@ instr 3
         k_noteOnSent init false
         if (k_noteOnSent == false) then
             sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f NoteOn Note(%d) Velocity(%d)",
-                STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime(), notnum(), veloc()))
+                STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime_k(), notnum(), veloc()))
             k_noteOnSent = true
         endif
 
@@ -174,7 +174,7 @@ instr 3
         #endif
         if (k_released == true && k_noteOffSent == false) then
             sendScoreMessage_k(sprintfk("i CONCAT(-%s_%d, .%03d) %.03f NoteOff", STRINGIZE(${InstrumentName}),
-                gk_trackIndex, i_noteId, elapsedTime() + k_releaseDeltaTime))
+                gk_trackIndex, i_noteId, elapsedTime_k() + k_releaseDeltaTime))
             ; turnoff
             // N.B. The 'turnoff' opcode isn't working as expected here so a 'k_noteOffSent' flag is used to prevent
             // duplicate scorelines.
