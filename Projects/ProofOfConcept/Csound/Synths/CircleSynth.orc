@@ -205,12 +205,16 @@ instr INSTRUMENT_ID
             ${CSOUND_ENDIF}
 #if !IS_PLAYBACK
         elseif (i(gk_mode) == 4) then
-            iInstrumentNumberFraction = frac(p1 + 0.0001)
+            giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] = giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            if (giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] == 1000) then
+                giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] = 1
+            endif
+            iInstrumentNumberFraction = giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX]
             sendScoreMessage_i(sprintf("i  CONCAT(%s_%d, .%03d) %.03f -1 EVENT_NOTE_GENERATED Note(%d) Velocity(%d)",
                 STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_i(), iNoteNumber, iVelocity))
 
             if (kReleased == true) then
-                sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f NoteOff",
+                sendScoreMessage_k(sprintfk("i  CONCAT(-%s_%d, .%03d) %.03f NoteOff",
                     STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_k()))
             endif
         endif

@@ -376,8 +376,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
             ga_masterSignals = a_masterSignals
             event_i("i", 2, 0, -1)
-            event_i("i", 6, 0, -1)
-            event_i("i", 10, 0, -1)
+            event_i("i", 6, 1, -1)
+            event_i("i", 10, 1, -1)
             turnoff
         endin
         instr 2
@@ -495,48 +495,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             xout kOut
         endop
          #end
-        gSCcInfo_PowerLineSynth[] = fillarray( \\
+        gSCcInfo_CircleSynth[] = fillarray( \\
         \\
             "example", "bool", "false", "synced", \\
         \\
             "", "", "", "")
-         #define gSCcInfo_PowerLineSynth_Count #8#
+         #define gSCcInfo_CircleSynth_Count #8#
          #define CC_INFO_CHANNEL #0#
          #define CC_INFO_TYPE #1#
          #define CC_INFO_VALUE #2#
          #define CC_INFO_SYNC_TYPE #3#
          #define CC_NO_SYNC #0#
          #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_PowerLineSynth_Count
-            if (lenarray(gSCcInfo_PowerLineSynth) == $gSCcInfo_PowerLineSynth_Count) then
-                giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
-                reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+         #ifdef gSCcInfo_CircleSynth_Count
+            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
+                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
             endif
          #else
-            giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
-            reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
          #end
-        opcode ccIndex_PowerLineSynth, i, S
+        opcode ccIndex_CircleSynth, i, S
             SChannel xin
             kgoto end
             iI = 0
-            while (iI < giCcCount_PowerLineSynth) do
-                if (strcmp(gSCcInfo_PowerLineSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+            while (iI < giCcCount_CircleSynth) do
+                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
                 iI += 1
             od
             iI = -1
         end:
             xout iI
         endop
-        giCcValueDefaults_PowerLineSynth[] init giCcCount_PowerLineSynth
-        giCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        gkCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        gkCcSyncTypes_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
-        instr PowerLineSynth_InitializeCcValues
+        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
+        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
+        instr CircleSynth_InitializeCcValues
             iI = 0
-            while (iI < giCcCount_PowerLineSynth) do
-                SType = gSCcInfo_PowerLineSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PowerLineSynth[iI][$CC_INFO_VALUE]
+            while (iI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
                 iJ = 0
                 while (iJ < 1) do
                     iValue = -1
@@ -549,18 +549,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
                         iValue = strtod(SValue)
                     endif
-                    giCcValueDefaults_PowerLineSynth[iI] = iValue
-                    giCcValues_PowerLineSynth[iJ][iI] = iValue
+                    giCcValueDefaults_CircleSynth[iI] = iValue
+                    giCcValues_CircleSynth[iJ][iI] = iValue
                     iJ += 1
                 od
                 iI += 1
             od
             igoto end
             kI = 0
-            while (kI < giCcCount_PowerLineSynth) do
-                SType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_PowerLineSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_SYNC_TYPE]
+            while (kI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
                 kJ = 0
                 while (kJ < 1) do
                     kValue = -1
@@ -573,10 +573,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
                         kValue = strtodk(SValue)
                     endif
-                    gkCcValues_PowerLineSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_NO_SYNC
+                    gkCcValues_CircleSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
                     if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
                     endif
                     kJ += 1
                 od
@@ -585,12 +585,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             turnoff
         end:
         endin
-        event_i("i", "PowerLineSynth_InitializeCcValues", 0, -1)
-        instr PowerLineSynth_CreateCcIndexes
-            giCc_PowerLineSynth_example init ccIndex_PowerLineSynth("example")
+        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
+        instr CircleSynth_CreateCcIndexes
+            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
             turnoff
         endin
-        event_i("i", "PowerLineSynth_CreateCcIndexes", 0, -1)
+        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
         /*
          * The resonance audio lookup tables were copied from https:
          * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
@@ -1745,284 +1745,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_dopplerShift
         endop
-        giMaxRiseTime = 10
-        giNoteOnStartPosition[] = fillarray(10, 0, 20)
-        giNoteOnEndPosition[] = fillarray(15, 10, 25)
-        giNoteOffEndZ = -1000
-        giNoteNumberWobbleStartAmp = 1.5
-        giNoteNumberWobbleSpeed = 5
-        giRiserTableSize = 1024
-        giWobbleTableSize = 1024
-        giMinNoteOffSpeed = 50
-        giMaxNoteOffSpeed = 100
-        giPowerLineSynth_DistanceMin = 5
-        giPowerLineSynth_DistanceMax = 100
-        giRiserTableId = ftgen(0, 0, giRiserTableSize + 1, 16, 0, giRiserTableSize, -10, 1)
-        giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
-        instr PowerLineSynth_NoteOn
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
-            iSecondsPerKPass = 1 / kr
-            iNoteOnDelta[] fillarray giNoteOnEndPosition[$X] - giNoteOnStartPosition[$X], giNoteOnEndPosition[$Y] - giNoteOnStartPosition[$Y], giNoteOnEndPosition[$Z] - giNoteOnStartPosition[$Z]
-            iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / giMaxRiseTime)
-            iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / giMaxRiseTime)
-            kPosition[] fillarray giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z]
-            if (kPosition[$Z] < giNoteOffEndZ) then
-                kgoto endin
-            endif
-            iMaxRiseAmount = iNoteNumber - 36
-            iNoteNumber = 36
-            kReleased = release()
-            iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
-            kRiserTableI init 0
-            if (kRiserTableI < giRiserTableSize && kReleased == 0) then
-                kRiserTableI += iRiserTableIncrementI
-            endif
-            kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
-            if (kReleased == 0) then
-                if (kRiserTableI < giRiserTableSize) then
-                    kPosition[$X] = kPosition[$X] + iNoteOnIncrementX
-                    kPosition[$Y] = giNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
-                    kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
-                endif
-            else
-                iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
-                xtratim(iExtraTime)
-                kNoteOffSpeed init giMinNoteOffSpeed
-                kNoteOffIncrementZ init iSecondsPerKPass * giMinNoteOffSpeed
-                kNoteOffSpeedCalculated init 0
-                if (kNoteOffSpeedCalculated == 0) then
-                    kNoteOffSpeed = giMinNoteOffSpeed +
-                        ((giMaxNoteOffSpeed - giMinNoteOffSpeed) * (kRiserTableI / giRiserTableSize))
-                    kNoteOffSpeed = min(kNoteOffSpeed, giMaxNoteOffSpeed)
-                    kNoteOffIncrementZ = iSecondsPerKPass * kNoteOffSpeed
-                    kNoteOffSpeedCalculated = 1
-                else
-                    kPosition[$Z] = kPosition[$Z] - kNoteOffIncrementZ
-                endif
-            endif
-            iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
-            kWobbleTableI init 0
-            kWobbleTableI += iWobbleTableIncrementI
-            kWobbleTableI = kWobbleTableI % giWobbleTableSize
-            kNoteNumberWobbleAmp = giNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
-            kNoteNumber = iNoteNumber
-            kNoteNumber += kRiserTableValue * iMaxRiseAmount
-            kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
-            if (kNoteNumber > 127) then
-                kNoteNumber = 127
-                    kLoggedNoteNumberWarning init 0
-                    if (kLoggedNoteNumberWarning == 0) then
-                        kLoggedNoteNumberWarning = 1
-                    endif
-            else
-                    kLoggedNoteNumberWarning = 0
-            endif
-            kAmp = 0.1 * iVelocity * kRiserTableValue
-            if (kReleased == 1) then
-                kAmp *= (giNoteOffEndZ - kPosition[$Z]) / giNoteOffEndZ
-            endif
-            kCps = cpsmidinn(kNoteNumber)
-            aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5)
-            aOut = tone(aOut, 5000)
-            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
-            aOutDistanced = aOut * kDistanceAttenuation
-            aOut = aOut * (2 * kDistanceAttenuation)
-            AF_3D_Audio_ChannelGains(kPosition, 1)
-                gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + gkAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + gkAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + gkAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + gkAmbisonicChannelGains[3] * aOutDistanced
-                gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
-                gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
-        endin:
-        endin
-        instr PowerLineSynth_NoteOff
-            iNoteNumber = p4
-            iVelocity = p5 / 127
-            iOrcInstanceIndex = p6
-            iInstrumentTrackIndex = p7
-        endin
-        giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
-        giPowerLineSynth_NoteIndex[] init 1
-         #ifdef IS_GENERATING_JSON
-            setPluginUuid(0, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
-            instr PowerLineSynth_Json
-                SJsonFile = sprintf("%s.0.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3")
-                fprints(SJsonFile, "{")
-                fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-                fprints(SJsonFile, ",\\"maxRiseTime\\":%d", giMaxRiseTime)
-                fprints(SJsonFile, ",\\"noteOnStartPosition\\":[%d,%d,%d]", giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z])
-                fprints(SJsonFile, ",\\"noteOnEndPosition\\":[%d,%d,%d]", giNoteOnEndPosition[$X], giNoteOnEndPosition[$Y], giNoteOnEndPosition[$Z])
-                fprints(SJsonFile, ",\\"noteOffEndZ\\":%d", giNoteOffEndZ)
-                fprints(SJsonFile, ",\\"noteNumberWobbleStartAmp\\":%.3f", giNoteNumberWobbleStartAmp)
-                fprints(SJsonFile, ",\\"noteNumberWobbleSpeed\\":%.3f", giNoteNumberWobbleSpeed)
-                fprints(SJsonFile, ",\\"minNoteOffSpeed\\":%d", giMinNoteOffSpeed)
-                fprints(SJsonFile, ",\\"maxNoteOffSpeed\\":%d", giMaxNoteOffSpeed)
-                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPowerLineSynth_DistanceMin)
-                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPowerLineSynth_DistanceMax)
-                fprints(SJsonFile, "}")
-                turnoff
-            endin
-         #end
-        instr 3
-            iEventType = p4
-            if (iEventType == 4) then
-                turnoff
-            elseif (iEventType == 1) then
-                iNoteNumber = p5
-                iVelocity = p6
-                kReleased = release()
-                    iInstrumentNumber = p1 + 0.0001
-                    SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
-                    scoreline_i(SOnEvent)
-                    if (kReleased == 1) then
-                        SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-                        scoreline(SOffEvent, 1)
-                    endif
-                    #ifdef IS_GENERATING_JSON
-                        if (giPowerLineSynth_NoteIndex[0] == 0) then
-                            scoreline_i("i \\"PowerLineSynth_Json\\" 0 0")
-                        endif
-                        giPowerLineSynth_NoteIndex[0] = giPowerLineSynth_NoteIndex[0] + 1
-                        SJsonFile = sprintf("%s.%d.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3", giPowerLineSynth_NoteIndex[0])
-                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
-                        if (kReleased == 1) then
-                            fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
-                        endif
-                    #end
-                if (kReleased == 1) then
-                    turnoff
-                endif
-            elseif (iEventType == 3) then
-                iNoteNumber = p5
-                iVelocity = p6
-                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
-                        iNoteNumber,
-                        iVelocity,
-                        0,
-                        0
-            endif
-        endin:
-        endin
-         #ifndef ADSR_LINSEGR_UDO_ORC
-         #define ADSR_LINSEGR_UDO_ORC ##
-        opcode adsr_linsegr, a, iiii
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout aOut
-        endop
-        opcode adsr_linsegr, k, kkkk
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout kOut
-        endop
-         #end
-        gSCcInfo_CircleSynth[] = fillarray( \\
-        \\
-            "example", "bool", "false", "synced", \\
-        \\
-            "", "", "", "")
-         #define gSCcInfo_CircleSynth_Count #8#
-         #define CC_INFO_CHANNEL #0#
-         #define CC_INFO_TYPE #1#
-         #define CC_INFO_VALUE #2#
-         #define CC_INFO_SYNC_TYPE #3#
-         #define CC_NO_SYNC #0#
-         #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_CircleSynth_Count
-            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
-                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
-            endif
-         #else
-            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
-         #end
-        opcode ccIndex_CircleSynth, i, S
-            SChannel xin
-            kgoto end
-            iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
-                iI += 1
-            od
-            iI = -1
-        end:
-            xout iI
-        endop
-        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
-        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
-        instr CircleSynth_InitializeCcValues
-            iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
-                iJ = 0
-                while (iJ < 1) do
-                    iValue = -1
-                    if (strcmp(SType, "bool") == 0) then
-                        if (strcmp(SValue, "false") == 0) then
-                            iValue = 0
-                        else
-                            iValue = 1
-                        endif
-                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
-                        iValue = strtod(SValue)
-                    endif
-                    giCcValueDefaults_CircleSynth[iI] = iValue
-                    giCcValues_CircleSynth[iJ][iI] = iValue
-                    iJ += 1
-                od
-                iI += 1
-            od
-            igoto end
-            kI = 0
-            while (kI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
-                kJ = 0
-                while (kJ < 1) do
-                    kValue = -1
-                    if (strcmpk(SType, "bool") == 0) then
-                        if (strcmpk(SValue, "false") == 0) then
-                            kValue = 0
-                        else
-                            kValue = 1
-                        endif
-                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
-                        kValue = strtodk(SValue)
-                    endif
-                    gkCcValues_CircleSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
-                    if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
-                    endif
-                    kJ += 1
-                od
-                kI += 1
-            od
-            turnoff
-        end:
-        endin
-        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
-        instr CircleSynth_CreateCcIndexes
-            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
-            turnoff
-        endin
-        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
         giCircleSynth_HeightRange init 50 - 1
         giCircleSynth_RadiusRange init 50 - 1
         giCircleSynth_SpreadSpeedRange init 15 - 1
@@ -2072,12 +1794,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             aOutDistanced = aOut * kDistanceAttenuation
             aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
             AF_3D_Audio_ChannelGains(kPosition, kSpread)
-                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + gkAmbisonicChannelGains[0] * aOutDistanced
-                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + gkAmbisonicChannelGains[1] * aOutDistanced
-                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + gkAmbisonicChannelGains[2] * aOutDistanced
-                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + gkAmbisonicChannelGains[3] * aOutDistanced
-                gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aOut
-                gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aOut
+                gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + gkAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aOut
+                gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aOut
         endin:
         endin
         instr CircleSynth_NoteOff
@@ -2089,7 +1811,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giCircleSynthNoteInstrumentNumber = nstrnum("CircleSynth_NoteOn")
         giCircleSynth_NoteIndex[] init 1
          #ifdef IS_GENERATING_JSON
-            setPluginUuid(1, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
+            setPluginUuid(0, 0, "baeea327-af4b-4b10-a843-6614c20ea958")
             instr CircleSynth_Json
                 SJsonFile = sprintf("%s.0.json", "baeea327-af4b-4b10-a843-6614c20ea958")
                 fprints(SJsonFile, "{")
@@ -2109,7 +1831,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        instr 4
+        instr 3
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
@@ -2142,6 +1864,288 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 iNoteNumber = p5
                 iVelocity = p6
                     aDummy subinstr giCircleSynthNoteInstrumentNumber,
+                        iNoteNumber,
+                        iVelocity,
+                        0,
+                        0
+            endif
+        endin:
+        endin
+         #ifndef ADSR_LINSEGR_UDO_ORC
+         #define ADSR_LINSEGR_UDO_ORC ##
+        opcode adsr_linsegr, a, iiii
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout aOut
+        endop
+        opcode adsr_linsegr, k, kkkk
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout kOut
+        endop
+         #end
+        gSCcInfo_PowerLineSynth[] = fillarray( \\
+        \\
+            "example", "bool", "false", "synced", \\
+        \\
+            "", "", "", "")
+         #define gSCcInfo_PowerLineSynth_Count #8#
+         #define CC_INFO_CHANNEL #0#
+         #define CC_INFO_TYPE #1#
+         #define CC_INFO_VALUE #2#
+         #define CC_INFO_SYNC_TYPE #3#
+         #define CC_NO_SYNC #0#
+         #define CC_SYNC_TO_CHANNEL #1#
+         #ifdef gSCcInfo_PowerLineSynth_Count
+            if (lenarray(gSCcInfo_PowerLineSynth) == $gSCcInfo_PowerLineSynth_Count) then
+                giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
+                reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+            endif
+         #else
+            giCcCount_PowerLineSynth = (lenarray(gSCcInfo_PowerLineSynth) / 4) - 1
+            reshapearray(gSCcInfo_PowerLineSynth, giCcCount_PowerLineSynth + 1, 4)
+         #end
+        opcode ccIndex_PowerLineSynth, i, S
+            SChannel xin
+            kgoto end
+            iI = 0
+            while (iI < giCcCount_PowerLineSynth) do
+                if (strcmp(gSCcInfo_PowerLineSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+                iI += 1
+            od
+            iI = -1
+        end:
+            xout iI
+        endop
+        giCcValueDefaults_PowerLineSynth[] init giCcCount_PowerLineSynth
+        giCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        gkCcValues_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        gkCcSyncTypes_PowerLineSynth[][] init 1, giCcCount_PowerLineSynth
+        instr PowerLineSynth_InitializeCcValues
+            iI = 0
+            while (iI < giCcCount_PowerLineSynth) do
+                SType = gSCcInfo_PowerLineSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PowerLineSynth[iI][$CC_INFO_VALUE]
+                iJ = 0
+                while (iJ < 1) do
+                    iValue = -1
+                    if (strcmp(SType, "bool") == 0) then
+                        if (strcmp(SValue, "false") == 0) then
+                            iValue = 0
+                        else
+                            iValue = 1
+                        endif
+                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
+                        iValue = strtod(SValue)
+                    endif
+                    giCcValueDefaults_PowerLineSynth[iI] = iValue
+                    giCcValues_PowerLineSynth[iJ][iI] = iValue
+                    iJ += 1
+                od
+                iI += 1
+            od
+            igoto end
+            kI = 0
+            while (kI < giCcCount_PowerLineSynth) do
+                SType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_PowerLineSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_PowerLineSynth[kI][$CC_INFO_SYNC_TYPE]
+                kJ = 0
+                while (kJ < 1) do
+                    kValue = -1
+                    if (strcmpk(SType, "bool") == 0) then
+                        if (strcmpk(SValue, "false") == 0) then
+                            kValue = 0
+                        else
+                            kValue = 1
+                        endif
+                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
+                        kValue = strtodk(SValue)
+                    endif
+                    gkCcValues_PowerLineSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_NO_SYNC
+                    if (strcmpk(SSyncType, "synced") == 0) then
+                        gkCcSyncTypes_PowerLineSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                    endif
+                    kJ += 1
+                od
+                kI += 1
+            od
+            turnoff
+        end:
+        endin
+        event_i("i", "PowerLineSynth_InitializeCcValues", 0, -1)
+        instr PowerLineSynth_CreateCcIndexes
+            giCc_PowerLineSynth_example init ccIndex_PowerLineSynth("example")
+            turnoff
+        endin
+        event_i("i", "PowerLineSynth_CreateCcIndexes", 0, -1)
+        giMaxRiseTime = 10
+        giNoteOnStartPosition[] = fillarray(10, 0, 20)
+        giNoteOnEndPosition[] = fillarray(15, 10, 25)
+        giNoteOffEndZ = -1000
+        giNoteNumberWobbleStartAmp = 1.5
+        giNoteNumberWobbleSpeed = 5
+        giRiserTableSize = 1024
+        giWobbleTableSize = 1024
+        giMinNoteOffSpeed = 50
+        giMaxNoteOffSpeed = 100
+        giPowerLineSynth_DistanceMin = 5
+        giPowerLineSynth_DistanceMax = 100
+        giRiserTableId = ftgen(0, 0, giRiserTableSize + 1, 16, 0, giRiserTableSize, -10, 1)
+        giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
+        instr PowerLineSynth_NoteOn
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
+            iSecondsPerKPass = 1 / kr
+            iNoteOnDelta[] fillarray giNoteOnEndPosition[$X] - giNoteOnStartPosition[$X], giNoteOnEndPosition[$Y] - giNoteOnStartPosition[$Y], giNoteOnEndPosition[$Z] - giNoteOnStartPosition[$Z]
+            iNoteOnIncrementX = iSecondsPerKPass * (iNoteOnDelta[$X] / giMaxRiseTime)
+            iNoteOnIncrementZ = iSecondsPerKPass * (iNoteOnDelta[$Z] / giMaxRiseTime)
+            kPosition[] fillarray giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z]
+            if (kPosition[$Z] < giNoteOffEndZ) then
+                kgoto endin
+            endif
+            iMaxRiseAmount = iNoteNumber - 36
+            iNoteNumber = 36
+            kReleased = release()
+            iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
+            kRiserTableI init 0
+            if (kRiserTableI < giRiserTableSize && kReleased == 0) then
+                kRiserTableI += iRiserTableIncrementI
+            endif
+            kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
+            if (kReleased == 0) then
+                if (kRiserTableI < giRiserTableSize) then
+                    kPosition[$X] = kPosition[$X] + iNoteOnIncrementX
+                    kPosition[$Y] = giNoteOnStartPosition[$Y] + iNoteOnDelta[$Y] * kRiserTableValue
+                    kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
+                endif
+            else
+                if (p3 == -1) then
+                    iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
+                elseif (p1 > 0) then
+                    iExtraTime = 0.01
+                endif
+                xtratim(iExtraTime)
+                kNoteOffSpeed init giMinNoteOffSpeed
+                kNoteOffIncrementZ init iSecondsPerKPass * giMinNoteOffSpeed
+                kNoteOffSpeedCalculated init 0
+                if (kNoteOffSpeedCalculated == 0) then
+                    kNoteOffSpeed = giMinNoteOffSpeed +
+                        ((giMaxNoteOffSpeed - giMinNoteOffSpeed) * (kRiserTableI / giRiserTableSize))
+                    kNoteOffSpeed = min(kNoteOffSpeed, giMaxNoteOffSpeed)
+                    kNoteOffIncrementZ = iSecondsPerKPass * kNoteOffSpeed
+                    kNoteOffSpeedCalculated = 1
+                else
+                    kPosition[$Z] = kPosition[$Z] - kNoteOffIncrementZ
+                endif
+            endif
+            iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
+            kWobbleTableI init 0
+            kWobbleTableI += iWobbleTableIncrementI
+            kWobbleTableI = kWobbleTableI % giWobbleTableSize
+            kNoteNumberWobbleAmp = giNoteNumberWobbleStartAmp * (1 - kRiserTableValue)
+            kNoteNumber = iNoteNumber
+            kNoteNumber += kRiserTableValue * iMaxRiseAmount
+            kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
+            if (kNoteNumber > 127) then
+                kNoteNumber = 127
+                    kLoggedNoteNumberWarning init 0
+                    if (kLoggedNoteNumberWarning == 0) then
+                        kLoggedNoteNumberWarning = 1
+                    endif
+            else
+                    kLoggedNoteNumberWarning = 0
+            endif
+            kAmp = 0.1 * iVelocity * kRiserTableValue
+            if (kReleased == 1) then
+                kAmp *= (giNoteOffEndZ - kPosition[$Z]) / giNoteOffEndZ
+            endif
+            kCps = cpsmidinn(kNoteNumber)
+            aOut = vco2(kAmp, kCps, 10, 0.5, 0, 0.5)
+            aOut = tone(aOut, 5000)
+            kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
+            kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
+            aOutDistanced = aOut * kDistanceAttenuation
+            aOut = aOut * (2 * kDistanceAttenuation)
+            AF_3D_Audio_ChannelGains(kPosition, 1)
+                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + gkAmbisonicChannelGains[3] * aOutDistanced
+                gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aOut
+                gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aOut
+        endin:
+        endin
+        instr PowerLineSynth_NoteOff
+            iNoteNumber = p4
+            iVelocity = p5 / 127
+            iOrcInstanceIndex = p6
+            iInstrumentTrackIndex = p7
+        endin
+        giPowerLineSynthNoteInstrumentNumber = nstrnum("PowerLineSynth_NoteOn")
+        giPowerLineSynth_NoteIndex[] init 1
+         #ifdef IS_GENERATING_JSON
+            setPluginUuid(1, 0, "069e83fd-1c94-47e9-95ec-126e0fbefec3")
+            instr PowerLineSynth_Json
+                SJsonFile = sprintf("%s.0.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3")
+                fprints(SJsonFile, "{")
+                fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+                fprints(SJsonFile, ",\\"maxRiseTime\\":%d", giMaxRiseTime)
+                fprints(SJsonFile, ",\\"noteOnStartPosition\\":[%d,%d,%d]", giNoteOnStartPosition[$X], giNoteOnStartPosition[$Y], giNoteOnStartPosition[$Z])
+                fprints(SJsonFile, ",\\"noteOnEndPosition\\":[%d,%d,%d]", giNoteOnEndPosition[$X], giNoteOnEndPosition[$Y], giNoteOnEndPosition[$Z])
+                fprints(SJsonFile, ",\\"noteOffEndZ\\":%d", giNoteOffEndZ)
+                fprints(SJsonFile, ",\\"noteNumberWobbleStartAmp\\":%.3f", giNoteNumberWobbleStartAmp)
+                fprints(SJsonFile, ",\\"noteNumberWobbleSpeed\\":%.3f", giNoteNumberWobbleSpeed)
+                fprints(SJsonFile, ",\\"minNoteOffSpeed\\":%d", giMinNoteOffSpeed)
+                fprints(SJsonFile, ",\\"maxNoteOffSpeed\\":%d", giMaxNoteOffSpeed)
+                fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPowerLineSynth_DistanceMin)
+                fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPowerLineSynth_DistanceMax)
+                fprints(SJsonFile, "}")
+                turnoff
+            endin
+         #end
+        instr 4
+            iEventType = p4
+            if (iEventType == 4) then
+                turnoff
+            elseif (iEventType == 1) then
+                iNoteNumber = p5
+                iVelocity = p6
+                kReleased = release()
+                    iInstrumentNumber = p1 + 0.0001
+                    SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, 3, iNoteNumber, iVelocity)
+                    scoreline_i(SOnEvent)
+                    if (kReleased == 1) then
+                        SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                        scoreline(SOffEvent, 1)
+                    endif
+                    #ifdef IS_GENERATING_JSON
+                        if (giPowerLineSynth_NoteIndex[0] == 0) then
+                            scoreline_i("i \\"PowerLineSynth_Json\\" 0 0")
+                        endif
+                        giPowerLineSynth_NoteIndex[0] = giPowerLineSynth_NoteIndex[0] + 1
+                        SJsonFile = sprintf("%s.%d.json", "069e83fd-1c94-47e9-95ec-126e0fbefec3", giPowerLineSynth_NoteIndex[0])
+                        fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"velocity\\":%.3f},", times(), iNoteNumber, iVelocity)
+                        if (kReleased == 1) then
+                            fprintks(SJsonFile, "\\"noteOff\\":{\\"time\\":%.3f}}", times:k())
+                        endif
+                    #end
+                if (kReleased == 1) then
+                    turnoff
+                endif
+            elseif (iEventType == 3) then
+                iNoteNumber = p5
+                iVelocity = p6
+                    aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
                         iNoteNumber,
                         iVelocity,
                         0,
@@ -2623,14 +2627,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 7 0.004 1 3 0 1 0.46
         i 7 0.004 1 3 0 2 0.46
         i 7 0.004 1 3 0 3 0.46
-        i 7 0.004 1 3 0 4 1.00
-        i 7 0.004 1 3 0 5 1.00
+        i 7 0.004 1 3 0 4 0.48
+        i 7 0.004 1 3 0 5 0.48
         i 7 0.004 1 3 1 0 0.46
         i 7 0.004 1 3 1 1 0.46
         i 7 0.004 1 3 1 2 0.46
         i 7 0.004 1 3 1 3 0.46
-        i 7 0.004 1 3 1 4 0.48
-        i 7 0.004 1 3 1 5 0.48
+        i 7 0.004 1 3 1 4 1.00
+        i 7 0.004 1 3 1 5 1.00
         i 7 0.004 1 3 2 0 0.04
         i 7 0.004 1 3 2 1 0.04
         i 7 0.004 1 3 2 2 0.04
@@ -2643,446 +2647,459 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 9 0.004 1 3 3 1.00
         i 9 0.004 1 3 4 1.00
         i 9 0.004 1 3 5 1.00
+        i 7 3.293 1 3 1 0 0.00
+        i 7 3.293 1 3 1 1 0.00
+        i 7 3.293 1 3 1 2 0.00
+        i 7 3.293 1 3 1 3 0.00
+        i 7 3.293 1 3 1 4 0.00
+        i 7 3.293 1 3 1 5 0.00
+        i 4.001 0 0.1 3 48 63
+        i 4.002 0 0.1 3 48 63
+        i 3.001 0 0.1 3 63 63
+        i 3.002 0 0.1 3 63 63
+        i 3.003 0 0.1 3 63 63
+        i 3.004 0 0.1 3 63 63
+        i 5.001 0 0.1 1 1063 63
         i 8 0.01 1 4 0 1.00
         i 8 0.01 1 4 1 0.98
         i 8 0.01 1 4 5 1.00
-        i 4.000 2.001 -1 3 24 45
-        i 4.000 2.001 -1 3 36 63
-        i 3.000 2.001 -1 3 48 96
-        i 5.003 2.853 0.020 1 1098 76
-        i 5.004 3.825 0.020 1 1095 79
-        i 5.005 4.621 0.020 1 1103 52
-        i 5.006 5.243 0.020 1 1103 78
-        i 5.007 5.799 0.020 1 1095 71
-        i 5.008 6.531 0.020 1 1097 58
-        i 5.009 7.439 0.020 1 1097 78
-        i 5.010 8.356 0.020 1 1095 72
-        i 5.011 9.097 0.020 1 1103 52
-        i 5.012 9.664 0.020 1 1102 79
-        i 4.000 10.001 -1 3 31 45
-        i 4.000 10.001 -1 3 43 63
-        i 4.000 10.001 0
-        i 4.000 10.001 0
-        i 5.013 10.237 0.020 1 1096 74
-        i 5.014 10.277 0.020 1 1096 77
-        i 5.015 10.852 0.020 1 1094 69
-        i 5.016 11.061 0.020 1 1098 74
-        i 5.017 11.380 0.020 1 1102 57
-        i 5.018 12.024 0.020 1 1096 76
-        i 5.019 12.321 0.020 1 1101 58
-        i 5.020 12.887 0.020 1 1094 55
-        i 5.021 13.176 0.020 1 1095 82
-        i 5.022 13.573 0.020 1 1104 76
-        i 5.023 13.911 0.020 1 1097 60
-        i 5.024 14.085 0.020 1 1102 59
-        i 5.025 14.732 0.020 1 1095 62
-        i 5.026 14.772 0.020 1 1096 73
-        i 5.027 15.325 0.020 1 1093 64
-        i 5.028 15.592 0.020 1 1099 61
-        i 5.029 15.832 0.020 1 1103 75
-        i 5.030 15.969 0.020 1 1099 76
-        i 5.031 16.576 0.020 1 1095 69
-        i 5.032 16.641 0.020 1 1097 56
-        i 5.033 16.752 0.020 1 1101 61
-        i 5.034 17.207 0.020 1 1103 79
-        i 5.035 17.384 0.020 1 1093 72
-        i 5.036 17.585 0.020 1 1096 74
-        i 5.037 17.908 0.020 1 1105 65
-        i 4.000 18.001 -1 3 29 45
-        i 4.000 18.001 -1 3 41 63
-        i 4.000 18.001 0
-        i 4.000 18.001 0
-        i 5.038 18.016 0.020 1 1103 69
-        i 5.039 18.341 0.020 1 1098 78
-        i 5.040 18.444 0.020 1 1095 59
-        i 5.041 18.560 0.020 1 1101 75
-        i 5.042 19.175 0.020 1 1097 55
-        i 5.043 19.215 0.020 1 1094 79
-        i 5.044 19.280 0.020 1 1097 83
-        i 5.045 19.681 0.020 1 1099 60
-        i 5.046 19.756 0.020 1 1092 81
-        i 5.047 20.176 0.020 1 1099 57
-        i 5.048 20.272 0.020 1 1102 53
-        i 5.049 20.441 0.020 1 1097 79
-        i 5.050 20.965 0.020 1 1104 60
-        i 5.051 21.105 0.020 1 1094 59
-        i 5.052 21.171 0.020 1 1100 75
-        i 5.053 21.755 0.020 1 1104 64
-        i 5.054 21.859 0.020 1 1092 74
-        i 5.055 21.981 0.020 1 1096 56
-        i 5.056 22.308 0.020 1 1096 79
-        i 5.057 22.436 0.020 1 1102 78
-        i 5.058 22.759 0.020 1 1098 67
-        i 5.059 23.005 0.020 1 1094 73
-        i 5.060 23.045 0.020 1 1100 56
-        i 5.061 23.127 0.020 1 1098 69
-        i 5.062 23.623 0.020 1 1093 58
-        i 5.063 23.709 0.020 1 1098 72
-        i 5.064 23.749 0.020 1 1092 59
-        i 5.065 23.809 0.020 1 1098 67
-        i 5.066 24.173 0.020 1 1091 68
-        i 5.067 24.509 0.020 1 1102 62
-        i 5.068 24.556 0.020 1 1096 60
-        i 5.069 24.711 0.020 1 1101 64
-        i 5.070 24.760 0.020 1 1100 68
-        i 5.071 25.168 0.020 1 1104 66
-        i 5.072 25.249 0.020 1 1100 69
-        i 5.073 25.587 0.020 1 1099 61
-        i 5.074 25.635 0.020 1 1094 82
-        i 4.000 26.001 -1 3 33 45
-        i 4.000 26.001 -1 3 45 63
-        i 4.000 26.001 0
-        i 4.000 26.001 0
-        i 5.075 26.013 0.020 1 1095 61
-        i 5.076 26.053 0.020 1 1103 75
-        i 5.077 26.333 0.020 1 1092 80
-        i 5.078 26.376 0.020 1 1097 84
-        i 5.079 26.685 0.020 1 1097 57
-        i 5.080 26.749 0.020 1 1097 62
-        i 5.081 26.856 0.020 1 1101 56
-        i 5.082 27.175 0.020 1 1099 65
-        i 5.083 27.509 0.020 1 1099 68
-        i 5.084 27.549 0.020 1 1093 79
-        i 5.085 27.591 0.020 1 1099 54
-        i 5.086 28.060 0.020 1 1093 65
-        i 5.087 28.248 0.020 1 1091 56
-        i 5.088 28.288 0.020 1 1097 79
-        i 5.089 28.339 0.020 1 1099 55
-        i 5.090 28.589 0.020 1 1092 72
-        i 5.091 29.019 0.020 1 1101 66
-        i 5.092 29.059 0.020 1 1101 78
-        i 5.093 29.148 0.020 1 1100 59
-        i 5.094 29.196 0.020 1 1095 75
-        i 5.095 29.335 0.020 1 1101 75
-        i 5.096 29.728 0.020 1 1099 67
-        i 5.097 29.768 0.020 1 1099 75
-        i 5.098 29.896 0.020 1 1105 74
-        i 5.099 30.003 0.020 1 1098 76
-        i 5.100 30.155 0.020 1 1093 52
-        i 5.101 30.521 0.020 1 1095 71
-        i 5.102 30.561 0.020 1 1103 75
-        i 5.103 30.771 0.020 1 1098 54
-        i 5.104 30.811 0.020 1 1093 52
-        i 5.105 30.860 0.020 1 1103 56
-        i 5.106 31.245 0.020 1 1098 81
-        i 5.107 31.332 0.020 1 1101 57
-        i 5.108 31.541 0.020 1 1105 54
-        i 5.109 31.589 0.020 1 1097 81
-        i 5.110 31.629 0.020 1 1100 78
-        i 5.111 32.024 0.020 1 1092 82
-        i 5.112 32.064 0.020 1 1098 82
-        i 5.113 32.416 0.020 1 1095 82
-        i 5.114 32.497 0.020 1 1092 75
-        i 5.115 32.583 0.020 1 1100 80
-        i 5.116 32.744 0.020 1 1090 75
-        i 5.117 32.924 0.020 1 1100 82
-        i 5.118 33.005 0.020 1 1092 80
-        i 5.119 33.144 0.020 1 1097 55
-        i 5.120 33.341 0.020 1 1096 83
-        i 5.121 33.527 0.020 1 1100 62
-        i 5.122 33.587 0.020 1 1100 55
-        i 5.123 33.725 0.020 1 1101 76
-        i 5.124 33.865 0.020 1 1102 61
-        i 4.000 34.001 -1 3 31 45
-        i 4.000 34.001 -1 3 43 63
-        i 4.000 34.001 0
-        i 4.000 34.001 0
-        i 5.125 34.243 0.020 1 1098 59
-        i 5.126 34.292 0.020 1 1098 57
-        i 5.127 34.332 0.020 1 1094 75
-        i 5.128 34.420 0.020 1 1097 58
-        i 5.129 34.631 0.020 1 1092 81
-        i 5.130 35.004 0.020 1 1104 71
-        i 5.131 35.044 0.020 1 1096 71
-        i 5.132 35.108 0.020 1 1104 64
-        i 5.133 35.167 0.020 1 1099 60
-        i 5.134 35.220 0.020 1 1094 80
-        i 5.135 35.309 0.020 1 1092 68
-        i 5.136 35.741 0.020 1 1098 73
-        i 5.137 35.808 0.020 1 1100 74
-        i 5.138 35.863 0.020 1 1106 83
-        i 5.139 36.008 0.020 1 1101 55
-        i 5.140 36.057 0.020 1 1102 67
-        i 5.141 36.209 0.020 1 1090 77
-        i 5.142 36.532 0.020 1 1092 79
-        i 5.143 36.572 0.020 1 1098 74
-        i 5.144 36.720 0.020 1 1100 63
-        i 5.145 36.859 0.020 1 1096 83
-        i 5.146 36.899 0.020 1 1098 79
-        i 5.147 36.939 0.020 1 1091 63
-        i 5.148 37.240 0.020 1 1091 64
-        i 5.149 37.301 0.020 1 1098 77
-        i 5.150 37.451 0.020 1 1093 54
-        i 5.151 37.511 0.020 1 1100 56
-        i 5.152 37.708 0.020 1 1098 66
-        i 5.153 37.795 0.020 1 1100 57
-        i 5.154 38.035 0.020 1 1099 59
-        i 5.155 38.075 0.020 1 1099 74
-        i 5.156 38.131 0.020 1 1094 68
-        i 5.157 38.397 0.020 1 1103 78
-        i 5.158 38.437 0.020 1 1100 70
-        i 5.159 38.641 0.020 1 1095 56
-        i 5.160 38.740 0.020 1 1097 78
-        i 5.161 38.865 0.020 1 1097 74
-        i 5.162 38.905 0.020 1 1097 60
-        i 5.163 38.967 0.020 1 1098 68
-        i 5.164 39.108 0.020 1 1093 56
-        i 5.165 39.532 0.020 1 1093 80
-        i 5.166 39.572 0.020 1 1097 52
-        i 5.167 39.612 0.020 1 1105 58
-        i 5.168 39.652 0.020 1 1100 73
-        i 5.169 39.692 0.020 1 1095 68
-        i 5.170 39.732 0.020 1 1091 60
-        i 5.171 40.240 0.020 1 1099 73
-        i 5.172 40.285 0.020 1 1099 74
-        i 5.173 40.325 0.020 1 1105 60
-        i 5.174 40.408 0.020 1 1103 56
-        i 5.175 40.453 0.020 1 1102 75
-        i 5.176 40.668 0.020 1 1089 76
-        i 5.177 41.043 0.020 1 1091 72
-        i 5.178 41.104 0.020 1 1097 55
-        i 5.179 41.180 0.020 1 1097 76
-        i 5.180 41.220 0.020 1 1099 53
-        i 5.181 41.269 0.020 1 1101 77
-        i 5.182 41.403 0.020 1 1092 77
-        i 5.183 41.443 0.020 1 1103 75
-        i 5.184 41.740 0.020 1 1091 69
-        i 5.185 41.831 0.020 1 1097 53
-        i 5.186 41.940 0.020 1 1094 84
-        i 5.187 42.097 0.020 1 1101 52
-        i 5.188 42.151 0.020 1 1099 81
-        i 5.189 42.191 0.020 1 1099 81
-        i 5.190 42.381 0.020 1 1101 74
-        i 5.191 42.547 0.020 1 1098 72
-        i 5.192 42.587 0.020 1 1098 77
-        i 5.193 42.627 0.020 1 1095 63
-        i 5.194 42.929 0.020 1 1103 54
-        i 5.195 42.975 0.020 1 1099 60
-        i 5.196 43.015 0.020 1 1103 66
-        i 5.197 43.055 0.020 1 1101 62
-        i 5.198 43.240 0.020 1 1096 64
-        i 5.199 43.308 0.020 1 1097 49
-        i 5.200 43.355 0.020 1 1096 68
-        i 5.201 43.585 0.020 1 1094 64
-        i 5.202 43.644 0.020 1 1105 70
-        i 5.203 43.684 0.020 1 1097 80
-        i 5.204 43.941 0.020 1 1095 73
-        i 5.205 44.051 0.020 1 1098 73
-        i 5.206 44.091 0.020 1 1100 65
-        i 5.207 44.131 0.020 1 1096 53
-        i 5.208 44.183 0.020 1 1105 80
-        i 5.209 44.223 0.020 1 1091 49
-        i 5.210 44.428 0.020 1 1095 67
-        i 5.211 44.740 0.020 1 1100 56
-        i 5.212 44.780 0.020 1 1093 81
-        i 5.213 44.820 0.020 1 1105 71
-        i 5.214 44.860 0.020 1 1098 58
-        i 5.215 44.943 0.020 1 1102 62
-        i 5.216 45.155 0.020 1 1098 49
-        i 5.217 45.196 0.020 1 1090 65
-        i 5.218 45.555 0.020 1 1090 67
-        i 5.219 45.595 0.020 1 1098 81
-        i 5.220 45.677 0.020 1 1096 74
-        i 5.221 45.717 0.020 1 1102 71
-        i 5.222 45.777 0.020 1 1098 67
-        i 5.223 45.915 0.020 1 1093 71
-        i 5.224 45.988 0.020 1 1102 55
-        i 5.225 46.240 0.020 1 1092 80
-        i 5.226 46.449 0.020 1 1096 71
-        i 5.227 46.489 0.020 1 1095 74
-        i 5.228 46.529 0.020 1 1100 73
-        i 5.229 46.569 0.020 1 1100 57
-        i 5.230 46.631 0.020 1 1102 84
-        i 5.231 46.825 0.020 1 1090 62
-        i 5.232 46.879 0.020 1 1100 61
-        i 5.233 47.059 0.020 1 1098 54
-        i 5.234 47.119 0.020 1 1097 63
-        i 5.235 47.188 0.020 1 1096 50
-        i 5.236 47.368 0.020 1 1088 62
-        i 5.237 47.408 0.020 1 1104 81
-        i 5.238 47.448 0.020 1 1098 77
-        i 5.239 47.488 0.020 1 1104 76
-        i 5.240 47.528 0.020 1 1100 58
-        i 5.241 47.740 0.020 1 1096 80
-        i 5.242 47.836 0.020 1 1098 75
-        i 5.243 47.888 0.020 1 1095 83
-        i 5.244 47.937 0.020 1 1106 65
-        i 3.000 48.000 0
-        i 4.000 48.000 0
-        i 4.000 48.000 0
-        i 5.245 48.009 0.020 1 1094 67
-        i 5.246 48.091 0.020 1 1098 63
-        i 5.247 48.217 0.020 1 1096 78
-        i 5.248 48.257 0.020 1 1102 78
-        i 5.249 48.561 0.020 1 1099 65
-        i 5.250 48.601 0.020 1 1101 79
-        i 5.251 48.641 0.020 1 1096 73
-        i 5.252 48.780 0.020 1 1090 64
-        i 5.253 48.869 0.020 1 1106 52
-        i 5.254 48.909 0.020 1 1096 50
-        i 5.255 48.993 0.020 1 1096 52
-        i 5.256 49.197 0.020 1 1094 83
-        i 5.257 49.239 0.020 1 1101 67
-        i 5.258 49.337 0.020 1 1097 64
-        i 5.259 49.377 0.020 1 1104 81
-        i 5.260 49.476 0.020 1 1103 72
-        i 5.261 49.747 0.020 1 1090 56
-        i 5.262 49.787 0.020 1 1098 58
-        i 5.263 49.912 0.020 1 1094 75
-        i 5.264 49.952 0.020 1 1094 74
-        i 5.265 50.017 0.020 1 1098 61
-        i 5.266 50.064 0.020 1 1091 74
-        i 5.267 50.265 0.020 1 1095 53
-        i 5.268 50.372 0.020 1 1097 50
-        i 5.269 50.435 0.020 1 1102 64
-        i 5.270 50.475 0.020 1 1093 65
-        i 5.271 50.653 0.020 1 1096 57
-        i 5.272 50.737 0.020 1 1093 56
-        i 5.273 50.807 0.020 1 1101 80
-        i 5.274 50.861 0.020 1 1102 70
-        i 5.275 51.049 0.020 1 1096 61
-        i 5.276 51.089 0.020 1 1095 60
-        i 5.277 51.164 0.020 1 1103 73
-        i 5.278 51.204 0.020 1 1099 70
-        i 5.279 51.244 0.020 1 1089 72
-        i 5.280 51.547 0.020 1 1099 79
-        i 5.281 51.587 0.020 1 1097 59
-        i 5.282 51.716 0.020 1 1096 65
-        i 5.283 51.756 0.020 1 1097 64
-        i 5.284 51.796 0.020 1 1097 49
-        i 5.285 51.836 0.020 1 1089 63
-        i 5.286 51.879 0.020 1 1105 77
-        i 5.287 51.919 0.020 1 1103 62
-        i 5.288 52.236 0.020 1 1095 66
-        i 5.289 52.385 0.020 1 1099 76
-        i 5.290 52.433 0.020 1 1095 62
-        i 5.291 52.473 0.020 1 1094 72
-        i 5.292 52.513 0.020 1 1101 78
-        i 5.293 52.553 0.020 1 1107 72
-        i 5.294 52.635 0.020 1 1097 71
-        i 5.295 52.675 0.020 1 1095 81
-        i 5.296 53.064 0.020 1 1097 77
-        i 5.297 53.104 0.020 1 1099 64
-        i 5.298 53.144 0.020 1 1103 62
-        i 5.299 53.184 0.020 1 1102 65
-        i 5.300 53.375 0.020 1 1089 75
-        i 5.301 53.435 0.020 1 1105 58
-        i 5.302 53.475 0.020 1 1097 57
-        i 5.303 53.615 0.020 1 1095 62
-        i 5.304 53.735 0.020 1 1102 57
-        i 5.305 53.871 0.020 1 1097 70
-        i 5.306 54.013 0.020 1 1093 72
-        i 5.307 54.053 0.020 1 1102 69
-        i 5.308 54.093 0.020 1 1103 57
-        i 5.309 54.296 0.020 1 1091 63
-        i 5.310 54.405 0.020 1 1099 72
-        i 5.311 54.456 0.020 1 1095 55
-        i 5.312 54.572 0.020 1 1092 74
-        i 5.313 54.612 0.020 1 1099 77
-        i 5.314 54.652 0.020 1 1095 62
-        i 5.315 54.853 0.020 1 1094 82
-        i 5.316 54.929 0.020 1 1101 67
-        i 5.317 54.969 0.020 1 1097 49
-        i 5.318 55.040 0.020 1 1094 54
-        i 5.319 55.117 0.020 1 1097 48
-        i 5.320 55.233 0.020 1 1094 56
-        i 5.321 55.273 0.020 1 1101 83
-        i 5.322 55.503 0.020 1 1101 52
-        i 5.323 55.543 0.020 1 1099 48
-        i 5.324 55.636 0.020 1 1089 47
-        i 5.325 55.676 0.020 1 1096 83
-        i 5.326 55.716 0.020 1 1104 72
-        i 5.327 55.756 0.020 1 1095 80
-        i 5.328 56.065 0.020 1 1097 63
-        i 5.329 56.105 0.020 1 1096 80
-        i 5.330 56.145 0.020 1 1099 58
-        i 5.331 56.329 0.020 1 1096 57
-        i 5.332 56.369 0.020 1 1089 54
-        i 5.333 56.409 0.020 1 1102 64
-        i 5.334 56.449 0.020 1 1105 49
-        i 5.335 56.489 0.020 1 1098 55
-        i 5.336 56.732 0.020 1 1094 62
-        i 5.337 56.875 0.020 1 1096 83
-        i 5.338 56.933 0.020 1 1101 57
-        i 5.339 56.973 0.020 1 1100 62
-        i 5.340 57.025 0.020 1 1094 80
-        i 5.341 57.065 0.020 1 1093 53
-        i 5.342 57.176 0.020 1 1106 49
-        i 5.343 57.216 0.020 1 1096 71
-        i 5.344 57.501 0.020 1 1104 67
-        i 5.345 57.560 0.020 1 1098 79
-        i 5.346 57.600 0.020 1 1100 74
-        i 5.347 57.696 0.020 1 1103 72
-        i 5.348 57.904 0.020 1 1090 56
-        i 5.349 57.944 0.020 1 1104 55
-        i 5.350 57.984 0.020 1 1098 76
-        i 5.351 58.156 0.020 1 1094 50
-        i 5.352 58.231 0.020 1 1102 78
-        i 5.353 58.305 0.020 1 1094 62
-        i 5.354 58.421 0.020 1 1096 56
-        i 5.355 58.645 0.020 1 1101 83
-        i 5.356 58.685 0.020 1 1102 67
-        i 5.357 58.743 0.020 1 1100 61
-        i 5.358 58.783 0.020 1 1092 76
-        i 5.359 58.844 0.020 1 1096 76
-        i 5.360 58.920 0.020 1 1096 60
-        i 5.361 59.080 0.020 1 1092 54
-        i 5.362 59.269 0.020 1 1100 68
-        i 5.363 59.375 0.020 1 1100 66
-        i 5.364 59.415 0.020 1 1094 59
-        i 5.365 59.496 0.020 1 1096 49
-        i 5.366 59.536 0.020 1 1098 44
-        i 5.367 59.611 0.020 1 1095 67
-        i 5.368 59.651 0.020 1 1100 82
-        i 5.369 59.731 0.020 1 1095 80
-        i 5.370 59.816 0.020 1 1102 66
-        i 5.371 59.948 0.020 1 1098 76
-        i 5.372 60.101 0.020 1 1088 48
-        i 5.373 60.141 0.020 1 1098 75
-        i 5.374 60.181 0.020 1 1104 76
-        i 5.375 60.233 0.020 1 1097 56
-        i 5.376 60.303 0.020 1 1094 66
-        i 5.377 60.509 0.020 1 1096 55
-        i 5.378 60.584 0.020 1 1095 84
-        i 5.379 60.788 0.020 1 1101 65
-        i 5.380 60.873 0.020 1 1102 70
-        i 5.381 60.913 0.020 1 1090 46
-        i 5.382 60.953 0.020 1 1098 66
-        i 5.383 60.993 0.020 1 1106 68
-        i 5.384 61.033 0.020 1 1095 80
-        i 5.385 61.231 0.020 1 1093 79
-        i 5.386 61.349 0.020 1 1094 72
-        i 5.387 61.389 0.020 1 1097 73
-        i 5.388 61.429 0.020 1 1104 60
-        i 5.389 61.469 0.020 1 1101 75
-        i 5.390 61.648 0.020 1 1093 84
-        i 5.391 61.836 0.020 1 1096 72
-        i 5.392 61.892 0.020 1 1106 57
-        i 5.393 62.088 0.020 1 1101 74
-        i 5.394 62.128 0.020 1 1099 69
-        i 5.395 62.168 0.020 1 1094 79
-        i 5.396 62.265 0.020 1 1102 57
-        i 5.397 62.336 0.020 1 1103 69
-        i 5.398 62.376 0.020 1 1091 49
-        i 5.399 62.492 0.020 1 1099 70
-        i 5.400 62.661 0.020 1 1097 62
-        i 5.401 62.701 0.020 1 1093 73
-        i 5.402 62.741 0.020 1 1101 58
-        i 5.403 63.008 0.020 1 1095 74
-        i 5.404 63.149 0.020 1 1101 67
-        i 5.405 63.189 0.020 1 1093 54
-        i 5.406 63.229 0.020 1 1101 54
-        i 5.407 63.269 0.020 1 1100 56
-        i 5.408 63.348 0.020 1 1099 70
-        i 5.409 63.388 0.020 1 1097 45
-        i 5.410 63.592 0.020 1 1093 66
-        i 5.411 63.632 0.020 1 1107 76
-        i 5.412 63.676 0.020 1 1109 77
-        i 5.413 63.833 0.020 1 1111 78
-        i 5.414 63.873 0.020 1 1112 48
-        i 5.415 63.913 0.020 1 1112 51
-        i 5.416 63.953 0.020 1 1093 80
-        i 5.417 63.993 0.020 1 1097 53
+        i 4.001 2.001 -1 3 48 96
+        i 3.001 2.001 -1 3 24 45
+        i 3.002 2.001 -1 3 36 63
+        i 5.007 2.853 0.020 1 1098 76
+        i 5.008 3.825 0.020 1 1095 79
+        i 5.009 4.621 0.020 1 1103 52
+        i 5.010 5.243 0.020 1 1103 78
+        i 5.011 5.799 0.020 1 1095 71
+        i 5.012 6.531 0.020 1 1097 58
+        i 5.013 7.439 0.020 1 1097 78
+        i 5.014 8.356 0.020 1 1095 72
+        i 5.015 9.097 0.020 1 1103 52
+        i 5.016 9.664 0.020 1 1102 79
+        i 3.003 10.001 -1 3 31 45
+        i 3.004 10.001 -1 3 43 63
+        i -3.001 10.001 0
+        i -3.002 10.001 0
+        i 5.017 10.237 0.020 1 1096 74
+        i 5.018 10.277 0.020 1 1096 77
+        i 5.019 10.852 0.020 1 1094 69
+        i 5.020 11.061 0.020 1 1098 74
+        i 5.021 11.380 0.020 1 1102 57
+        i 5.022 12.024 0.020 1 1096 76
+        i 5.023 12.321 0.020 1 1101 58
+        i 5.024 12.887 0.020 1 1094 55
+        i 5.025 13.176 0.020 1 1095 82
+        i 5.026 13.573 0.020 1 1104 76
+        i 5.027 13.911 0.020 1 1097 60
+        i 5.028 14.085 0.020 1 1102 59
+        i 5.029 14.732 0.020 1 1095 62
+        i 5.030 14.772 0.020 1 1096 73
+        i 5.031 15.325 0.020 1 1093 64
+        i 5.032 15.592 0.020 1 1099 61
+        i 5.033 15.832 0.020 1 1103 75
+        i 5.034 15.969 0.020 1 1099 76
+        i 5.035 16.576 0.020 1 1095 69
+        i 5.036 16.641 0.020 1 1097 56
+        i 5.037 16.752 0.020 1 1101 61
+        i 5.038 17.207 0.020 1 1103 79
+        i 5.039 17.384 0.020 1 1093 72
+        i 5.040 17.585 0.020 1 1096 74
+        i 5.041 17.908 0.020 1 1105 65
+        i 3.005 18.001 -1 3 29 45
+        i 3.006 18.001 -1 3 41 63
+        i -3.003 18.001 0
+        i -3.004 18.001 0
+        i 5.042 18.016 0.020 1 1103 69
+        i 5.043 18.341 0.020 1 1098 78
+        i 5.044 18.444 0.020 1 1095 59
+        i 5.045 18.560 0.020 1 1101 75
+        i 5.046 19.175 0.020 1 1097 55
+        i 5.047 19.215 0.020 1 1094 79
+        i 5.048 19.280 0.020 1 1097 83
+        i 5.049 19.681 0.020 1 1099 60
+        i 5.050 19.756 0.020 1 1092 81
+        i 5.051 20.176 0.020 1 1099 57
+        i 5.052 20.272 0.020 1 1102 53
+        i 5.053 20.441 0.020 1 1097 79
+        i 5.054 20.965 0.020 1 1104 60
+        i 5.055 21.105 0.020 1 1094 59
+        i 5.056 21.171 0.020 1 1100 75
+        i 5.057 21.755 0.020 1 1104 64
+        i 5.058 21.859 0.020 1 1092 74
+        i 5.059 21.981 0.020 1 1096 56
+        i 5.060 22.308 0.020 1 1096 79
+        i 5.061 22.436 0.020 1 1102 78
+        i 5.062 22.759 0.020 1 1098 67
+        i 5.063 23.005 0.020 1 1094 73
+        i 5.064 23.045 0.020 1 1100 56
+        i 5.065 23.127 0.020 1 1098 69
+        i 5.066 23.623 0.020 1 1093 58
+        i 5.067 23.709 0.020 1 1098 72
+        i 5.068 23.749 0.020 1 1092 59
+        i 5.069 23.809 0.020 1 1098 67
+        i 5.070 24.173 0.020 1 1091 68
+        i 5.071 24.509 0.020 1 1102 62
+        i 5.072 24.556 0.020 1 1096 60
+        i 5.073 24.711 0.020 1 1101 64
+        i 5.074 24.760 0.020 1 1100 68
+        i 5.075 25.168 0.020 1 1104 66
+        i 5.076 25.249 0.020 1 1100 69
+        i 5.077 25.587 0.020 1 1099 61
+        i 5.078 25.635 0.020 1 1094 82
+        i 3.007 26.001 -1 3 33 45
+        i 3.008 26.001 -1 3 45 63
+        i -3.005 26.001 0
+        i -3.006 26.001 0
+        i 5.079 26.013 0.020 1 1095 61
+        i 5.080 26.053 0.020 1 1103 75
+        i 5.081 26.333 0.020 1 1092 80
+        i 5.082 26.376 0.020 1 1097 84
+        i 5.083 26.685 0.020 1 1097 57
+        i 5.084 26.749 0.020 1 1097 62
+        i 5.085 26.856 0.020 1 1101 56
+        i 5.086 27.175 0.020 1 1099 65
+        i 5.087 27.509 0.020 1 1099 68
+        i 5.088 27.549 0.020 1 1093 79
+        i 5.089 27.591 0.020 1 1099 54
+        i 5.090 28.060 0.020 1 1093 65
+        i 5.091 28.248 0.020 1 1091 56
+        i 5.092 28.288 0.020 1 1097 79
+        i 5.093 28.339 0.020 1 1099 55
+        i 5.094 28.589 0.020 1 1092 72
+        i 5.095 29.019 0.020 1 1101 66
+        i 5.096 29.059 0.020 1 1101 78
+        i 5.097 29.148 0.020 1 1100 59
+        i 5.098 29.196 0.020 1 1095 75
+        i 5.099 29.335 0.020 1 1101 75
+        i 5.100 29.728 0.020 1 1099 67
+        i 5.101 29.768 0.020 1 1099 75
+        i 5.102 29.896 0.020 1 1105 74
+        i 5.103 30.003 0.020 1 1098 76
+        i 5.104 30.155 0.020 1 1093 52
+        i 5.105 30.521 0.020 1 1095 71
+        i 5.106 30.561 0.020 1 1103 75
+        i 5.107 30.771 0.020 1 1098 54
+        i 5.108 30.811 0.020 1 1093 52
+        i 5.109 30.860 0.020 1 1103 56
+        i 5.110 31.245 0.020 1 1098 81
+        i 5.111 31.332 0.020 1 1101 57
+        i 5.112 31.541 0.020 1 1105 54
+        i 5.113 31.589 0.020 1 1097 81
+        i 5.114 31.629 0.020 1 1100 78
+        i 5.115 32.024 0.020 1 1092 82
+        i 5.116 32.064 0.020 1 1098 82
+        i 5.117 32.416 0.020 1 1095 82
+        i 5.118 32.497 0.020 1 1092 75
+        i 5.119 32.583 0.020 1 1100 80
+        i 5.120 32.744 0.020 1 1090 75
+        i 5.121 32.924 0.020 1 1100 82
+        i 5.122 33.005 0.020 1 1092 80
+        i 5.123 33.144 0.020 1 1097 55
+        i 5.124 33.341 0.020 1 1096 83
+        i 5.125 33.527 0.020 1 1100 62
+        i 5.126 33.587 0.020 1 1100 55
+        i 5.127 33.725 0.020 1 1101 76
+        i 5.128 33.865 0.020 1 1102 61
+        i 3.009 34.001 -1 3 31 45
+        i 3.010 34.001 -1 3 43 63
+        i -3.007 34.001 0
+        i -3.008 34.001 0
+        i 5.129 34.243 0.020 1 1098 59
+        i 5.130 34.292 0.020 1 1098 57
+        i 5.131 34.332 0.020 1 1094 75
+        i 5.132 34.420 0.020 1 1097 58
+        i 5.133 34.631 0.020 1 1092 81
+        i 5.134 35.004 0.020 1 1104 71
+        i 5.135 35.044 0.020 1 1096 71
+        i 5.136 35.108 0.020 1 1104 64
+        i 5.137 35.167 0.020 1 1099 60
+        i 5.138 35.220 0.020 1 1094 80
+        i 5.139 35.309 0.020 1 1092 68
+        i 5.140 35.741 0.020 1 1098 73
+        i 5.141 35.808 0.020 1 1100 74
+        i 5.142 35.863 0.020 1 1106 83
+        i 5.143 36.008 0.020 1 1101 55
+        i 5.144 36.057 0.020 1 1102 67
+        i 5.145 36.209 0.020 1 1090 77
+        i 5.146 36.532 0.020 1 1092 79
+        i 5.147 36.572 0.020 1 1098 74
+        i 5.148 36.720 0.020 1 1100 63
+        i 5.149 36.859 0.020 1 1096 83
+        i 5.150 36.899 0.020 1 1098 79
+        i 5.151 36.939 0.020 1 1091 63
+        i 5.152 37.240 0.020 1 1091 64
+        i 5.153 37.301 0.020 1 1098 77
+        i 5.154 37.451 0.020 1 1093 54
+        i 5.155 37.511 0.020 1 1100 56
+        i 5.156 37.708 0.020 1 1098 66
+        i 5.157 37.795 0.020 1 1100 57
+        i 5.158 38.035 0.020 1 1099 59
+        i 5.159 38.075 0.020 1 1099 74
+        i 5.160 38.131 0.020 1 1094 68
+        i 5.161 38.397 0.020 1 1103 78
+        i 5.162 38.437 0.020 1 1100 70
+        i 5.163 38.641 0.020 1 1095 56
+        i 5.164 38.740 0.020 1 1097 78
+        i 5.165 38.865 0.020 1 1097 74
+        i 5.166 38.905 0.020 1 1097 60
+        i 5.167 38.967 0.020 1 1098 68
+        i 5.168 39.108 0.020 1 1093 56
+        i 5.169 39.532 0.020 1 1093 80
+        i 5.170 39.572 0.020 1 1097 52
+        i 5.171 39.612 0.020 1 1105 58
+        i 5.172 39.652 0.020 1 1100 73
+        i 5.173 39.692 0.020 1 1095 68
+        i 5.174 39.732 0.020 1 1091 60
+        i 5.175 40.240 0.020 1 1099 73
+        i 5.176 40.285 0.020 1 1099 74
+        i 5.177 40.325 0.020 1 1105 60
+        i 5.178 40.408 0.020 1 1103 56
+        i 5.179 40.453 0.020 1 1102 75
+        i 5.180 40.668 0.020 1 1089 76
+        i 5.181 41.043 0.020 1 1091 72
+        i 5.182 41.104 0.020 1 1097 55
+        i 5.183 41.180 0.020 1 1097 76
+        i 5.184 41.220 0.020 1 1099 53
+        i 5.185 41.269 0.020 1 1101 77
+        i 5.186 41.403 0.020 1 1092 77
+        i 5.187 41.443 0.020 1 1103 75
+        i 5.188 41.740 0.020 1 1091 69
+        i 5.189 41.831 0.020 1 1097 53
+        i 5.190 41.940 0.020 1 1094 84
+        i 5.191 42.097 0.020 1 1101 52
+        i 5.192 42.151 0.020 1 1099 81
+        i 5.193 42.191 0.020 1 1099 81
+        i 5.194 42.381 0.020 1 1101 74
+        i 5.195 42.547 0.020 1 1098 72
+        i 5.196 42.587 0.020 1 1098 77
+        i 5.197 42.627 0.020 1 1095 63
+        i 5.198 42.929 0.020 1 1103 54
+        i 5.199 42.975 0.020 1 1099 60
+        i 5.200 43.015 0.020 1 1103 66
+        i 5.201 43.055 0.020 1 1101 62
+        i 5.202 43.240 0.020 1 1096 64
+        i 5.203 43.308 0.020 1 1097 49
+        i 5.204 43.355 0.020 1 1096 68
+        i 5.205 43.585 0.020 1 1094 64
+        i 5.206 43.644 0.020 1 1105 70
+        i 5.207 43.684 0.020 1 1097 80
+        i 5.208 43.941 0.020 1 1095 73
+        i 5.209 44.051 0.020 1 1098 73
+        i 5.210 44.091 0.020 1 1100 65
+        i 5.211 44.131 0.020 1 1096 53
+        i 5.212 44.183 0.020 1 1105 80
+        i 5.213 44.223 0.020 1 1091 49
+        i 5.214 44.428 0.020 1 1095 67
+        i 5.215 44.740 0.020 1 1100 56
+        i 5.216 44.780 0.020 1 1093 81
+        i 5.217 44.820 0.020 1 1105 71
+        i 5.218 44.860 0.020 1 1098 58
+        i 5.219 44.943 0.020 1 1102 62
+        i 5.220 45.155 0.020 1 1098 49
+        i 5.221 45.196 0.020 1 1090 65
+        i 5.222 45.555 0.020 1 1090 67
+        i 5.223 45.595 0.020 1 1098 81
+        i 5.224 45.677 0.020 1 1096 74
+        i 5.225 45.717 0.020 1 1102 71
+        i 5.226 45.777 0.020 1 1098 67
+        i 5.227 45.915 0.020 1 1093 71
+        i 5.228 45.988 0.020 1 1102 55
+        i 5.229 46.240 0.020 1 1092 80
+        i 5.230 46.449 0.020 1 1096 71
+        i 5.231 46.489 0.020 1 1095 74
+        i 5.232 46.529 0.020 1 1100 73
+        i 5.233 46.569 0.020 1 1100 57
+        i 5.234 46.631 0.020 1 1102 84
+        i 5.235 46.825 0.020 1 1090 62
+        i 5.236 46.879 0.020 1 1100 61
+        i 5.237 47.059 0.020 1 1098 54
+        i 5.238 47.119 0.020 1 1097 63
+        i 5.239 47.188 0.020 1 1096 50
+        i 5.240 47.368 0.020 1 1088 62
+        i 5.241 47.408 0.020 1 1104 81
+        i 5.242 47.448 0.020 1 1098 77
+        i 5.243 47.488 0.020 1 1104 76
+        i 5.244 47.528 0.020 1 1100 58
+        i 5.245 47.740 0.020 1 1096 80
+        i 5.246 47.836 0.020 1 1098 75
+        i 5.247 47.888 0.020 1 1095 83
+        i 5.248 47.937 0.020 1 1106 65
+        i -4.001 48.000 0
+        i -3.009 48.000 0
+        i -3.010 48.000 0
+        i 5.249 48.009 0.020 1 1094 67
+        i 5.250 48.091 0.020 1 1098 63
+        i 5.251 48.217 0.020 1 1096 78
+        i 5.252 48.257 0.020 1 1102 78
+        i 5.253 48.561 0.020 1 1099 65
+        i 5.254 48.601 0.020 1 1101 79
+        i 5.255 48.641 0.020 1 1096 73
+        i 5.256 48.780 0.020 1 1090 64
+        i 5.257 48.869 0.020 1 1106 52
+        i 5.258 48.909 0.020 1 1096 50
+        i 5.259 48.993 0.020 1 1096 52
+        i 5.260 49.197 0.020 1 1094 83
+        i 5.261 49.239 0.020 1 1101 67
+        i 5.262 49.337 0.020 1 1097 64
+        i 5.263 49.377 0.020 1 1104 81
+        i 5.264 49.476 0.020 1 1103 72
+        i 5.265 49.747 0.020 1 1090 56
+        i 5.266 49.787 0.020 1 1098 58
+        i 5.267 49.912 0.020 1 1094 75
+        i 5.268 49.952 0.020 1 1094 74
+        i 5.269 50.017 0.020 1 1098 61
+        i 5.270 50.064 0.020 1 1091 74
+        i 5.271 50.265 0.020 1 1095 53
+        i 5.272 50.372 0.020 1 1097 50
+        i 5.273 50.435 0.020 1 1102 64
+        i 5.274 50.475 0.020 1 1093 65
+        i 5.275 50.653 0.020 1 1096 57
+        i 5.276 50.737 0.020 1 1093 56
+        i 5.277 50.807 0.020 1 1101 80
+        i 5.278 50.861 0.020 1 1102 70
+        i 5.279 51.049 0.020 1 1096 61
+        i 5.280 51.089 0.020 1 1095 60
+        i 5.281 51.164 0.020 1 1103 73
+        i 5.282 51.204 0.020 1 1099 70
+        i 5.283 51.244 0.020 1 1089 72
+        i 5.284 51.547 0.020 1 1099 79
+        i 5.285 51.587 0.020 1 1097 59
+        i 5.286 51.716 0.020 1 1096 65
+        i 5.287 51.756 0.020 1 1097 64
+        i 5.288 51.796 0.020 1 1097 49
+        i 5.289 51.836 0.020 1 1089 63
+        i 5.290 51.879 0.020 1 1105 77
+        i 5.291 51.919 0.020 1 1103 62
+        i 5.292 52.236 0.020 1 1095 66
+        i 5.293 52.385 0.020 1 1099 76
+        i 5.294 52.433 0.020 1 1095 62
+        i 5.295 52.473 0.020 1 1094 72
+        i 5.296 52.513 0.020 1 1101 78
+        i 5.297 52.553 0.020 1 1107 72
+        i 5.298 52.635 0.020 1 1097 71
+        i 5.299 52.675 0.020 1 1095 81
+        i 5.300 53.064 0.020 1 1097 77
+        i 5.301 53.104 0.020 1 1099 64
+        i 5.302 53.144 0.020 1 1103 62
+        i 5.303 53.184 0.020 1 1102 65
+        i 5.304 53.375 0.020 1 1089 75
+        i 5.305 53.435 0.020 1 1105 58
+        i 5.306 53.475 0.020 1 1097 57
+        i 5.307 53.615 0.020 1 1095 62
+        i 5.308 53.735 0.020 1 1102 57
+        i 5.309 53.871 0.020 1 1097 70
+        i 5.310 54.013 0.020 1 1093 72
+        i 5.311 54.053 0.020 1 1102 69
+        i 5.312 54.093 0.020 1 1103 57
+        i 5.313 54.296 0.020 1 1091 63
+        i 5.314 54.405 0.020 1 1099 72
+        i 5.315 54.456 0.020 1 1095 55
+        i 5.316 54.572 0.020 1 1092 74
+        i 5.317 54.612 0.020 1 1099 77
+        i 5.318 54.652 0.020 1 1095 62
+        i 5.319 54.853 0.020 1 1094 82
+        i 5.320 54.929 0.020 1 1101 67
+        i 5.321 54.969 0.020 1 1097 49
+        i 5.322 55.040 0.020 1 1094 54
+        i 5.323 55.117 0.020 1 1097 48
+        i 5.324 55.233 0.020 1 1094 56
+        i 5.325 55.273 0.020 1 1101 83
+        i 5.326 55.503 0.020 1 1101 52
+        i 5.327 55.543 0.020 1 1099 48
+        i 5.328 55.636 0.020 1 1089 47
+        i 5.329 55.676 0.020 1 1096 83
+        i 5.330 55.716 0.020 1 1104 72
+        i 5.331 55.756 0.020 1 1095 80
+        i 5.332 56.065 0.020 1 1097 63
+        i 5.333 56.105 0.020 1 1096 80
+        i 5.334 56.145 0.020 1 1099 58
+        i 5.335 56.329 0.020 1 1096 57
+        i 5.336 56.369 0.020 1 1089 54
+        i 5.337 56.409 0.020 1 1102 64
+        i 5.338 56.449 0.020 1 1105 49
+        i 5.339 56.489 0.020 1 1098 55
+        i 5.340 56.732 0.020 1 1094 62
+        i 5.341 56.875 0.020 1 1096 83
+        i 5.342 56.933 0.020 1 1101 57
+        i 5.343 56.973 0.020 1 1100 62
+        i 5.344 57.025 0.020 1 1094 80
+        i 5.345 57.065 0.020 1 1093 53
+        i 5.346 57.176 0.020 1 1106 49
+        i 5.347 57.216 0.020 1 1096 71
+        i 5.348 57.501 0.020 1 1104 67
+        i 5.349 57.560 0.020 1 1098 79
+        i 5.350 57.600 0.020 1 1100 74
+        i 5.351 57.696 0.020 1 1103 72
+        i 5.352 57.904 0.020 1 1090 56
+        i 5.353 57.944 0.020 1 1104 55
+        i 5.354 57.984 0.020 1 1098 76
+        i 5.355 58.156 0.020 1 1094 50
+        i 5.356 58.231 0.020 1 1102 78
+        i 5.357 58.305 0.020 1 1094 62
+        i 5.358 58.421 0.020 1 1096 56
+        i 5.359 58.645 0.020 1 1101 83
+        i 5.360 58.685 0.020 1 1102 67
+        i 5.361 58.743 0.020 1 1100 61
+        i 5.362 58.783 0.020 1 1092 76
+        i 5.363 58.844 0.020 1 1096 76
+        i 5.364 58.920 0.020 1 1096 60
+        i 5.365 59.080 0.020 1 1092 54
+        i 5.366 59.269 0.020 1 1100 68
+        i 5.367 59.375 0.020 1 1100 66
+        i 5.368 59.415 0.020 1 1094 59
+        i 5.369 59.496 0.020 1 1096 49
+        i 5.370 59.536 0.020 1 1098 44
+        i 5.371 59.611 0.020 1 1095 67
+        i 5.372 59.651 0.020 1 1100 82
+        i 5.373 59.731 0.020 1 1095 80
+        i 5.374 59.816 0.020 1 1102 66
+        i 5.375 59.948 0.020 1 1098 76
+        i 5.376 60.101 0.020 1 1088 48
+        i 5.377 60.141 0.020 1 1098 75
+        i 5.378 60.181 0.020 1 1104 76
+        i 5.379 60.233 0.020 1 1097 56
+        i 5.380 60.303 0.020 1 1094 66
+        i 5.381 60.509 0.020 1 1096 55
+        i 5.382 60.584 0.020 1 1095 84
+        i 5.383 60.788 0.020 1 1101 65
+        i 5.384 60.873 0.020 1 1102 70
+        i 5.385 60.913 0.020 1 1090 46
+        i 5.386 60.953 0.020 1 1098 66
+        i 5.387 60.993 0.020 1 1106 68
+        i 5.388 61.033 0.020 1 1095 80
+        i 5.389 61.231 0.020 1 1093 79
+        i 5.390 61.349 0.020 1 1094 72
+        i 5.391 61.389 0.020 1 1097 73
+        i 5.392 61.429 0.020 1 1104 60
+        i 5.393 61.469 0.020 1 1101 75
+        i 5.394 61.648 0.020 1 1093 84
+        i 5.395 61.836 0.020 1 1096 72
+        i 5.396 61.892 0.020 1 1106 57
+        i 5.397 62.088 0.020 1 1101 74
+        i 5.398 62.128 0.020 1 1099 69
+        i 5.399 62.168 0.020 1 1094 79
+        i 5.400 62.265 0.020 1 1102 57
+        i 5.401 62.336 0.020 1 1103 69
+        i 5.402 62.376 0.020 1 1091 49
+        i 5.403 62.492 0.020 1 1099 70
+        i 5.404 62.661 0.020 1 1097 62
+        i 5.405 62.701 0.020 1 1093 73
+        i 5.406 62.741 0.020 1 1101 58
+        i 5.407 63.008 0.020 1 1095 74
+        i 5.408 63.149 0.020 1 1101 67
+        i 5.409 63.189 0.020 1 1093 54
+        i 5.410 63.229 0.020 1 1101 54
+        i 5.411 63.269 0.020 1 1100 56
+        i 5.412 63.348 0.020 1 1099 70
+        i 5.413 63.388 0.020 1 1097 45
+        i 5.414 63.592 0.020 1 1093 66
+        i 5.415 63.632 0.020 1 1107 76
+        i 5.416 63.676 0.020 1 1109 77
+        i 5.417 63.833 0.020 1 1111 78
+        i 5.418 63.873 0.020 1 1112 48
+        i 5.419 63.913 0.020 1 1112 51
+        i 5.420 63.953 0.020 1 1093 80
+        i 5.421 63.993 0.020 1 1097 53
          #ifdef IS_GENERATING_JSON
             s
             i "GenerateJson" 0 1

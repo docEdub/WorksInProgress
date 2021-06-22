@@ -101,8 +101,8 @@ instr Init_instrnum
     ga_masterSignals = a_masterSignals
 
     event_i("i", ClearSignals_instrnum, 0, -1)      // clear signals
-    event_i("i", AuxMixInstrument, 0, -1) // mix instruments into auxes
-    event_i("i", FinalMixInstrument, 0, -1)   // mix signals
+    event_i("i", AuxMixInstrument, 1, -1) // mix instruments into auxes
+    event_i("i", FinalMixInstrument, 1, -1)   // mix signals
 
     turnoff
 endin
