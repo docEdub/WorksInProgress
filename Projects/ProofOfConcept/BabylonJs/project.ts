@@ -203,20 +203,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return
         }
         console.debug('Csound csd compile succeeded')
-
-        const csoundStartDelay = 4 // seconds
-        let currentStartDelay = 0
-        const csoundLoadTimer = setInterval(() => {
-            currentStartDelay += 1
-            console.log('Csound starting in', csoundStartDelay - currentStartDelay)
-            if (currentStartDelay >= csoundStartDelay) {
-                console.debug('Csound starting ...')
-                csound.start()
-                clearInterval(csoundLoadTimer)
-            }
-        }, 1000)
+        console.debug('Csound starting ...')
+        csound.start()
     }
-    // startCsound()
 
     const csdText = `
         <CsoundSynthesizer>
