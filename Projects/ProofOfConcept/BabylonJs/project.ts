@@ -3105,6 +3105,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             s
             i "GenerateJson" 0 1
          #end
+         s
+         e 30
         </CsScore>
         </CsoundSynthesizer>
         `
