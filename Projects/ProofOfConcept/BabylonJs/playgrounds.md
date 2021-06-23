@@ -1,7 +1,7 @@
 
 ### Playgrounds used for audio glitch testing
 
- - 2021-06-13: https://playground.babylonjs.com/#SY0NY5
+- 2021-06-13: https://playground.babylonjs.com/#SY0NY5
     - Me ...
         - Glitchy on Oculus Quest 2
     - Discord:**@De-Panther** ...
@@ -9,6 +9,13 @@
         - (but when I try to record it the glitches are over)
         - Galaxy S10e, Android 11, latest chrome
 
- - 2021-06-22: https://playground.babylonjs.com/#SY0NY5#1
+- 2021-06-22: https://playground.babylonjs.com/#SY0NY5#1
     - Me ...
         - Not glitchy on Oculus Quest 2
+    - Discord:**Sorskoot** ...
+        - Just tested on my Android. Glitched a little bit at the start, but after that it ran fine. I'll test on some other devices later.
+        - It's an older Samsung S8. It was Chrome 91.0.4472.101
+        - Just have a quick run on my Quest 1 and Hololens 2. Both couldn't keep up and kept stuttering.
+
+- 2021-06-23: https://playground.babylonjs.com/#SY0NY5#2
+    - Title: **docEdub for quest 2 audio profiling - 2021-06-23 - 1**

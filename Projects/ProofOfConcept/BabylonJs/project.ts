@@ -2652,7 +2652,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 8 0.01 1 4 0 1.00
         i 8 0.01 1 4 1 0.98
         i 8 0.01 1 4 5 1.00
-        b 2
+        b 5
         i 4.001 2.001 -1 3 48 96
         i 3.001 2.001 -1 3 24 45
         i 3.002 2.001 -1 3 36 63
