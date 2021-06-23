@@ -338,6 +338,16 @@ instr FinalMixInstrument
     outch(2, ga_masterSignals[5])
 endin
 
+
+instr EndOfInstrumentAllocations
+    // If you see instrument allocation messages like `new alloc for instr 8:` after this message is printed, slower
+    // devices like the Oculus Quest 2 will hit buffer underruns.
+    prints("-------------------------------------------------------------------------------------------------------\n")
+    prints("Add preallocation score lines for all instruments allocated after this message.\n")
+    prints("-------------------------------------------------------------------------------------------------------\n")
+    turnoff
+endin
+
 </CsInstruments>
 <CsScore>
 

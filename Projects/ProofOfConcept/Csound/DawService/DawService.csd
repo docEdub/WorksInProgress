@@ -643,6 +643,8 @@ instr HandleOscScoreGenerationMessages
         // This is broken into two lines so Csound doesn't see it as a macro yet.
         fprints(S_filename, "b $")
         fprints(S_filename, "SCORE_START_DELAY\n")
+        
+        fprints(S_filename, "i \"EndOfInstrumentAllocations\" 0.005 -1\n")
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1
