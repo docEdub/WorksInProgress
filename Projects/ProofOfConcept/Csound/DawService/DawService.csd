@@ -639,6 +639,10 @@ instr HandleOscScoreGenerationMessages
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3.sco"
     elseif (i_mode == 4) then
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode4.sco"
+
+        // This is broken into two lines so Csound doesn't see it as a macro yet.
+        fprints(S_filename, "b $")
+        fprints(S_filename, "SCORE_START_DELAY\n")
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1

@@ -341,6 +341,10 @@ endin
 </CsInstruments>
 <CsScore>
 
+${CSOUND_IFNDEF} SCORE_START_DELAY
+    ${CSOUND_DEFINE} SCORE_START_DELAY #0#
+${CSOUND_ENDIF}
+
 #define Cc _(EVENT_CC)
 #define NoteOn -1 _(EVENT_NOTE_ON)
 #define NoteOff 0
