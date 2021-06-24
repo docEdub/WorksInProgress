@@ -13,6 +13,12 @@
 </CsOptions>
 <CsInstruments>
 
+gSPresetUuidOrder[] = fillarray( \
+    "baeea327-af4b-4b10-a843-6614c20ea958", /* CircleSynth */ \
+    "069e83fd-1c94-47e9-95ec-126e0fbefec3", /* PowerLineSynth */ \
+    "b4f7a35c-6198-422f-be6e-fa126f31b007"  /* PointSynth */ \
+)
+
 #include "core_global.h"
 
 // Override core_global.h ksmps.
@@ -103,6 +109,21 @@ opcode getNextTrackIndex, i, 0
     od
     log_i_info("opcode getNextTrackIndex() - done => %d", i_returnValue)
     xout i_returnValue
+endop
+
+
+opcode getPresetTrackIndexForUuid, i, S
+    SUuid xin
+    ii = 0
+    while (ii < lenarray(gSPresetUuidOrder)) do
+        if (strcmp(SUuid, gSPresetUuidOrder[ii]) == 0) then
+            goto end
+        endif
+        ii += 1
+    od
+    ii = -1
+end:
+    xout ii
 endop
 
 
@@ -509,10 +530,15 @@ instr RegisterTrack
     log_ik_info(
         "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) ...",
         i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
-    i_trackIndex = getTrackIndexForPort(i_oscPort)
-    if (i_trackIndex == -1) then
-        i_trackIndex = getNextTrackIndex()
+    i_trackIndex = getPresetTrackIndexForUuid(SUuid)
+    if (i_trackIndex != -1) then
         setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
+    else
+        i_trackIndex = getTrackIndexForPort(i_oscPort)
+        if (i_trackIndex == -1) then
+            i_trackIndex = getNextTrackIndex()
+            setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
+        endif
     endif
     log_ik_debug("i_trackIndex = %d", i_trackIndex)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
