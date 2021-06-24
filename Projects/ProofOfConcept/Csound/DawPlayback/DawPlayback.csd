@@ -12,6 +12,12 @@
 </CsOptions>
 <CsInstruments>
 
+giPresetUuidPreallocationCount[] = fillarray( \
+    4,  /* instr 3 -- CircleSynth */ \
+    1,  /* instr 4 -- PowerLineSynth */ \
+    1   /* instr 5 -- PointSynth */ \
+)
+
 ${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT
 ${CSOUND_DEFINE} OUTPUT_CHANNEL_COUNT #2#
 ${CSOUND_ENDIF}
