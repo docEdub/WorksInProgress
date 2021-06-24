@@ -376,9 +376,11 @@ ${CSOUND_ENDIF}
 #include "_.mode3.sco"
 #include "_.mode4.sco"
 
+s
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    s
     i "GenerateJson" 0 1
+${CSOUND_ELSE}
+    e 15
 ${CSOUND_ENDIF}
 
 </CsScore>
