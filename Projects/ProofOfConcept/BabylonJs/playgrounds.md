@@ -19,3 +19,8 @@
 
 - 2021-06-23: https://playground.babylonjs.com/#SY0NY5#2
     - Title: **docEdub for quest 2 audio profiling - 2021-06-23 - 1**
+        - Discord:**De-Panther** ...
+            - Take lots of time till there's sound, and then it glitches
+            - (assuming still on Galaxy S10e, Android 11, latest chrome)
+        - Discord:**yinch** ...
+            - Posted a video showing audio works glitch free on Huawei P30
