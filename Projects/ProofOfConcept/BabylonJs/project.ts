@@ -21,16 +21,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     
     const originalConsoleDebug = console.debug
     console.debug = function() {
-        originalConsoleLog.apply(console, arguments)
+        // originalConsoleLog.apply(console, arguments)
     }
 
     const originalConsoleLog = console.log
     console.log = function() {
-        if (arguments[0] === 'csd:started') {
-            startTime = document.audioContext.currentTime - (4 - document.latency);
-            isCsoundStarted = true
-            return
-        }
         originalConsoleLog.apply(console, arguments)
     }
 
@@ -148,7 +143,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const onAudioEngineUnlocked = () => {
         document.audioContext.resume()
         isAudioEngineUnlocked = true
-        console.log('Audio engine unlocked')
+        console.debug('Audio engine unlocked')
         startCsound()
     }
     
@@ -161,6 +156,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
         console.debug('Csound initializing ...')
+        const previousConsoleLog = console.log;
+        const csoundConsoleLog = function() {
+            if (arguments[0] === 'csd:started') {
+                startTime = document.audioContext.currentTime - (4 - document.latency);
+                isCsoundStarted = true
+            }
+            //previousConsoleLog.apply(console, arguments)
+        }
+        console.log = csoundConsoleLog;
         const csound = await document.Csound({
             audioContext: new AudioContext({
                 latencyHint: 0.17066666667,
@@ -168,17 +172,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }),
             useSAB: false
         })
+        console.log = previousConsoleLog;
         if (!csound) {
             console.error('Csound failed to initialize')
             return
         }
         const audioContext = await csound.getAudioContext()
-        console.log('audioContext =', audioContext)
-        console.log('audioContext.audioWorklet =', audioContext.audioWorklet)
-        console.log('audioContext.baseLatency =', audioContext.baseLatency)
-        console.log('audioContext.outputLatency =', audioContext.outputLatency)
-        console.log('audioContext.sampleRate =', audioContext.sampleRate)
-        console.log('audioContext.state =', audioContext.state)
+        console.debug('audioContext =', audioContext)
+        console.debug('audioContext.audioWorklet =', audioContext.audioWorklet)
+        console.debug('audioContext.baseLatency =', audioContext.baseLatency)
+        console.debug('audioContext.outputLatency =', audioContext.outputLatency)
+        console.debug('audioContext.sampleRate =', audioContext.sampleRate)
+        console.debug('audioContext.state =', audioContext.state)
         document.audioContext = audioContext
 
         console.debug('Csound initialized successfully');
@@ -189,9 +194,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.error('Csound csd compile failed')
             return
         }
+        document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate;
+        console.debug('Latency =', document.latency);
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
-        document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate;
         csound.start()
     }
 
