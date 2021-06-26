@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-; --messagelevel=0
+--messagelevel=0
 --midi-device=0
 --nodisplays
 --nosound
@@ -353,6 +353,17 @@ instr EndOfInstrumentAllocations
     prints("-------------------------------------------------------------------------------------------------------\n")
     turnoff
 endin
+
+
+instr SendStartupMessage
+    // If the duration is not -1 then this is the preallocation instance of this instrument.
+    // Only sound the tone if this is not the preallocation instance.
+    if (p3 == -1) then
+        prints("csd:started\n")
+    endif
+    turnoff
+endin
+
 
 </CsInstruments>
 <CsScore>
