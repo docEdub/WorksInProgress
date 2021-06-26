@@ -13,7 +13,7 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
-    const csoundIoBufferSize = 16384;
+    const csoundIoBufferSize = 128;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
