@@ -5,11 +5,14 @@ var spawnSync = require('child_process').spawnSync;
 
 if (os.type() === 'Darwin') {
     const csoundDir = path.resolve('Csound');
-    const buildDir = csoundDir + '/build/playback';
-    spawnSync('bash', [ '-c', 'cmake -B ' + buildDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON' ], {
+    const buildDir = csoundDir + '/build';
+    const playbackDir = buildDir + '/playback';
+    const bounceDir = buildDir + '/bounce';
+    const jsonDir = bounceDir + '/json';
+    spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON' ], {
         stdio: 'inherit'
     });
-    spawnSync('bash', [ '-c', 'cd ' + buildDir + ' && make 2>&1' ], {
+    spawnSync('bash', [ '-c', 'cd ' + playbackDir + ' && make 2>&1' ], {
         stdio: 'inherit'
     });
 
@@ -50,7 +53,22 @@ if (os.type() === 'Darwin') {
             }
             console.log('-- Generating ../bounce/DawPlayback.csd.js done')
         });
+        
+        
     });
+
+    if (process.argv.indexOf('--with-json') != -1) {
+        // Wipe the json folder.
+        if (fs.existsSync(jsonDir)) {
+            fs.rmdirSync(jsonDir, { recursive: true });
+        }
+        fs.mkdirSync(jsonDir);
+
+        // Generate DawPlayback.json
+        spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.csd --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
+            stdio: 'inherit'
+        });
+    }
 }
 else {
     throw new Error('Unsupported OS: ' + os.type());

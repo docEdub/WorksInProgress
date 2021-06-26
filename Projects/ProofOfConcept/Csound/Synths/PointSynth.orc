@@ -71,7 +71,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
     instr PointSynth_Json
-        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPointSynth_DistanceMin)
@@ -215,7 +215,7 @@ instr INSTRUMENT_ID
                     scoreline_i("i \"PointSynth_Json\" 0 0")
                 endif
                 giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-                SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
                 fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"rtz\":[%.3f,%.3f,%.3f]}}", times(),
                     iNoteNumber, iR, iT, iZ)
             ${CSOUND_ENDIF}

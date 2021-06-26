@@ -151,7 +151,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
     instr CircleSynth_Json
-        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, ",\"heightMin\":%d", CIRCLE_SYNTH_HEIGHT_MIN)
@@ -197,7 +197,7 @@ instr INSTRUMENT_ID
                     scoreline_i("i \"CircleSynth_Json\" 0 0")
                 endif
                 giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] = giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-                SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giCircleSynth_NoteIndex[ORC_INSTANCE_INDEX])
                 fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
                 if (kReleased == true) then
                     fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())

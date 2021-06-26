@@ -195,7 +195,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         iWriteComma = false
 
         while (true == true) do
-            SFileName = sprintf("%s.%d.json", SPluginUuid, iI)
+            SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
 
             iJ = 0
             while (iJ != -1) do
