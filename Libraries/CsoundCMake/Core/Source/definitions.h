@@ -64,7 +64,7 @@
 #define TRACK_TYPE_MASTER 4
 
 // The first 2 instruments in the playback csd are for initialization and clearing.
-#define TRACK_PLAYBACK_INSTRUMENT_START_INDEX 3
+#define TRACK_PLAYBACK_INSTRUMENT_START_INDEX 4
 
 #define PLUGIN_INDEX_TRACKING_DIVISOR 1000000
 #define PLUGIN_INDEX_TRACKING_INDEX_TO_SIGNAL(index) (index / PLUGIN_INDEX_TRACKING_DIVISOR)

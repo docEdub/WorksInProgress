@@ -31,14 +31,13 @@ kr = 200
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 
-#define Init_instrnum 1
-#define ClearSignals_instrnum 2
+#define Init_instrnum 2
+#define ClearSignals_instrnum 3
 
 #include "_.mode3_TrackDefines.h"
 
 ${CSOUND_DEFINE} INSTANCE_NAME #"TestSynth playback"#
-${CSOUND_INCLUDE} "core_global.orc"
-${CSOUND_INCLUDE} "time.orc"
+${CSOUND_INCLUDE} "af_global.orc"
 
 #define LOW_CHANNEL_COUNT_INDEX 0
 #define HIGH_CHANNEL_COUNT_INDEX 1
@@ -57,6 +56,13 @@ gi_trackCount = gi_instrumentCount + gi_auxCount
 giMasterChannelIndexRanges[][] init gi_trackCount, 2 // 2nd column contains { [0]: low index, [1]: high index }
 ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
 ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
+
+
+instr 1
+    AF_3D_UpdateListenerRotationMatrix(0.01)
+    AF_3D_UpdateListenerPosition(0.01)
+endin
+event_i("i", 1, 0, -1)
 
 
 instr Init_instrnum

@@ -5,6 +5,7 @@ declare global {
     interface Document {
         audioContext: AudioContext
         Csound: CSOUND.Csound
+        csound: CSOUND.CsoundObj
         latency: number
     }
 }
@@ -13,7 +14,9 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
+    const logCsoundMessages = true;
     const csoundIoBufferSize = 128;
+    const csoundCameraUpdatesPerSecond = 30;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
@@ -65,8 +68,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         skyboxSize: 999
     });
 
-    // XR
-    const xrHelper = scene.createDefaultXRExperienceAsync({});
+    
+    // Update `currentCamera` when switching between flat-screen and XR.
+    let currentCamera = camera
+
+    const startXr = async () => {
+        try {
+            const xr = await scene.createDefaultXRExperienceAsync({});
+            if (!!xr) {
+                xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
+                    if (eventData == null) {
+                        if (currentCamera != camera) {
+                            console.debug('Switching to flat-screen camera')
+                            currentCamera = camera
+                        }
+                    }
+                    else {
+                        if (currentCamera != xr.baseExperience.camera) {
+                            console.debug('Switching to XR camera')
+                            currentCamera = xr.baseExperience.camera
+                        }
+                    }
+                })
+            }
+        }
+        catch(e) {
+            console.debug(e)
+        }
+    }
+    startXr();
 
     let startTime = 0;
 
@@ -105,6 +135,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let nextPointSynthNoteOnIndex = 1
         let nextPointSynthNoteOffIndex = 1
 
+        const previousCameraMatrix = new Float32Array(16)
+        const currentCameraMatrix = new Float32Array(16)
+        let currentCameraMatrixIsDirty = true    
+
+        // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 return
@@ -123,6 +158,28 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 nextPointSynthNoteOffIndex++
             }
         })
+
+        // Send the camera matrix to Csound.
+        setInterval(() => {
+            if (!isCsoundStarted) {
+                return;
+            }    
+            currentCamera.worldMatrixFromCache.copyToArray(currentCameraMatrix)
+            if (!currentCameraMatrixIsDirty) {
+                for (let i = 0; i < 16; i++) {
+                    if (0.1 < Math.abs(currentCameraMatrix[i] - previousCameraMatrix[i])) {
+                        currentCameraMatrixIsDirty = true
+                        break
+                    }
+                }
+            }
+            if (currentCameraMatrixIsDirty) {
+                console.debug("Writing table 1 ...")
+                document.csound.tableCopyIn("1", currentCameraMatrix);
+                currentCamera.worldMatrixFromCache.copyToArray(previousCameraMatrix);
+                currentCameraMatrixIsDirty = false;
+            }
+        }, 1000 / csoundCameraUpdatesPerSecond);
     }
 
     const csoundLoadTimer = setInterval(() => {
@@ -162,7 +219,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 startTime = document.audioContext.currentTime - (4 - document.latency);
                 isCsoundStarted = true
             }
-            //previousConsoleLog.apply(console, arguments)
+            if (logCsoundMessages) {
+                previousConsoleLog.apply(console, arguments)
+            }
         }
         console.log = csoundConsoleLog;
         const csound = await document.Csound({
@@ -177,6 +236,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.error('Csound failed to initialize')
             return
         }
+        document.csound = csound;
+        
         const audioContext = await csound.getAudioContext()
         console.debug('audioContext =', audioContext)
         console.debug('audioContext.audioWorklet =', audioContext.audioWorklet)
@@ -273,309 +334,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             S_filename = strsubk(S_fullPath, ki + 1, k_fullPathLength)
             xout S_filename
         endop
-        opcode time_i, i, 0
-            xout (i(gk_i) + 1) / kr
-        endop
-        opcode time_k, k, 0
-            xout gk_i / kr
-        endop
-        opcode time_string_i, S, 0
-            i_time = time_i()
-            i_hours = floor(i_time / 3600)
-            i_ = i_time - (3600 * i_hours)
-            i_minutes = floor(i_ / 60)
-            i_seconds = floor(i_ - (60 * i_minutes))
-            i_nanoseconds = 10000 * frac(i_time)
-            xout sprintf("%d:%02d:%02d.%04d", i_hours, i_minutes, i_seconds, i_nanoseconds)
-        endop
-        opcode time_string_k, S, 0
-            k_time = time_k()
-            k_hours = floor(k_time / 3600)
-            k_ = k_time - (3600 * k_hours)
-            k_minutes = floor(k_ / 60)
-            k_seconds = floor(k_ - (60 * k_minutes))
-            k_nanoseconds = 10000 * frac(k_time)
-            xout sprintfk("%d:%02d:%02d.%04d", k_hours, k_minutes, k_seconds, k_nanoseconds)
-        endop
-        opcode time_metro, k, i
-            i_cps xin
-            k_returnValue init 0
-            i_secondsPerTick = 1 / i_cps
-            i_startTime = time_i()
-            k_nextTickTime init i_startTime
-            k_currentTime = time_k()
-            if (k_nextTickTime < k_currentTime) then
-                k_returnValue = 1
-                k_nextTickTime += i_secondsPerTick
-            else
-                k_returnValue = 0
-            endif
-            xout k_returnValue
-        endop
-        gi_instrumentCount = 1
-        gi_instrumentIndexOffset = 0
-        gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-        gi_auxCount = 1
-        gi_auxIndexOffset = 0
-        giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
-        ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-        ga_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
-        gi_trackCount = gi_instrumentCount + gi_auxCount
-        giMasterChannelIndexRanges[][] init gi_trackCount, 2
-        ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
-        ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
-        instr 1
-            gi_instrumentCount = p4
-            gi_instrumentIndexOffset = p5
-            gi_auxCount = p6
-            gi_auxIndexOffset = p7
-            gi_trackCount = gi_instrumentCount + gi_auxCount
-            a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-            gaInstrumentSignals = a_instrumentSignals
-            iAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
-            iI = 0
-            while (iI < gi_auxCount) do
-                iJ = 0
-                while (iJ < gi_instrumentCount) do
-                    iAuxChannelIndexRanges[iI][iJ][0] = 0
-                    iAuxChannelIndexRanges[iI][iJ][1] = $INTERNAL_CHANNEL_COUNT - 1
-                    iJ += 1
-                od
-                iI += 1
-            od
-            giAuxChannelIndexRanges = iAuxChannelIndexRanges
-            a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-            ga_auxVolumes = a_auxVolumes
-            a_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
-            ga_auxSignals = a_auxSignals
-            iMasterChannelIndexRanges[][] init gi_trackCount, 2
-            iI = 0
-            while (iI < gi_trackCount) do
-                iMasterChannelIndexRanges[iI][0] = 0
-                iMasterChannelIndexRanges[iI][1] = $INTERNAL_CHANNEL_COUNT - 1
-                iI += 1
-            od
-            giMasterChannelIndexRanges = iMasterChannelIndexRanges
-            a_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
-            ga_masterVolumes = a_masterVolumes
-            a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
-            ga_masterSignals = a_masterSignals
-            event_i("i", 2, 0, -1)
-            event_i("i", 6, 1, -1)
-            event_i("i", 10, 1, -1)
-            turnoff
-        endin
-        instr 2
-            gk_i += 1
-            k_instrument = 0
-            while (k_instrument < gi_instrumentCount) do
-                k_channel = 0
-                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                    gaInstrumentSignals[k_instrument][k_channel] = 0
-                    k_channel += 1
-                od
-                k_instrument += 1
-            od
-            k_bus = 0
-            while (k_bus < gi_auxCount) do
-                k_channel = 0
-                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                    ga_auxSignals[k_bus][k_channel] = 0
-                    k_channel += 1
-                od
-                k_bus += 1
-            od
-            k_channel = 0
-            while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-                ga_masterSignals[k_channel] = 0
-                k_channel += 1
-            od
-        endin
-         #ifdef IS_GENERATING_JSON
-            giWriteComma init 0
-            gSPluginUuids[][] init 1000, 100
-            opcode setPluginUuid, 0, iiS
-                iTrackIndex, iPluginIndex, SUuid xin
-                gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
-            endop
-            instr StartJsonArray
-                turnoff
-                fprints("DawPlayback.json", "[")
-            endin
-            instr EndJsonArray
-                turnoff
-                fprints("DawPlayback.json", "]")
-            endin
-            instr StartJsonObject
-                turnoff
-                fprints("DawPlayback.json", "{")
-            endin
-            instr EndJsonObject
-                turnoff
-                fprints("DawPlayback.json", "}")
-            endin
-            instr GeneratePluginJson
-                turnoff
-                SPluginUuid = strget(p4)
-                if (giWriteComma == 1) then
-                    fprints("DawPlayback.json", ",")
-                else
-                    giWriteComma = 1
-                endif
-                fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
-                iI = 0
-                iWriteComma = 0
-                while (1 == 1) do
-                    SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
-                    iJ = 0
-                    while (iJ != -1) do
-                        SLine, iJ readfi SFileName
-                        if (iJ == -1) then
-                        else
-                            if (iWriteComma == 1) then
-                                fprints("DawPlayback.json", ",")
-                            else
-                                iWriteComma = 1
-                            endif
-                            if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\\n") == 0) then
-                                SLine = strsub(SLine, 0, strlen(SLine) - 1)
-                            endif
-                            fprints("DawPlayback.json", SLine)
-                        endif
-                    od
-                    iI += 1
-                od
-            endin
-            instr GenerateJson
-                prints("instr GenerateJson ...\\n")
-                scoreline_i("i \\"StartJsonObject\\" 0 0")
-                iI = 0
-                while (iI < 1000) do
-                    if (strlen(gSPluginUuids[iI][0]) == 36) then
-                        scoreline_i(sprintf("i \\"GeneratePluginJson\\" 0 0 \\"%s\\"", gSPluginUuids[iI][0]))
-                        scoreline_i("i \\"EndJsonArray\\" 0 0")
-                    endif
-                    iI += 1
-                od
-                scoreline_i("i \\"EndJsonObject\\" 0 0")
-                prints("instr GenerateJson - done\\n")
-            endin
-         #end
-         #ifndef ADSR_LINSEGR_UDO_ORC
-         #define ADSR_LINSEGR_UDO_ORC ##
-        opcode adsr_linsegr, a, iiii
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout aOut
-        endop
-        opcode adsr_linsegr, k, kkkk
-            iA, iD, iS, iR xin
-            iA = max(0.000001, iA)
-            iD = max(0.000001, iD)
-            iR = max(0.000001, iR)
-            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
-            xout kOut
-        endop
-         #end
-        gSCcInfo_CircleSynth[] = fillarray( \\
-        \\
-            "example", "bool", "false", "synced", \\
-        \\
-            "", "", "", "")
-         #define gSCcInfo_CircleSynth_Count #8#
-         #define CC_INFO_CHANNEL #0#
-         #define CC_INFO_TYPE #1#
-         #define CC_INFO_VALUE #2#
-         #define CC_INFO_SYNC_TYPE #3#
-         #define CC_NO_SYNC #0#
-         #define CC_SYNC_TO_CHANNEL #1#
-         #ifdef gSCcInfo_CircleSynth_Count
-            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
-                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
-            endif
-         #else
-            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
-            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
-         #end
-        opcode ccIndex_CircleSynth, i, S
-            SChannel xin
-            kgoto end
-            iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
-                iI += 1
-            od
-            iI = -1
-        end:
-            xout iI
-        endop
-        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
-        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
-        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
-        instr CircleSynth_InitializeCcValues
-            iI = 0
-            while (iI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
-                iJ = 0
-                while (iJ < 1) do
-                    iValue = -1
-                    if (strcmp(SType, "bool") == 0) then
-                        if (strcmp(SValue, "false") == 0) then
-                            iValue = 0
-                        else
-                            iValue = 1
-                        endif
-                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
-                        iValue = strtod(SValue)
-                    endif
-                    giCcValueDefaults_CircleSynth[iI] = iValue
-                    giCcValues_CircleSynth[iJ][iI] = iValue
-                    iJ += 1
-                od
-                iI += 1
-            od
-            igoto end
-            kI = 0
-            while (kI < giCcCount_CircleSynth) do
-                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
-                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
-                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
-                kJ = 0
-                while (kJ < 1) do
-                    kValue = -1
-                    if (strcmpk(SType, "bool") == 0) then
-                        if (strcmpk(SValue, "false") == 0) then
-                            kValue = 0
-                        else
-                            kValue = 1
-                        endif
-                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
-                        kValue = strtodk(SValue)
-                    endif
-                    gkCcValues_CircleSynth[kJ][kI] = kValue
-                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
-                    if (strcmpk(SSyncType, "synced") == 0) then
-                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
-                    endif
-                    kJ += 1
-                od
-                kI += 1
-            od
-            turnoff
-        end:
-        endin
-        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
-        instr CircleSynth_CreateCcIndexes
-            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
-            turnoff
-        endin
-        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
         /*
          * The resonance audio lookup tables were copied from https:
          * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
@@ -1554,6 +1312,45 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             S_channelName, k_channelValue xin
             chnset k_channelValue, S_channelName
         endop
+        opcode time_i, i, 0
+            xout (i(gk_i) + 1) / kr
+        endop
+        opcode time_k, k, 0
+            xout gk_i / kr
+        endop
+        opcode time_string_i, S, 0
+            i_time = time_i()
+            i_hours = floor(i_time / 3600)
+            i_ = i_time - (3600 * i_hours)
+            i_minutes = floor(i_ / 60)
+            i_seconds = floor(i_ - (60 * i_minutes))
+            i_nanoseconds = 10000 * frac(i_time)
+            xout sprintf("%d:%02d:%02d.%04d", i_hours, i_minutes, i_seconds, i_nanoseconds)
+        endop
+        opcode time_string_k, S, 0
+            k_time = time_k()
+            k_hours = floor(k_time / 3600)
+            k_ = k_time - (3600 * k_hours)
+            k_minutes = floor(k_ / 60)
+            k_seconds = floor(k_ - (60 * k_minutes))
+            k_nanoseconds = 10000 * frac(k_time)
+            xout sprintfk("%d:%02d:%02d.%04d", k_hours, k_minutes, k_seconds, k_nanoseconds)
+        endop
+        opcode time_metro, k, i
+            i_cps xin
+            k_returnValue init 0
+            i_secondsPerTick = 1 / i_cps
+            i_startTime = time_i()
+            k_nextTickTime init i_startTime
+            k_currentTime = time_k()
+            if (k_nextTickTime < k_currentTime) then
+                k_returnValue = 1
+                k_nextTickTime += i_secondsPerTick
+            else
+                k_returnValue = 0
+            endif
+            xout k_returnValue
+        endop
          #define AF_3D_AUDIO__AMBISONIC_ORDER_MAX #3#
          #define AF_3D_AUDIO__SPEED_OF_SOUND #343#
         gk_AF_3D_ListenerPosition[] init 3
@@ -1730,6 +1527,375 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             xout k_dopplerShift
         endop
+        gi_AF_3D_ListenerMatrixTableNumber ftgen 1, 0, 16, -2, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+        gk_AF_3D_ListenerRotationMatrix[] init 9
+        opcode AF_3D_UpdateListenerRotationMatrix, 0, i
+            i_portamento_halftime xin
+            gk_AF_3D_ListenerRotationMatrix[0] = port(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[1] = port(tab:k(1, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[2] = port(tab:k(2, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[3] = port(tab:k(4, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[4] = port(tab:k(5, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[5] = port(tab:k(6, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[6] = port(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[7] = port(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerRotationMatrix[8] = port(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            kChanged = 0
+            if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[1]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[2]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[3]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[4]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[5]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[6]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[7]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerRotationMatrix[8]) == 1) then
+                kChanged = 1
+            endif
+            kPrinted init 0
+            if (kChanged == 1) then
+                kPrinted = 0
+            endif
+            if (kChanged == 0 && kPrinted == 0) then
+                printsk("gk_AF_3D_ListenerRotationMatrix ...\\n")
+                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2])
+                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5])
+                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
+                kPrinted = 1
+            endif
+        endop
+        opcode AF_3D_UpdateListenerPosition, 0, i
+            i_portamento_halftime xin
+            gk_AF_3D_ListenerPosition[0] = port(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerPosition[1] = port(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            gk_AF_3D_ListenerPosition[2] = port(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+            kChanged = 0
+            if (changed(gk_AF_3D_ListenerPosition[0]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerPosition[1]) == 1) then
+                kChanged = 1
+            endif
+            if (changed(gk_AF_3D_ListenerPosition[2]) == 1) then
+                kChanged = 1
+            endif
+            kPrinted init 0
+            if (kChanged == 1) then
+                kPrinted = 0
+            endif
+            if (kChanged == 0 && kPrinted == 0) then
+                printsk("gk_AF_3D_ListenerPosition ...\\n")
+                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerPosition[0], gk_AF_3D_ListenerPosition[1], gk_AF_3D_ListenerPosition[2])
+                kPrinted = 1
+            endif
+        endop
+        ga_AF_3D_AmbisonicOutput[] init 4
+        opcode AF_Ambisonics_Send, 0, ai[]P
+            a_signal, i_position[], k_width xin
+            AF_3D_Audio_ChannelGains(i_position, k_width)
+            ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
+            ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
+            ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (gkAmbisonicChannelGains[2] * a_signal)
+            ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (gkAmbisonicChannelGains[3] * a_signal)
+        endop
+        opcode AF_Ambisonics_Send, 0, ak[]P
+            a_signal, k_position[], k_width xin
+            AF_3D_Audio_ChannelGains(k_position, k_width)
+            ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
+            ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
+            ga_AF_3D_AmbisonicOutput[2] = ga_AF_3D_AmbisonicOutput[2] + (gkAmbisonicChannelGains[2] * a_signal)
+            ga_AF_3D_AmbisonicOutput[3] = ga_AF_3D_AmbisonicOutput[3] + (gkAmbisonicChannelGains[3] * a_signal)
+        endop
+        ga_AF_Reverb_Send init 0
+        opcode AF_Reverb_Send, 0, a
+            a_signal xin
+            ga_AF_Reverb_Send += a_signal
+        endop
+        gi_instrumentCount = 1
+        gi_instrumentIndexOffset = 0
+        gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+        gi_auxCount = 1
+        gi_auxIndexOffset = 0
+        giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
+        ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+        ga_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
+        gi_trackCount = gi_instrumentCount + gi_auxCount
+        giMasterChannelIndexRanges[][] init gi_trackCount, 2
+        ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
+        ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
+        instr 1
+            AF_3D_UpdateListenerRotationMatrix(0.01)
+            AF_3D_UpdateListenerPosition(0.01)
+        endin
+        event_i("i", 1, 0, -1)
+        instr 2
+            gi_instrumentCount = p4
+            gi_instrumentIndexOffset = p5
+            gi_auxCount = p6
+            gi_auxIndexOffset = p7
+            gi_trackCount = gi_instrumentCount + gi_auxCount
+            a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+            gaInstrumentSignals = a_instrumentSignals
+            iAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
+            iI = 0
+            while (iI < gi_auxCount) do
+                iJ = 0
+                while (iJ < gi_instrumentCount) do
+                    iAuxChannelIndexRanges[iI][iJ][0] = 0
+                    iAuxChannelIndexRanges[iI][iJ][1] = $INTERNAL_CHANNEL_COUNT - 1
+                    iJ += 1
+                od
+                iI += 1
+            od
+            giAuxChannelIndexRanges = iAuxChannelIndexRanges
+            a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+            ga_auxVolumes = a_auxVolumes
+            a_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
+            ga_auxSignals = a_auxSignals
+            iMasterChannelIndexRanges[][] init gi_trackCount, 2
+            iI = 0
+            while (iI < gi_trackCount) do
+                iMasterChannelIndexRanges[iI][0] = 0
+                iMasterChannelIndexRanges[iI][1] = $INTERNAL_CHANNEL_COUNT - 1
+                iI += 1
+            od
+            giMasterChannelIndexRanges = iMasterChannelIndexRanges
+            a_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
+            ga_masterVolumes = a_masterVolumes
+            a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
+            ga_masterSignals = a_masterSignals
+            event_i("i", 3, 0, -1)
+            event_i("i", 7, 1, -1)
+            event_i("i", 11, 1, -1)
+            turnoff
+        endin
+        instr 3
+            gk_i += 1
+            k_instrument = 0
+            while (k_instrument < gi_instrumentCount) do
+                k_channel = 0
+                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+                    gaInstrumentSignals[k_instrument][k_channel] = 0
+                    k_channel += 1
+                od
+                k_instrument += 1
+            od
+            k_bus = 0
+            while (k_bus < gi_auxCount) do
+                k_channel = 0
+                while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+                    ga_auxSignals[k_bus][k_channel] = 0
+                    k_channel += 1
+                od
+                k_bus += 1
+            od
+            k_channel = 0
+            while (k_channel < $INTERNAL_CHANNEL_COUNT) do
+                ga_masterSignals[k_channel] = 0
+                k_channel += 1
+            od
+        endin
+         #ifdef IS_GENERATING_JSON
+            giWriteComma init 0
+            gSPluginUuids[][] init 1000, 100
+            opcode setPluginUuid, 0, iiS
+                iTrackIndex, iPluginIndex, SUuid xin
+                gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
+            endop
+            instr StartJsonArray
+                turnoff
+                fprints("DawPlayback.json", "[")
+            endin
+            instr EndJsonArray
+                turnoff
+                fprints("DawPlayback.json", "]")
+            endin
+            instr StartJsonObject
+                turnoff
+                fprints("DawPlayback.json", "{")
+            endin
+            instr EndJsonObject
+                turnoff
+                fprints("DawPlayback.json", "}")
+            endin
+            instr GeneratePluginJson
+                turnoff
+                SPluginUuid = strget(p4)
+                if (giWriteComma == 1) then
+                    fprints("DawPlayback.json", ",")
+                else
+                    giWriteComma = 1
+                endif
+                fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
+                iI = 0
+                iWriteComma = 0
+                while (1 == 1) do
+                    SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
+                    iJ = 0
+                    while (iJ != -1) do
+                        SLine, iJ readfi SFileName
+                        if (iJ == -1) then
+                        else
+                            if (iWriteComma == 1) then
+                                fprints("DawPlayback.json", ",")
+                            else
+                                iWriteComma = 1
+                            endif
+                            if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\\n") == 0) then
+                                SLine = strsub(SLine, 0, strlen(SLine) - 1)
+                            endif
+                            fprints("DawPlayback.json", SLine)
+                        endif
+                    od
+                    iI += 1
+                od
+            endin
+            instr GenerateJson
+                prints("instr GenerateJson ...\\n")
+                scoreline_i("i \\"StartJsonObject\\" 0 0")
+                iI = 0
+                while (iI < 1000) do
+                    if (strlen(gSPluginUuids[iI][0]) == 36) then
+                        scoreline_i(sprintf("i \\"GeneratePluginJson\\" 0 0 \\"%s\\"", gSPluginUuids[iI][0]))
+                        scoreline_i("i \\"EndJsonArray\\" 0 0")
+                    endif
+                    iI += 1
+                od
+                scoreline_i("i \\"EndJsonObject\\" 0 0")
+                prints("instr GenerateJson - done\\n")
+            endin
+         #end
+         #ifndef ADSR_LINSEGR_UDO_ORC
+         #define ADSR_LINSEGR_UDO_ORC ##
+        opcode adsr_linsegr, a, iiii
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout aOut
+        endop
+        opcode adsr_linsegr, k, kkkk
+            iA, iD, iS, iR xin
+            iA = max(0.000001, iA)
+            iD = max(0.000001, iD)
+            iR = max(0.000001, iR)
+            kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+            xout kOut
+        endop
+         #end
+        gSCcInfo_CircleSynth[] = fillarray( \\
+        \\
+            "example", "bool", "false", "synced", \\
+        \\
+            "", "", "", "")
+         #define gSCcInfo_CircleSynth_Count #8#
+         #define CC_INFO_CHANNEL #0#
+         #define CC_INFO_TYPE #1#
+         #define CC_INFO_VALUE #2#
+         #define CC_INFO_SYNC_TYPE #3#
+         #define CC_NO_SYNC #0#
+         #define CC_SYNC_TO_CHANNEL #1#
+         #ifdef gSCcInfo_CircleSynth_Count
+            if (lenarray(gSCcInfo_CircleSynth) == $gSCcInfo_CircleSynth_Count) then
+                giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+                reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+            endif
+         #else
+            giCcCount_CircleSynth = (lenarray(gSCcInfo_CircleSynth) / 4) - 1
+            reshapearray(gSCcInfo_CircleSynth, giCcCount_CircleSynth + 1, 4)
+         #end
+        opcode ccIndex_CircleSynth, i, S
+            SChannel xin
+            kgoto end
+            iI = 0
+            while (iI < giCcCount_CircleSynth) do
+                if (strcmp(gSCcInfo_CircleSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+                iI += 1
+            od
+            iI = -1
+        end:
+            xout iI
+        endop
+        giCcValueDefaults_CircleSynth[] init giCcCount_CircleSynth
+        giCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcValues_CircleSynth[][] init 1, giCcCount_CircleSynth
+        gkCcSyncTypes_CircleSynth[][] init 1, giCcCount_CircleSynth
+        instr CircleSynth_InitializeCcValues
+            iI = 0
+            while (iI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[iI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[iI][$CC_INFO_VALUE]
+                iJ = 0
+                while (iJ < 1) do
+                    iValue = -1
+                    if (strcmp(SType, "bool") == 0) then
+                        if (strcmp(SValue, "false") == 0) then
+                            iValue = 0
+                        else
+                            iValue = 1
+                        endif
+                    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
+                        iValue = strtod(SValue)
+                    endif
+                    giCcValueDefaults_CircleSynth[iI] = iValue
+                    giCcValues_CircleSynth[iJ][iI] = iValue
+                    iJ += 1
+                od
+                iI += 1
+            od
+            igoto end
+            kI = 0
+            while (kI < giCcCount_CircleSynth) do
+                SType = gSCcInfo_CircleSynth[kI][$CC_INFO_TYPE]
+                SValue = gSCcInfo_CircleSynth[kI][$CC_INFO_VALUE]
+                SSyncType = gSCcInfo_CircleSynth[kI][$CC_INFO_SYNC_TYPE]
+                kJ = 0
+                while (kJ < 1) do
+                    kValue = -1
+                    if (strcmpk(SType, "bool") == 0) then
+                        if (strcmpk(SValue, "false") == 0) then
+                            kValue = 0
+                        else
+                            kValue = 1
+                        endif
+                    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
+                        kValue = strtodk(SValue)
+                    endif
+                    gkCcValues_CircleSynth[kJ][kI] = kValue
+                    gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_NO_SYNC
+                    if (strcmpk(SSyncType, "synced") == 0) then
+                        gkCcSyncTypes_CircleSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+                    endif
+                    kJ += 1
+                od
+                kI += 1
+            od
+            turnoff
+        end:
+        endin
+        event_i("i", "CircleSynth_InitializeCcValues", 0, -1)
+        instr CircleSynth_CreateCcIndexes
+            giCc_CircleSynth_example init ccIndex_CircleSynth("example")
+            turnoff
+        endin
+        event_i("i", "CircleSynth_CreateCcIndexes", 0, -1)
         giCircleSynth_HeightRange init 50 - 1
         giCircleSynth_RadiusRange init 50 - 1
         giCircleSynth_SpreadSpeedRange init 15 - 1
@@ -1816,7 +1982,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        instr 3
+        instr 4
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
@@ -1856,15 +2022,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
         endin:
         endin
-            instr Preallocate_3
+            instr Preallocate_4
                 ii = 0
                 while (ii < giPresetUuidPreallocationCount[0]) do
-                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 3, ii, 3))
+                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 4, ii, 3))
                     ii += 1
                 od
                 turnoff
             endin
-            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 3))
+            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
          #ifndef ADSR_LINSEGR_UDO_ORC
          #define ADSR_LINSEGR_UDO_ORC ##
         opcode adsr_linsegr, a, iiii
@@ -2107,7 +2273,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        instr 4
+        instr 5
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
@@ -2147,15 +2313,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
         endin:
         endin
-            instr Preallocate_4
+            instr Preallocate_5
                 ii = 0
                 while (ii < giPresetUuidPreallocationCount[1]) do
-                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 4, ii, 3))
+                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 5, ii, 3))
                     ii += 1
                 od
                 turnoff
             endin
-            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
+            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
          #ifndef ADSR_LINSEGR_UDO_ORC
          #define ADSR_LINSEGR_UDO_ORC ##
         opcode adsr_linsegr, a, iiii
@@ -2345,7 +2511,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
          #end
-        instr 5
+        instr 6
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
@@ -2402,15 +2568,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
         end:
         endin
-            instr Preallocate_5
+            instr Preallocate_6
                 ii = 0
                 while (ii < giPresetUuidPreallocationCount[2]) do
-                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1063 63", 5, ii, 1))
+                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1063 63", 6, ii, 1))
                     ii += 1
                 od
                 turnoff
             endin
-            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
+            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
         gSCcInfo_Reverb[] = fillarray( \\
         \\
             "enabled", "bool", "false", "synced", \\
@@ -2515,7 +2681,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             giCc_Reverb_volume init ccIndex_Reverb("volume")
         endin
         event_i("i", "Reverb_CreateCcIndexes", 0, -1)
-        instr 8
+        instr 9
             iOrcInstanceIndex = 0
             iEventType = p4
             if (iEventType == 4) then
@@ -2567,16 +2733,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 od
             endif
         endin
-            instr Preallocate_8
+            instr Preallocate_9
                 ii = 0
                 while (ii < 10) do
-                    scoreline_i(sprintf("i %d.%.3d 0 .1 0 0 0", 8, ii))
+                    scoreline_i(sprintf("i %d.%.3d 0 .1 0 0 0", 9, ii))
                     ii += 1
                 od
                 turnoff
             endin
-            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
-        instr 6
+            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 9))
+        instr 7
             kAux = 0
             while (kAux < gi_auxCount) do
                 kInstrument = 0
@@ -2593,7 +2759,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 kAux += 1
             od
         endin
-        instr 7
+        instr 8
             k_aux = p4 - gi_auxIndexOffset
             k_track = p5 - gi_instrumentIndexOffset
             k_channel = p6
@@ -2601,14 +2767,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
             turnoff
         endin
-        instr 9
+        instr 10
             k_track = p4 - gi_instrumentIndexOffset
             k_channel = p5
             k_volume = p6
             ga_masterVolumes[k_track][k_channel] = k_volume
             turnoff
         endin
-        instr 10
+        instr 11
             kChannel = 0
             while (kChannel < $INTERNAL_CHANNEL_COUNT) do
                 ga_masterSignals[kChannel] = 0
@@ -2657,476 +2823,476 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #ifndef SCORE_START_DELAY
             #define SCORE_START_DELAY #5#
          #end
-        i 1 0 -1 3 0 1 3
-        i 8.1 0 -1 1 0 0
-        i 7 0.004 1 3 0 0 0.46
-        i 7 0.004 1 3 0 1 0.46
-        i 7 0.004 1 3 0 2 0.46
-        i 7 0.004 1 3 0 3 0.46
-        i 7 0.004 1 3 0 4 0.48
-        i 7 0.004 1 3 0 5 0.48
-        i 7 0.004 1 3 1 0 0.46
-        i 7 0.004 1 3 1 1 0.46
-        i 7 0.004 1 3 1 2 0.46
-        i 7 0.004 1 3 1 3 0.46
-        i 7 0.004 1 3 1 4 1.00
-        i 7 0.004 1 3 1 5 1.00
-        i 7 0.004 1 3 2 0 0.04
-        i 7 0.004 1 3 2 1 0.04
-        i 7 0.004 1 3 2 2 0.04
-        i 7 0.004 1 3 2 3 0.04
-        i 7 0.004 1 3 2 4 1.00
-        i 7 0.004 1 3 2 5 1.00
-        i 9 0.004 1 3 0 1.00
-        i 9 0.004 1 3 1 1.00
-        i 9 0.004 1 3 2 1.00
-        i 9 0.004 1 3 3 1.00
-        i 9 0.004 1 3 4 1.00
-        i 9 0.004 1 3 5 1.00
+        i 2 0 -1 3 0 1 3
+        i 9.1 0 -1 1 0 0
+        i 8 0.004 1 3 0 0 0.46
+        i 8 0.004 1 3 0 1 0.46
+        i 8 0.004 1 3 0 2 0.46
+        i 8 0.004 1 3 0 3 0.46
+        i 8 0.004 1 3 0 4 0.48
+        i 8 0.004 1 3 0 5 0.48
+        i 8 0.004 1 3 1 0 0.46
+        i 8 0.004 1 3 1 1 0.46
+        i 8 0.004 1 3 1 2 0.46
+        i 8 0.004 1 3 1 3 0.46
+        i 8 0.004 1 3 1 4 1.00
+        i 8 0.004 1 3 1 5 1.00
+        i 8 0.004 1 3 2 0 0.04
+        i 8 0.004 1 3 2 1 0.04
+        i 8 0.004 1 3 2 2 0.04
+        i 8 0.004 1 3 2 3 0.04
+        i 8 0.004 1 3 2 4 1.00
+        i 8 0.004 1 3 2 5 1.00
+        i 10 0.004 1 3 0 1.00
+        i 10 0.004 1 3 1 1.00
+        i 10 0.004 1 3 2 1.00
+        i 10 0.004 1 3 3 1.00
+        i 10 0.004 1 3 4 1.00
+        i 10 0.004 1 3 5 1.00
         i "EndOfInstrumentAllocations" 3 -1
         i "SendStartupMessage" 0 1
         i "SendStartupMessage" 4 -1
         b $SCORE_START_DELAY
-        i 8 0.01 1 4 0 1.00
-        i 8 0.01 1 4 1 0.98
-        i 8 0.01 1 4 5 1.00
-        i 4.001 2.001 -1 3 48 96
-        i 3.001 2.001 -1 3 24 45
-        i 3.002 2.001 -1 3 36 63
-        i 5.002 2.853 0.020 1 1098 76
-        i 5.003 3.825 0.020 1 1095 79
-        i 5.004 4.621 0.020 1 1103 52
-        i 5.005 5.243 0.020 1 1103 78
-        i 5.006 5.799 0.020 1 1095 71
-        i 5.007 6.531 0.020 1 1097 58
-        i 5.008 7.439 0.020 1 1097 78
-        i 5.009 8.356 0.020 1 1095 72
-        i 5.010 9.097 0.020 1 1103 52
-        i 5.011 9.664 0.020 1 1102 79
-        i 3.003 10.001 -1 3 31 45
-        i 3.004 10.001 -1 3 43 63
-        i -3.001 10.001 0
-        i -3.002 10.001 0
-        i 5.012 10.237 0.020 1 1096 74
-        i 5.013 10.277 0.020 1 1096 77
-        i 5.014 10.852 0.020 1 1094 69
-        i 5.015 11.061 0.020 1 1098 74
-        i 5.016 11.380 0.020 1 1102 57
-        i 5.017 12.024 0.020 1 1096 76
-        i 5.018 12.321 0.020 1 1101 58
-        i 5.019 12.887 0.020 1 1094 55
-        i 5.020 13.176 0.020 1 1095 82
-        i 5.021 13.573 0.020 1 1104 76
-        i 5.022 13.911 0.020 1 1097 60
-        i 5.023 14.085 0.020 1 1102 59
-        i 5.024 14.732 0.020 1 1095 62
-        i 5.025 14.772 0.020 1 1096 73
-        i 5.026 15.325 0.020 1 1093 64
-        i 5.027 15.592 0.020 1 1099 61
-        i 5.028 15.832 0.020 1 1103 75
-        i 5.029 15.969 0.020 1 1099 76
-        i 5.030 16.576 0.020 1 1095 69
-        i 5.031 16.641 0.020 1 1097 56
-        i 5.032 16.752 0.020 1 1101 61
-        i 5.033 17.207 0.020 1 1103 79
-        i 5.034 17.384 0.020 1 1093 72
-        i 5.035 17.585 0.020 1 1096 74
-        i 5.036 17.908 0.020 1 1105 65
-        i 3.005 18.001 -1 3 29 45
-        i 3.006 18.001 -1 3 41 63
-        i -3.003 18.001 0
-        i -3.004 18.001 0
-        i 5.037 18.016 0.020 1 1103 69
-        i 5.038 18.341 0.020 1 1098 78
-        i 5.039 18.444 0.020 1 1095 59
-        i 5.040 18.560 0.020 1 1101 75
-        i 5.041 19.175 0.020 1 1097 55
-        i 5.042 19.215 0.020 1 1094 79
-        i 5.043 19.280 0.020 1 1097 83
-        i 5.044 19.681 0.020 1 1099 60
-        i 5.045 19.756 0.020 1 1092 81
-        i 5.046 20.176 0.020 1 1099 57
-        i 5.047 20.272 0.020 1 1102 53
-        i 5.048 20.441 0.020 1 1097 79
-        i 5.049 20.965 0.020 1 1104 60
-        i 5.050 21.105 0.020 1 1094 59
-        i 5.051 21.171 0.020 1 1100 75
-        i 5.052 21.755 0.020 1 1104 64
-        i 5.053 21.859 0.020 1 1092 74
-        i 5.054 21.981 0.020 1 1096 56
-        i 5.055 22.308 0.020 1 1096 79
-        i 5.056 22.436 0.020 1 1102 78
-        i 5.057 22.759 0.020 1 1098 67
-        i 5.058 23.005 0.020 1 1094 73
-        i 5.059 23.045 0.020 1 1100 56
-        i 5.060 23.127 0.020 1 1098 69
-        i 5.061 23.623 0.020 1 1093 58
-        i 5.062 23.709 0.020 1 1098 72
-        i 5.063 23.749 0.020 1 1092 59
-        i 5.064 23.809 0.020 1 1098 67
-        i 5.065 24.173 0.020 1 1091 68
-        i 5.066 24.509 0.020 1 1102 62
-        i 5.067 24.556 0.020 1 1096 60
-        i 5.068 24.711 0.020 1 1101 64
-        i 5.069 24.760 0.020 1 1100 68
-        i 5.070 25.168 0.020 1 1104 66
-        i 5.071 25.249 0.020 1 1100 69
-        i 5.072 25.587 0.020 1 1099 61
-        i 5.073 25.635 0.020 1 1094 82
-        i 3.007 26.001 -1 3 33 45
-        i 3.008 26.001 -1 3 45 63
-        i -3.005 26.001 0
-        i -3.006 26.001 0
-        i 5.074 26.013 0.020 1 1095 61
-        i 5.075 26.053 0.020 1 1103 75
-        i 5.076 26.333 0.020 1 1092 80
-        i 5.077 26.376 0.020 1 1097 84
-        i 5.078 26.685 0.020 1 1097 57
-        i 5.079 26.749 0.020 1 1097 62
-        i 5.080 26.856 0.020 1 1101 56
-        i 5.081 27.175 0.020 1 1099 65
-        i 5.082 27.509 0.020 1 1099 68
-        i 5.083 27.549 0.020 1 1093 79
-        i 5.084 27.591 0.020 1 1099 54
-        i 5.085 28.060 0.020 1 1093 65
-        i 5.086 28.248 0.020 1 1091 56
-        i 5.087 28.288 0.020 1 1097 79
-        i 5.088 28.339 0.020 1 1099 55
-        i 5.089 28.589 0.020 1 1092 72
-        i 5.090 29.019 0.020 1 1101 66
-        i 5.091 29.059 0.020 1 1101 78
-        i 5.092 29.148 0.020 1 1100 59
-        i 5.093 29.196 0.020 1 1095 75
-        i 5.094 29.335 0.020 1 1101 75
-        i 5.095 29.728 0.020 1 1099 67
-        i 5.096 29.768 0.020 1 1099 75
-        i 5.097 29.896 0.020 1 1105 74
-        i 5.098 30.003 0.020 1 1098 76
-        i 5.099 30.155 0.020 1 1093 52
-        i 5.100 30.521 0.020 1 1095 71
-        i 5.101 30.561 0.020 1 1103 75
-        i 5.102 30.771 0.020 1 1098 54
-        i 5.103 30.811 0.020 1 1093 52
-        i 5.104 30.860 0.020 1 1103 56
-        i 5.105 31.245 0.020 1 1098 81
-        i 5.106 31.332 0.020 1 1101 57
-        i 5.107 31.541 0.020 1 1105 54
-        i 5.108 31.589 0.020 1 1097 81
-        i 5.109 31.629 0.020 1 1100 78
-        i 5.110 32.024 0.020 1 1092 82
-        i 5.111 32.064 0.020 1 1098 82
-        i 5.112 32.416 0.020 1 1095 82
-        i 5.113 32.497 0.020 1 1092 75
-        i 5.114 32.583 0.020 1 1100 80
-        i 5.115 32.744 0.020 1 1090 75
-        i 5.116 32.924 0.020 1 1100 82
-        i 5.117 33.005 0.020 1 1092 80
-        i 5.118 33.144 0.020 1 1097 55
-        i 5.119 33.341 0.020 1 1096 83
-        i 5.120 33.527 0.020 1 1100 62
-        i 5.121 33.587 0.020 1 1100 55
-        i 5.122 33.725 0.020 1 1101 76
-        i 5.123 33.865 0.020 1 1102 61
-        i 3.009 34.001 -1 3 31 45
-        i 3.010 34.001 -1 3 43 63
-        i -3.007 34.001 0
-        i -3.008 34.001 0
-        i 5.124 34.243 0.020 1 1098 59
-        i 5.125 34.292 0.020 1 1098 57
-        i 5.126 34.332 0.020 1 1094 75
-        i 5.127 34.420 0.020 1 1097 58
-        i 5.128 34.631 0.020 1 1092 81
-        i 5.129 35.004 0.020 1 1104 71
-        i 5.130 35.044 0.020 1 1096 71
-        i 5.131 35.108 0.020 1 1104 64
-        i 5.132 35.167 0.020 1 1099 60
-        i 5.133 35.220 0.020 1 1094 80
-        i 5.134 35.309 0.020 1 1092 68
-        i 5.135 35.741 0.020 1 1098 73
-        i 5.136 35.808 0.020 1 1100 74
-        i 5.137 35.863 0.020 1 1106 83
-        i 5.138 36.008 0.020 1 1101 55
-        i 5.139 36.057 0.020 1 1102 67
-        i 5.140 36.209 0.020 1 1090 77
-        i 5.141 36.532 0.020 1 1092 79
-        i 5.142 36.572 0.020 1 1098 74
-        i 5.143 36.720 0.020 1 1100 63
-        i 5.144 36.859 0.020 1 1096 83
-        i 5.145 36.899 0.020 1 1098 79
-        i 5.146 36.939 0.020 1 1091 63
-        i 5.147 37.240 0.020 1 1091 64
-        i 5.148 37.301 0.020 1 1098 77
-        i 5.149 37.451 0.020 1 1093 54
-        i 5.150 37.511 0.020 1 1100 56
-        i 5.151 37.708 0.020 1 1098 66
-        i 5.152 37.795 0.020 1 1100 57
-        i 5.153 38.035 0.020 1 1099 59
-        i 5.154 38.075 0.020 1 1099 74
-        i 5.155 38.131 0.020 1 1094 68
-        i 5.156 38.397 0.020 1 1103 78
-        i 5.157 38.437 0.020 1 1100 70
-        i 5.158 38.641 0.020 1 1095 56
-        i 5.159 38.740 0.020 1 1097 78
-        i 5.160 38.865 0.020 1 1097 74
-        i 5.161 38.905 0.020 1 1097 60
-        i 5.162 38.967 0.020 1 1098 68
-        i 5.163 39.108 0.020 1 1093 56
-        i 5.164 39.532 0.020 1 1093 80
-        i 5.165 39.572 0.020 1 1097 52
-        i 5.166 39.612 0.020 1 1105 58
-        i 5.167 39.652 0.020 1 1100 73
-        i 5.168 39.692 0.020 1 1095 68
-        i 5.169 39.732 0.020 1 1091 60
-        i 5.170 40.240 0.020 1 1099 73
-        i 5.171 40.285 0.020 1 1099 74
-        i 5.172 40.325 0.020 1 1105 60
-        i 5.173 40.408 0.020 1 1103 56
-        i 5.174 40.453 0.020 1 1102 75
-        i 5.175 40.668 0.020 1 1089 76
-        i 5.176 41.043 0.020 1 1091 72
-        i 5.177 41.104 0.020 1 1097 55
-        i 5.178 41.180 0.020 1 1097 76
-        i 5.179 41.220 0.020 1 1099 53
-        i 5.180 41.269 0.020 1 1101 77
-        i 5.181 41.403 0.020 1 1092 77
-        i 5.182 41.443 0.020 1 1103 75
-        i 5.183 41.740 0.020 1 1091 69
-        i 5.184 41.831 0.020 1 1097 53
-        i 5.185 41.940 0.020 1 1094 84
-        i 5.186 42.097 0.020 1 1101 52
-        i 5.187 42.151 0.020 1 1099 81
-        i 5.188 42.191 0.020 1 1099 81
-        i 5.189 42.381 0.020 1 1101 74
-        i 5.190 42.547 0.020 1 1098 72
-        i 5.191 42.587 0.020 1 1098 77
-        i 5.192 42.627 0.020 1 1095 63
-        i 5.193 42.929 0.020 1 1103 54
-        i 5.194 42.975 0.020 1 1099 60
-        i 5.195 43.015 0.020 1 1103 66
-        i 5.196 43.055 0.020 1 1101 62
-        i 5.197 43.240 0.020 1 1096 64
-        i 5.198 43.308 0.020 1 1097 49
-        i 5.199 43.355 0.020 1 1096 68
-        i 5.200 43.585 0.020 1 1094 64
-        i 5.201 43.644 0.020 1 1105 70
-        i 5.202 43.684 0.020 1 1097 80
-        i 5.203 43.941 0.020 1 1095 73
-        i 5.204 44.051 0.020 1 1098 73
-        i 5.205 44.091 0.020 1 1100 65
-        i 5.206 44.131 0.020 1 1096 53
-        i 5.207 44.183 0.020 1 1105 80
-        i 5.208 44.223 0.020 1 1091 49
-        i 5.209 44.428 0.020 1 1095 67
-        i 5.210 44.740 0.020 1 1100 56
-        i 5.211 44.780 0.020 1 1093 81
-        i 5.212 44.820 0.020 1 1105 71
-        i 5.213 44.860 0.020 1 1098 58
-        i 5.214 44.943 0.020 1 1102 62
-        i 5.215 45.155 0.020 1 1098 49
-        i 5.216 45.196 0.020 1 1090 65
-        i 5.217 45.555 0.020 1 1090 67
-        i 5.218 45.595 0.020 1 1098 81
-        i 5.219 45.677 0.020 1 1096 74
-        i 5.220 45.717 0.020 1 1102 71
-        i 5.221 45.777 0.020 1 1098 67
-        i 5.222 45.915 0.020 1 1093 71
-        i 5.223 45.988 0.020 1 1102 55
-        i 5.224 46.240 0.020 1 1092 80
-        i 5.225 46.449 0.020 1 1096 71
-        i 5.226 46.489 0.020 1 1095 74
-        i 5.227 46.529 0.020 1 1100 73
-        i 5.228 46.569 0.020 1 1100 57
-        i 5.229 46.631 0.020 1 1102 84
-        i 5.230 46.825 0.020 1 1090 62
-        i 5.231 46.879 0.020 1 1100 61
-        i 5.232 47.059 0.020 1 1098 54
-        i 5.233 47.119 0.020 1 1097 63
-        i 5.234 47.188 0.020 1 1096 50
-        i 5.235 47.368 0.020 1 1088 62
-        i 5.236 47.408 0.020 1 1104 81
-        i 5.237 47.448 0.020 1 1098 77
-        i 5.238 47.488 0.020 1 1104 76
-        i 5.239 47.528 0.020 1 1100 58
-        i 5.240 47.740 0.020 1 1096 80
-        i 5.241 47.836 0.020 1 1098 75
-        i 5.242 47.888 0.020 1 1095 83
-        i 5.243 47.937 0.020 1 1106 65
-        i -4.001 48.000 0
-        i -3.009 48.000 0
-        i -3.010 48.000 0
-        i 5.244 48.009 0.020 1 1094 67
-        i 5.245 48.091 0.020 1 1098 63
-        i 5.246 48.217 0.020 1 1096 78
-        i 5.247 48.257 0.020 1 1102 78
-        i 5.248 48.561 0.020 1 1099 65
-        i 5.249 48.601 0.020 1 1101 79
-        i 5.250 48.641 0.020 1 1096 73
-        i 5.251 48.780 0.020 1 1090 64
-        i 5.252 48.869 0.020 1 1106 52
-        i 5.253 48.909 0.020 1 1096 50
-        i 5.254 48.993 0.020 1 1096 52
-        i 5.255 49.197 0.020 1 1094 83
-        i 5.256 49.239 0.020 1 1101 67
-        i 5.257 49.337 0.020 1 1097 64
-        i 5.258 49.377 0.020 1 1104 81
-        i 5.259 49.476 0.020 1 1103 72
-        i 5.260 49.747 0.020 1 1090 56
-        i 5.261 49.787 0.020 1 1098 58
-        i 5.262 49.912 0.020 1 1094 75
-        i 5.263 49.952 0.020 1 1094 74
-        i 5.264 50.017 0.020 1 1098 61
-        i 5.265 50.064 0.020 1 1091 74
-        i 5.266 50.265 0.020 1 1095 53
-        i 5.267 50.372 0.020 1 1097 50
-        i 5.268 50.435 0.020 1 1102 64
-        i 5.269 50.475 0.020 1 1093 65
-        i 5.270 50.653 0.020 1 1096 57
-        i 5.271 50.737 0.020 1 1093 56
-        i 5.272 50.807 0.020 1 1101 80
-        i 5.273 50.861 0.020 1 1102 70
-        i 5.274 51.049 0.020 1 1096 61
-        i 5.275 51.089 0.020 1 1095 60
-        i 5.276 51.164 0.020 1 1103 73
-        i 5.277 51.204 0.020 1 1099 70
-        i 5.278 51.244 0.020 1 1089 72
-        i 5.279 51.547 0.020 1 1099 79
-        i 5.280 51.587 0.020 1 1097 59
-        i 5.281 51.716 0.020 1 1096 65
-        i 5.282 51.756 0.020 1 1097 64
-        i 5.283 51.796 0.020 1 1097 49
-        i 5.284 51.836 0.020 1 1089 63
-        i 5.285 51.879 0.020 1 1105 77
-        i 5.286 51.919 0.020 1 1103 62
-        i 5.287 52.236 0.020 1 1095 66
-        i 5.288 52.385 0.020 1 1099 76
-        i 5.289 52.433 0.020 1 1095 62
-        i 5.290 52.473 0.020 1 1094 72
-        i 5.291 52.513 0.020 1 1101 78
-        i 5.292 52.553 0.020 1 1107 72
-        i 5.293 52.635 0.020 1 1097 71
-        i 5.294 52.675 0.020 1 1095 81
-        i 5.295 53.064 0.020 1 1097 77
-        i 5.296 53.104 0.020 1 1099 64
-        i 5.297 53.144 0.020 1 1103 62
-        i 5.298 53.184 0.020 1 1102 65
-        i 5.299 53.375 0.020 1 1089 75
-        i 5.300 53.435 0.020 1 1105 58
-        i 5.301 53.475 0.020 1 1097 57
-        i 5.302 53.615 0.020 1 1095 62
-        i 5.303 53.735 0.020 1 1102 57
-        i 5.304 53.871 0.020 1 1097 70
-        i 5.305 54.013 0.020 1 1093 72
-        i 5.306 54.053 0.020 1 1102 69
-        i 5.307 54.093 0.020 1 1103 57
-        i 5.308 54.296 0.020 1 1091 63
-        i 5.309 54.405 0.020 1 1099 72
-        i 5.310 54.456 0.020 1 1095 55
-        i 5.311 54.572 0.020 1 1092 74
-        i 5.312 54.612 0.020 1 1099 77
-        i 5.313 54.652 0.020 1 1095 62
-        i 5.314 54.853 0.020 1 1094 82
-        i 5.315 54.929 0.020 1 1101 67
-        i 5.316 54.969 0.020 1 1097 49
-        i 5.317 55.040 0.020 1 1094 54
-        i 5.318 55.117 0.020 1 1097 48
-        i 5.319 55.233 0.020 1 1094 56
-        i 5.320 55.273 0.020 1 1101 83
-        i 5.321 55.503 0.020 1 1101 52
-        i 5.322 55.543 0.020 1 1099 48
-        i 5.323 55.636 0.020 1 1089 47
-        i 5.324 55.676 0.020 1 1096 83
-        i 5.325 55.716 0.020 1 1104 72
-        i 5.326 55.756 0.020 1 1095 80
-        i 5.327 56.065 0.020 1 1097 63
-        i 5.328 56.105 0.020 1 1096 80
-        i 5.329 56.145 0.020 1 1099 58
-        i 5.330 56.329 0.020 1 1096 57
-        i 5.331 56.369 0.020 1 1089 54
-        i 5.332 56.409 0.020 1 1102 64
-        i 5.333 56.449 0.020 1 1105 49
-        i 5.334 56.489 0.020 1 1098 55
-        i 5.335 56.732 0.020 1 1094 62
-        i 5.336 56.875 0.020 1 1096 83
-        i 5.337 56.933 0.020 1 1101 57
-        i 5.338 56.973 0.020 1 1100 62
-        i 5.339 57.025 0.020 1 1094 80
-        i 5.340 57.065 0.020 1 1093 53
-        i 5.341 57.176 0.020 1 1106 49
-        i 5.342 57.216 0.020 1 1096 71
-        i 5.343 57.501 0.020 1 1104 67
-        i 5.344 57.560 0.020 1 1098 79
-        i 5.345 57.600 0.020 1 1100 74
-        i 5.346 57.696 0.020 1 1103 72
-        i 5.347 57.904 0.020 1 1090 56
-        i 5.348 57.944 0.020 1 1104 55
-        i 5.349 57.984 0.020 1 1098 76
-        i 5.350 58.156 0.020 1 1094 50
-        i 5.351 58.231 0.020 1 1102 78
-        i 5.352 58.305 0.020 1 1094 62
-        i 5.353 58.421 0.020 1 1096 56
-        i 5.354 58.645 0.020 1 1101 83
-        i 5.355 58.685 0.020 1 1102 67
-        i 5.356 58.743 0.020 1 1100 61
-        i 5.357 58.783 0.020 1 1092 76
-        i 5.358 58.844 0.020 1 1096 76
-        i 5.359 58.920 0.020 1 1096 60
-        i 5.360 59.080 0.020 1 1092 54
-        i 5.361 59.269 0.020 1 1100 68
-        i 5.362 59.375 0.020 1 1100 66
-        i 5.363 59.415 0.020 1 1094 59
-        i 5.364 59.496 0.020 1 1096 49
-        i 5.365 59.536 0.020 1 1098 44
-        i 5.366 59.611 0.020 1 1095 67
-        i 5.367 59.651 0.020 1 1100 82
-        i 5.368 59.731 0.020 1 1095 80
-        i 5.369 59.816 0.020 1 1102 66
-        i 5.370 59.948 0.020 1 1098 76
-        i 5.371 60.101 0.020 1 1088 48
-        i 5.372 60.141 0.020 1 1098 75
-        i 5.373 60.181 0.020 1 1104 76
-        i 5.374 60.233 0.020 1 1097 56
-        i 5.375 60.303 0.020 1 1094 66
-        i 5.376 60.509 0.020 1 1096 55
-        i 5.377 60.584 0.020 1 1095 84
-        i 5.378 60.788 0.020 1 1101 65
-        i 5.379 60.873 0.020 1 1102 70
-        i 5.380 60.913 0.020 1 1090 46
-        i 5.381 60.953 0.020 1 1098 66
-        i 5.382 60.993 0.020 1 1106 68
-        i 5.383 61.033 0.020 1 1095 80
-        i 5.384 61.231 0.020 1 1093 79
-        i 5.385 61.349 0.020 1 1094 72
-        i 5.386 61.389 0.020 1 1097 73
-        i 5.387 61.429 0.020 1 1104 60
-        i 5.388 61.469 0.020 1 1101 75
-        i 5.389 61.648 0.020 1 1093 84
-        i 5.390 61.836 0.020 1 1096 72
-        i 5.391 61.892 0.020 1 1106 57
-        i 5.392 62.088 0.020 1 1101 74
-        i 5.393 62.128 0.020 1 1099 69
-        i 5.394 62.168 0.020 1 1094 79
-        i 5.395 62.265 0.020 1 1102 57
-        i 5.396 62.336 0.020 1 1103 69
-        i 5.397 62.376 0.020 1 1091 49
-        i 5.398 62.492 0.020 1 1099 70
-        i 5.399 62.661 0.020 1 1097 62
-        i 5.400 62.701 0.020 1 1093 73
-        i 5.401 62.741 0.020 1 1101 58
-        i 5.402 63.008 0.020 1 1095 74
-        i 5.403 63.149 0.020 1 1101 67
-        i 5.404 63.189 0.020 1 1093 54
-        i 5.405 63.229 0.020 1 1101 54
-        i 5.406 63.269 0.020 1 1100 56
-        i 5.407 63.348 0.020 1 1099 70
-        i 5.408 63.388 0.020 1 1097 45
-        i 5.409 63.592 0.020 1 1093 66
-        i 5.410 63.632 0.020 1 1107 76
-        i 5.411 63.676 0.020 1 1109 77
-        i 5.412 63.833 0.020 1 1111 78
-        i 5.413 63.873 0.020 1 1112 48
-        i 5.414 63.913 0.020 1 1112 51
-        i 5.415 63.953 0.020 1 1093 80
-        i 5.416 63.993 0.020 1 1097 53
+        i 9 0.01 1 4 0 1.00
+        i 9 0.01 1 4 1 0.98
+        i 9 0.01 1 4 5 1.00
+        i 5.001 2.001 -1 3 48 96
+        i 4.001 2.001 -1 3 24 45
+        i 4.002 2.001 -1 3 36 63
+        i 6.002 2.853 0.020 1 1098 76
+        i 6.003 3.825 0.020 1 1095 79
+        i 6.004 4.621 0.020 1 1103 52
+        i 6.005 5.243 0.020 1 1103 78
+        i 6.006 5.799 0.020 1 1095 71
+        i 6.007 6.531 0.020 1 1097 58
+        i 6.008 7.439 0.020 1 1097 78
+        i 6.009 8.356 0.020 1 1095 72
+        i 6.010 9.097 0.020 1 1103 52
+        i 6.011 9.664 0.020 1 1102 79
+        i 4.003 10.001 -1 3 31 45
+        i 4.004 10.001 -1 3 43 63
+        i -4.001 10.001 0
+        i -4.002 10.001 0
+        i 6.012 10.237 0.020 1 1096 74
+        i 6.013 10.277 0.020 1 1096 77
+        i 6.014 10.852 0.020 1 1094 69
+        i 6.015 11.061 0.020 1 1098 74
+        i 6.016 11.380 0.020 1 1102 57
+        i 6.017 12.024 0.020 1 1096 76
+        i 6.018 12.321 0.020 1 1101 58
+        i 6.019 12.887 0.020 1 1094 55
+        i 6.020 13.176 0.020 1 1095 82
+        i 6.021 13.573 0.020 1 1104 76
+        i 6.022 13.911 0.020 1 1097 60
+        i 6.023 14.085 0.020 1 1102 59
+        i 6.024 14.732 0.020 1 1095 62
+        i 6.025 14.772 0.020 1 1096 73
+        i 6.026 15.325 0.020 1 1093 64
+        i 6.027 15.592 0.020 1 1099 61
+        i 6.028 15.832 0.020 1 1103 75
+        i 6.029 15.969 0.020 1 1099 76
+        i 6.030 16.576 0.020 1 1095 69
+        i 6.031 16.641 0.020 1 1097 56
+        i 6.032 16.752 0.020 1 1101 61
+        i 6.033 17.207 0.020 1 1103 79
+        i 6.034 17.384 0.020 1 1093 72
+        i 6.035 17.585 0.020 1 1096 74
+        i 6.036 17.908 0.020 1 1105 65
+        i 4.005 18.001 -1 3 29 45
+        i 4.006 18.001 -1 3 41 63
+        i -4.003 18.001 0
+        i -4.004 18.001 0
+        i 6.037 18.016 0.020 1 1103 69
+        i 6.038 18.341 0.020 1 1098 78
+        i 6.039 18.444 0.020 1 1095 59
+        i 6.040 18.560 0.020 1 1101 75
+        i 6.041 19.175 0.020 1 1097 55
+        i 6.042 19.215 0.020 1 1094 79
+        i 6.043 19.280 0.020 1 1097 83
+        i 6.044 19.681 0.020 1 1099 60
+        i 6.045 19.756 0.020 1 1092 81
+        i 6.046 20.176 0.020 1 1099 57
+        i 6.047 20.272 0.020 1 1102 53
+        i 6.048 20.441 0.020 1 1097 79
+        i 6.049 20.965 0.020 1 1104 60
+        i 6.050 21.105 0.020 1 1094 59
+        i 6.051 21.171 0.020 1 1100 75
+        i 6.052 21.755 0.020 1 1104 64
+        i 6.053 21.859 0.020 1 1092 74
+        i 6.054 21.981 0.020 1 1096 56
+        i 6.055 22.308 0.020 1 1096 79
+        i 6.056 22.436 0.020 1 1102 78
+        i 6.057 22.759 0.020 1 1098 67
+        i 6.058 23.005 0.020 1 1094 73
+        i 6.059 23.045 0.020 1 1100 56
+        i 6.060 23.127 0.020 1 1098 69
+        i 6.061 23.623 0.020 1 1093 58
+        i 6.062 23.709 0.020 1 1098 72
+        i 6.063 23.749 0.020 1 1092 59
+        i 6.064 23.809 0.020 1 1098 67
+        i 6.065 24.173 0.020 1 1091 68
+        i 6.066 24.509 0.020 1 1102 62
+        i 6.067 24.556 0.020 1 1096 60
+        i 6.068 24.711 0.020 1 1101 64
+        i 6.069 24.760 0.020 1 1100 68
+        i 6.070 25.168 0.020 1 1104 66
+        i 6.071 25.249 0.020 1 1100 69
+        i 6.072 25.587 0.020 1 1099 61
+        i 6.073 25.635 0.020 1 1094 82
+        i 4.007 26.001 -1 3 33 45
+        i 4.008 26.001 -1 3 45 63
+        i -4.005 26.001 0
+        i -4.006 26.001 0
+        i 6.074 26.013 0.020 1 1095 61
+        i 6.075 26.053 0.020 1 1103 75
+        i 6.076 26.333 0.020 1 1092 80
+        i 6.077 26.376 0.020 1 1097 84
+        i 6.078 26.685 0.020 1 1097 57
+        i 6.079 26.749 0.020 1 1097 62
+        i 6.080 26.856 0.020 1 1101 56
+        i 6.081 27.175 0.020 1 1099 65
+        i 6.082 27.509 0.020 1 1099 68
+        i 6.083 27.549 0.020 1 1093 79
+        i 6.084 27.591 0.020 1 1099 54
+        i 6.085 28.060 0.020 1 1093 65
+        i 6.086 28.248 0.020 1 1091 56
+        i 6.087 28.288 0.020 1 1097 79
+        i 6.088 28.339 0.020 1 1099 55
+        i 6.089 28.589 0.020 1 1092 72
+        i 6.090 29.019 0.020 1 1101 66
+        i 6.091 29.059 0.020 1 1101 78
+        i 6.092 29.148 0.020 1 1100 59
+        i 6.093 29.196 0.020 1 1095 75
+        i 6.094 29.335 0.020 1 1101 75
+        i 6.095 29.728 0.020 1 1099 67
+        i 6.096 29.768 0.020 1 1099 75
+        i 6.097 29.896 0.020 1 1105 74
+        i 6.098 30.003 0.020 1 1098 76
+        i 6.099 30.155 0.020 1 1093 52
+        i 6.100 30.521 0.020 1 1095 71
+        i 6.101 30.561 0.020 1 1103 75
+        i 6.102 30.771 0.020 1 1098 54
+        i 6.103 30.811 0.020 1 1093 52
+        i 6.104 30.860 0.020 1 1103 56
+        i 6.105 31.245 0.020 1 1098 81
+        i 6.106 31.332 0.020 1 1101 57
+        i 6.107 31.541 0.020 1 1105 54
+        i 6.108 31.589 0.020 1 1097 81
+        i 6.109 31.629 0.020 1 1100 78
+        i 6.110 32.024 0.020 1 1092 82
+        i 6.111 32.064 0.020 1 1098 82
+        i 6.112 32.416 0.020 1 1095 82
+        i 6.113 32.497 0.020 1 1092 75
+        i 6.114 32.583 0.020 1 1100 80
+        i 6.115 32.744 0.020 1 1090 75
+        i 6.116 32.924 0.020 1 1100 82
+        i 6.117 33.005 0.020 1 1092 80
+        i 6.118 33.144 0.020 1 1097 55
+        i 6.119 33.341 0.020 1 1096 83
+        i 6.120 33.527 0.020 1 1100 62
+        i 6.121 33.587 0.020 1 1100 55
+        i 6.122 33.725 0.020 1 1101 76
+        i 6.123 33.865 0.020 1 1102 61
+        i 4.009 34.001 -1 3 31 45
+        i 4.010 34.001 -1 3 43 63
+        i -4.007 34.001 0
+        i -4.008 34.001 0
+        i 6.124 34.243 0.020 1 1098 59
+        i 6.125 34.292 0.020 1 1098 57
+        i 6.126 34.332 0.020 1 1094 75
+        i 6.127 34.420 0.020 1 1097 58
+        i 6.128 34.631 0.020 1 1092 81
+        i 6.129 35.004 0.020 1 1104 71
+        i 6.130 35.044 0.020 1 1096 71
+        i 6.131 35.108 0.020 1 1104 64
+        i 6.132 35.167 0.020 1 1099 60
+        i 6.133 35.220 0.020 1 1094 80
+        i 6.134 35.309 0.020 1 1092 68
+        i 6.135 35.741 0.020 1 1098 73
+        i 6.136 35.808 0.020 1 1100 74
+        i 6.137 35.863 0.020 1 1106 83
+        i 6.138 36.008 0.020 1 1101 55
+        i 6.139 36.057 0.020 1 1102 67
+        i 6.140 36.209 0.020 1 1090 77
+        i 6.141 36.532 0.020 1 1092 79
+        i 6.142 36.572 0.020 1 1098 74
+        i 6.143 36.720 0.020 1 1100 63
+        i 6.144 36.859 0.020 1 1096 83
+        i 6.145 36.899 0.020 1 1098 79
+        i 6.146 36.939 0.020 1 1091 63
+        i 6.147 37.240 0.020 1 1091 64
+        i 6.148 37.301 0.020 1 1098 77
+        i 6.149 37.451 0.020 1 1093 54
+        i 6.150 37.511 0.020 1 1100 56
+        i 6.151 37.708 0.020 1 1098 66
+        i 6.152 37.795 0.020 1 1100 57
+        i 6.153 38.035 0.020 1 1099 59
+        i 6.154 38.075 0.020 1 1099 74
+        i 6.155 38.131 0.020 1 1094 68
+        i 6.156 38.397 0.020 1 1103 78
+        i 6.157 38.437 0.020 1 1100 70
+        i 6.158 38.641 0.020 1 1095 56
+        i 6.159 38.740 0.020 1 1097 78
+        i 6.160 38.865 0.020 1 1097 74
+        i 6.161 38.905 0.020 1 1097 60
+        i 6.162 38.967 0.020 1 1098 68
+        i 6.163 39.108 0.020 1 1093 56
+        i 6.164 39.532 0.020 1 1093 80
+        i 6.165 39.572 0.020 1 1097 52
+        i 6.166 39.612 0.020 1 1105 58
+        i 6.167 39.652 0.020 1 1100 73
+        i 6.168 39.692 0.020 1 1095 68
+        i 6.169 39.732 0.020 1 1091 60
+        i 6.170 40.240 0.020 1 1099 73
+        i 6.171 40.285 0.020 1 1099 74
+        i 6.172 40.325 0.020 1 1105 60
+        i 6.173 40.408 0.020 1 1103 56
+        i 6.174 40.453 0.020 1 1102 75
+        i 6.175 40.668 0.020 1 1089 76
+        i 6.176 41.043 0.020 1 1091 72
+        i 6.177 41.104 0.020 1 1097 55
+        i 6.178 41.180 0.020 1 1097 76
+        i 6.179 41.220 0.020 1 1099 53
+        i 6.180 41.269 0.020 1 1101 77
+        i 6.181 41.403 0.020 1 1092 77
+        i 6.182 41.443 0.020 1 1103 75
+        i 6.183 41.740 0.020 1 1091 69
+        i 6.184 41.831 0.020 1 1097 53
+        i 6.185 41.940 0.020 1 1094 84
+        i 6.186 42.097 0.020 1 1101 52
+        i 6.187 42.151 0.020 1 1099 81
+        i 6.188 42.191 0.020 1 1099 81
+        i 6.189 42.381 0.020 1 1101 74
+        i 6.190 42.547 0.020 1 1098 72
+        i 6.191 42.587 0.020 1 1098 77
+        i 6.192 42.627 0.020 1 1095 63
+        i 6.193 42.929 0.020 1 1103 54
+        i 6.194 42.975 0.020 1 1099 60
+        i 6.195 43.015 0.020 1 1103 66
+        i 6.196 43.055 0.020 1 1101 62
+        i 6.197 43.240 0.020 1 1096 64
+        i 6.198 43.308 0.020 1 1097 49
+        i 6.199 43.355 0.020 1 1096 68
+        i 6.200 43.585 0.020 1 1094 64
+        i 6.201 43.644 0.020 1 1105 70
+        i 6.202 43.684 0.020 1 1097 80
+        i 6.203 43.941 0.020 1 1095 73
+        i 6.204 44.051 0.020 1 1098 73
+        i 6.205 44.091 0.020 1 1100 65
+        i 6.206 44.131 0.020 1 1096 53
+        i 6.207 44.183 0.020 1 1105 80
+        i 6.208 44.223 0.020 1 1091 49
+        i 6.209 44.428 0.020 1 1095 67
+        i 6.210 44.740 0.020 1 1100 56
+        i 6.211 44.780 0.020 1 1093 81
+        i 6.212 44.820 0.020 1 1105 71
+        i 6.213 44.860 0.020 1 1098 58
+        i 6.214 44.943 0.020 1 1102 62
+        i 6.215 45.155 0.020 1 1098 49
+        i 6.216 45.196 0.020 1 1090 65
+        i 6.217 45.555 0.020 1 1090 67
+        i 6.218 45.595 0.020 1 1098 81
+        i 6.219 45.677 0.020 1 1096 74
+        i 6.220 45.717 0.020 1 1102 71
+        i 6.221 45.777 0.020 1 1098 67
+        i 6.222 45.915 0.020 1 1093 71
+        i 6.223 45.988 0.020 1 1102 55
+        i 6.224 46.240 0.020 1 1092 80
+        i 6.225 46.449 0.020 1 1096 71
+        i 6.226 46.489 0.020 1 1095 74
+        i 6.227 46.529 0.020 1 1100 73
+        i 6.228 46.569 0.020 1 1100 57
+        i 6.229 46.631 0.020 1 1102 84
+        i 6.230 46.825 0.020 1 1090 62
+        i 6.231 46.879 0.020 1 1100 61
+        i 6.232 47.059 0.020 1 1098 54
+        i 6.233 47.119 0.020 1 1097 63
+        i 6.234 47.188 0.020 1 1096 50
+        i 6.235 47.368 0.020 1 1088 62
+        i 6.236 47.408 0.020 1 1104 81
+        i 6.237 47.448 0.020 1 1098 77
+        i 6.238 47.488 0.020 1 1104 76
+        i 6.239 47.528 0.020 1 1100 58
+        i 6.240 47.740 0.020 1 1096 80
+        i 6.241 47.836 0.020 1 1098 75
+        i 6.242 47.888 0.020 1 1095 83
+        i 6.243 47.937 0.020 1 1106 65
+        i -5.001 48.000 0
+        i -4.009 48.000 0
+        i -4.010 48.000 0
+        i 6.244 48.009 0.020 1 1094 67
+        i 6.245 48.091 0.020 1 1098 63
+        i 6.246 48.217 0.020 1 1096 78
+        i 6.247 48.257 0.020 1 1102 78
+        i 6.248 48.561 0.020 1 1099 65
+        i 6.249 48.601 0.020 1 1101 79
+        i 6.250 48.641 0.020 1 1096 73
+        i 6.251 48.780 0.020 1 1090 64
+        i 6.252 48.869 0.020 1 1106 52
+        i 6.253 48.909 0.020 1 1096 50
+        i 6.254 48.993 0.020 1 1096 52
+        i 6.255 49.197 0.020 1 1094 83
+        i 6.256 49.239 0.020 1 1101 67
+        i 6.257 49.337 0.020 1 1097 64
+        i 6.258 49.377 0.020 1 1104 81
+        i 6.259 49.476 0.020 1 1103 72
+        i 6.260 49.747 0.020 1 1090 56
+        i 6.261 49.787 0.020 1 1098 58
+        i 6.262 49.912 0.020 1 1094 75
+        i 6.263 49.952 0.020 1 1094 74
+        i 6.264 50.017 0.020 1 1098 61
+        i 6.265 50.064 0.020 1 1091 74
+        i 6.266 50.265 0.020 1 1095 53
+        i 6.267 50.372 0.020 1 1097 50
+        i 6.268 50.435 0.020 1 1102 64
+        i 6.269 50.475 0.020 1 1093 65
+        i 6.270 50.653 0.020 1 1096 57
+        i 6.271 50.737 0.020 1 1093 56
+        i 6.272 50.807 0.020 1 1101 80
+        i 6.273 50.861 0.020 1 1102 70
+        i 6.274 51.049 0.020 1 1096 61
+        i 6.275 51.089 0.020 1 1095 60
+        i 6.276 51.164 0.020 1 1103 73
+        i 6.277 51.204 0.020 1 1099 70
+        i 6.278 51.244 0.020 1 1089 72
+        i 6.279 51.547 0.020 1 1099 79
+        i 6.280 51.587 0.020 1 1097 59
+        i 6.281 51.716 0.020 1 1096 65
+        i 6.282 51.756 0.020 1 1097 64
+        i 6.283 51.796 0.020 1 1097 49
+        i 6.284 51.836 0.020 1 1089 63
+        i 6.285 51.879 0.020 1 1105 77
+        i 6.286 51.919 0.020 1 1103 62
+        i 6.287 52.236 0.020 1 1095 66
+        i 6.288 52.385 0.020 1 1099 76
+        i 6.289 52.433 0.020 1 1095 62
+        i 6.290 52.473 0.020 1 1094 72
+        i 6.291 52.513 0.020 1 1101 78
+        i 6.292 52.553 0.020 1 1107 72
+        i 6.293 52.635 0.020 1 1097 71
+        i 6.294 52.675 0.020 1 1095 81
+        i 6.295 53.064 0.020 1 1097 77
+        i 6.296 53.104 0.020 1 1099 64
+        i 6.297 53.144 0.020 1 1103 62
+        i 6.298 53.184 0.020 1 1102 65
+        i 6.299 53.375 0.020 1 1089 75
+        i 6.300 53.435 0.020 1 1105 58
+        i 6.301 53.475 0.020 1 1097 57
+        i 6.302 53.615 0.020 1 1095 62
+        i 6.303 53.735 0.020 1 1102 57
+        i 6.304 53.871 0.020 1 1097 70
+        i 6.305 54.013 0.020 1 1093 72
+        i 6.306 54.053 0.020 1 1102 69
+        i 6.307 54.093 0.020 1 1103 57
+        i 6.308 54.296 0.020 1 1091 63
+        i 6.309 54.405 0.020 1 1099 72
+        i 6.310 54.456 0.020 1 1095 55
+        i 6.311 54.572 0.020 1 1092 74
+        i 6.312 54.612 0.020 1 1099 77
+        i 6.313 54.652 0.020 1 1095 62
+        i 6.314 54.853 0.020 1 1094 82
+        i 6.315 54.929 0.020 1 1101 67
+        i 6.316 54.969 0.020 1 1097 49
+        i 6.317 55.040 0.020 1 1094 54
+        i 6.318 55.117 0.020 1 1097 48
+        i 6.319 55.233 0.020 1 1094 56
+        i 6.320 55.273 0.020 1 1101 83
+        i 6.321 55.503 0.020 1 1101 52
+        i 6.322 55.543 0.020 1 1099 48
+        i 6.323 55.636 0.020 1 1089 47
+        i 6.324 55.676 0.020 1 1096 83
+        i 6.325 55.716 0.020 1 1104 72
+        i 6.326 55.756 0.020 1 1095 80
+        i 6.327 56.065 0.020 1 1097 63
+        i 6.328 56.105 0.020 1 1096 80
+        i 6.329 56.145 0.020 1 1099 58
+        i 6.330 56.329 0.020 1 1096 57
+        i 6.331 56.369 0.020 1 1089 54
+        i 6.332 56.409 0.020 1 1102 64
+        i 6.333 56.449 0.020 1 1105 49
+        i 6.334 56.489 0.020 1 1098 55
+        i 6.335 56.732 0.020 1 1094 62
+        i 6.336 56.875 0.020 1 1096 83
+        i 6.337 56.933 0.020 1 1101 57
+        i 6.338 56.973 0.020 1 1100 62
+        i 6.339 57.025 0.020 1 1094 80
+        i 6.340 57.065 0.020 1 1093 53
+        i 6.341 57.176 0.020 1 1106 49
+        i 6.342 57.216 0.020 1 1096 71
+        i 6.343 57.501 0.020 1 1104 67
+        i 6.344 57.560 0.020 1 1098 79
+        i 6.345 57.600 0.020 1 1100 74
+        i 6.346 57.696 0.020 1 1103 72
+        i 6.347 57.904 0.020 1 1090 56
+        i 6.348 57.944 0.020 1 1104 55
+        i 6.349 57.984 0.020 1 1098 76
+        i 6.350 58.156 0.020 1 1094 50
+        i 6.351 58.231 0.020 1 1102 78
+        i 6.352 58.305 0.020 1 1094 62
+        i 6.353 58.421 0.020 1 1096 56
+        i 6.354 58.645 0.020 1 1101 83
+        i 6.355 58.685 0.020 1 1102 67
+        i 6.356 58.743 0.020 1 1100 61
+        i 6.357 58.783 0.020 1 1092 76
+        i 6.358 58.844 0.020 1 1096 76
+        i 6.359 58.920 0.020 1 1096 60
+        i 6.360 59.080 0.020 1 1092 54
+        i 6.361 59.269 0.020 1 1100 68
+        i 6.362 59.375 0.020 1 1100 66
+        i 6.363 59.415 0.020 1 1094 59
+        i 6.364 59.496 0.020 1 1096 49
+        i 6.365 59.536 0.020 1 1098 44
+        i 6.366 59.611 0.020 1 1095 67
+        i 6.367 59.651 0.020 1 1100 82
+        i 6.368 59.731 0.020 1 1095 80
+        i 6.369 59.816 0.020 1 1102 66
+        i 6.370 59.948 0.020 1 1098 76
+        i 6.371 60.101 0.020 1 1088 48
+        i 6.372 60.141 0.020 1 1098 75
+        i 6.373 60.181 0.020 1 1104 76
+        i 6.374 60.233 0.020 1 1097 56
+        i 6.375 60.303 0.020 1 1094 66
+        i 6.376 60.509 0.020 1 1096 55
+        i 6.377 60.584 0.020 1 1095 84
+        i 6.378 60.788 0.020 1 1101 65
+        i 6.379 60.873 0.020 1 1102 70
+        i 6.380 60.913 0.020 1 1090 46
+        i 6.381 60.953 0.020 1 1098 66
+        i 6.382 60.993 0.020 1 1106 68
+        i 6.383 61.033 0.020 1 1095 80
+        i 6.384 61.231 0.020 1 1093 79
+        i 6.385 61.349 0.020 1 1094 72
+        i 6.386 61.389 0.020 1 1097 73
+        i 6.387 61.429 0.020 1 1104 60
+        i 6.388 61.469 0.020 1 1101 75
+        i 6.389 61.648 0.020 1 1093 84
+        i 6.390 61.836 0.020 1 1096 72
+        i 6.391 61.892 0.020 1 1106 57
+        i 6.392 62.088 0.020 1 1101 74
+        i 6.393 62.128 0.020 1 1099 69
+        i 6.394 62.168 0.020 1 1094 79
+        i 6.395 62.265 0.020 1 1102 57
+        i 6.396 62.336 0.020 1 1103 69
+        i 6.397 62.376 0.020 1 1091 49
+        i 6.398 62.492 0.020 1 1099 70
+        i 6.399 62.661 0.020 1 1097 62
+        i 6.400 62.701 0.020 1 1093 73
+        i 6.401 62.741 0.020 1 1101 58
+        i 6.402 63.008 0.020 1 1095 74
+        i 6.403 63.149 0.020 1 1101 67
+        i 6.404 63.189 0.020 1 1093 54
+        i 6.405 63.229 0.020 1 1101 54
+        i 6.406 63.269 0.020 1 1100 56
+        i 6.407 63.348 0.020 1 1099 70
+        i 6.408 63.388 0.020 1 1097 45
+        i 6.409 63.592 0.020 1 1093 66
+        i 6.410 63.632 0.020 1 1107 76
+        i 6.411 63.676 0.020 1 1109 77
+        i 6.412 63.833 0.020 1 1111 78
+        i 6.413 63.873 0.020 1 1112 48
+        i 6.414 63.913 0.020 1 1112 51
+        i 6.415 63.953 0.020 1 1093 80
+        i 6.416 63.993 0.020 1 1097 53
         s
          #ifdef IS_GENERATING_JSON
             i "GenerateJson" 0 1
@@ -3137,8 +3303,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         </CsoundSynthesizer>
         `
     const csdJson = `
-{"baeea327-af4b-4b10-a843-6614c20ea958":[],"069e83fd-1c94-47e9-95ec-126e0fbefec3":[],"b4f7a35c-6198-422f-be6e-fa126f31b007":[{"instanceName":"","soundDistanceMin":5,"soundDistanceMax":100},{"noteOn":{"time":0.005,"note":63.000,"rtz":[97.483,50.185,14.961]}},{"noteOn":{"time":7.855,"note":98.000,"rtz":[78.101,189.001,17.717]}},{"noteOn":{"time":8.825,"note":95.000,"rtz":[64.153,349.023,17.480]}},{"noteOn":{"time":9.620,"note":103.000,"rtz":[73.098,340.247,18.110]}},{"noteOn":{"time":10.245,"note":103.000,"rtz":[17.742,75.556,18.110]}},{"noteOn":{"time":10.800,"note":95.000,"rtz":[27.420,1.279,17.480]}},{"noteOn":{"time":11.530,"note":97.000,"rtz":[40.762,317.710,17.638]}},{"noteOn":{"time":12.440,"note":97.000,"rtz":[52.645,48.639,17.638]}},{"noteOn":{"time":13.355,"note":95.000,"rtz":[34.853,105.488,17.480]}},{"noteOn":{"time":14.095,"note":103.000,"rtz":[9.261,270.852,18.110]}},{"noteOn":{"time":14.665,"note":102.000,"rtz":[72.572,128.955,18.031]}},{"noteOn":{"time":15.235,"note":96.000,"rtz":[95.375,283.861,17.559]}},{"noteOn":{"time":15.275,"note":96.000,"rtz":[56.289,71.592,17.559]}},{"noteOn":{"time":15.850,"note":94.000,"rtz":[11.600,129.770,17.402]}},{"noteOn":{"time":16.060,"note":98.000,"rtz":[23.150,86.891,17.717]}},{"noteOn":{"time":16.380,"note":102.000,"rtz":[59.324,210.027,18.031]}},{"noteOn":{"time":17.025,"note":96.000,"rtz":[82.004,315.736,17.559]}},{"noteOn":{"time":17.320,"note":101.000,"rtz":[92.451,190.114,17.953]}},{"noteOn":{"time":17.885,"note":94.000,"rtz":[95.268,240.929,17.402]}},{"noteOn":{"time":18.175,"note":95.000,"rtz":[90.977,318.219,17.480]}},{"noteOn":{"time":18.575,"note":104.000,"rtz":[66.879,3.563,18.189]}},{"noteOn":{"time":18.910,"note":97.000,"rtz":[9.616,53.159,17.638]}},{"noteOn":{"time":19.085,"note":102.000,"rtz":[66.239,106.456,18.031]}},{"noteOn":{"time":19.730,"note":95.000,"rtz":[36.338,341.630,17.480]}},{"noteOn":{"time":19.770,"note":96.000,"rtz":[56.406,118.703,17.559]}},{"noteOn":{"time":20.325,"note":93.000,"rtz":[93.748,350.831,17.323]}},{"noteOn":{"time":20.590,"note":99.000,"rtz":[28.630,127.198,17.795]}},{"noteOn":{"time":20.830,"note":103.000,"rtz":[46.228,352.357,18.110]}},{"noteOn":{"time":20.970,"note":99.000,"rtz":[71.295,336.536,17.795]}},{"noteOn":{"time":21.575,"note":95.000,"rtz":[8.968,153.196,17.480]}},{"noteOn":{"time":21.640,"note":97.000,"rtz":[13.094,9.590,17.638]}},{"noteOn":{"time":21.750,"note":101.000,"rtz":[83.112,40.792,17.953]}},{"noteOn":{"time":22.205,"note":103.000,"rtz":[5.480,192.732,18.110]}},{"noteOn":{"time":22.385,"note":93.000,"rtz":[73.463,126.815,17.323]}},{"noteOn":{"time":22.585,"note":96.000,"rtz":[35.532,18.146,17.559]}},{"noteOn":{"time":22.910,"note":105.000,"rtz":[37.320,15.967,18.268]}},{"noteOn":{"time":23.015,"note":103.000,"rtz":[71.415,24.613,18.110]}},{"noteOn":{"time":23.340,"note":98.000,"rtz":[28.124,283.993,17.717]}},{"noteOn":{"time":23.445,"note":95.000,"rtz":[59.959,105.043,17.480]}},{"noteOn":{"time":23.560,"note":101.000,"rtz":[91.821,297.246,17.953]}},{"noteOn":{"time":24.175,"note":97.000,"rtz":[50.497,266.088,17.638]}},{"noteOn":{"time":24.215,"note":94.000,"rtz":[34.368,270.915,17.402]}},{"noteOn":{"time":24.280,"note":97.000,"rtz":[74.331,115.062,17.638]}},{"noteOn":{"time":24.680,"note":99.000,"rtz":[86.947,140.339,17.795]}},{"noteOn":{"time":24.755,"note":92.000,"rtz":[33.628,333.655,17.244]}},{"noteOn":{"time":25.175,"note":99.000,"rtz":[23.424,196.768,17.795]}},{"noteOn":{"time":25.270,"note":102.000,"rtz":[91.299,87.479,18.031]}},{"noteOn":{"time":25.440,"note":97.000,"rtz":[75.752,325.560,17.638]}},{"noteOn":{"time":25.965,"note":104.000,"rtz":[82.099,354.035,18.189]}},{"noteOn":{"time":26.105,"note":94.000,"rtz":[23.226,117.339,17.402]}},{"noteOn":{"time":26.170,"note":100.000,"rtz":[55.589,150.576,17.874]}},{"noteOn":{"time":26.755,"note":104.000,"rtz":[34.860,108.144,18.189]}},{"noteOn":{"time":26.860,"note":92.000,"rtz":[83.513,201.611,17.244]}},{"noteOn":{"time":26.980,"note":96.000,"rtz":[36.714,132.657,17.559]}},{"noteOn":{"time":27.310,"note":96.000,"rtz":[8.854,107.157,17.559]}},{"noteOn":{"time":27.435,"note":102.000,"rtz":[55.926,286.092,18.031]}},{"noteOn":{"time":27.760,"note":98.000,"rtz":[23.642,284.369,17.717]}},{"noteOn":{"time":28.005,"note":94.000,"rtz":[70.483,10.514,17.402]}},{"noteOn":{"time":28.045,"note":100.000,"rtz":[13.952,354.113,17.874]}},{"noteOn":{"time":28.125,"note":98.000,"rtz":[25.408,273.544,17.717]}},{"noteOn":{"time":28.625,"note":93.000,"rtz":[52.818,118.058,17.323]}},{"noteOn":{"time":28.710,"note":98.000,"rtz":[75.704,306.568,17.717]}},{"noteOn":{"time":28.750,"note":92.000,"rtz":[26.125,201.316,17.244]}},{"noteOn":{"time":28.810,"note":98.000,"rtz":[28.470,62.649,17.717]}},{"noteOn":{"time":29.175,"note":91.000,"rtz":[46.562,126.412,17.165]}},{"noteOn":{"time":29.510,"note":102.000,"rtz":[24.266,174.907,18.031]}},{"noteOn":{"time":29.555,"note":96.000,"rtz":[50.096,105.260,17.559]}},{"noteOn":{"time":29.710,"note":101.000,"rtz":[97.896,216.200,17.953]}},{"noteOn":{"time":29.760,"note":100.000,"rtz":[64.575,158.423,17.874]}},{"noteOn":{"time":30.170,"note":104.000,"rtz":[64.248,26.952,18.189]}},{"noteOn":{"time":30.250,"note":100.000,"rtz":[93.519,259.045,17.874]}},{"noteOn":{"time":30.585,"note":99.000,"rtz":[27.474,22.859,17.795]}},{"noteOn":{"time":30.635,"note":94.000,"rtz":[74.105,24.332,17.402]}},{"noteOn":{"time":31.015,"note":95.000,"rtz":[20.274,12.299,17.480]}},{"noteOn":{"time":31.055,"note":103.000,"rtz":[63.870,235.305,18.110]}},{"noteOn":{"time":31.335,"note":92.000,"rtz":[28.744,172.681,17.244]}},{"noteOn":{"time":31.375,"note":97.000,"rtz":[82.882,308.346,17.638]}},{"noteOn":{"time":31.685,"note":97.000,"rtz":[75.832,357.733,17.638]}},{"noteOn":{"time":31.750,"note":97.000,"rtz":[31.608,242.618,17.638]}},{"noteOn":{"time":31.855,"note":101.000,"rtz":[43.196,215.005,17.953]}},{"noteOn":{"time":32.175,"note":99.000,"rtz":[31.183,72.156,17.795]}},{"noteOn":{"time":32.510,"note":99.000,"rtz":[27.354,334.796,17.795]}},{"noteOn":{"time":32.550,"note":93.000,"rtz":[55.345,52.525,17.323]}},{"noteOn":{"time":32.590,"note":99.000,"rtz":[48.501,185.011,17.795]}},{"noteOn":{"time":33.060,"note":93.000,"rtz":[47.609,186.712,17.323]}},{"noteOn":{"time":33.250,"note":91.000,"rtz":[95.143,190.797,17.165]}},{"noteOn":{"time":33.290,"note":97.000,"rtz":[19.356,3.751,17.638]}},{"noteOn":{"time":33.340,"note":99.000,"rtz":[14.864,0.328,17.795]}},{"noteOn":{"time":33.590,"note":92.000,"rtz":[14.170,81.787,17.244]}},{"noteOn":{"time":34.020,"note":101.000,"rtz":[11.629,141.538,17.953]}},{"noteOn":{"time":34.060,"note":101.000,"rtz":[67.153,113.335,17.953]}},{"noteOn":{"time":34.150,"note":100.000,"rtz":[38.664,195.442,17.874]}},{"noteOn":{"time":34.195,"note":95.000,"rtz":[54.235,326.885,17.480]}},{"noteOn":{"time":34.335,"note":101.000,"rtz":[24.141,124.827,17.953]}},{"noteOn":{"time":34.730,"note":99.000,"rtz":[74.954,5.229,17.795]}},{"noteOn":{"time":34.770,"note":99.000,"rtz":[56.192,32.823,17.795]}},{"noteOn":{"time":34.895,"note":105.000,"rtz":[67.683,326.088,18.268]}},{"noteOn":{"time":35.005,"note":98.000,"rtz":[96.857,158.983,17.717]}},{"noteOn":{"time":35.155,"note":93.000,"rtz":[79.898,190.438,17.323]}},{"noteOn":{"time":35.520,"note":95.000,"rtz":[9.322,295.084,17.480]}},{"noteOn":{"time":35.560,"note":103.000,"rtz":[85.057,101.489,18.110]}},{"noteOn":{"time":35.770,"note":98.000,"rtz":[87.452,343.077,17.717]}},{"noteOn":{"time":35.810,"note":93.000,"rtz":[96.862,161.132,17.323]}},{"noteOn":{"time":35.860,"note":103.000,"rtz":[44.969,206.920,18.110]}},{"noteOn":{"time":36.245,"note":98.000,"rtz":[90.129,337.920,17.717]}},{"noteOn":{"time":36.330,"note":101.000,"rtz":[47.684,216.831,17.953]}},{"noteOn":{"time":36.540,"note":105.000,"rtz":[82.232,47.222,18.268]}},{"noteOn":{"time":36.590,"note":97.000,"rtz":[90.236,20.655,17.638]}},{"noteOn":{"time":36.630,"note":100.000,"rtz":[12.470,119.051,17.874]}},{"noteOn":{"time":37.025,"note":92.000,"rtz":[8.454,306.578,17.244]}},{"noteOn":{"time":37.065,"note":98.000,"rtz":[26.408,315.075,17.717]}},{"noteOn":{"time":37.415,"note":95.000,"rtz":[73.968,329.488,17.480]}},{"noteOn":{"time":37.495,"note":92.000,"rtz":[96.921,184.611,17.244]}},{"noteOn":{"time":37.585,"note":100.000,"rtz":[36.402,7.293,17.874]}},{"noteOn":{"time":37.745,"note":90.000,"rtz":[18.896,179.016,17.087]}},{"noteOn":{"time":37.925,"note":100.000,"rtz":[69.976,166.813,17.874]}},{"noteOn":{"time":38.005,"note":92.000,"rtz":[13.819,300.590,17.244]}},{"noteOn":{"time":38.145,"note":97.000,"rtz":[48.976,15.636,17.638]}},{"noteOn":{"time":38.340,"note":96.000,"rtz":[62.161,269.055,17.559]}},{"noteOn":{"time":38.525,"note":100.000,"rtz":[22.327,116.699,17.874]}},{"noteOn":{"time":38.585,"note":100.000,"rtz":[37.698,167.505,17.874]}},{"noteOn":{"time":38.725,"note":101.000,"rtz":[33.153,142.841,17.953]}},{"noteOn":{"time":38.865,"note":102.000,"rtz":[8.592,2.088,18.031]}},{"noteOn":{"time":39.245,"note":98.000,"rtz":[63.368,33.936,17.717]}},{"noteOn":{"time":39.290,"note":98.000,"rtz":[98.781,211.573,17.717]}},{"noteOn":{"time":39.330,"note":94.000,"rtz":[30.227,48.021,17.402]}},{"noteOn":{"time":39.420,"note":97.000,"rtz":[17.597,17.559,17.638]}},{"noteOn":{"time":39.630,"note":92.000,"rtz":[20.914,269.304,17.244]}},{"noteOn":{"time":40.005,"note":104.000,"rtz":[29.294,33.731,18.189]}},{"noteOn":{"time":40.045,"note":96.000,"rtz":[93.048,69.871,17.559]}},{"noteOn":{"time":40.110,"note":104.000,"rtz":[58.470,227.284,18.189]}},{"noteOn":{"time":40.165,"note":99.000,"rtz":[89.481,77.592,17.795]}},{"noteOn":{"time":40.220,"note":94.000,"rtz":[84.329,169.377,17.402]}},{"noteOn":{"time":40.310,"note":92.000,"rtz":[85.501,279.912,17.244]}},{"noteOn":{"time":40.740,"note":98.000,"rtz":[40.864,358.753,17.717]}},{"noteOn":{"time":40.810,"note":100.000,"rtz":[60.127,172.602,17.874]}},{"noteOn":{"time":40.865,"note":106.000,"rtz":[80.664,137.764,18.346]}},{"noteOn":{"time":41.010,"note":101.000,"rtz":[56.661,220.898,17.953]}},{"noteOn":{"time":41.055,"note":102.000,"rtz":[5.942,18.327,18.031]}},{"noteOn":{"time":41.210,"note":90.000,"rtz":[42.381,247.977,17.087]}},{"noteOn":{"time":41.530,"note":92.000,"rtz":[98.017,264.871,17.244]}},{"noteOn":{"time":41.570,"note":98.000,"rtz":[95.334,267.419,17.717]}},{"noteOn":{"time":41.720,"note":100.000,"rtz":[71.598,97.941,17.874]}},{"noteOn":{"time":41.860,"note":96.000,"rtz":[83.271,104.367,17.559]}},{"noteOn":{"time":41.900,"note":98.000,"rtz":[72.929,272.240,17.717]}},{"noteOn":{"time":41.940,"note":91.000,"rtz":[16.370,244.734,17.165]}},{"noteOn":{"time":42.240,"note":91.000,"rtz":[7.364,228.953,17.165]}},{"noteOn":{"time":42.300,"note":98.000,"rtz":[41.150,113.556,17.717]}},{"noteOn":{"time":42.450,"note":93.000,"rtz":[44.845,157.184,17.323]}},{"noteOn":{"time":42.510,"note":100.000,"rtz":[29.590,152.623,17.874]}},{"noteOn":{"time":42.710,"note":98.000,"rtz":[92.077,39.959,17.717]}},{"noteOn":{"time":42.795,"note":100.000,"rtz":[77.179,178.605,17.874]}},{"noteOn":{"time":43.035,"note":99.000,"rtz":[58.481,231.863,17.795]}},{"noteOn":{"time":43.075,"note":99.000,"rtz":[27.492,30.219,17.795]}},{"noteOn":{"time":43.130,"note":94.000,"rtz":[89.884,239.377,17.402]}},{"noteOn":{"time":43.395,"note":103.000,"rtz":[47.586,177.586,18.110]}},{"noteOn":{"time":43.435,"note":100.000,"rtz":[30.003,318.448,17.874]}},{"noteOn":{"time":43.640,"note":95.000,"rtz":[73.273,50.516,17.480]}},{"noteOn":{"time":43.740,"note":97.000,"rtz":[87.346,300.518,17.638]}},{"noteOn":{"time":43.865,"note":97.000,"rtz":[46.967,288.953,17.638]}},{"noteOn":{"time":43.905,"note":97.000,"rtz":[8.647,24.391,17.638]}},{"noteOn":{"time":43.965,"note":98.000,"rtz":[21.943,322.135,17.717]}},{"noteOn":{"time":44.110,"note":93.000,"rtz":[81.344,50.971,17.323]}},{"noteOn":{"time":44.530,"note":93.000,"rtz":[5.054,21.742,17.323]}},{"noteOn":{"time":44.570,"note":97.000,"rtz":[42.860,80.089,17.638]}},{"noteOn":{"time":44.610,"note":105.000,"rtz":[59.149,139.941,18.268]}},{"noteOn":{"time":44.650,"note":100.000,"rtz":[22.519,193.645,17.874]}},{"noteOn":{"time":44.690,"note":95.000,"rtz":[98.995,297.348,17.480]}},{"noteOn":{"time":44.730,"note":91.000,"rtz":[53.356,333.951,17.165]}},{"noteOn":{"time":45.240,"note":99.000,"rtz":[31.721,287.857,17.795]}},{"noteOn":{"time":45.285,"note":99.000,"rtz":[73.006,303.427,17.795]}},{"noteOn":{"time":45.325,"note":105.000,"rtz":[33.307,204.817,18.268]}},{"noteOn":{"time":45.410,"note":103.000,"rtz":[31.335,133.214,18.110]}},{"noteOn":{"time":45.455,"note":102.000,"rtz":[24.426,239.084,18.031]}},{"noteOn":{"time":45.670,"note":89.000,"rtz":[39.379,122.625,17.008]}},{"noteOn":{"time":46.045,"note":91.000,"rtz":[13.390,128.579,17.165]}},{"noteOn":{"time":46.105,"note":97.000,"rtz":[84.859,22.184,17.638]}},{"noteOn":{"time":46.180,"note":97.000,"rtz":[55.234,8.286,17.638]}},{"noteOn":{"time":46.220,"note":99.000,"rtz":[46.663,166.900,17.795]}},{"noteOn":{"time":46.270,"note":101.000,"rtz":[16.234,190.067,17.953]}},{"noteOn":{"time":46.405,"note":92.000,"rtz":[93.963,77.273,17.244]}},{"noteOn":{"time":46.445,"note":103.000,"rtz":[75.420,192.277,18.110]}},{"noteOn":{"time":46.740,"note":91.000,"rtz":[60.741,59.005,17.165]}},{"noteOn":{"time":46.830,"note":97.000,"rtz":[39.683,244.574,17.638]}},{"noteOn":{"time":46.940,"note":94.000,"rtz":[97.868,204.920,17.402]}},{"noteOn":{"time":47.095,"note":101.000,"rtz":[34.231,215.565,17.953]}},{"noteOn":{"time":47.150,"note":99.000,"rtz":[46.831,234.643,17.795]}},{"noteOn":{"time":47.190,"note":99.000,"rtz":[10.214,293.490,17.795]}},{"noteOn":{"time":47.380,"note":101.000,"rtz":[40.481,204.918,17.953]}},{"noteOn":{"time":47.545,"note":98.000,"rtz":[34.155,185.358,17.717]}},{"noteOn":{"time":47.585,"note":98.000,"rtz":[57.308,120.899,17.717]}},{"noteOn":{"time":47.625,"note":95.000,"rtz":[60.125,171.896,17.480]}},{"noteOn":{"time":47.930,"note":103.000,"rtz":[60.913,128.106,18.110]}},{"noteOn":{"time":47.975,"note":99.000,"rtz":[71.629,110.420,17.795]}},{"noteOn":{"time":48.015,"note":103.000,"rtz":[52.148,209.102,18.110]}},{"noteOn":{"time":48.055,"note":101.000,"rtz":[56.143,13.150,17.953]}},{"noteOn":{"time":48.240,"note":96.000,"rtz":[87.639,58.133,17.559]}},{"noteOn":{"time":48.310,"note":97.000,"rtz":[15.310,179.445,17.638]}},{"noteOn":{"time":48.355,"note":96.000,"rtz":[81.984,307.752,17.559]}},{"noteOn":{"time":48.585,"note":94.000,"rtz":[59.238,175.663,17.402]}},{"noteOn":{"time":48.645,"note":105.000,"rtz":[71.240,314.346,18.268]}},{"noteOn":{"time":48.685,"note":97.000,"rtz":[53.582,64.758,17.638]}},{"noteOn":{"time":48.940,"note":95.000,"rtz":[10.528,59.340,17.480]}},{"noteOn":{"time":49.050,"note":98.000,"rtz":[49.057,48.155,17.717]}},{"noteOn":{"time":49.090,"note":100.000,"rtz":[21.329,75.793,17.874]}},{"noteOn":{"time":49.130,"note":96.000,"rtz":[34.039,138.507,17.559]}},{"noteOn":{"time":49.185,"note":105.000,"rtz":[77.409,270.951,18.268]}},{"noteOn":{"time":49.225,"note":91.000,"rtz":[75.321,152.908,17.165]}},{"noteOn":{"time":49.430,"note":95.000,"rtz":[5.061,24.362,17.480]}},{"noteOn":{"time":49.740,"note":100.000,"rtz":[21.126,354.206,17.874]}},{"noteOn":{"time":49.780,"note":93.000,"rtz":[28.011,238.640,17.323]}},{"noteOn":{"time":49.820,"note":105.000,"rtz":[26.960,176.654,18.268]}},{"noteOn":{"time":49.860,"note":98.000,"rtz":[98.937,274.118,17.717]}},{"noteOn":{"time":49.945,"note":102.000,"rtz":[68.889,90.426,18.031]}},{"noteOn":{"time":50.155,"note":98.000,"rtz":[63.155,308.185,17.717]}},{"noteOn":{"time":50.195,"note":90.000,"rtz":[71.329,350.143,17.087]}},{"noteOn":{"time":50.555,"note":90.000,"rtz":[9.395,324.322,17.087]}},{"noteOn":{"time":50.595,"note":98.000,"rtz":[47.506,145.640,17.717]}},{"noteOn":{"time":50.675,"note":96.000,"rtz":[86.842,98.019,17.559]}},{"noteOn":{"time":50.715,"note":102.000,"rtz":[85.445,257.481,18.031]}},{"noteOn":{"time":50.775,"note":98.000,"rtz":[78.739,85.084,17.717]}},{"noteOn":{"time":50.915,"note":93.000,"rtz":[8.806,88.097,17.323]}},{"noteOn":{"time":50.990,"note":102.000,"rtz":[93.050,70.419,18.031]}},{"noteOn":{"time":51.240,"note":92.000,"rtz":[73.785,255.846,17.244]}},{"noteOn":{"time":51.450,"note":96.000,"rtz":[33.022,90.253,17.559]}},{"noteOn":{"time":51.490,"note":95.000,"rtz":[58.334,172.858,17.480]}},{"noteOn":{"time":51.530,"note":100.000,"rtz":[87.812,127.797,17.874]}},{"noteOn":{"time":51.570,"note":100.000,"rtz":[62.982,238.747,17.874]}},{"noteOn":{"time":51.630,"note":102.000,"rtz":[29.969,304.774,18.031]}},{"noteOn":{"time":51.825,"note":90.000,"rtz":[70.970,205.893,17.087]}},{"noteOn":{"time":51.880,"note":100.000,"rtz":[61.422,332.311,17.874]}},{"noteOn":{"time":52.060,"note":98.000,"rtz":[80.852,213.382,17.717]}},{"noteOn":{"time":52.120,"note":97.000,"rtz":[80.794,190.195,17.638]}},{"noteOn":{"time":52.190,"note":96.000,"rtz":[97.535,71.423,17.559]}},{"noteOn":{"time":52.370,"note":88.000,"rtz":[6.864,28.266,16.929]}},{"noteOn":{"time":52.410,"note":104.000,"rtz":[35.282,277.625,18.189]}},{"noteOn":{"time":52.450,"note":98.000,"rtz":[71.916,225.504,17.717]}},{"noteOn":{"time":52.490,"note":104.000,"rtz":[39.714,256.916,18.189]}},{"noteOn":{"time":52.530,"note":100.000,"rtz":[62.933,219.289,17.874]}},{"noteOn":{"time":52.740,"note":96.000,"rtz":[55.961,300.037,17.559]}},{"noteOn":{"time":52.835,"note":98.000,"rtz":[33.518,289.461,17.717]}},{"noteOn":{"time":52.890,"note":95.000,"rtz":[22.851,326.851,17.480]}},{"noteOn":{"time":52.935,"note":106.000,"rtz":[23.191,103.573,18.346]}},{"noteOn":{"time":53.010,"note":94.000,"rtz":[50.723,357.119,17.402]}},{"noteOn":{"time":53.090,"note":98.000,"rtz":[14.437,188.995,17.717]}},{"noteOn":{"time":53.215,"note":96.000,"rtz":[63.971,275.847,17.559]}},{"noteOn":{"time":53.255,"note":102.000,"rtz":[22.215,71.378,18.031]}},{"noteOn":{"time":53.560,"note":99.000,"rtz":[5.622,249.840,17.795]}},{"noteOn":{"time":53.600,"note":101.000,"rtz":[55.099,314.057,17.953]}},{"noteOn":{"time":53.640,"note":96.000,"rtz":[45.490,56.209,17.559]}},{"noteOn":{"time":53.780,"note":90.000,"rtz":[56.508,159.776,17.087]}},{"noteOn":{"time":53.870,"note":106.000,"rtz":[7.068,110.070,18.346]}},{"noteOn":{"time":53.910,"note":96.000,"rtz":[42.373,244.724,17.559]}},{"noteOn":{"time":53.995,"note":96.000,"rtz":[7.064,108.695,17.559]}},{"noteOn":{"time":54.195,"note":94.000,"rtz":[98.922,268.136,17.402]}},{"noteOn":{"time":54.240,"note":101.000,"rtz":[91.634,222.257,17.953]}},{"noteOn":{"time":54.335,"note":97.000,"rtz":[43.925,147.690,17.638]}},{"noteOn":{"time":54.375,"note":104.000,"rtz":[49.156,87.968,18.189]}},{"noteOn":{"time":54.475,"note":103.000,"rtz":[89.444,62.809,18.110]}},{"noteOn":{"time":54.745,"note":90.000,"rtz":[51.023,117.580,17.087]}},{"noteOn":{"time":54.785,"note":98.000,"rtz":[62.339,340.620,17.717]}},{"noteOn":{"time":54.910,"note":94.000,"rtz":[28.170,302.414,17.402]}},{"noteOn":{"time":54.950,"note":94.000,"rtz":[99.973,330.143,17.402]}},{"noteOn":{"time":55.015,"note":98.000,"rtz":[20.243,359.981,17.717]}},{"noteOn":{"time":55.065,"note":91.000,"rtz":[94.467,279.428,17.165]}},{"noteOn":{"time":55.265,"note":95.000,"rtz":[27.342,330.030,17.480]}},{"noteOn":{"time":55.370,"note":97.000,"rtz":[17.094,175.514,17.638]}},{"noteOn":{"time":55.435,"note":102.000,"rtz":[67.076,82.416,18.031]}},{"noteOn":{"time":55.475,"note":93.000,"rtz":[29.199,355.671,17.323]}},{"noteOn":{"time":55.655,"note":96.000,"rtz":[68.965,120.803,17.559]}},{"noteOn":{"time":55.735,"note":93.000,"rtz":[57.462,182.591,17.323]}},{"noteOn":{"time":55.805,"note":101.000,"rtz":[74.949,3.466,17.953]}},{"noteOn":{"time":55.860,"note":102.000,"rtz":[6.917,49.606,18.031]}},{"noteOn":{"time":56.050,"note":96.000,"rtz":[61.901,164.924,17.559]}},{"noteOn":{"time":56.090,"note":95.000,"rtz":[55.990,311.663,17.480]}},{"noteOn":{"time":56.165,"note":103.000,"rtz":[73.578,172.731,18.110]}},{"noteOn":{"time":56.205,"note":99.000,"rtz":[84.273,146.879,17.795]}},{"noteOn":{"time":56.245,"note":89.000,"rtz":[26.484,345.654,17.008]}},{"noteOn":{"time":56.545,"note":99.000,"rtz":[73.917,308.885,17.795]}},{"noteOn":{"time":56.585,"note":97.000,"rtz":[90.910,291.619,17.638]}},{"noteOn":{"time":56.715,"note":96.000,"rtz":[83.182,68.894,17.559]}},{"noteOn":{"time":56.755,"note":97.000,"rtz":[31.168,65.976,17.638]}},{"noteOn":{"time":56.795,"note":97.000,"rtz":[44.573,48.044,17.638]}},{"noteOn":{"time":56.835,"note":89.000,"rtz":[18.217,266.452,17.008]}},{"noteOn":{"time":56.880,"note":105.000,"rtz":[44.558,41.945,18.268]}},{"noteOn":{"time":56.920,"note":103.000,"rtz":[37.715,174.410,18.110]}},{"noteOn":{"time":57.235,"note":95.000,"rtz":[36.216,292.854,17.480]}},{"noteOn":{"time":57.385,"note":99.000,"rtz":[22.693,263.319,17.795]}},{"noteOn":{"time":57.435,"note":95.000,"rtz":[51.947,128.567,17.480]}},{"noteOn":{"time":57.475,"note":94.000,"rtz":[84.514,243.611,17.402]}},{"noteOn":{"time":57.515,"note":101.000,"rtz":[70.957,200.450,17.953]}},{"noteOn":{"time":57.555,"note":107.000,"rtz":[99.247,38.757,18.425]}},{"noteOn":{"time":57.635,"note":97.000,"rtz":[43.577,8.223,17.638]}},{"noteOn":{"time":57.675,"note":95.000,"rtz":[44.901,179.582,17.480]}},{"noteOn":{"time":58.065,"note":97.000,"rtz":[85.799,39.330,17.638]}},{"noteOn":{"time":58.105,"note":99.000,"rtz":[59.595,318.811,17.795]}},{"noteOn":{"time":58.145,"note":103.000,"rtz":[83.404,157.936,18.110]}},{"noteOn":{"time":58.185,"note":102.000,"rtz":[50.622,316.374,18.031]}},{"noteOn":{"time":58.375,"note":89.000,"rtz":[15.296,173.692,17.008]}},{"noteOn":{"time":58.435,"note":105.000,"rtz":[16.139,152.069,18.268]}},{"noteOn":{"time":58.475,"note":97.000,"rtz":[76.593,303.570,17.638]}},{"noteOn":{"time":58.615,"note":95.000,"rtz":[37.301,8.259,17.480]}},{"noteOn":{"time":58.735,"note":102.000,"rtz":[45.908,223.732,18.031]}},{"noteOn":{"time":58.870,"note":97.000,"rtz":[85.177,149.795,17.638]}},{"noteOn":{"time":59.015,"note":93.000,"rtz":[13.017,338.787,17.323]}},{"noteOn":{"time":59.055,"note":102.000,"rtz":[71.915,225.444,18.031]}},{"noteOn":{"time":59.095,"note":103.000,"rtz":[38.025,298.903,18.110]}},{"noteOn":{"time":59.295,"note":91.000,"rtz":[96.815,142.182,17.165]}},{"noteOn":{"time":59.405,"note":99.000,"rtz":[85.175,148.960,17.795]}},{"noteOn":{"time":59.455,"note":95.000,"rtz":[84.671,306.615,17.480]}},{"noteOn":{"time":59.570,"note":92.000,"rtz":[27.435,7.289,17.244]}},{"noteOn":{"time":59.610,"note":99.000,"rtz":[18.783,133.798,17.795]}},{"noteOn":{"time":59.650,"note":95.000,"rtz":[40.769,320.551,17.480]}},{"noteOn":{"time":59.855,"note":94.000,"rtz":[37.078,278.967,17.402]}},{"noteOn":{"time":59.930,"note":101.000,"rtz":[14.443,191.022,17.953]}},{"noteOn":{"time":59.970,"note":97.000,"rtz":[25.639,6.410,17.638]}},{"noteOn":{"time":60.040,"note":94.000,"rtz":[89.215,330.838,17.402]}},{"noteOn":{"time":60.115,"note":97.000,"rtz":[39.672,240.120,17.638]}},{"noteOn":{"time":60.235,"note":94.000,"rtz":[68.342,230.564,17.402]}},{"noteOn":{"time":60.275,"note":101.000,"rtz":[86.191,196.830,17.953]}},{"noteOn":{"time":60.505,"note":101.000,"rtz":[93.033,63.625,17.953]}},{"noteOn":{"time":60.545,"note":99.000,"rtz":[73.843,279.335,17.795]}},{"noteOn":{"time":60.635,"note":89.000,"rtz":[24.741,5.820,17.008]}},{"noteOn":{"time":60.675,"note":96.000,"rtz":[72.717,187.317,17.559]}},{"noteOn":{"time":60.715,"note":104.000,"rtz":[17.064,163.452,18.189]}},{"noteOn":{"time":60.755,"note":95.000,"rtz":[14.853,355.642,17.480]}},{"noteOn":{"time":61.065,"note":97.000,"rtz":[68.162,158.422,17.638]}},{"noteOn":{"time":61.105,"note":96.000,"rtz":[64.209,11.358,17.559]}},{"noteOn":{"time":61.145,"note":99.000,"rtz":[37.546,106.604,17.795]}},{"noteOn":{"time":61.330,"note":96.000,"rtz":[40.473,201.878,17.559]}},{"noteOn":{"time":61.370,"note":89.000,"rtz":[44.172,246.966,17.008]}},{"noteOn":{"time":61.410,"note":102.000,"rtz":[69.751,76.274,18.031]}},{"noteOn":{"time":61.450,"note":105.000,"rtz":[47.480,135.040,18.268]}},{"noteOn":{"time":61.490,"note":98.000,"rtz":[75.504,226.300,17.717]}},{"noteOn":{"time":61.730,"note":94.000,"rtz":[61.965,190.577,17.402]}},{"noteOn":{"time":61.875,"note":96.000,"rtz":[13.221,60.405,17.559]}},{"noteOn":{"time":61.935,"note":101.000,"rtz":[78.820,117.423,17.953]}},{"noteOn":{"time":61.975,"note":100.000,"rtz":[57.945,16.697,17.874]}},{"noteOn":{"time":62.025,"note":94.000,"rtz":[91.818,295.881,17.402]}},{"noteOn":{"time":62.065,"note":93.000,"rtz":[12.323,59.998,17.323]}},{"noteOn":{"time":62.175,"note":106.000,"rtz":[67.449,232.231,18.346]}},{"noteOn":{"time":62.215,"note":96.000,"rtz":[37.778,199.827,17.559]}},{"noteOn":{"time":62.500,"note":104.000,"rtz":[81.823,243.098,18.189]}},{"noteOn":{"time":62.560,"note":98.000,"rtz":[56.606,198.788,17.717]}},{"noteOn":{"time":62.600,"note":100.000,"rtz":[52.787,105.869,17.874]}},{"noteOn":{"time":62.695,"note":103.000,"rtz":[19.931,234.432,18.110]}},{"noteOn":{"time":62.905,"note":90.000,"rtz":[99.330,71.820,17.087]}},{"noteOn":{"time":62.945,"note":104.000,"rtz":[17.977,170.108,18.189]}},{"noteOn":{"time":62.985,"note":98.000,"rtz":[10.922,217.712,17.717]}},{"noteOn":{"time":63.155,"note":94.000,"rtz":[11.847,229.063,17.402]}},{"noteOn":{"time":63.230,"note":102.000,"rtz":[44.203,259.278,18.031]}},{"noteOn":{"time":63.305,"note":94.000,"rtz":[33.968,110.100,17.402]}},{"noteOn":{"time":63.420,"note":96.000,"rtz":[43.215,222.570,17.559]}},{"noteOn":{"time":63.645,"note":101.000,"rtz":[52.692,67.648,17.953]}},{"noteOn":{"time":63.685,"note":102.000,"rtz":[91.315,94.209,18.031]}},{"noteOn":{"time":63.745,"note":100.000,"rtz":[73.927,312.854,17.874]}},{"noteOn":{"time":63.785,"note":92.000,"rtz":[11.868,237.444,17.244]}},{"noteOn":{"time":63.845,"note":96.000,"rtz":[88.521,52.177,17.559]}},{"noteOn":{"time":63.920,"note":96.000,"rtz":[38.783,243.230,17.559]}},{"noteOn":{"time":64.080,"note":92.000,"rtz":[60.294,239.669,17.244]}},{"noteOn":{"time":64.270,"note":100.000,"rtz":[55.727,206.231,17.874]}},{"noteOn":{"time":64.375,"note":100.000,"rtz":[70.876,168.080,17.874]}},{"noteOn":{"time":64.415,"note":94.000,"rtz":[49.233,118.886,17.402]}},{"noteOn":{"time":64.495,"note":96.000,"rtz":[98.847,237.938,17.559]}},{"noteOn":{"time":64.535,"note":98.000,"rtz":[7.338,218.798,17.717]}},{"noteOn":{"time":64.610,"note":95.000,"rtz":[42.221,183.538,17.480]}},{"noteOn":{"time":64.650,"note":100.000,"rtz":[6.420,210.110,17.874]}},{"noteOn":{"time":64.730,"note":95.000,"rtz":[84.327,168.400,17.480]}},{"noteOn":{"time":64.815,"note":102.000,"rtz":[58.168,105.888,18.031]}},{"noteOn":{"time":64.950,"note":98.000,"rtz":[20.459,86.570,17.717]}},{"noteOn":{"time":65.100,"note":88.000,"rtz":[50.346,205.490,16.929]}},{"noteOn":{"time":65.140,"note":98.000,"rtz":[50.157,129.852,17.717]}},{"noteOn":{"time":65.180,"note":104.000,"rtz":[25.434,283.773,18.189]}},{"noteOn":{"time":65.235,"note":97.000,"rtz":[53.801,152.731,17.638]}},{"noteOn":{"time":65.305,"note":94.000,"rtz":[95.099,173.180,17.402]}},{"noteOn":{"time":65.510,"note":96.000,"rtz":[96.815,142.045,17.559]}},{"noteOn":{"time":65.585,"note":95.000,"rtz":[81.338,48.430,17.480]}},{"noteOn":{"time":65.790,"note":101.000,"rtz":[29.019,283.107,17.953]}},{"noteOn":{"time":65.875,"note":102.000,"rtz":[35.186,239.045,18.031]}},{"noteOn":{"time":65.915,"note":90.000,"rtz":[38.298,48.416,17.087]}},{"noteOn":{"time":65.955,"note":98.000,"rtz":[28.643,132.417,17.717]}},{"noteOn":{"time":65.995,"note":106.000,"rtz":[97.156,279.285,18.346]}},{"noteOn":{"time":66.035,"note":95.000,"rtz":[23.329,158.966,17.480]}},{"noteOn":{"time":66.230,"note":93.000,"rtz":[79.417,357.112,17.323]}},{"noteOn":{"time":66.350,"note":94.000,"rtz":[14.254,115.442,17.402]}},{"noteOn":{"time":66.390,"note":97.000,"rtz":[97.577,88.295,17.638]}},{"noteOn":{"time":66.430,"note":104.000,"rtz":[98.580,130.704,18.189]}},{"noteOn":{"time":66.470,"note":101.000,"rtz":[49.258,128.965,17.953]}},{"noteOn":{"time":66.650,"note":93.000,"rtz":[95.637,29.286,17.323]}},{"noteOn":{"time":66.835,"note":96.000,"rtz":[63.774,196.777,17.559]}},{"noteOn":{"time":66.890,"note":106.000,"rtz":[91.552,189.377,18.346]}},{"noteOn":{"time":67.090,"note":101.000,"rtz":[74.668,250.553,17.953]}},{"noteOn":{"time":67.130,"note":99.000,"rtz":[75.034,37.478,17.795]}},{"noteOn":{"time":67.170,"note":94.000,"rtz":[7.813,49.284,17.402]}},{"noteOn":{"time":67.265,"note":102.000,"rtz":[52.891,147.416,18.031]}},{"noteOn":{"time":67.335,"note":103.000,"rtz":[41.501,254.495,18.110]}},{"noteOn":{"time":67.375,"note":91.000,"rtz":[90.263,31.840,17.165]}},{"noteOn":{"time":67.490,"note":99.000,"rtz":[40.194,89.860,17.795]}},{"noteOn":{"time":67.660,"note":97.000,"rtz":[47.343,80.172,17.638]}},{"noteOn":{"time":67.700,"note":93.000,"rtz":[61.465,349.779,17.323]}},{"noteOn":{"time":67.740,"note":101.000,"rtz":[94.225,182.266,17.953]}},{"noteOn":{"time":68.010,"note":95.000,"rtz":[65.844,307.813,17.480]}},{"noteOn":{"time":68.150,"note":101.000,"rtz":[60.923,131.992,17.953]}},{"noteOn":{"time":68.190,"note":93.000,"rtz":[85.273,188.086,17.323]}},{"noteOn":{"time":68.230,"note":101.000,"rtz":[38.562,154.618,17.953]}},{"noteOn":{"time":68.270,"note":100.000,"rtz":[52.864,136.423,17.874]}},{"noteOn":{"time":68.350,"note":99.000,"rtz":[19.157,283.990,17.795]}},{"noteOn":{"time":68.390,"note":97.000,"rtz":[59.876,71.716,17.638]}},{"noteOn":{"time":68.590,"note":93.000,"rtz":[15.066,81.174,17.323]}},{"noteOn":{"time":68.630,"note":107.000,"rtz":[89.500,85.163,18.425]}},{"noteOn":{"time":68.675,"note":109.000,"rtz":[11.026,259.298,18.583]}},{"noteOn":{"time":68.835,"note":111.000,"rtz":[34.530,335.677,18.740]}},{"noteOn":{"time":68.875,"note":112.000,"rtz":[79.964,216.954,18.819]}},{"noteOn":{"time":68.915,"note":112.000,"rtz":[85.659,343.110,18.819]}},{"noteOn":{"time":68.955,"note":93.000,"rtz":[97.771,166.151,17.323]}},{"noteOn":{"time":68.995,"note":97.000,"rtz":[90.307,49.196,17.638]}}]}
-`
+        {"baeea327-af4b-4b10-a843-6614c20ea958":[],"069e83fd-1c94-47e9-95ec-126e0fbefec3":[],"b4f7a35c-6198-422f-be6e-fa126f31b007":[{"instanceName":"","soundDistanceMin":5,"soundDistanceMax":100},{"noteOn":{"time":0.005,"note":63.000,"rtz":[97.483,50.185,14.961]}},{"noteOn":{"time":7.855,"note":98.000,"rtz":[78.101,189.001,17.717]}},{"noteOn":{"time":8.825,"note":95.000,"rtz":[64.153,349.023,17.480]}},{"noteOn":{"time":9.620,"note":103.000,"rtz":[73.098,340.247,18.110]}},{"noteOn":{"time":10.245,"note":103.000,"rtz":[17.742,75.556,18.110]}},{"noteOn":{"time":10.800,"note":95.000,"rtz":[27.420,1.279,17.480]}},{"noteOn":{"time":11.530,"note":97.000,"rtz":[40.762,317.710,17.638]}},{"noteOn":{"time":12.440,"note":97.000,"rtz":[52.645,48.639,17.638]}},{"noteOn":{"time":13.355,"note":95.000,"rtz":[34.853,105.488,17.480]}},{"noteOn":{"time":14.095,"note":103.000,"rtz":[9.261,270.852,18.110]}},{"noteOn":{"time":14.665,"note":102.000,"rtz":[72.572,128.955,18.031]}},{"noteOn":{"time":15.235,"note":96.000,"rtz":[95.375,283.861,17.559]}},{"noteOn":{"time":15.275,"note":96.000,"rtz":[56.289,71.592,17.559]}},{"noteOn":{"time":15.850,"note":94.000,"rtz":[11.600,129.770,17.402]}},{"noteOn":{"time":16.060,"note":98.000,"rtz":[23.150,86.891,17.717]}},{"noteOn":{"time":16.380,"note":102.000,"rtz":[59.324,210.027,18.031]}},{"noteOn":{"time":17.025,"note":96.000,"rtz":[82.004,315.736,17.559]}},{"noteOn":{"time":17.320,"note":101.000,"rtz":[92.451,190.114,17.953]}},{"noteOn":{"time":17.885,"note":94.000,"rtz":[95.268,240.929,17.402]}},{"noteOn":{"time":18.175,"note":95.000,"rtz":[90.977,318.219,17.480]}},{"noteOn":{"time":18.575,"note":104.000,"rtz":[66.879,3.563,18.189]}},{"noteOn":{"time":18.910,"note":97.000,"rtz":[9.616,53.159,17.638]}},{"noteOn":{"time":19.085,"note":102.000,"rtz":[66.239,106.456,18.031]}},{"noteOn":{"time":19.730,"note":95.000,"rtz":[36.338,341.630,17.480]}},{"noteOn":{"time":19.770,"note":96.000,"rtz":[56.406,118.703,17.559]}},{"noteOn":{"time":20.325,"note":93.000,"rtz":[93.748,350.831,17.323]}},{"noteOn":{"time":20.590,"note":99.000,"rtz":[28.630,127.198,17.795]}},{"noteOn":{"time":20.830,"note":103.000,"rtz":[46.228,352.357,18.110]}},{"noteOn":{"time":20.970,"note":99.000,"rtz":[71.295,336.536,17.795]}},{"noteOn":{"time":21.575,"note":95.000,"rtz":[8.968,153.196,17.480]}},{"noteOn":{"time":21.640,"note":97.000,"rtz":[13.094,9.590,17.638]}},{"noteOn":{"time":21.750,"note":101.000,"rtz":[83.112,40.792,17.953]}},{"noteOn":{"time":22.205,"note":103.000,"rtz":[5.480,192.732,18.110]}},{"noteOn":{"time":22.385,"note":93.000,"rtz":[73.463,126.815,17.323]}},{"noteOn":{"time":22.585,"note":96.000,"rtz":[35.532,18.146,17.559]}},{"noteOn":{"time":22.910,"note":105.000,"rtz":[37.320,15.967,18.268]}},{"noteOn":{"time":23.015,"note":103.000,"rtz":[71.415,24.613,18.110]}},{"noteOn":{"time":23.340,"note":98.000,"rtz":[28.124,283.993,17.717]}},{"noteOn":{"time":23.445,"note":95.000,"rtz":[59.959,105.043,17.480]}},{"noteOn":{"time":23.560,"note":101.000,"rtz":[91.821,297.246,17.953]}},{"noteOn":{"time":24.175,"note":97.000,"rtz":[50.497,266.088,17.638]}},{"noteOn":{"time":24.215,"note":94.000,"rtz":[34.368,270.915,17.402]}},{"noteOn":{"time":24.280,"note":97.000,"rtz":[74.331,115.062,17.638]}},{"noteOn":{"time":24.680,"note":99.000,"rtz":[86.947,140.339,17.795]}},{"noteOn":{"time":24.755,"note":92.000,"rtz":[33.628,333.655,17.244]}},{"noteOn":{"time":25.175,"note":99.000,"rtz":[23.424,196.768,17.795]}},{"noteOn":{"time":25.270,"note":102.000,"rtz":[91.299,87.479,18.031]}},{"noteOn":{"time":25.440,"note":97.000,"rtz":[75.752,325.560,17.638]}},{"noteOn":{"time":25.965,"note":104.000,"rtz":[82.099,354.035,18.189]}},{"noteOn":{"time":26.105,"note":94.000,"rtz":[23.226,117.339,17.402]}},{"noteOn":{"time":26.170,"note":100.000,"rtz":[55.589,150.576,17.874]}},{"noteOn":{"time":26.755,"note":104.000,"rtz":[34.860,108.144,18.189]}},{"noteOn":{"time":26.860,"note":92.000,"rtz":[83.513,201.611,17.244]}},{"noteOn":{"time":26.980,"note":96.000,"rtz":[36.714,132.657,17.559]}},{"noteOn":{"time":27.310,"note":96.000,"rtz":[8.854,107.157,17.559]}},{"noteOn":{"time":27.435,"note":102.000,"rtz":[55.926,286.092,18.031]}},{"noteOn":{"time":27.760,"note":98.000,"rtz":[23.642,284.369,17.717]}},{"noteOn":{"time":28.005,"note":94.000,"rtz":[70.483,10.514,17.402]}},{"noteOn":{"time":28.045,"note":100.000,"rtz":[13.952,354.113,17.874]}},{"noteOn":{"time":28.125,"note":98.000,"rtz":[25.408,273.544,17.717]}},{"noteOn":{"time":28.625,"note":93.000,"rtz":[52.818,118.058,17.323]}},{"noteOn":{"time":28.710,"note":98.000,"rtz":[75.704,306.568,17.717]}},{"noteOn":{"time":28.750,"note":92.000,"rtz":[26.125,201.316,17.244]}},{"noteOn":{"time":28.810,"note":98.000,"rtz":[28.470,62.649,17.717]}},{"noteOn":{"time":29.175,"note":91.000,"rtz":[46.562,126.412,17.165]}},{"noteOn":{"time":29.510,"note":102.000,"rtz":[24.266,174.907,18.031]}},{"noteOn":{"time":29.555,"note":96.000,"rtz":[50.096,105.260,17.559]}},{"noteOn":{"time":29.710,"note":101.000,"rtz":[97.896,216.200,17.953]}},{"noteOn":{"time":29.760,"note":100.000,"rtz":[64.575,158.423,17.874]}},{"noteOn":{"time":30.170,"note":104.000,"rtz":[64.248,26.952,18.189]}},{"noteOn":{"time":30.250,"note":100.000,"rtz":[93.519,259.045,17.874]}},{"noteOn":{"time":30.585,"note":99.000,"rtz":[27.474,22.859,17.795]}},{"noteOn":{"time":30.635,"note":94.000,"rtz":[74.105,24.332,17.402]}},{"noteOn":{"time":31.015,"note":95.000,"rtz":[20.274,12.299,17.480]}},{"noteOn":{"time":31.055,"note":103.000,"rtz":[63.870,235.305,18.110]}},{"noteOn":{"time":31.335,"note":92.000,"rtz":[28.744,172.681,17.244]}},{"noteOn":{"time":31.375,"note":97.000,"rtz":[82.882,308.346,17.638]}},{"noteOn":{"time":31.685,"note":97.000,"rtz":[75.832,357.733,17.638]}},{"noteOn":{"time":31.750,"note":97.000,"rtz":[31.608,242.618,17.638]}},{"noteOn":{"time":31.855,"note":101.000,"rtz":[43.196,215.005,17.953]}},{"noteOn":{"time":32.175,"note":99.000,"rtz":[31.183,72.156,17.795]}},{"noteOn":{"time":32.510,"note":99.000,"rtz":[27.354,334.796,17.795]}},{"noteOn":{"time":32.550,"note":93.000,"rtz":[55.345,52.525,17.323]}},{"noteOn":{"time":32.590,"note":99.000,"rtz":[48.501,185.011,17.795]}},{"noteOn":{"time":33.060,"note":93.000,"rtz":[47.609,186.712,17.323]}},{"noteOn":{"time":33.250,"note":91.000,"rtz":[95.143,190.797,17.165]}},{"noteOn":{"time":33.290,"note":97.000,"rtz":[19.356,3.751,17.638]}},{"noteOn":{"time":33.340,"note":99.000,"rtz":[14.864,0.328,17.795]}},{"noteOn":{"time":33.590,"note":92.000,"rtz":[14.170,81.787,17.244]}},{"noteOn":{"time":34.020,"note":101.000,"rtz":[11.629,141.538,17.953]}},{"noteOn":{"time":34.060,"note":101.000,"rtz":[67.153,113.335,17.953]}},{"noteOn":{"time":34.150,"note":100.000,"rtz":[38.664,195.442,17.874]}},{"noteOn":{"time":34.195,"note":95.000,"rtz":[54.235,326.885,17.480]}},{"noteOn":{"time":34.335,"note":101.000,"rtz":[24.141,124.827,17.953]}},{"noteOn":{"time":34.730,"note":99.000,"rtz":[74.954,5.229,17.795]}},{"noteOn":{"time":34.770,"note":99.000,"rtz":[56.192,32.823,17.795]}},{"noteOn":{"time":34.895,"note":105.000,"rtz":[67.683,326.088,18.268]}},{"noteOn":{"time":35.005,"note":98.000,"rtz":[96.857,158.983,17.717]}},{"noteOn":{"time":35.155,"note":93.000,"rtz":[79.898,190.438,17.323]}},{"noteOn":{"time":35.520,"note":95.000,"rtz":[9.322,295.084,17.480]}},{"noteOn":{"time":35.560,"note":103.000,"rtz":[85.057,101.489,18.110]}},{"noteOn":{"time":35.770,"note":98.000,"rtz":[87.452,343.077,17.717]}},{"noteOn":{"time":35.810,"note":93.000,"rtz":[96.862,161.132,17.323]}},{"noteOn":{"time":35.860,"note":103.000,"rtz":[44.969,206.920,18.110]}},{"noteOn":{"time":36.245,"note":98.000,"rtz":[90.129,337.920,17.717]}},{"noteOn":{"time":36.330,"note":101.000,"rtz":[47.684,216.831,17.953]}},{"noteOn":{"time":36.540,"note":105.000,"rtz":[82.232,47.222,18.268]}},{"noteOn":{"time":36.590,"note":97.000,"rtz":[90.236,20.655,17.638]}},{"noteOn":{"time":36.630,"note":100.000,"rtz":[12.470,119.051,17.874]}},{"noteOn":{"time":37.025,"note":92.000,"rtz":[8.454,306.578,17.244]}},{"noteOn":{"time":37.065,"note":98.000,"rtz":[26.408,315.075,17.717]}},{"noteOn":{"time":37.415,"note":95.000,"rtz":[73.968,329.488,17.480]}},{"noteOn":{"time":37.495,"note":92.000,"rtz":[96.921,184.611,17.244]}},{"noteOn":{"time":37.585,"note":100.000,"rtz":[36.402,7.293,17.874]}},{"noteOn":{"time":37.745,"note":90.000,"rtz":[18.896,179.016,17.087]}},{"noteOn":{"time":37.925,"note":100.000,"rtz":[69.976,166.813,17.874]}},{"noteOn":{"time":38.005,"note":92.000,"rtz":[13.819,300.590,17.244]}},{"noteOn":{"time":38.145,"note":97.000,"rtz":[48.976,15.636,17.638]}},{"noteOn":{"time":38.340,"note":96.000,"rtz":[62.161,269.055,17.559]}},{"noteOn":{"time":38.525,"note":100.000,"rtz":[22.327,116.699,17.874]}},{"noteOn":{"time":38.585,"note":100.000,"rtz":[37.698,167.505,17.874]}},{"noteOn":{"time":38.725,"note":101.000,"rtz":[33.153,142.841,17.953]}},{"noteOn":{"time":38.865,"note":102.000,"rtz":[8.592,2.088,18.031]}},{"noteOn":{"time":39.245,"note":98.000,"rtz":[63.368,33.936,17.717]}},{"noteOn":{"time":39.290,"note":98.000,"rtz":[98.781,211.573,17.717]}},{"noteOn":{"time":39.330,"note":94.000,"rtz":[30.227,48.021,17.402]}},{"noteOn":{"time":39.420,"note":97.000,"rtz":[17.597,17.559,17.638]}},{"noteOn":{"time":39.630,"note":92.000,"rtz":[20.914,269.304,17.244]}},{"noteOn":{"time":40.005,"note":104.000,"rtz":[29.294,33.731,18.189]}},{"noteOn":{"time":40.045,"note":96.000,"rtz":[93.048,69.871,17.559]}},{"noteOn":{"time":40.110,"note":104.000,"rtz":[58.470,227.284,18.189]}},{"noteOn":{"time":40.165,"note":99.000,"rtz":[89.481,77.592,17.795]}},{"noteOn":{"time":40.220,"note":94.000,"rtz":[84.329,169.377,17.402]}},{"noteOn":{"time":40.310,"note":92.000,"rtz":[85.501,279.912,17.244]}},{"noteOn":{"time":40.740,"note":98.000,"rtz":[40.864,358.753,17.717]}},{"noteOn":{"time":40.810,"note":100.000,"rtz":[60.127,172.602,17.874]}},{"noteOn":{"time":40.865,"note":106.000,"rtz":[80.664,137.764,18.346]}},{"noteOn":{"time":41.010,"note":101.000,"rtz":[56.661,220.898,17.953]}},{"noteOn":{"time":41.055,"note":102.000,"rtz":[5.942,18.327,18.031]}},{"noteOn":{"time":41.210,"note":90.000,"rtz":[42.381,247.977,17.087]}},{"noteOn":{"time":41.530,"note":92.000,"rtz":[98.017,264.871,17.244]}},{"noteOn":{"time":41.570,"note":98.000,"rtz":[95.334,267.419,17.717]}},{"noteOn":{"time":41.720,"note":100.000,"rtz":[71.598,97.941,17.874]}},{"noteOn":{"time":41.860,"note":96.000,"rtz":[83.271,104.367,17.559]}},{"noteOn":{"time":41.900,"note":98.000,"rtz":[72.929,272.240,17.717]}},{"noteOn":{"time":41.940,"note":91.000,"rtz":[16.370,244.734,17.165]}},{"noteOn":{"time":42.240,"note":91.000,"rtz":[7.364,228.953,17.165]}},{"noteOn":{"time":42.300,"note":98.000,"rtz":[41.150,113.556,17.717]}},{"noteOn":{"time":42.450,"note":93.000,"rtz":[44.845,157.184,17.323]}},{"noteOn":{"time":42.510,"note":100.000,"rtz":[29.590,152.623,17.874]}},{"noteOn":{"time":42.710,"note":98.000,"rtz":[92.077,39.959,17.717]}},{"noteOn":{"time":42.795,"note":100.000,"rtz":[77.179,178.605,17.874]}},{"noteOn":{"time":43.035,"note":99.000,"rtz":[58.481,231.863,17.795]}},{"noteOn":{"time":43.075,"note":99.000,"rtz":[27.492,30.219,17.795]}},{"noteOn":{"time":43.130,"note":94.000,"rtz":[89.884,239.377,17.402]}},{"noteOn":{"time":43.395,"note":103.000,"rtz":[47.586,177.586,18.110]}},{"noteOn":{"time":43.435,"note":100.000,"rtz":[30.003,318.448,17.874]}},{"noteOn":{"time":43.640,"note":95.000,"rtz":[73.273,50.516,17.480]}},{"noteOn":{"time":43.740,"note":97.000,"rtz":[87.346,300.518,17.638]}},{"noteOn":{"time":43.865,"note":97.000,"rtz":[46.967,288.953,17.638]}},{"noteOn":{"time":43.905,"note":97.000,"rtz":[8.647,24.391,17.638]}},{"noteOn":{"time":43.965,"note":98.000,"rtz":[21.943,322.135,17.717]}},{"noteOn":{"time":44.110,"note":93.000,"rtz":[81.344,50.971,17.323]}},{"noteOn":{"time":44.530,"note":93.000,"rtz":[5.054,21.742,17.323]}},{"noteOn":{"time":44.570,"note":97.000,"rtz":[42.860,80.089,17.638]}},{"noteOn":{"time":44.610,"note":105.000,"rtz":[59.149,139.941,18.268]}},{"noteOn":{"time":44.650,"note":100.000,"rtz":[22.519,193.645,17.874]}},{"noteOn":{"time":44.690,"note":95.000,"rtz":[98.995,297.348,17.480]}},{"noteOn":{"time":44.730,"note":91.000,"rtz":[53.356,333.951,17.165]}},{"noteOn":{"time":45.240,"note":99.000,"rtz":[31.721,287.857,17.795]}},{"noteOn":{"time":45.285,"note":99.000,"rtz":[73.006,303.427,17.795]}},{"noteOn":{"time":45.325,"note":105.000,"rtz":[33.307,204.817,18.268]}},{"noteOn":{"time":45.410,"note":103.000,"rtz":[31.335,133.214,18.110]}},{"noteOn":{"time":45.455,"note":102.000,"rtz":[24.426,239.084,18.031]}},{"noteOn":{"time":45.670,"note":89.000,"rtz":[39.379,122.625,17.008]}},{"noteOn":{"time":46.045,"note":91.000,"rtz":[13.390,128.579,17.165]}},{"noteOn":{"time":46.105,"note":97.000,"rtz":[84.859,22.184,17.638]}},{"noteOn":{"time":46.180,"note":97.000,"rtz":[55.234,8.286,17.638]}},{"noteOn":{"time":46.220,"note":99.000,"rtz":[46.663,166.900,17.795]}},{"noteOn":{"time":46.270,"note":101.000,"rtz":[16.234,190.067,17.953]}},{"noteOn":{"time":46.405,"note":92.000,"rtz":[93.963,77.273,17.244]}},{"noteOn":{"time":46.445,"note":103.000,"rtz":[75.420,192.277,18.110]}},{"noteOn":{"time":46.740,"note":91.000,"rtz":[60.741,59.005,17.165]}},{"noteOn":{"time":46.830,"note":97.000,"rtz":[39.683,244.574,17.638]}},{"noteOn":{"time":46.940,"note":94.000,"rtz":[97.868,204.920,17.402]}},{"noteOn":{"time":47.095,"note":101.000,"rtz":[34.231,215.565,17.953]}},{"noteOn":{"time":47.150,"note":99.000,"rtz":[46.831,234.643,17.795]}},{"noteOn":{"time":47.190,"note":99.000,"rtz":[10.214,293.490,17.795]}},{"noteOn":{"time":47.380,"note":101.000,"rtz":[40.481,204.918,17.953]}},{"noteOn":{"time":47.545,"note":98.000,"rtz":[34.155,185.358,17.717]}},{"noteOn":{"time":47.585,"note":98.000,"rtz":[57.308,120.899,17.717]}},{"noteOn":{"time":47.625,"note":95.000,"rtz":[60.125,171.896,17.480]}},{"noteOn":{"time":47.930,"note":103.000,"rtz":[60.913,128.106,18.110]}},{"noteOn":{"time":47.975,"note":99.000,"rtz":[71.629,110.420,17.795]}},{"noteOn":{"time":48.015,"note":103.000,"rtz":[52.148,209.102,18.110]}},{"noteOn":{"time":48.055,"note":101.000,"rtz":[56.143,13.150,17.953]}},{"noteOn":{"time":48.240,"note":96.000,"rtz":[87.639,58.133,17.559]}},{"noteOn":{"time":48.310,"note":97.000,"rtz":[15.310,179.445,17.638]}},{"noteOn":{"time":48.355,"note":96.000,"rtz":[81.984,307.752,17.559]}},{"noteOn":{"time":48.585,"note":94.000,"rtz":[59.238,175.663,17.402]}},{"noteOn":{"time":48.645,"note":105.000,"rtz":[71.240,314.346,18.268]}},{"noteOn":{"time":48.685,"note":97.000,"rtz":[53.582,64.758,17.638]}},{"noteOn":{"time":48.940,"note":95.000,"rtz":[10.528,59.340,17.480]}},{"noteOn":{"time":49.050,"note":98.000,"rtz":[49.057,48.155,17.717]}},{"noteOn":{"time":49.090,"note":100.000,"rtz":[21.329,75.793,17.874]}},{"noteOn":{"time":49.130,"note":96.000,"rtz":[34.039,138.507,17.559]}},{"noteOn":{"time":49.185,"note":105.000,"rtz":[77.409,270.951,18.268]}},{"noteOn":{"time":49.225,"note":91.000,"rtz":[75.321,152.908,17.165]}},{"noteOn":{"time":49.430,"note":95.000,"rtz":[5.061,24.362,17.480]}},{"noteOn":{"time":49.740,"note":100.000,"rtz":[21.126,354.206,17.874]}},{"noteOn":{"time":49.780,"note":93.000,"rtz":[28.011,238.640,17.323]}},{"noteOn":{"time":49.820,"note":105.000,"rtz":[26.960,176.654,18.268]}},{"noteOn":{"time":49.860,"note":98.000,"rtz":[98.937,274.118,17.717]}},{"noteOn":{"time":49.945,"note":102.000,"rtz":[68.889,90.426,18.031]}},{"noteOn":{"time":50.155,"note":98.000,"rtz":[63.155,308.185,17.717]}},{"noteOn":{"time":50.195,"note":90.000,"rtz":[71.329,350.143,17.087]}},{"noteOn":{"time":50.555,"note":90.000,"rtz":[9.395,324.322,17.087]}},{"noteOn":{"time":50.595,"note":98.000,"rtz":[47.506,145.640,17.717]}},{"noteOn":{"time":50.675,"note":96.000,"rtz":[86.842,98.019,17.559]}},{"noteOn":{"time":50.715,"note":102.000,"rtz":[85.445,257.481,18.031]}},{"noteOn":{"time":50.775,"note":98.000,"rtz":[78.739,85.084,17.717]}},{"noteOn":{"time":50.915,"note":93.000,"rtz":[8.806,88.097,17.323]}},{"noteOn":{"time":50.990,"note":102.000,"rtz":[93.050,70.419,18.031]}},{"noteOn":{"time":51.240,"note":92.000,"rtz":[73.785,255.846,17.244]}},{"noteOn":{"time":51.450,"note":96.000,"rtz":[33.022,90.253,17.559]}},{"noteOn":{"time":51.490,"note":95.000,"rtz":[58.334,172.858,17.480]}},{"noteOn":{"time":51.530,"note":100.000,"rtz":[87.812,127.797,17.874]}},{"noteOn":{"time":51.570,"note":100.000,"rtz":[62.982,238.747,17.874]}},{"noteOn":{"time":51.630,"note":102.000,"rtz":[29.969,304.774,18.031]}},{"noteOn":{"time":51.825,"note":90.000,"rtz":[70.970,205.893,17.087]}},{"noteOn":{"time":51.880,"note":100.000,"rtz":[61.422,332.311,17.874]}},{"noteOn":{"time":52.060,"note":98.000,"rtz":[80.852,213.382,17.717]}},{"noteOn":{"time":52.120,"note":97.000,"rtz":[80.794,190.195,17.638]}},{"noteOn":{"time":52.190,"note":96.000,"rtz":[97.535,71.423,17.559]}},{"noteOn":{"time":52.370,"note":88.000,"rtz":[6.864,28.266,16.929]}},{"noteOn":{"time":52.410,"note":104.000,"rtz":[35.282,277.625,18.189]}},{"noteOn":{"time":52.450,"note":98.000,"rtz":[71.916,225.504,17.717]}},{"noteOn":{"time":52.490,"note":104.000,"rtz":[39.714,256.916,18.189]}},{"noteOn":{"time":52.530,"note":100.000,"rtz":[62.933,219.289,17.874]}},{"noteOn":{"time":52.740,"note":96.000,"rtz":[55.961,300.037,17.559]}},{"noteOn":{"time":52.835,"note":98.000,"rtz":[33.518,289.461,17.717]}},{"noteOn":{"time":52.890,"note":95.000,"rtz":[22.851,326.851,17.480]}},{"noteOn":{"time":52.935,"note":106.000,"rtz":[23.191,103.573,18.346]}},{"noteOn":{"time":53.010,"note":94.000,"rtz":[50.723,357.119,17.402]}},{"noteOn":{"time":53.090,"note":98.000,"rtz":[14.437,188.995,17.717]}},{"noteOn":{"time":53.215,"note":96.000,"rtz":[63.971,275.847,17.559]}},{"noteOn":{"time":53.255,"note":102.000,"rtz":[22.215,71.378,18.031]}},{"noteOn":{"time":53.560,"note":99.000,"rtz":[5.622,249.840,17.795]}},{"noteOn":{"time":53.600,"note":101.000,"rtz":[55.099,314.057,17.953]}},{"noteOn":{"time":53.640,"note":96.000,"rtz":[45.490,56.209,17.559]}},{"noteOn":{"time":53.780,"note":90.000,"rtz":[56.508,159.776,17.087]}},{"noteOn":{"time":53.870,"note":106.000,"rtz":[7.068,110.070,18.346]}},{"noteOn":{"time":53.910,"note":96.000,"rtz":[42.373,244.724,17.559]}},{"noteOn":{"time":53.995,"note":96.000,"rtz":[7.064,108.695,17.559]}},{"noteOn":{"time":54.195,"note":94.000,"rtz":[98.922,268.136,17.402]}},{"noteOn":{"time":54.240,"note":101.000,"rtz":[91.634,222.257,17.953]}},{"noteOn":{"time":54.335,"note":97.000,"rtz":[43.925,147.690,17.638]}},{"noteOn":{"time":54.375,"note":104.000,"rtz":[49.156,87.968,18.189]}},{"noteOn":{"time":54.475,"note":103.000,"rtz":[89.444,62.809,18.110]}},{"noteOn":{"time":54.745,"note":90.000,"rtz":[51.023,117.580,17.087]}},{"noteOn":{"time":54.785,"note":98.000,"rtz":[62.339,340.620,17.717]}},{"noteOn":{"time":54.910,"note":94.000,"rtz":[28.170,302.414,17.402]}},{"noteOn":{"time":54.950,"note":94.000,"rtz":[99.973,330.143,17.402]}},{"noteOn":{"time":55.015,"note":98.000,"rtz":[20.243,359.981,17.717]}},{"noteOn":{"time":55.065,"note":91.000,"rtz":[94.467,279.428,17.165]}},{"noteOn":{"time":55.265,"note":95.000,"rtz":[27.342,330.030,17.480]}},{"noteOn":{"time":55.370,"note":97.000,"rtz":[17.094,175.514,17.638]}},{"noteOn":{"time":55.435,"note":102.000,"rtz":[67.076,82.416,18.031]}},{"noteOn":{"time":55.475,"note":93.000,"rtz":[29.199,355.671,17.323]}},{"noteOn":{"time":55.655,"note":96.000,"rtz":[68.965,120.803,17.559]}},{"noteOn":{"time":55.735,"note":93.000,"rtz":[57.462,182.591,17.323]}},{"noteOn":{"time":55.805,"note":101.000,"rtz":[74.949,3.466,17.953]}},{"noteOn":{"time":55.860,"note":102.000,"rtz":[6.917,49.606,18.031]}},{"noteOn":{"time":56.050,"note":96.000,"rtz":[61.901,164.924,17.559]}},{"noteOn":{"time":56.090,"note":95.000,"rtz":[55.990,311.663,17.480]}},{"noteOn":{"time":56.165,"note":103.000,"rtz":[73.578,172.731,18.110]}},{"noteOn":{"time":56.205,"note":99.000,"rtz":[84.273,146.879,17.795]}},{"noteOn":{"time":56.245,"note":89.000,"rtz":[26.484,345.654,17.008]}},{"noteOn":{"time":56.545,"note":99.000,"rtz":[73.917,308.885,17.795]}},{"noteOn":{"time":56.585,"note":97.000,"rtz":[90.910,291.619,17.638]}},{"noteOn":{"time":56.715,"note":96.000,"rtz":[83.182,68.894,17.559]}},{"noteOn":{"time":56.755,"note":97.000,"rtz":[31.168,65.976,17.638]}},{"noteOn":{"time":56.795,"note":97.000,"rtz":[44.573,48.044,17.638]}},{"noteOn":{"time":56.835,"note":89.000,"rtz":[18.217,266.452,17.008]}},{"noteOn":{"time":56.880,"note":105.000,"rtz":[44.558,41.945,18.268]}},{"noteOn":{"time":56.920,"note":103.000,"rtz":[37.715,174.410,18.110]}},{"noteOn":{"time":57.235,"note":95.000,"rtz":[36.216,292.854,17.480]}},{"noteOn":{"time":57.385,"note":99.000,"rtz":[22.693,263.319,17.795]}},{"noteOn":{"time":57.435,"note":95.000,"rtz":[51.947,128.567,17.480]}},{"noteOn":{"time":57.475,"note":94.000,"rtz":[84.514,243.611,17.402]}},{"noteOn":{"time":57.515,"note":101.000,"rtz":[70.957,200.450,17.953]}},{"noteOn":{"time":57.555,"note":107.000,"rtz":[99.247,38.757,18.425]}},{"noteOn":{"time":57.635,"note":97.000,"rtz":[43.577,8.223,17.638]}},{"noteOn":{"time":57.675,"note":95.000,"rtz":[44.901,179.582,17.480]}},{"noteOn":{"time":58.065,"note":97.000,"rtz":[85.799,39.330,17.638]}},{"noteOn":{"time":58.105,"note":99.000,"rtz":[59.595,318.811,17.795]}},{"noteOn":{"time":58.145,"note":103.000,"rtz":[83.404,157.936,18.110]}},{"noteOn":{"time":58.185,"note":102.000,"rtz":[50.622,316.374,18.031]}},{"noteOn":{"time":58.375,"note":89.000,"rtz":[15.296,173.692,17.008]}},{"noteOn":{"time":58.435,"note":105.000,"rtz":[16.139,152.069,18.268]}},{"noteOn":{"time":58.475,"note":97.000,"rtz":[76.593,303.570,17.638]}},{"noteOn":{"time":58.615,"note":95.000,"rtz":[37.301,8.259,17.480]}},{"noteOn":{"time":58.735,"note":102.000,"rtz":[45.908,223.732,18.031]}},{"noteOn":{"time":58.870,"note":97.000,"rtz":[85.177,149.795,17.638]}},{"noteOn":{"time":59.015,"note":93.000,"rtz":[13.017,338.787,17.323]}},{"noteOn":{"time":59.055,"note":102.000,"rtz":[71.915,225.444,18.031]}},{"noteOn":{"time":59.095,"note":103.000,"rtz":[38.025,298.903,18.110]}},{"noteOn":{"time":59.295,"note":91.000,"rtz":[96.815,142.182,17.165]}},{"noteOn":{"time":59.405,"note":99.000,"rtz":[85.175,148.960,17.795]}},{"noteOn":{"time":59.455,"note":95.000,"rtz":[84.671,306.615,17.480]}},{"noteOn":{"time":59.570,"note":92.000,"rtz":[27.435,7.289,17.244]}},{"noteOn":{"time":59.610,"note":99.000,"rtz":[18.783,133.798,17.795]}},{"noteOn":{"time":59.650,"note":95.000,"rtz":[40.769,320.551,17.480]}},{"noteOn":{"time":59.855,"note":94.000,"rtz":[37.078,278.967,17.402]}},{"noteOn":{"time":59.930,"note":101.000,"rtz":[14.443,191.022,17.953]}},{"noteOn":{"time":59.970,"note":97.000,"rtz":[25.639,6.410,17.638]}},{"noteOn":{"time":60.040,"note":94.000,"rtz":[89.215,330.838,17.402]}},{"noteOn":{"time":60.115,"note":97.000,"rtz":[39.672,240.120,17.638]}},{"noteOn":{"time":60.235,"note":94.000,"rtz":[68.342,230.564,17.402]}},{"noteOn":{"time":60.275,"note":101.000,"rtz":[86.191,196.830,17.953]}},{"noteOn":{"time":60.505,"note":101.000,"rtz":[93.033,63.625,17.953]}},{"noteOn":{"time":60.545,"note":99.000,"rtz":[73.843,279.335,17.795]}},{"noteOn":{"time":60.635,"note":89.000,"rtz":[24.741,5.820,17.008]}},{"noteOn":{"time":60.675,"note":96.000,"rtz":[72.717,187.317,17.559]}},{"noteOn":{"time":60.715,"note":104.000,"rtz":[17.064,163.452,18.189]}},{"noteOn":{"time":60.755,"note":95.000,"rtz":[14.853,355.642,17.480]}},{"noteOn":{"time":61.065,"note":97.000,"rtz":[68.162,158.422,17.638]}},{"noteOn":{"time":61.105,"note":96.000,"rtz":[64.209,11.358,17.559]}},{"noteOn":{"time":61.145,"note":99.000,"rtz":[37.546,106.604,17.795]}},{"noteOn":{"time":61.330,"note":96.000,"rtz":[40.473,201.878,17.559]}},{"noteOn":{"time":61.370,"note":89.000,"rtz":[44.172,246.966,17.008]}},{"noteOn":{"time":61.410,"note":102.000,"rtz":[69.751,76.274,18.031]}},{"noteOn":{"time":61.450,"note":105.000,"rtz":[47.480,135.040,18.268]}},{"noteOn":{"time":61.490,"note":98.000,"rtz":[75.504,226.300,17.717]}},{"noteOn":{"time":61.730,"note":94.000,"rtz":[61.965,190.577,17.402]}},{"noteOn":{"time":61.875,"note":96.000,"rtz":[13.221,60.405,17.559]}},{"noteOn":{"time":61.935,"note":101.000,"rtz":[78.820,117.423,17.953]}},{"noteOn":{"time":61.975,"note":100.000,"rtz":[57.945,16.697,17.874]}},{"noteOn":{"time":62.025,"note":94.000,"rtz":[91.818,295.881,17.402]}},{"noteOn":{"time":62.065,"note":93.000,"rtz":[12.323,59.998,17.323]}},{"noteOn":{"time":62.175,"note":106.000,"rtz":[67.449,232.231,18.346]}},{"noteOn":{"time":62.215,"note":96.000,"rtz":[37.778,199.827,17.559]}},{"noteOn":{"time":62.500,"note":104.000,"rtz":[81.823,243.098,18.189]}},{"noteOn":{"time":62.560,"note":98.000,"rtz":[56.606,198.788,17.717]}},{"noteOn":{"time":62.600,"note":100.000,"rtz":[52.787,105.869,17.874]}},{"noteOn":{"time":62.695,"note":103.000,"rtz":[19.931,234.432,18.110]}},{"noteOn":{"time":62.905,"note":90.000,"rtz":[99.330,71.820,17.087]}},{"noteOn":{"time":62.945,"note":104.000,"rtz":[17.977,170.108,18.189]}},{"noteOn":{"time":62.985,"note":98.000,"rtz":[10.922,217.712,17.717]}},{"noteOn":{"time":63.155,"note":94.000,"rtz":[11.847,229.063,17.402]}},{"noteOn":{"time":63.230,"note":102.000,"rtz":[44.203,259.278,18.031]}},{"noteOn":{"time":63.305,"note":94.000,"rtz":[33.968,110.100,17.402]}},{"noteOn":{"time":63.420,"note":96.000,"rtz":[43.215,222.570,17.559]}},{"noteOn":{"time":63.645,"note":101.000,"rtz":[52.692,67.648,17.953]}},{"noteOn":{"time":63.685,"note":102.000,"rtz":[91.315,94.209,18.031]}},{"noteOn":{"time":63.745,"note":100.000,"rtz":[73.927,312.854,17.874]}},{"noteOn":{"time":63.785,"note":92.000,"rtz":[11.868,237.444,17.244]}},{"noteOn":{"time":63.845,"note":96.000,"rtz":[88.521,52.177,17.559]}},{"noteOn":{"time":63.920,"note":96.000,"rtz":[38.783,243.230,17.559]}},{"noteOn":{"time":64.080,"note":92.000,"rtz":[60.294,239.669,17.244]}},{"noteOn":{"time":64.270,"note":100.000,"rtz":[55.727,206.231,17.874]}},{"noteOn":{"time":64.375,"note":100.000,"rtz":[70.876,168.080,17.874]}},{"noteOn":{"time":64.415,"note":94.000,"rtz":[49.233,118.886,17.402]}},{"noteOn":{"time":64.495,"note":96.000,"rtz":[98.847,237.938,17.559]}},{"noteOn":{"time":64.535,"note":98.000,"rtz":[7.338,218.798,17.717]}},{"noteOn":{"time":64.610,"note":95.000,"rtz":[42.221,183.538,17.480]}},{"noteOn":{"time":64.650,"note":100.000,"rtz":[6.420,210.110,17.874]}},{"noteOn":{"time":64.730,"note":95.000,"rtz":[84.327,168.400,17.480]}},{"noteOn":{"time":64.815,"note":102.000,"rtz":[58.168,105.888,18.031]}},{"noteOn":{"time":64.950,"note":98.000,"rtz":[20.459,86.570,17.717]}},{"noteOn":{"time":65.100,"note":88.000,"rtz":[50.346,205.490,16.929]}},{"noteOn":{"time":65.140,"note":98.000,"rtz":[50.157,129.852,17.717]}},{"noteOn":{"time":65.180,"note":104.000,"rtz":[25.434,283.773,18.189]}},{"noteOn":{"time":65.235,"note":97.000,"rtz":[53.801,152.731,17.638]}},{"noteOn":{"time":65.305,"note":94.000,"rtz":[95.099,173.180,17.402]}},{"noteOn":{"time":65.510,"note":96.000,"rtz":[96.815,142.045,17.559]}},{"noteOn":{"time":65.585,"note":95.000,"rtz":[81.338,48.430,17.480]}},{"noteOn":{"time":65.790,"note":101.000,"rtz":[29.019,283.107,17.953]}},{"noteOn":{"time":65.875,"note":102.000,"rtz":[35.186,239.045,18.031]}},{"noteOn":{"time":65.915,"note":90.000,"rtz":[38.298,48.416,17.087]}},{"noteOn":{"time":65.955,"note":98.000,"rtz":[28.643,132.417,17.717]}},{"noteOn":{"time":65.995,"note":106.000,"rtz":[97.156,279.285,18.346]}},{"noteOn":{"time":66.035,"note":95.000,"rtz":[23.329,158.966,17.480]}},{"noteOn":{"time":66.230,"note":93.000,"rtz":[79.417,357.112,17.323]}},{"noteOn":{"time":66.350,"note":94.000,"rtz":[14.254,115.442,17.402]}},{"noteOn":{"time":66.390,"note":97.000,"rtz":[97.577,88.295,17.638]}},{"noteOn":{"time":66.430,"note":104.000,"rtz":[98.580,130.704,18.189]}},{"noteOn":{"time":66.470,"note":101.000,"rtz":[49.258,128.965,17.953]}},{"noteOn":{"time":66.650,"note":93.000,"rtz":[95.637,29.286,17.323]}},{"noteOn":{"time":66.835,"note":96.000,"rtz":[63.774,196.777,17.559]}},{"noteOn":{"time":66.890,"note":106.000,"rtz":[91.552,189.377,18.346]}},{"noteOn":{"time":67.090,"note":101.000,"rtz":[74.668,250.553,17.953]}},{"noteOn":{"time":67.130,"note":99.000,"rtz":[75.034,37.478,17.795]}},{"noteOn":{"time":67.170,"note":94.000,"rtz":[7.813,49.284,17.402]}},{"noteOn":{"time":67.265,"note":102.000,"rtz":[52.891,147.416,18.031]}},{"noteOn":{"time":67.335,"note":103.000,"rtz":[41.501,254.495,18.110]}},{"noteOn":{"time":67.375,"note":91.000,"rtz":[90.263,31.840,17.165]}},{"noteOn":{"time":67.490,"note":99.000,"rtz":[40.194,89.860,17.795]}},{"noteOn":{"time":67.660,"note":97.000,"rtz":[47.343,80.172,17.638]}},{"noteOn":{"time":67.700,"note":93.000,"rtz":[61.465,349.779,17.323]}},{"noteOn":{"time":67.740,"note":101.000,"rtz":[94.225,182.266,17.953]}},{"noteOn":{"time":68.010,"note":95.000,"rtz":[65.844,307.813,17.480]}},{"noteOn":{"time":68.150,"note":101.000,"rtz":[60.923,131.992,17.953]}},{"noteOn":{"time":68.190,"note":93.000,"rtz":[85.273,188.086,17.323]}},{"noteOn":{"time":68.230,"note":101.000,"rtz":[38.562,154.618,17.953]}},{"noteOn":{"time":68.270,"note":100.000,"rtz":[52.864,136.423,17.874]}},{"noteOn":{"time":68.350,"note":99.000,"rtz":[19.157,283.990,17.795]}},{"noteOn":{"time":68.390,"note":97.000,"rtz":[59.876,71.716,17.638]}},{"noteOn":{"time":68.590,"note":93.000,"rtz":[15.066,81.174,17.323]}},{"noteOn":{"time":68.630,"note":107.000,"rtz":[89.500,85.163,18.425]}},{"noteOn":{"time":68.675,"note":109.000,"rtz":[11.026,259.298,18.583]}},{"noteOn":{"time":68.835,"note":111.000,"rtz":[34.530,335.677,18.740]}},{"noteOn":{"time":68.875,"note":112.000,"rtz":[79.964,216.954,18.819]}},{"noteOn":{"time":68.915,"note":112.000,"rtz":[85.659,343.110,18.819]}},{"noteOn":{"time":68.955,"note":93.000,"rtz":[97.771,166.151,17.323]}},{"noteOn":{"time":68.995,"note":97.000,"rtz":[90.307,49.196,17.638]}}]}
+        `
     startAudioVisuals()
     return scene;
 }}
