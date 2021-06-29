@@ -14,9 +14,15 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
+    const groundSize = 100;
+    const groundGridLineMajorColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
+    const groundGridLineMinorColor = new BABYLON.Color4(0.1, 0.1, 0.1, 1);
+
     const logCsoundMessages = true;
     const csoundIoBufferSize = 128;
     const csoundCameraUpdatesPerSecond = 30;
+
+    const halfGroundSize = groundSize / 2;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
@@ -44,48 +50,79 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    // This creates and positions a free camera (non-mesh)
-    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-
-    // This targets the camera to scene origin
-    camera.setTarget(BABYLON.Vector3.Zero());
-
-    // This attaches the camera to the canvas
+    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 2, 0), scene);
+    camera.setTarget(new BABYLON.Vector3(0, 2, 10));
     camera.attachControl(canvas, true);
 
-    // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-    // Default intensity is 1. Let's dim the light a small amount
+    let light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene);
     light.intensity = 0.7;
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
-    const environmentSettings = scene.createDefaultEnvironment({
-        groundColor: BABYLON.Color3.BlackReadOnly,
+    const environment = scene.createDefaultEnvironment({
         groundOpacity: 0,
-        groundSize: 999,
+        groundSize: groundSize,
         skyboxColor: BABYLON.Color3.BlackReadOnly,
-        skyboxSize: 999
+        skyboxSize: groundSize * 2
     });
 
+    let majorLine = BABYLON.MeshBuilder.CreateLines('', {
+        points: [
+            new BABYLON.Vector3(0, 0, -halfGroundSize),
+            new BABYLON.Vector3(0, 0, halfGroundSize)
+        ],
+        colors: [
+            groundGridLineMajorColor,
+            groundGridLineMajorColor
+        ]
+    });
+
+    let minorLine = BABYLON.MeshBuilder.CreateLines('', {
+        points: [
+            new BABYLON.Vector3(0, 0, -halfGroundSize),
+            new BABYLON.Vector3(0, 0, halfGroundSize)
+        ],
+        colors: [
+            groundGridLineMinorColor,
+            groundGridLineMinorColor
+        ]
+    });
+
+    for (let i = -halfGroundSize; i <= halfGroundSize; i++) {
+        let zAxisInstance = null;
+        let xAxisInstance = null;
+        if (i % 10 == 0) {
+            zAxisInstance = majorLine.createInstance('');
+            xAxisInstance = majorLine.createInstance('');
+        }
+        else {
+            zAxisInstance = minorLine.createInstance('');
+            xAxisInstance = minorLine.createInstance('');
+        }
+        zAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(i, 0, 0));
+        xAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(0, 0, i));
+        xAxisInstance.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0);
+    }
+
+    majorLine.isVisible = false;
+    minorLine.isVisible = false;
     
-    // Update `currentCamera` when switching between flat-screen and XR.
+    // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
 
     const startXr = async () => {
         try {
-            const xr = await scene.createDefaultXRExperienceAsync({});
+            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ environment.ground ]});
             if (!!xr) {
                 xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                     if (eventData == null) {
                         if (currentCamera != camera) {
-                            console.debug('Switching to flat-screen camera')
+                            console.debug('Switched to flat-screen camera')
                             currentCamera = camera
                         }
                     }
                     else {
                         if (currentCamera != xr.baseExperience.camera) {
-                            console.debug('Switching to XR camera')
+                            console.debug('Switched to XR camera')
                             currentCamera = xr.baseExperience.camera
                         }
                     }
