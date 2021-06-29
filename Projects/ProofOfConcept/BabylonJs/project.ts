@@ -22,6 +22,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csoundIoBufferSize = 128;
     const csoundCameraUpdatesPerSecond = 30;
 
+    const logDebugMessages = false;
+
     const halfGroundSize = groundSize / 2;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
@@ -30,7 +32,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     
     const originalConsoleDebug = console.debug
     console.debug = function() {
-        // originalConsoleLog.apply(console, arguments)
+        if (logDebugMessages) {
+            originalConsoleLog.apply(console, arguments)
+        }
     }
 
     const originalConsoleLog = console.log
