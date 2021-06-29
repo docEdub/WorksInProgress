@@ -160,9 +160,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             let mesh = pointSynthMesh.createInstance('')
             mesh.isVisible = false // false
             mesh.position = new BABYLON.Vector3(
-                -10 + (20 * i / 500), //noteOn.rtz[0] * Math.sin(noteOn.rtz[1]),
-                100 * (noteOn.rtz[2] / 127) - 20, //0, //noteOn.rtz[2], // Put them on the ground for now. TODO: Update Csound note positions to 0, too?
-                20, //noteOn.rtz[0] * Math.cos(noteOn.rtz[1])
+                noteOn.rtz[0] * Math.sin(noteOn.rtz[1]),
+                noteOn.rtz[2],
+                noteOn.rtz[0] * Math.cos(noteOn.rtz[1])
             )
             noteOn.mesh = mesh
             noteOn.offTime = noteOn.time + 0.1
