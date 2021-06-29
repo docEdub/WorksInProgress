@@ -54,9 +54,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 2, 0), scene);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 10));
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    camera.applyGravity = true;
+    camera.checkCollisions = true;
+    camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
+    camera.speed = 0.25;
     camera.attachControl(canvas, true);
+    camera.setTarget(new BABYLON.Vector3(0, 2, 10));
 
     let light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene);
     light.intensity = 0.7;
@@ -68,47 +72,83 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         skyboxColor: BABYLON.Color3.BlackReadOnly,
         skyboxSize: groundSize * 2
     });
+    environment.ground.checkCollisions = true;
 
-    let majorLine = BABYLON.MeshBuilder.CreateLines('', {
-        points: [
-            new BABYLON.Vector3(0, 0, -halfGroundSize),
-            new BABYLON.Vector3(0, 0, halfGroundSize)
-        ],
-        colors: [
-            groundGridLineMajorColor,
-            groundGridLineMajorColor
-        ]
-    });
+    { // Grid lines
 
-    let minorLine = BABYLON.MeshBuilder.CreateLines('', {
-        points: [
-            new BABYLON.Vector3(0, 0, -halfGroundSize),
-            new BABYLON.Vector3(0, 0, halfGroundSize)
-        ],
-        colors: [
-            groundGridLineMinorColor,
-            groundGridLineMinorColor
-        ]
-    });
+        let majorLine = BABYLON.MeshBuilder.CreateLines('', {
+            points: [
+                new BABYLON.Vector3(0, 0, -halfGroundSize),
+                new BABYLON.Vector3(0, 0, halfGroundSize)
+            ],
+            colors: [
+                groundGridLineMajorColor,
+                groundGridLineMajorColor
+            ]
+        });
+        majorLine.isVisible = false;
 
-    for (let i = -halfGroundSize; i <= halfGroundSize; i++) {
-        let zAxisInstance = null;
-        let xAxisInstance = null;
-        if (i % 10 == 0) {
-            zAxisInstance = majorLine.createInstance('');
-            xAxisInstance = majorLine.createInstance('');
+        let minorLine = BABYLON.MeshBuilder.CreateLines('', {
+            points: [
+                new BABYLON.Vector3(0, 0, -halfGroundSize),
+                new BABYLON.Vector3(0, 0, halfGroundSize)
+            ],
+            colors: [
+                groundGridLineMinorColor,
+                groundGridLineMinorColor
+            ]
+        });
+        minorLine.isVisible = false;
+
+        for (let i = -halfGroundSize; i <= halfGroundSize; i++) {
+            let zAxisInstance = null;
+            let xAxisInstance = null;
+            if (i % 10 == 0) {
+                zAxisInstance = majorLine.createInstance('');
+                xAxisInstance = majorLine.createInstance('');
+            }
+            else {
+                zAxisInstance = minorLine.createInstance('');
+                xAxisInstance = minorLine.createInstance('');
+            }
+            zAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(i, 0, 0));
+            xAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(0, 0, i));
+            xAxisInstance.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0);
         }
-        else {
-            zAxisInstance = minorLine.createInstance('');
-            xAxisInstance = minorLine.createInstance('');
-        }
-        zAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(i, 0, 0));
-        xAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(0, 0, i));
-        xAxisInstance.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0);
+
     }
+    { // Walls
 
-    majorLine.isVisible = false;
-    minorLine.isVisible = false;
+        const wall = BABYLON.MeshBuilder.CreatePlane('', {
+            size: groundSize
+        });
+        wall.isVisible = false;
+        wall.position.y = halfGroundSize;
+
+        const northWall = wall.createInstance('');
+        northWall.checkCollisions = true;
+        northWall.isVisible = false;
+        northWall.position.z = halfGroundSize + 0.1;
+
+        const eastWall = wall.createInstance('');
+        eastWall.checkCollisions = true;
+        eastWall.isVisible = false;
+        eastWall.position.x = halfGroundSize + 0.1;
+        eastWall.rotation.y = Math.PI / 2;
+
+        const southWall = wall.createInstance('');
+        southWall.checkCollisions = true;
+        southWall.isVisible = false;
+        southWall.position.z = -halfGroundSize - 0.1;
+        southWall.rotation.y = Math.PI;
+
+        const westWall = wall.createInstance('');
+        westWall.checkCollisions = true;
+        westWall.isVisible = false;
+        westWall.position.x = -halfGroundSize - 0.1;
+        westWall.rotation.y = -Math.PI / 2;
+
+    }
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
