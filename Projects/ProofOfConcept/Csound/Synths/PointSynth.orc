@@ -43,17 +43,21 @@ giPointSynth_DistanceMin = 5
 giPointSynth_DistanceMax = 100
 giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
 
-${CSOUND_DEFINE} POINT_SYNTH_NEXT_RTZ_COUNT #16384#
-giPointSynthNextRT[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
-giPointSynthNextRTZ_i init 0
+${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
+giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
+giPointSynthNextXYZ_i init 0
 
 iI = 0
 while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
-    while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
-        giPointSynthNextRT[iI][iJ][$R] = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
-        giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
+    while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
+        iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+        iT = rnd(359.999)
+        iXYZ[] = math_rytToXyz(iR, 0, iT)
+        giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
+        giPointSynthNextXYZ[iI][iJ][$Y] = iXYZ[$Y]
+        giPointSynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
         iJ += 1
     od
     iI += 1
@@ -163,22 +167,18 @@ instr INSTRUMENT_ID
             aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
             aOut *= aEnvelope
 
-            iR init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$R]
-            iT init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$T]
-            iZ init 10 + 10 * (iNoteNumber / 127)
-            kR init iR
-            kT init iT
-            kZ init iZ
-            log_i_debug("rtz = (%f, %f, %f)", i(kR), i(kT), i(kZ))
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(math_fastSqrt(math_fastSquare(kR) + math_fastSquare(kZ)),
-                giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+            iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
+            iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
+            iY init 10 + 10 * (iNoteNumber / 127)
+            kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax)
             aOutDistanced = aOut * kDistanceAmp
 
-            giPointSynthNextRTZ_i += 1
-            if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
-                giPointSynthNextRTZ_i = 0
+            giPointSynthNextXYZ_i += 1
+            if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
+                giPointSynthNextXYZ_i = 0
             endif
-            AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
+            AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
             a1 = gkAmbisonicChannelGains[0] * aOutDistanced
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
@@ -216,8 +216,8 @@ instr INSTRUMENT_ID
                 endif
                 giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
                 SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
-                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"rtz\":[%.3f,%.3f,%.3f]}}", times(),
-                    iNoteNumber, iR, iT, iZ)
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
+                    iNoteNumber, iX, iY, iZ)
             ${CSOUND_ENDIF}
 #if !IS_PLAYBACK
         endif

@@ -107,8 +107,7 @@ instr CircleSynth_NoteOn
 
     kPosition[] fillarray 0, 0, 0
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giCircleSynth_DistanceMin),
-        k(giCircleSynth_DistanceMax))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, giCircleSynth_DistanceMax)
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (kDistanceAttenuation + kDistanceAttenuation) * kSpreadAttenuation
     AF_3D_Audio_ChannelGains(kPosition, kSpread)
@@ -228,11 +227,11 @@ instr INSTRUMENT_ID
         iVelocity = p6
 
         #if IS_PLAYBACK
-            aDummy subinstr giCircleSynthNoteInstrumentNumber,
-                iNoteNumber,
-                iVelocity,
-                ORC_INSTANCE_INDEX,
-                INSTRUMENT_TRACK_INDEX
+            ; aDummy subinstr giCircleSynthNoteInstrumentNumber,
+            ;     iNoteNumber,
+            ;     iVelocity,
+            ;     ORC_INSTANCE_INDEX,
+            ;     INSTRUMENT_TRACK_INDEX
         #else
             a1, a2, a3, a4, aOut subinstr giCircleSynthNoteInstrumentNumber,
                 iNoteNumber,

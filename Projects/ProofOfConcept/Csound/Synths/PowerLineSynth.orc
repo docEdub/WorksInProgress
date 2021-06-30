@@ -172,7 +172,7 @@ instr PowerLineSynth_NoteOn
     aOut = tone(aOut, 5000)
 
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, giPowerLineSynth_DistanceMax)
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
     AF_3D_Audio_ChannelGains(kPosition, 1)
@@ -290,11 +290,11 @@ instr INSTRUMENT_ID
         iVelocity = p6
 
         #if IS_PLAYBACK
-            aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
-                iNoteNumber,
-                iVelocity,
-                ORC_INSTANCE_INDEX,
-                INSTRUMENT_TRACK_INDEX
+            ; aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+            ;     iNoteNumber,
+            ;     iVelocity,
+            ;     ORC_INSTANCE_INDEX,
+            ;     INSTRUMENT_TRACK_INDEX
         #else
             a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
                 iNoteNumber,

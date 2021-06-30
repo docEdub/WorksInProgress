@@ -741,7 +741,7 @@ instr SubtractiveSynth_CcEvent
 
         kPreviousDistance = CC_VALUE_k(calculatedDistance)
         kListenerDistance = AF_3D_Audio_SourceDistance(kPosition)
-        kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kListenerDistance, giMinDistance, giMaxDistance)
+        kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kListenerDistance, giMaxDistance)
         ; kPreviousTime = CC_VALUE_k(timeOfLastPositionCalculation)
         ; kCurrentTime = time_k()
         ; if (kPreviousTime == 0 || kPreviousTime < kCurrentTime) then
