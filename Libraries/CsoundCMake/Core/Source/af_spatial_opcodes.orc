@@ -6,6 +6,7 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_spatial_opcodes_orc ${CSOUND_INCLU
 ${CSOUND_INCLUDE} "af_spatial_tables.orc"
 ${CSOUND_INCLUDE} "af_opcodes.orc"
 ${CSOUND_INCLUDE} "log.orc"
+${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -274,34 +275,38 @@ opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp
 endop
 
 
+giDistanceAttenuationTable = ftgen(0, 0, 513, GEN06, 1, 32, 1, 128, 0.5, 353, 0)
+
+
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the logarithmic attenuation for the given distance.
 //
 // in  k  : Distance.
-// in  k  : Minimum distance.
+// in  i  : Maximum distance.
+//
+// out k  : Attenuation.
+//
+opcode AF_3D_Audio_DistanceAttenuation, k, ki
+    kDistance, iMaxDistance xin
+    xout tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_DistanceAttenuation
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the logarithmic attenuation for the given distance.
+//
+// in  k  : Distance.
 // in  k  : Maximum distance.
 //
 // out k  : Attenuation.
 //
-opcode AF_3D_Audio_DistanceAttenuation, k, kkk
-    // TODO: Try changing this opcode to use a predefined curve instead of a logarithmic spike when objects are close.
-    // Objects passing directly thru the camera are zippering and popping. Try a predefined curve instead of raw math.
-    k_distance, k_minDistance, k_maxDistance xin
-    k_linearFadeOutDistance = k_maxDistance - 1
-    if (k_linearFadeOutDistance < k_distance) then
-        k_fadeOutDistance = k_distance - k_linearFadeOutDistance
-        if (k_fadeOutDistance < 1) then
-            k_linearFadeFrom = 1 / k_maxDistance
-            k_gain = k_linearFadeFrom * (1 - k_fadeOutDistance)
-        else
-            k_gain = 0
-        endif
-    else
-        k_gain = 1 / (max(k_minDistance, k_distance) + 1)
-    endif
-    xout k_gain
+opcode AF_3D_Audio_DistanceAttenuation, k, kk
+    kDistance, kMaxDistance xin
+    xout tablei(kDistance / kMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
 endop
 
 
@@ -341,19 +346,40 @@ endop
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the distance and direction from the listener to the given source position.
 //
+// in  i: Source's position x.
+// in  i: Source's position y.
+// in  i: Source's position z.
+//
+// out k  : Distance from listener to given source position.
+//
+opcode AF_3D_Audio_SourceDistance, k, iii
+    iSourcePositionX, iSourcePositionY, iSourcePositionZ xin
+    kVector[] init 3
+    kVector[$X] = iSourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = iSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = iSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
+
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
 // in  i[]: Source's position [x, y, z].
 //
 // out k  : Distance from listener to given source position.
 //
 opcode AF_3D_Audio_SourceDistance, k, i[]
-    i_sourcePosition[] xin
+    iSourcePosition[] xin
+    kVector[] init 3
+    kVector[$X] = iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
 
-    k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
-        i_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
-        i_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
-
-    xout sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y] \
-        + k_direction[$Z] * k_direction[$Z])
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
 
@@ -367,14 +393,14 @@ endop
 // out k  : Distance from listener to given source position.
 //
 opcode AF_3D_Audio_SourceDistance, k, k[]
-    k_sourcePosition[] xin
+    kSourcePosition[] xin
 
-    k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
-        k_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
-        k_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
+    kVector[] init 3
+    kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
 
-    xout sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y] \
-        + k_direction[$Z] * k_direction[$Z])
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
 

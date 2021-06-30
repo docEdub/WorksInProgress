@@ -24,6 +24,11 @@
 #define PI 3.141592653589793
 #define TWO_PI 6.283185307179586
 
+#define GEN06 6
+
+#define TABLEI_RAW_INDEX_MODE 0
+#define TABLEI_NORMALIZED_INDEX_MODE 1
+
 #define CSOUND_DEFINE _(HASH)_(define)
 #define CSOUND_ELSE _(HASH)_(else)
 #define CSOUND_ENDIF _(HASH)_(end)
