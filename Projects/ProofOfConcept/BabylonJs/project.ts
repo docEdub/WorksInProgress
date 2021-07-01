@@ -219,6 +219,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
+                nextPointSynthNoteOnIndex = 1
+                nextPointSynthNoteOffIndex = 1
                 return
             }
             const time = document.audioContext.currentTime - startTime;
@@ -286,6 +288,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         startCsound()
     }
 
+    const restartCsound = async () => {
+        console.debug('Restarting Csound ...')
+        isCsoundStarted = false;
+        await document.csound.rewindScore();
+        console.debug('Restarting Csound - done')
+    }
+
     const startCsound = async () => {
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
@@ -295,6 +304,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (arguments[0] === 'csd:started') {
                 startTime = document.audioContext.currentTime - (4 - document.latency);
                 isCsoundStarted = true
+            }
+            else if (arguments[0] === 'csd:ended') {
+                restartCsound();
             }
             if (logCsoundMessages) {
                 previousConsoleLog.apply(console, arguments)
@@ -2903,11 +2915,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
             turnoff
         endin
+        instr SendEndedMessage
+            if (p3 == -1) then
+                prints("csd:ended\\n")
+            endif
+            turnoff
+        endin
         </CsInstruments>
         <CsScore>
          #ifndef SCORE_START_DELAY
             #define SCORE_START_DELAY #5#
          #end
+        i "SendEndedMessage" 0 1
         i 2 0 -1 3 0 1 3
         i 9.1 0 -1 1 0 0
         i 8 0.004 1 3 0 0 0.46
@@ -3379,10 +3398,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 6.415 63.953 0.020 1 1093 80
         i 6.416 63.993 0.020 1 1097 53
         s
+        i "SendEndedMessage" 10 -1
          #ifdef IS_GENERATING_JSON
             i "GenerateJson" 0 1
          #else
-            e 15
+            e 60
          #end
         </CsScore>
         </CsoundSynthesizer>
