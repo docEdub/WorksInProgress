@@ -171,7 +171,7 @@ instr INSTRUMENT_ID
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
             iY init 10 + 10 * (iNoteNumber / 127)
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax) * 16
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1
@@ -189,8 +189,8 @@ instr INSTRUMENT_ID
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut * 0.033
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut * 0.033
             #else
                 kReloaded init false
                 kFadeTimeLeft init 0.1

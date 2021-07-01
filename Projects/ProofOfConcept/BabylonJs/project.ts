@@ -2586,7 +2586,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     iZ init giPointSynthNextXYZ[0][giPointSynthNextXYZ_i][$Z]
                     iY init 10 + 10 * (iNoteNumber / 127)
                     kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax)
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax) * 16
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextXYZ_i += 1
                     if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
@@ -2601,8 +2601,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + a2
                         gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + a3
                         gaInstrumentSignals[2][3] = gaInstrumentSignals[2][3] + a4
-                        gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut
-                        gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut
+                        gaInstrumentSignals[2][4] = gaInstrumentSignals[2][4] + aOut * 0.033
+                        gaInstrumentSignals[2][5] = gaInstrumentSignals[2][5] + aOut * 0.033
                     #ifdef IS_GENERATING_JSON
                         if (giPointSynth_NoteIndex[0] == 0) then
                             scoreline_i("i \\"PointSynth_Json\\" 0 0")
