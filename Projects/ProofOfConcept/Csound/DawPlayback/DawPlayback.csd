@@ -338,16 +338,35 @@ instr FinalMixInstrument
         kAux += 1
     od
 
-    // Output master.
-    ; kChannel = 0
-    ; while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-    ;     outch(kChannel + 1, ga_masterSignals[kChannel])
-    ;     kChannel += 1
-    ; od
-    // For now just output the reverb channels.
-    // TODO: Add spatial audio conversion from ambisonic to stereo.
-    outch(1, ga_masterSignals[4])
-    outch(2, ga_masterSignals[5])
+    // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
+    aw = ga_masterSignals[0]
+    ay = ga_masterSignals[1]
+    az = ga_masterSignals[2]
+    ax = ga_masterSignals[3]
+    km0 = gk_AF_3D_ListenerRotationMatrix[0]
+    km1 = gk_AF_3D_ListenerRotationMatrix[1]
+    km2 = gk_AF_3D_ListenerRotationMatrix[2]
+    km3 = gk_AF_3D_ListenerRotationMatrix[3]
+    km4 = gk_AF_3D_ListenerRotationMatrix[4]
+    km5 = gk_AF_3D_ListenerRotationMatrix[5]
+    km6 = gk_AF_3D_ListenerRotationMatrix[6]
+    km7 = gk_AF_3D_ListenerRotationMatrix[7]
+    km8 = gk_AF_3D_ListenerRotationMatrix[8]
+    ayr = -(ay * km0 + az * km3 + ax * km6)
+    azr =   ay * km1 + az * km4 + ax * km7
+    axr = -(ay * km2 + az * km5 + ax * km8)
+    aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
+    ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
+    az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
+    ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
+    aL = aw - ay + az + ax
+    aR = aw + ay + az + ax
+
+    // Add reverb.
+    aL += ga_masterSignals[4]
+    aR += ga_masterSignals[5]
+
+    outs(aL, aR)
 endin
 
 
