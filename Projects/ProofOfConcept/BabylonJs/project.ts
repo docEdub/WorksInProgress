@@ -335,6 +335,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('audioContext.state =', audioContext.state)
         document.audioContext = audioContext
 
+        if (audioContext.sampleRate != 48000) {
+            console.log('Sample restricted to 48000');
+            return;
+        }
+
         console.debug('Csound initialized successfully');
         await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
         console.debug('Csound csd compiling ...')
