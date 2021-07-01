@@ -14,15 +14,14 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
+    const logCsoundMessages = true;
+    const logDebugMessages = false;
+
+    const csoundCameraUpdatesPerSecond = 30;
+    const csoundIoBufferSize = 128;
     const groundSize = 100;
     const groundGridLineMajorColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
     const groundGridLineMinorColor = new BABYLON.Color4(0.1, 0.1, 0.1, 1);
-
-    const logCsoundMessages = true;
-    const csoundIoBufferSize = 128;
-    const csoundCameraUpdatesPerSecond = 30;
-
-    const logDebugMessages = false;
 
     const halfGroundSize = groundSize / 2;
 
