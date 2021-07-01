@@ -1689,70 +1689,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             gk_AF_3D_ListenerRotationMatrix[6] = port(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
             gk_AF_3D_ListenerRotationMatrix[7] = port(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
             gk_AF_3D_ListenerRotationMatrix[8] = port(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-            kChanged = 0
-            if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[1]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[2]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[3]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[4]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[5]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[6]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[7]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerRotationMatrix[8]) == 1) then
-                kChanged = 1
-            endif
-            kPrinted init 0
-            if (kChanged == 1) then
-                kPrinted = 0
-            endif
-            if (kChanged == 0 && kPrinted == 0) then
-                printsk("gk_AF_3D_ListenerRotationMatrix ...\\n")
-                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2])
-                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5])
-                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
-                kPrinted = 1
-            endif
         endop
         opcode AF_3D_UpdateListenerPosition, 0, i
             i_portamento_halftime xin
             gk_AF_3D_ListenerPosition[0] = port(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
             gk_AF_3D_ListenerPosition[1] = port(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
             gk_AF_3D_ListenerPosition[2] = port(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-            kChanged = 0
-            if (changed(gk_AF_3D_ListenerPosition[0]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerPosition[1]) == 1) then
-                kChanged = 1
-            endif
-            if (changed(gk_AF_3D_ListenerPosition[2]) == 1) then
-                kChanged = 1
-            endif
-            kPrinted init 0
-            if (kChanged == 1) then
-                kPrinted = 0
-            endif
-            if (kChanged == 0 && kPrinted == 0) then
-                printsk("gk_AF_3D_ListenerPosition ...\\n")
-                printsk("[%.3f, %.3f, %.3f]\\n", gk_AF_3D_ListenerPosition[0], gk_AF_3D_ListenerPosition[1], gk_AF_3D_ListenerPosition[2])
-                kPrinted = 1
-            endif
         endop
         ga_AF_3D_AmbisonicOutput[] init 4
         opcode AF_Ambisonics_Send, 0, ai[]P

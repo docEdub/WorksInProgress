@@ -32,7 +32,6 @@ gi_AF_3D_ListenerMatrixTableNumber ftgen 1, 0, 16, -2,   1, 0, 0, 0,   0, 1, 0, 
 // before accessing the values in this matrix.
 gk_AF_3D_ListenerRotationMatrix[] init 9
 
-
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_UpdateListenerRotationMatrix
 //---------------------------------------------------------------------------------------------------------------------
@@ -53,47 +52,47 @@ opcode AF_3D_UpdateListenerRotationMatrix, 0, i
     gk_AF_3D_ListenerRotationMatrix[7] = port(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
     gk_AF_3D_ListenerRotationMatrix[8] = port(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
 
-    kChanged = false
-    if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[1]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[2]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[3]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[4]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[5]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[6]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[7]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerRotationMatrix[8]) == true) then
-        kChanged = true
-    endif
+    ; kChanged = false
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[1]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[2]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[3]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[4]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[5]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[6]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[7]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerRotationMatrix[8]) == true) then
+    ;     kChanged = true
+    ; endif
 
-    kPrinted init false
-    if (kChanged == true) then
-        kPrinted = false
-    endif
+    ; kPrinted init false
+    ; if (kChanged == true) then
+    ;     kPrinted = false
+    ; endif
 
-    if (kChanged == false && kPrinted == false) then
-        printsk("gk_AF_3D_ListenerRotationMatrix ...\n")
-        printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2])
-        printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5])
-        printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
-        kPrinted = true
-    endif
+    ; if (kChanged == false && kPrinted == false) then
+    ;     printsk("gk_AF_3D_ListenerRotationMatrix ...\n")
+    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2])
+    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5])
+    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
+    ;     kPrinted = true
+    ; endif
 endop
 
 
@@ -111,27 +110,27 @@ opcode AF_3D_UpdateListenerPosition, 0, i
     gk_AF_3D_ListenerPosition[1] = port(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
     gk_AF_3D_ListenerPosition[2] = port(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
 
-    kChanged = false
-    if (changed(gk_AF_3D_ListenerPosition[0]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerPosition[1]) == true) then
-        kChanged = true
-    endif
-    if (changed(gk_AF_3D_ListenerPosition[2]) == true) then
-        kChanged = true
-    endif
+    ; kChanged = false
+    ; if (changed(gk_AF_3D_ListenerPosition[0]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerPosition[1]) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(gk_AF_3D_ListenerPosition[2]) == true) then
+    ;     kChanged = true
+    ; endif
 
-    kPrinted init false
-    if (kChanged == true) then
-        kPrinted = false
-    endif
+    ; kPrinted init false
+    ; if (kChanged == true) then
+    ;     kPrinted = false
+    ; endif
     
-    if (kChanged == false && kPrinted == false) then
-        printsk("gk_AF_3D_ListenerPosition ...\n")
-        printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerPosition[0], gk_AF_3D_ListenerPosition[1], gk_AF_3D_ListenerPosition[2])
-        kPrinted = true
-    endif
+    ; if (kChanged == false && kPrinted == false) then
+    ;     printsk("gk_AF_3D_ListenerPosition ...\n")
+    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerPosition[0], gk_AF_3D_ListenerPosition[1], gk_AF_3D_ListenerPosition[2])
+    ;     kPrinted = true
+    ; endif
 endop
 
 
