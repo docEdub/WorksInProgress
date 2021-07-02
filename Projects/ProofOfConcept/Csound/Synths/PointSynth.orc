@@ -55,9 +55,9 @@ while (iI < ORC_INSTANCE_COUNT) do
         iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
         iT = rnd(359.999)
         iXYZ[] = math_rytToXyz(iR, 0, iT)
-        giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
-        giPointSynthNextXYZ[iI][iJ][$Y] = iXYZ[$Y]
-        giPointSynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
+        giPointSynthNextXYZ[iI][iJ][$X] = 0 // iXYZ[$X]
+        giPointSynthNextXYZ[iI][iJ][$Y] = 2 // iXYZ[$Y]
+        giPointSynthNextXYZ[iI][iJ][$Z] = 50 // iXYZ[$Z]
         iJ += 1
     od
     iI += 1
@@ -171,6 +171,7 @@ instr INSTRUMENT_ID
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
             iY init 10 + 10 * (iNoteNumber / 127)
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+            ; printsk("kDistance = %.3f\n", kDistance)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax) * 16
             aOutDistanced = aOut * kDistanceAmp
 

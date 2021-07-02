@@ -106,31 +106,27 @@ endop
 //
 opcode AF_3D_UpdateListenerPosition, 0, i
     i_portamento_halftime xin
-    gk_AF_3D_ListenerPosition[0] = port(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerPosition[1] = port(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerPosition[2] = port(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
 
-    ; kChanged = false
-    ; if (changed(gk_AF_3D_ListenerPosition[0]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerPosition[1]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerPosition[2]) == true) then
-    ;     kChanged = true
-    ; endif
+    kX = tab:k(12, gi_AF_3D_ListenerMatrixTableNumber)
+    kY = tab:k(13, gi_AF_3D_ListenerMatrixTableNumber)
+    kZ = tab:k(14, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerPosition[0] = port(kX, i_portamento_halftime)
+    gk_AF_3D_ListenerPosition[1] = port(kY, i_portamento_halftime)
+    gk_AF_3D_ListenerPosition[2] = port(kZ, i_portamento_halftime)
 
-    ; kPrinted init false
-    ; if (kChanged == true) then
-    ;     kPrinted = false
-    ; endif
-    
-    ; if (kChanged == false && kPrinted == false) then
-    ;     printsk("gk_AF_3D_ListenerPosition ...\n")
-    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerPosition[0], gk_AF_3D_ListenerPosition[1], gk_AF_3D_ListenerPosition[2])
-    ;     kPrinted = true
-    ; endif
+    kChanged = false
+    if (changed(kX) == true) then
+        kChanged = true
+    endif
+    if (changed(kY) == true) then
+        kChanged = true
+    endif
+    if (changed(kZ) == true) then
+        kChanged = true
+    endif    
+    if (kChanged == true) then
+        printsk("Raw Csound listener position = [%.3f, %.3f, %.3f]\n", kX, kY, kZ)
+    endif
 endop
 
 
