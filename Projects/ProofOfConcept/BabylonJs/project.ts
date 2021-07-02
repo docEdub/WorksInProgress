@@ -1759,7 +1759,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             AF_3D_UpdateListenerRotationMatrix(0.01)
             AF_3D_UpdateListenerPosition(0.01)
         endin
-        event_i("i", 1, 0, -1)
         instr 2
             gi_instrumentCount = p4
             gi_instrumentIndexOffset = p5
@@ -2916,6 +2915,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #ifndef SCORE_START_DELAY
             #define SCORE_START_DELAY #5#
          #end
+        i 1 0 -1
         i "SendEndedMessage" 0 1
         i 2 0 -1 3 0 1 3
         i 9.1 0 -1 1 0 0

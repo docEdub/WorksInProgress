@@ -62,7 +62,6 @@ instr 1
     AF_3D_UpdateListenerRotationMatrix(0.01)
     AF_3D_UpdateListenerPosition(0.01)
 endin
-event_i("i", 1, 0, -1)
 
 
 instr Init_instrnum
@@ -424,6 +423,7 @@ ${CSOUND_ENDIF}
 #define Velocity(x) x
 #define Volume(x) x
 
+i 1 0 -1
 i "SendEndedMessage" 0 1 // preallocation instance
 
 #include "_.mode3_TrackSet.sco"
