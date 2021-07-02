@@ -130,6 +130,8 @@ instr INSTRUMENT_ID
                     // The Oculus Quest 2 can't handle 2 note on events at the same time, even if this instrument is
                     // preallocated with the prealloc opcode. This spaces them out so there's never 2 instances playitng
                     // at the same time.
+                    // TODO: Undo this. The Quest 2 can handle 2 notes just fine if the instrument is preallocated using
+                    // a score event instead of relying on the prealloc opcode.
                     kNoteOnTime = elapsedTime_k()
                     if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (iTotalTime + iTotalTime)) then
                         kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + iTotalTime + iTotalTime
