@@ -17,6 +17,14 @@ ${CSOUND_INCLUDE} "time.orc"
 ${CSOUND_DEFINE} AF_3D_AUDIO__AMBISONIC_ORDER_MAX #3#
 ${CSOUND_DEFINE} AF_3D_AUDIO__SPEED_OF_SOUND #343# // Meters per second at 20 °C
 
+// Use GEN02 to create table #1 for the listener matrix containing 16 values.
+// This matrix is set to the BabylonJS camera's matrix in Javascript using the Csound WASM API.
+// Note that we use GEN02 with a negative number to prevent Csound's auto-scaling of it's values.
+gi_AF_3D_ListenerMatrixTableNumber ftgen 1, 0, 16, -2,   1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1
+
+// This gets updated by the AF_3D_UpdateListenerRotationMatrix opcode, which should be called in instrument 1
+// before accessing the values in this matrix.
+gk_AF_3D_ListenerRotationMatrix[] init 9
 
 // This gets updated by the AF_3D_UpdateListenerPosition opcode, which should be called in instrument 1
 // before accessing the values in this vector.
@@ -92,13 +100,22 @@ gk_AF_3D_ListenerPosition[] init 3
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
 opcode AF_3D_Audio_ChannelGains, 0, kkkp
-    k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
+    kSourceAzimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
 
-    k_azimuth = 360 - k_azimuth
+    kListenerAzimuth = (cosinv(gk_AF_3D_ListenerRotationMatrix[2])) * $AF_MATH__RADIANS_TO_DEGREES
+    if (gk_AF_3D_ListenerRotationMatrix[0] < 0) then
+        kListenerAzimuth = 360 - kListenerAzimuth
+    endif
+
+    k_azimuth = (kSourceAzimuth + 180) % 360
+    if (k_azimuth < 0) then
+        k_azimuth += 360
+    endif
+    
     k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
     k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
-    
+
     gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 0
     while (k_i <= i_ambisonicOrder) do
@@ -127,6 +144,15 @@ opcode AF_3D_Audio_ChannelGains, 0, kkkp
         od
         k_i += 1
     od
+
+    ; if (changed(kListenerAzimuth) == true || changed(k_azimuth) == true || changed(k_elevation) == true) then
+    ;     printsk("azimuth = %.03f, gains = [%.03f, %.03f, %.03f, %.03f], m012 = [%.03f, %.03f, %.03f], m345 = [%.03f, %.03f, %.03f], m678 = [%.03f, %.03f, %.03f]\n",
+    ;         k_azimuth,
+    ;         gkAmbisonicChannelGains[0], gkAmbisonicChannelGains[1], gkAmbisonicChannelGains[2], gkAmbisonicChannelGains[3],
+    ;         gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2],
+    ;         gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5],
+    ;         gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
+    ; endif
 endop
 
 
@@ -199,13 +225,18 @@ endop
 opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
 
-    k_direction[] = fillarray(k_sourcePositionX - gk_AF_3D_ListenerPosition[$X],
-        k_sourcePositionY - gk_AF_3D_ListenerPosition[$Y],
-        k_sourcePositionZ - gk_AF_3D_ListenerPosition[$Z])
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_direction[] init 3
+    k_direction[$X] = k_sourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    k_direction[$Y] = k_sourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    k_direction[$Z] = k_sourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
 
-    // Elevation is disable for now since it complicates the calculations used to smooth out crossing over zero on the x
-    // and y axes.
+    ; if (changed(k_direction[$X]) == true || changed(k_direction[$Z]) == true) then
+    ;     printsk("k_direction = [%.03f, %.03f, %.03f], ", k_direction[$X], 0, k_direction[$Z])
+    ; endif
+    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+
+    // Elevation is disabled for now since it complicates the calculations used to smooth out crossing over zero on the
+    // x and y axes.
     ; k_elevation = taninv2(k_direction[$Z],
     ;     sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = 0
@@ -221,22 +252,22 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 
     // Smooth out crossing over zero on the x and y axes.
-    i_minW = 0.79021
-    i_maxW = 1.25
-    i_diffW = i_maxW - i_minW
-    k_distance = sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])
-    if (k_distance <= 1) then
-        gkAmbisonicChannelGains[0] = i_maxW
-        gkAmbisonicChannelGains[1] = 0
-        gkAmbisonicChannelGains[2] = 0
-        gkAmbisonicChannelGains[3] = 0
-    elseif (k_distance <= 2) then
-        k_distance -= 1
-        gkAmbisonicChannelGains[0] = i_minW + (i_diffW * (1 - k_distance))
-        gkAmbisonicChannelGains[1] = gkAmbisonicChannelGains[1] * k_distance
-        gkAmbisonicChannelGains[2] = gkAmbisonicChannelGains[2] * k_distance
-        gkAmbisonicChannelGains[3] = gkAmbisonicChannelGains[3] * k_distance
-    endif
+    ; i_minW = 0.79021
+    ; i_maxW = 1.25
+    ; i_diffW = i_maxW - i_minW
+    ; k_distance = sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])
+    ; if (k_distance <= 1) then
+    ;     gkAmbisonicChannelGains[0] = i_maxW
+    ;     gkAmbisonicChannelGains[1] = 0
+    ;     gkAmbisonicChannelGains[2] = 0
+    ;     gkAmbisonicChannelGains[3] = 0
+    ; elseif (k_distance <= 2) then
+    ;     k_distance -= 1
+    ;     gkAmbisonicChannelGains[0] = i_minW + (i_diffW * (1 - k_distance))
+    ;     gkAmbisonicChannelGains[1] = gkAmbisonicChannelGains[1] * k_distance
+    ;     gkAmbisonicChannelGains[2] = gkAmbisonicChannelGains[2] * k_distance
+    ;     gkAmbisonicChannelGains[3] = gkAmbisonicChannelGains[3] * k_distance
+    ; endif
 endop
 
 

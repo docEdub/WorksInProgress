@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-;--messagelevel=0
+--messagelevel=0
 --midi-device=0
 --nodisplays
 --nosound
@@ -425,6 +425,7 @@ ${CSOUND_ENDIF}
 
 i 1 0 -1
 i "SendEndedMessage" 0 1 // preallocation instance
+i "PointSynth_ResetNextXYZ_i" 0 -1
 
 #include "_.mode3_TrackSet.sco"
 #include "_.mode3.sco"

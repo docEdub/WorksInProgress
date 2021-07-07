@@ -23,15 +23,6 @@ ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 //0dbfs = 1
 
 
-// Use GEN02 to create table #1 for the listener matrix containing 16 values.
-// This matrix is set to the BabylonJS camera's matrix in Javascript using the Csound WASM API.
-// Note that we use GEN02 with a negative number to prevent Csound's auto-scaling of it's values.
-gi_AF_3D_ListenerMatrixTableNumber ftgen 1, 0, 16, -2,   1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1
-
-// This gets updated by the AF_3D_UpdateListenerRotationMatrix opcode, which should be called in instrument 1
-// before accessing the values in this matrix.
-gk_AF_3D_ListenerRotationMatrix[] init 9
-
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_UpdateListenerRotationMatrix
 //---------------------------------------------------------------------------------------------------------------------
@@ -51,6 +42,11 @@ opcode AF_3D_UpdateListenerRotationMatrix, 0, i
     gk_AF_3D_ListenerRotationMatrix[6] = port(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
     gk_AF_3D_ListenerRotationMatrix[7] = port(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
     gk_AF_3D_ListenerRotationMatrix[8] = port(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+
+    ; kM11 = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
+    ; if (changed(kM11) == true) then
+    ;     printsk("listener azimuth = %.03f\n", sininv(kM11) * $AF_MATH__RADIANS_TO_DEGREES)
+    ; endif
 
     ; kChanged = false
     ; if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == true) then
@@ -114,19 +110,19 @@ opcode AF_3D_UpdateListenerPosition, 0, i
     gk_AF_3D_ListenerPosition[1] = port(kY, i_portamento_halftime)
     gk_AF_3D_ListenerPosition[2] = port(kZ, i_portamento_halftime)
 
-    kChanged = false
-    if (changed(kX) == true) then
-        kChanged = true
-    endif
-    if (changed(kY) == true) then
-        kChanged = true
-    endif
-    if (changed(kZ) == true) then
-        kChanged = true
-    endif    
-    if (kChanged == true) then
-        printsk("Raw Csound listener position = [%.3f, %.3f, %.3f]\n", kX, kY, kZ)
-    endif
+    ; kChanged = false
+    ; if (changed(kX) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(kY) == true) then
+    ;     kChanged = true
+    ; endif
+    ; if (changed(kZ) == true) then
+    ;     kChanged = true
+    ; endif    
+    ; if (kChanged == true) then
+    ;     printsk("Raw Csound listener position = [%.3f, %.3f, %.3f]\n", kX, kY, kZ)
+    ; endif
 endop
 
 

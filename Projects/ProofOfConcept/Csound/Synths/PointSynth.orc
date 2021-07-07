@@ -47,17 +47,22 @@ ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
 giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
 giPointSynthNextXYZ_i init 0
 
+instr PointSynth_ResetNextXYZ_i
+    giPointSynthNextXYZ_i = 0
+    turnoff
+endin
+
 iI = 0
 while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
     while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
-        iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
-        iT = rnd(359.999)
+        iR = 50 // giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+        iT = (iJ / 360) * TWO_PI //rnd(359.999)
         iXYZ[] = math_rytToXyz(iR, 0, iT)
-        giPointSynthNextXYZ[iI][iJ][$X] = 0 // iXYZ[$X]
-        giPointSynthNextXYZ[iI][iJ][$Y] = 2 // iXYZ[$Y]
-        giPointSynthNextXYZ[iI][iJ][$Z] = 50 // iXYZ[$Z]
+        giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
+        giPointSynthNextXYZ[iI][iJ][$Y] = 2//iXYZ[$Y]
+        giPointSynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
         iJ += 1
     od
     iI += 1
@@ -171,7 +176,7 @@ instr INSTRUMENT_ID
 
             iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
-            iY init 10 + 10 * (iNoteNumber / 127)
+            iY init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Y] //10 + 10 * (iNoteNumber / 127)
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
             ; printsk("kDistance = %.3f\n", kDistance)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax) * 16
@@ -181,7 +186,7 @@ instr INSTRUMENT_ID
             if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
                 giPointSynthNextXYZ_i = 0
             endif
-            AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
+            AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
             a1 = gkAmbisonicChannelGains[0] * aOutDistanced
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
