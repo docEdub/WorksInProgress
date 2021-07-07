@@ -237,9 +237,8 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
 
     // Elevation is disabled for now since it complicates the calculations used to smooth out crossing over zero on the
     // x and y axes.
-    ; k_elevation = taninv2(k_direction[$Z],
-    ;     sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
-    k_elevation = 0
+    k_elevation = taninv2(k_direction[$Z],
+        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
 
     #if LOGGING
         if (changed(k_azimuth) == true || changed(k_elevation) == true) then
