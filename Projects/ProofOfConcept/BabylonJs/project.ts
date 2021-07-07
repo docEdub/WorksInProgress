@@ -1544,7 +1544,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
             k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
             gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
-            k_i = 0
+            k_i = 1
             while (k_i <= i_ambisonicOrder) do
                 k_degreeWeight = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][k_i]
                 k_j = -k_i
