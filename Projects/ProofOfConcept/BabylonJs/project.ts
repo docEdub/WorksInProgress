@@ -1609,7 +1609,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth,
                 i_ambisonicOrder)
         endop
-        giDistanceAttenuationTable = ftgen(0, 0, 513, 6, 1, 32, 1, 128, 0.5, 353, 0)
+        giDistanceAttenuationTable = ftgen(0, 0, 101, 8, 1, 5, .99, 20, 0.55, 25, 0.23, 40, 0.01, 10, 0)
         opcode AF_3D_Audio_DistanceAttenuation, k, ki
             kDistance, iMaxDistance xin
             xout tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, 1)
