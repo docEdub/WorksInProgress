@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---messagelevel=0
+;--messagelevel=0
 --midi-device=0
 --nodisplays
 --nosound
@@ -13,9 +13,9 @@
 <CsInstruments>
 
 giPresetUuidPreallocationCount[] = fillarray( \
-    4,  /* instr 3 -- CircleSynth */ \
-    1,  /* instr 4 -- PowerLineSynth */ \
-    1   /* instr 5 -- PointSynth */ \
+    4,  /* instr 4 -- CircleSynth */ \
+    1,  /* instr 5 -- PowerLineSynth */ \
+    2   /* instr 6 -- PointSynth */ \
 )
 
 ${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT

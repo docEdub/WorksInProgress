@@ -39,9 +39,10 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giPointSynth_DistanceMin = 5
-giPointSynth_DistanceMax = 100
+giPointSynth_DistanceMin = 1
+giPointSynth_DistanceMax = 50
 giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+giPointSynth_AudioDistanceMax = 250
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
 giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
@@ -57,11 +58,11 @@ while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
     while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
-        iR = 50 // giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
-        iT = (iJ / 360) * TWO_PI //rnd(359.999)
+        iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+        iT = rnd(359.999)
         iXYZ[] = math_rytToXyz(iR, 0, iT)
         giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
-        giPointSynthNextXYZ[iI][iJ][$Y] = 2//iXYZ[$Y]
+        giPointSynthNextXYZ[iI][iJ][$Y] = 2
         giPointSynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
         iJ += 1
     od
@@ -71,6 +72,10 @@ od
 giPointSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 gkPointSynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
 gkPointSynth_LastNoteOnTime[] init ORC_INSTANCE_COUNT
+
+giFadeInTime init 0.05
+giFadeOutTime init 0.05
+giTotalTime init giFadeInTime + giFadeOutTime
 
 #endif // #ifndef PointSynth_orc__include_guard
 
@@ -83,6 +88,8 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"fadeInTime\":%.02f", giFadeInTime))
+        fprints(SJsonFile, sprintf(",\"fadeOutTime\":%.02f", giFadeOutTime))
         fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPointSynth_DistanceMin)
         fprints(SJsonFile, ",\"soundDistanceMax\":%d", giPointSynth_DistanceMax)
         fprints(SJsonFile, "}")
@@ -99,9 +106,6 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        iFadeInTime = 0.01
-        iFadeOutTime = 0.01
-        iTotalTime = iFadeInTime + iFadeOutTime
 
 #if !IS_PLAYBACK
         if (iNoteNumber < 128) then
@@ -138,17 +142,17 @@ instr INSTRUMENT_ID
                     // TODO: Undo this. The Quest 2 can handle 2 notes just fine if the instrument is preallocated using
                     // a score event instead of relying on the prealloc opcode.
                     kNoteOnTime = elapsedTime_k()
-                    if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (iTotalTime + iTotalTime)) then
-                        kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + iTotalTime + iTotalTime
+                    if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (giTotalTime + giTotalTime)) then
+                        kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + giTotalTime + giTotalTime
                     endif
                     gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] = kNoteOnTime
 
                     sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
-                        STRINGIZE(${InstrumentName}), gk_trackIndex, kInstrumentNumberFraction, kNoteOnTime, iTotalTime, kNoteNumber, kVelocity))
+                        STRINGIZE(${InstrumentName}), gk_trackIndex, kInstrumentNumberFraction, kNoteOnTime, giTotalTime, kNoteNumber, kVelocity))
                     goto end
                 endif
                 kInstrumentNumberFraction = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] / 1000000
-                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", p1 + kInstrumentNumberFraction, iTotalTime, p4,
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", p1 + kInstrumentNumberFraction, giTotalTime, p4,
                     kNoteNumber,
                     kVelocity)
                 scoreline(SEvent, 1)
@@ -168,18 +172,22 @@ instr INSTRUMENT_ID
             iCps = cpsmidinn(p5 - 1000)
             iAmp = 0.05
 
-            kCps = linseg(iCps, iTotalTime, iCps + 100)
+            kCps = linseg(iCps, giTotalTime, iCps + 100)
 
             aOut = oscil(iAmp, kCps)
-            aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
+            aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
             aOut *= aEnvelope
 
             iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
-            iY init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Y] //10 + 10 * (iNoteNumber / 127)
+
+            // Note number range 80 to 105 (range = 25).
+            // Height range 0 to 3.5.
+            iY init ((iNoteNumber - 80) / 25) * 3.5
+
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
             ; printsk("kDistance = %.3f\n", kDistance)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_DistanceMax) * 16
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 16
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1

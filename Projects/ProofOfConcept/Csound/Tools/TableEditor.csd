@@ -23,7 +23,7 @@ endin
 </CsInstruments>
 <CsScore>
 ; Distance attenuation curve - 2021-07-08--00:51
-f1 0 101 8    1    5  .99    20  0.55    25  0.23    40   0.01    10  0
+f1 0    101 5    1 100 0.00001
 i1 0 z
 </CsScore>
 </CsoundSynthesizer>

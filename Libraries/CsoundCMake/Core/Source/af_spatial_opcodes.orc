@@ -306,8 +306,11 @@ endop
 
 ; giDistanceAttenuationTable = ftgen(0, 0, 513, GEN06, 1, 32, 1, 128, 0.5, 353, 0)
 
-;                                  f1 0  101  8    1    5  .99    20  0.55    25  0.23    40  0.01    10  0
-giDistanceAttenuationTable = ftgen(0, 0, 101, 8,   1,   5, .99,   20, 0.55,   25, 0.23,   40, 0.01,   10, 0)
+;                                    f1 0  101  8    1    5  .99    20  0.55    25  0.23    40  0.01    10  0
+; giDistanceAttenuationTable = ftgen(0, 0, 101, 8,   1,   5, .99,   20, 0.55,   25, 0.23,   40, 0.01,   10, 0)
+
+;                                  f1 0  101  5  1  100  0.0001
+giDistanceAttenuationTable = ftgen(0, 0, 101, 5, 1, 100, 0.0001)
 
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
@@ -322,6 +325,11 @@ giDistanceAttenuationTable = ftgen(0, 0, 101, 8,   1,   5, .99,   20, 0.55,   25
 opcode AF_3D_Audio_DistanceAttenuation, k, ki
     kDistance, iMaxDistance xin
     xout tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
+    ; kAttenuation = kDistance / iMaxDistance
+    ; if (changed(kAttenuation) == true) then
+    ;     printsk("kAttenuation = %.03f\n", kAttenuation)
+    ; endif
+    ; xout kDistance / iMaxDistance
 endop
 
 
@@ -338,6 +346,7 @@ endop
 opcode AF_3D_Audio_DistanceAttenuation, k, kk
     kDistance, kMaxDistance xin
     xout tablei(kDistance / kMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
+    //xout kDistance / kMaxDistance
 endop
 
 
