@@ -320,25 +320,21 @@ giDistanceAttenuationTable = ftgen(0, 0, 251, 25,   0, 1,   5, 1,   250, 0.00001
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
 //---------------------------------------------------------------------------------------------------------------------
-// Returns the logarithmic attenuation for the given distance.
+// Returns the attenuation for the given distance using the inverse distance model.
+// See https://medium.com/@kfarr/understanding-web-audio-api-positional-audio-distance-models-for-webxr-e77998afcdff
+// See https://www.desmos.com/calculator/lzxfqvwoqq
 //
 // in  k  : Distance.
-// in  i  : Maximum distance.
+// in  p  : Reference distance. Defaults to 1.
+// in  p  : Rolloff factor. Default to 1.
 //
 // out k  : Attenuation.
 //
-opcode AF_3D_Audio_DistanceAttenuation, k, ki
-    kDistance, iMaxDistance xin
-    ; kAttenuation = tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
-    // Inverse distance model.
-    kRefDistance init 5
-    kRolloffFactor init 1.5
-    kAttenuation = kRefDistance / (kRefDistance + kRolloffFactor * (max(kDistance, kRefDistance) - kRefDistance))
+opcode AF_3D_Audio_DistanceAttenuation, k, kpp
+    kDistance, iReferenceDistance, iRolloffFactor xin
+    kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
     if (changed(kAttenuation) == true) then
-        printsk("%.03f, %.03f, listener = [%.03f, %.03f, %.03f]\n", kDistance, kAttenuation,
-            gk_AF_3D_ListenerPosition[$X],
-            gk_AF_3D_ListenerPosition[$Y],
-            gk_AF_3D_ListenerPosition[$Z])
+        printsk("%.03f, %.03f\n", kDistance, kAttenuation)
     endif
     xout kAttenuation
 endop
