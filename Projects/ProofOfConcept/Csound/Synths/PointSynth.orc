@@ -189,7 +189,7 @@ instr INSTRUMENT_ID
             ; if (changed(kDistance) == true) then
             ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
             ; endif
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 1600
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 50
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1

@@ -331,8 +331,8 @@ opcode AF_3D_Audio_DistanceAttenuation, k, ki
     kDistance, iMaxDistance xin
     ; kAttenuation = tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
     // Inverse distance model.
-    kRefDistance init 0.01
-    kRolloffFactor init 0.25
+    kRefDistance init 5
+    kRolloffFactor init 1.5
     kAttenuation = kRefDistance / (kRefDistance + kRolloffFactor * (max(kDistance, kRefDistance) - kRefDistance))
     if (changed(kAttenuation) == true) then
         printsk("%.03f, %.03f, listener = [%.03f, %.03f, %.03f]\n", kDistance, kAttenuation,

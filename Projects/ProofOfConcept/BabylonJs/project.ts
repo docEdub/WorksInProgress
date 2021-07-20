@@ -1613,8 +1613,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceAttenuationTable = ftgen(0, 0, 251, 25, 0, 1, 5, 1, 250, 0.00001)
         opcode AF_3D_Audio_DistanceAttenuation, k, ki
             kDistance, iMaxDistance xin
-            kRefDistance init 0.01
-            kRolloffFactor init 0.25
+            kRefDistance init 5
+            kRolloffFactor init 1.5
             kAttenuation = kRefDistance / (kRefDistance + kRolloffFactor * (max(kDistance, kRefDistance) - kRefDistance))
             if (changed(kAttenuation) == 1) then
                 printsk("%.03f, %.03f, listener = [%.03f, %.03f, %.03f]\\n", kDistance, kAttenuation,
@@ -2599,7 +2599,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     iZ init giPointSynthNextXYZ[0][giPointSynthNextXYZ_i][$Z]
                     iY init ((iNoteNumber - 80) / 25) * 3.5
                     kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 1600
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 50
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextXYZ_i += 1
                     if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
