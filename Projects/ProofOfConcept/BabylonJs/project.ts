@@ -53,7 +53,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -50), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -1611,16 +1611,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 i_ambisonicOrder)
         endop
         giDistanceAttenuationTable = ftgen(0, 0, 251, 25, 0, 1, 5, 1, 250, 0.00001)
-        opcode AF_3D_Audio_DistanceAttenuation, k, ki
-            kDistance, iMaxDistance xin
-            kRefDistance init 5
-            kRolloffFactor init 1.5
-            kAttenuation = kRefDistance / (kRefDistance + kRolloffFactor * (max(kDistance, kRefDistance) - kRefDistance))
+        opcode AF_3D_Audio_DistanceAttenuation, k, kpp
+            kDistance, iReferenceDistance, iRolloffFactor xin
+            kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
             if (changed(kAttenuation) == 1) then
-                printsk("%.03f, %.03f, listener = [%.03f, %.03f, %.03f]\\n", kDistance, kAttenuation,
-                    gk_AF_3D_ListenerPosition[$X],
-                    gk_AF_3D_ListenerPosition[$Y],
-                    gk_AF_3D_ListenerPosition[$Z])
+                printsk("%.03f, %.03f\\n", kDistance, kAttenuation)
             endif
             xout kAttenuation
         endop
@@ -2533,8 +2528,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         event_i("i", "PointSynth_CreateCcIndexes", 0, -1)
         giPointSynth_DistanceMin = 1
         giPointSynth_DistanceMax = 50
-        giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-        giPointSynth_AudioDistanceMax = 250
+        giPointSynth_ReferenceDistance = 5
+        giPointSynth_RolloffFactor = 1
+        giPointSynth_FinalVolumeAdjustment = 100
+        giPointSynth_FinalReverbAdjustment = 0.02
          #define POINT_SYNTH_NEXT_XYZ_COUNT #16384#
         giPointSynthNextXYZ[][][] init 1, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
         giPointSynthNextXYZ_i init 0
@@ -2599,7 +2596,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     iZ init giPointSynthNextXYZ[0][giPointSynthNextXYZ_i][$Z]
                     iY init ((iNoteNumber - 80) / 25) * 3.5
                     kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 50
+                    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor) * giPointSynth_FinalVolumeAdjustment
                     aOutDistanced = aOut * kDistanceAmp
                     giPointSynthNextXYZ_i += 1
                     if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
@@ -2610,7 +2607,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a2 = gkAmbisonicChannelGains[1] * aOutDistanced
                     a3 = gkAmbisonicChannelGains[2] * aOutDistanced
                     a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-                    aReverbOut = aOut * 0.01
+                    aReverbOut = aOut * giPointSynth_FinalReverbAdjustment
                         gaInstrumentSignals[2][0] = gaInstrumentSignals[2][0] + a1
                         gaInstrumentSignals[2][1] = gaInstrumentSignals[2][1] + a2
                         gaInstrumentSignals[2][2] = gaInstrumentSignals[2][2] + a3

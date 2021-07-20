@@ -41,8 +41,10 @@ ${CSOUND_INCLUDE} "math.orc"
 
 giPointSynth_DistanceMin = 1
 giPointSynth_DistanceMax = 50
-giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
-giPointSynth_AudioDistanceMax = 250
+giPointSynth_ReferenceDistance = 5
+giPointSynth_RolloffFactor = 1
+giPointSynth_FinalVolumeAdjustment = 100
+giPointSynth_FinalReverbAdjustment = 0.02
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
 giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
@@ -189,7 +191,7 @@ instr INSTRUMENT_ID
             ; if (changed(kDistance) == true) then
             ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
             ; endif
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 50
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor) * giPointSynth_FinalVolumeAdjustment
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1
@@ -201,7 +203,7 @@ instr INSTRUMENT_ID
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
             a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-            aReverbOut = aOut * 0.01
+            aReverbOut = aOut * giPointSynth_FinalReverbAdjustment
 
             #if IS_PLAYBACK
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
