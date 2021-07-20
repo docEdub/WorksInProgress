@@ -186,8 +186,10 @@ instr INSTRUMENT_ID
             iY init ((iNoteNumber - 80) / 25) * 3.5
 
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-            ; printsk("kDistance = %.3f\n", kDistance)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 16
+            ; if (changed(kDistance) == true) then
+            ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
+            ; endif
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_AudioDistanceMax) * 1600
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1
@@ -199,14 +201,15 @@ instr INSTRUMENT_ID
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
             a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+            aReverbOut = aOut * 0.01
 
             #if IS_PLAYBACK
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut * 0.033
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut * 0.033
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
             #else
                 kReloaded init false
                 kFadeTimeLeft init 0.1

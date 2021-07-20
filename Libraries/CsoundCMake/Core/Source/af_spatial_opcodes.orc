@@ -310,8 +310,13 @@ endop
 ; giDistanceAttenuationTable = ftgen(0, 0, 101, 8,   1,   5, .99,   20, 0.55,   25, 0.23,   40, 0.01,   10, 0)
 
 ;                                  f1 0  101  5  1  100  0.0001
-giDistanceAttenuationTable = ftgen(0, 0, 101, 5, 1, 100, 0.0001)
+; giDistanceAttenuationTable = ftgen(0, 0, 101, 5, 1, 100, 0.0001)
 
+;                               f1 0, 0, 101, 25    0  1    5  1    90  0.01    95  0.005    100  0.001
+; giDistanceAttenuationTable = ftgen(0, 0, 101, 25,   0, 1,   5, 1,   90, 0.01,   95, 0.005,   100, 0.001)
+
+;                               f1 0     251  25    0  1    5  1    250  0.00001
+giDistanceAttenuationTable = ftgen(0, 0, 251, 25,   0, 1,   5, 1,   250, 0.00001)
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
 //---------------------------------------------------------------------------------------------------------------------
@@ -324,12 +329,18 @@ giDistanceAttenuationTable = ftgen(0, 0, 101, 5, 1, 100, 0.0001)
 //
 opcode AF_3D_Audio_DistanceAttenuation, k, ki
     kDistance, iMaxDistance xin
-    xout tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
-    ; kAttenuation = kDistance / iMaxDistance
-    ; if (changed(kAttenuation) == true) then
-    ;     printsk("kAttenuation = %.03f\n", kAttenuation)
-    ; endif
-    ; xout kDistance / iMaxDistance
+    ; kAttenuation = tablei(kDistance / iMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
+    // Inverse distance model.
+    kRefDistance init 0.01
+    kRolloffFactor init 0.25
+    kAttenuation = kRefDistance / (kRefDistance + kRolloffFactor * (max(kDistance, kRefDistance) - kRefDistance))
+    if (changed(kAttenuation) == true) then
+        printsk("%.03f, %.03f, listener = [%.03f, %.03f, %.03f]\n", kDistance, kAttenuation,
+            gk_AF_3D_ListenerPosition[$X],
+            gk_AF_3D_ListenerPosition[$Y],
+            gk_AF_3D_ListenerPosition[$Z])
+    endif
+    xout kAttenuation
 endop
 
 
