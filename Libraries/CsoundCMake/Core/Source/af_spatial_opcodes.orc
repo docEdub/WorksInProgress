@@ -333,9 +333,9 @@ giDistanceAttenuationTable = ftgen(0, 0, 251, 25,   0, 1,   5, 1,   250, 0.00001
 opcode AF_3D_Audio_DistanceAttenuation, k, kpp
     kDistance, iReferenceDistance, iRolloffFactor xin
     kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
-    if (changed(kAttenuation) == true) then
-        printsk("%.03f, %.03f\n", kDistance, kAttenuation)
-    endif
+    ; if (changed(kAttenuation) == true) then
+    ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
+    ; endif
     xout kAttenuation
 endop
 

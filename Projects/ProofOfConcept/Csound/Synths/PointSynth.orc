@@ -171,7 +171,7 @@ instr INSTRUMENT_ID
                 igoto end
                 turnoff
             endif
-            iCps = cpsmidinn(p5 - 1000)
+            iCps = cpsmidinn(iNoteNumber)
             iAmp = 0.05
 
             kCps = linseg(iCps, giTotalTime, iCps + 100)

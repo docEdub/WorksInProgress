@@ -1614,9 +1614,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         opcode AF_3D_Audio_DistanceAttenuation, k, kpp
             kDistance, iReferenceDistance, iRolloffFactor xin
             kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
-            if (changed(kAttenuation) == 1) then
-                printsk("%.03f, %.03f\\n", kDistance, kAttenuation)
-            endif
             xout kAttenuation
         endop
         opcode AF_3D_Audio_DistanceAttenuation, k, kk
@@ -2586,7 +2583,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         igoto end
                         turnoff
                     endif
-                    iCps = cpsmidinn(p5 - 1000)
+                    iCps = cpsmidinn(iNoteNumber)
                     iAmp = 0.05
                     kCps = linseg(iCps, giTotalTime, iCps + 100)
                     aOut = oscil(iAmp, kCps)
