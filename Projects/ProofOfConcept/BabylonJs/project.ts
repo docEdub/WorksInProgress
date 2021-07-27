@@ -205,7 +205,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             mesh.position = new BABYLON.Vector3(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]),
             noteOn.mesh = mesh
             // noteOn.time += pointSynthData[0].fadeInTime
-            noteOn.offTime = noteOn.time + pointSynthData[0].fadeOutTime
+            noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
         }
 
         // Incremented as elapsed time passes.
@@ -302,7 +302,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const previousConsoleLog = console.log;
         const csoundConsoleLog = function() {
             if (arguments[0] === 'csd:started') {
-                startTime = document.audioContext.currentTime - (4 - document.latency);
+                startTime = document.audioContext.currentTime - (4 - 3 * document.latency);
                 isCsoundStarted = true
             }
             else if (arguments[0] === 'csd:ended') {
