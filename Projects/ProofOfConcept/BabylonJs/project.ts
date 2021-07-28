@@ -50,6 +50,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     `
     document.body.appendChild(csoundImportScript)
 
+    function browser() {
+        // Get the user-agent string
+        const userAgent = navigator.userAgent;
+        console.debug('userAgent =', userAgent);
+        if (userAgent.indexOf('MSIE') > -1) {
+            return 'Explorer';
+        }
+        if (userAgent.indexOf('Firefox') > -1) {
+            return 'Firefox';
+        }
+        if (userAgent.indexOf('Chrome') > -1) {
+            if (userAgent.indexOf('OP') > -1) {
+                return 'Opera';
+            }
+            else {
+                return 'Chrome';
+            }
+        }
+        if (userAgent.indexOf('Safari') > -1) {
+            return 'Safari';
+        }
+        return 'Unknown';
+    }
+    const detectedBrowser = browser();
+    console.log('Browser detected =', detectedBrowser)
+
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
