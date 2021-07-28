@@ -314,7 +314,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         console.log = csoundConsoleLog;
         const csound = await document.Csound({
-            audioContext: document.audioContext,
+            audioContext: new AudioContext({
+                latencyHint: 0.08533333333333333,
+                sampleRate: 48000
+            }),
             useSAB: false
         })
         console.log = previousConsoleLog;
@@ -331,6 +334,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('audioContext.outputLatency =', audioContext.outputLatency)
         console.debug('audioContext.sampleRate =', audioContext.sampleRate)
         console.debug('audioContext.state =', audioContext.state)
+        document.audioContext = audioContext;
 
         if (audioContext.sampleRate != 48000) {
             console.log('Sample restricted to 48000');
