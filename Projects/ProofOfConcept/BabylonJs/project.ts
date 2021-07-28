@@ -181,7 +181,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const startXr = async () => {
         try {
             const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ environment.ground ]});
-            if (!!xr) {
+            if (!!xr && !!xr.enterExitUI) {
                 xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                     if (eventData == null) {
                         if (currentCamera != camera) {
