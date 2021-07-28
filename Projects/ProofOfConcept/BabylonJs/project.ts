@@ -199,7 +199,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('pointSynthHeader =', pointSynthHeader)
         for (let i = 1; i < pointSynthData.length; i++) {
             let noteOn = pointSynthData[i].noteOn
-            console.debug('noteOn event ', i, '=', noteOn)
+            // console.debug('noteOn event ', i, '=', noteOn)
             let mesh = pointSynthMesh.createInstance('')
             mesh.isVisible = false // false
             mesh.position = new BABYLON.Vector3(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]),
