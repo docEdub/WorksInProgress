@@ -43,8 +43,8 @@ giPointSynth_DistanceMin = 1
 giPointSynth_DistanceMax = 50
 giPointSynth_ReferenceDistance = 5
 giPointSynth_RolloffFactor = 1
-giPointSynth_FinalVolumeAdjustment = 100
-giPointSynth_FinalReverbAdjustment = 0.02
+giPointSynth_PlaybackVolumeAdjustment = 50
+giPointSynth_PlaybackReverbAdjustment = 1
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
 giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
@@ -144,9 +144,9 @@ instr INSTRUMENT_ID
                     // TODO: Undo this. The Quest 2 can handle 2 notes just fine if the instrument is preallocated using
                     // a score event instead of relying on the prealloc opcode.
                     kNoteOnTime = elapsedTime_k()
-                    if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (giTotalTime + giTotalTime)) then
-                        kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + giTotalTime + giTotalTime
-                    endif
+                    ; if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (giTotalTime + giTotalTime)) then
+                    ;     kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + giTotalTime + giTotalTime
+                    ; endif
                     gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] = kNoteOnTime
 
                     sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
@@ -191,7 +191,10 @@ instr INSTRUMENT_ID
             ; if (changed(kDistance) == true) then
             ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
             ; endif
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor) * giPointSynth_FinalVolumeAdjustment
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
+            #if IS_PLAYBACK
+                kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
+            #endif
             aOutDistanced = aOut * kDistanceAmp
 
             giPointSynthNextXYZ_i += 1
@@ -203,9 +206,10 @@ instr INSTRUMENT_ID
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
             a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-            aReverbOut = aOut * giPointSynth_FinalReverbAdjustment
+            aReverbOut = aOut
 
             #if IS_PLAYBACK
+                aReverbOut *= giPointSynth_PlaybackReverbAdjustment
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
