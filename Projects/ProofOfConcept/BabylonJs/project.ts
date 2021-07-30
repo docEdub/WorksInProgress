@@ -247,6 +247,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
 
             let placeholderMesh = pointSynthPlaceholderMesh.createInstance('');
+            placeholderMesh.isVisible = true;
             placeholderMesh.position = mesh.position;
             noteOn.placeholderMesh = placeholderMesh;
         }
@@ -267,18 +268,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const currentCameraMatrix = new Float32Array(16)
         let currentCameraMatrixIsDirty = true
 
-        const resetPointSynthPlaceholders = () => {
-            for (let i = pointSynthNoteStartIndex; i < pointSynthData.length; i++) {
-                pointSynthData[i].noteOn.placeholderMesh.isVisible = true;
-            }
-        }
-
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
                 nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
-                resetPointSynthPlaceholders();
                 return;
             }
             const time = document.audioContext.currentTime - startTime;
@@ -292,7 +286,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             while (nextPointSynthNoteOffIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= time) {
                 pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false;
-                pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible = false;
+                pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible =
+                    !pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible;
                 nextPointSynthNoteOffIndex++;
             }
         })
