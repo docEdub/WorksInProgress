@@ -219,6 +219,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynthMeshMaterial.freeze()
         pointSynthMesh.material = pointSynthMeshMaterial
 
+        const pointSynthPlaceholderMesh = BABYLON.Mesh.CreateSphere('', 8, 0.15, scene)
+        pointSynthPlaceholderMesh.isVisible = false;
+        const pointSynthPlaceholderMeshMaterial = new BABYLON.StandardMaterial('', scene)
+        pointSynthPlaceholderMeshMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+        pointSynthPlaceholderMeshMaterial.disableLighting = true
+        pointSynthPlaceholderMeshMaterial.freeze()
+        pointSynthPlaceholderMesh.material = pointSynthPlaceholderMeshMaterial
 
         // Initialize point synth notes.
         const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
@@ -239,6 +246,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteOn.mesh = mesh
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
 
+            let placeholderMesh = pointSynthPlaceholderMesh.createInstance('');
+            placeholderMesh.position = mesh.position;
+            noteOn.placeholderMesh = placeholderMesh;
         }
 
         let pointSynthNoteStartIndex = 1;
@@ -257,11 +267,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const currentCameraMatrix = new Float32Array(16)
         let currentCameraMatrixIsDirty = true
 
+        const resetPointSynthPlaceholders = () => {
+            for (let i = pointSynthNoteStartIndex; i < pointSynthData.length; i++) {
+                pointSynthData[i].noteOn.placeholderMesh.isVisible = true;
+            }
+        }
+
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
                 nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
+                resetPointSynthPlaceholders();
                 return;
             }
             const time = document.audioContext.currentTime - startTime;
@@ -275,6 +292,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             while (nextPointSynthNoteOffIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= time) {
                 pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false;
+                pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible = false;
                 nextPointSynthNoteOffIndex++;
             }
         })
