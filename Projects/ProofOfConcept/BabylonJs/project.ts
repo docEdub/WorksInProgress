@@ -2596,8 +2596,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giPointSynth_DistanceMax = 50
         giPointSynth_ReferenceDistance = 5
         giPointSynth_RolloffFactor = 1
-        giPointSynth_PlaybackVolumeAdjustment = 50
-        giPointSynth_PlaybackReverbAdjustment = 1
+        giPointSynth_PlaybackVolumeAdjustment = 10
+        giPointSynth_PlaybackReverbAdjustment = 0.5
          #define POINT_SYNTH_NEXT_XYZ_COUNT #16384#
         giPointSynthNextXYZ[][][] init 1, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
         giPointSynthNextXYZ_i init 0

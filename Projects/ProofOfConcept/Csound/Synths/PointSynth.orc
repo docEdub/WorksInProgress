@@ -43,8 +43,8 @@ giPointSynth_DistanceMin = 1
 giPointSynth_DistanceMax = 50
 giPointSynth_ReferenceDistance = 5
 giPointSynth_RolloffFactor = 1
-giPointSynth_PlaybackVolumeAdjustment = 50
-giPointSynth_PlaybackReverbAdjustment = 1
+giPointSynth_PlaybackVolumeAdjustment = 10
+giPointSynth_PlaybackReverbAdjustment = 0.5
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
 giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
