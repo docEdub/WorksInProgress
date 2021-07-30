@@ -217,23 +217,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let csdData = JSON.parse(csdJson)
         console.debug('csdData =', csdData)
 
-        // Add point synth mesh instance template.
-        const pointSynthMesh = BABYLON.Mesh.CreateSphere('', 8, 0.25, scene)
-        pointSynthMesh.isVisible = false
-        const pointSynthMeshMaterial = new BABYLON.StandardMaterial('', scene)
-        pointSynthMeshMaterial.emissiveColor = BABYLON.Color3.White()
-        pointSynthMeshMaterial.disableLighting = true
-        pointSynthMeshMaterial.freeze()
-        pointSynthMesh.material = pointSynthMeshMaterial
-
-        const pointSynthPlaceholderMesh = BABYLON.Mesh.CreateSphere('', 8, 0.15, scene)
-        pointSynthPlaceholderMesh.isVisible = false;
-        const pointSynthPlaceholderMeshMaterial = new BABYLON.StandardMaterial('', scene)
-        pointSynthPlaceholderMeshMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-        pointSynthPlaceholderMeshMaterial.disableLighting = true
-        pointSynthPlaceholderMeshMaterial.freeze()
-        pointSynthPlaceholderMesh.material = pointSynthPlaceholderMeshMaterial
-
         // Initialize point synth notes.
         const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
         const pointSynthHeader = pointSynthData[0]
@@ -247,14 +230,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
 
             // console.debug('noteOn event ', i, '=', noteOn)
-            let mesh = pointSynthMesh.createInstance('')
+            let mesh = whiteSphere.createInstance('')
             mesh.isVisible = false
+            mesh.scaling.x = mesh.scaling.y = mesh.scaling.z = 0.25
             mesh.position = new BABYLON.Vector3(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]),
             noteOn.mesh = mesh
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
 
-            let placeholderMesh = pointSynthPlaceholderMesh.createInstance('');
+            let placeholderMesh = graySphere.createInstance('');
             placeholderMesh.isVisible = true;
+            placeholderMesh.scaling.x = placeholderMesh.scaling.y = placeholderMesh.scaling.z = 0.15
             placeholderMesh.position = mesh.position;
             noteOn.placeholderMesh = placeholderMesh;
         }
