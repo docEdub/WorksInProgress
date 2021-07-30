@@ -268,6 +268,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
+        const pointSynthNoteOn = (i) => {
+            const note = pointSynthData[i].noteOn;
+            note.mesh.isVisible = true;
+        }
+
+        const pointSynthNoteOff = (i) => {
+            const note = pointSynthData[i].noteOn;
+            note.mesh.isVisible = false;
+            note.placeholderMesh.isVisible = !note.placeholderMesh.isVisible
+        }
+
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
@@ -282,15 +293,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             while (nextPointSynthNoteOnIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= time) {
-                pointSynthData[nextPointSynthNoteOnIndex].noteOn.mesh.isVisible = true;
+                pointSynthNoteOn(nextPointSynthNoteOnIndex);
                 nextPointSynthNoteOnIndex++;
             }
 
             while (nextPointSynthNoteOffIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= time) {
-                pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false;
-                pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible =
-                    !pointSynthData[nextPointSynthNoteOffIndex].noteOn.placeholderMesh.isVisible;
+                pointSynthNoteOff(nextPointSynthNoteOffIndex);
                 nextPointSynthNoteOffIndex++;
             }
         })
