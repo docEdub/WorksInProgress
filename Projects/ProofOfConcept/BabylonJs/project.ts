@@ -20,8 +20,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
-    const groundGridLineMajorColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
-    const groundGridLineMinorColor = new BABYLON.Color4(0.1, 0.1, 0.1, 1);
 
     const halfGroundSize = groundSize / 2;
 
