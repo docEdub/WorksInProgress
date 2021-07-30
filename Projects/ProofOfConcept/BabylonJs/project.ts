@@ -19,7 +19,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
-    const groundSize = 100;
+    const groundSize = 1000;
     const groundGridLineMajorColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
     const groundGridLineMinorColor = new BABYLON.Color4(0.1, 0.1, 0.1, 1);
 
@@ -79,7 +79,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -50), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -99,48 +99,55 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     });
     environment.ground.checkCollisions = true;
 
-    { // Grid lines
+    const whiteSphere = BABYLON.Mesh.CreateSphere('', 8, 1, scene);
+    whiteSphere.isVisible = false;
+    const whiteSphereMaterial = new BABYLON.StandardMaterial('', scene);
+    whiteSphereMaterial.emissiveColor = BABYLON.Color3.White();
+    whiteSphereMaterial.disableLighting = true;
+    whiteSphereMaterial.freeze();
+    whiteSphere.material = whiteSphereMaterial;
 
-        let majorLine = BABYLON.MeshBuilder.CreateLines('', {
-            points: [
-                new BABYLON.Vector3(0, 0, -halfGroundSize),
-                new BABYLON.Vector3(0, 0, halfGroundSize)
-            ],
-            colors: [
-                groundGridLineMajorColor,
-                groundGridLineMajorColor
-            ]
-        });
-        majorLine.isVisible = false;
+    const graySphere = BABYLON.Mesh.CreateSphere('', 8, 1, scene);
+    graySphere.isVisible = false;
+    const graySphereMaterial = new BABYLON.StandardMaterial('', scene);
+    graySphereMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+    graySphereMaterial.disableLighting = true;
+    graySphereMaterial.freeze();
+    graySphere.material = graySphereMaterial;
 
-        let minorLine = BABYLON.MeshBuilder.CreateLines('', {
-            points: [
-                new BABYLON.Vector3(0, 0, -halfGroundSize),
-                new BABYLON.Vector3(0, 0, halfGroundSize)
-            ],
-            colors: [
-                groundGridLineMinorColor,
-                groundGridLineMinorColor
-            ]
-        });
-        minorLine.isVisible = false;
 
-        for (let i = -halfGroundSize; i <= halfGroundSize; i++) {
-            let zAxisInstance = null;
-            let xAxisInstance = null;
-            if (i % 10 == 0) {
-                zAxisInstance = majorLine.createInstance('');
-                xAxisInstance = majorLine.createInstance('');
-            }
-            else {
-                zAxisInstance = minorLine.createInstance('');
-                xAxisInstance = minorLine.createInstance('');
-            }
-            zAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(i, 0, 0));
-            xAxisInstance.setPositionWithLocalVector(new BABYLON.Vector3(0, 0, i));
-            xAxisInstance.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0);
+    { // Grid dots.
+
+        const makeGridDot = (mesh, x, z) => {
+            let dot = mesh.createInstance('');
+            dot.isVisible = true;
+            dot.scaling.x = dot.scaling.z = 0.1
+            dot.scaling.y = 0;
+            dot.position.x = x;
+            dot.position.z = z;
         }
 
+        for (let i = 1; i < 100; i++) {
+            const radius = i * 3;
+
+            // Major grid lines.
+            makeGridDot(whiteSphere, radius, 0);
+            makeGridDot(whiteSphere, 0, radius);
+            makeGridDot(whiteSphere, 0, -radius);
+            makeGridDot(whiteSphere, -radius, 0);
+
+            // Minor grid lines.
+            const dotsPerQuadrant = 8;
+            for (let j = 1; j < dotsPerQuadrant; j++) {
+                const angle = Math.PI / 2 * (j / dotsPerQuadrant);
+                const x = radius * Math.sin(angle);
+                const z = radius * Math.cos(angle);
+                makeGridDot(graySphere, x, z);
+                makeGridDot(graySphere, x, -z);
+                makeGridDot(graySphere, -x, -z);
+                makeGridDot(graySphere, -x, z);
+            }
+        }
     }
     { // Walls
 
