@@ -235,11 +235,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteOn.mesh = mesh
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
 
+            let meshMirror = mesh.clone('');
+            meshMirror.position.y = -meshMirror.position.y;
+            noteOn.meshMirror = meshMirror;
+
             let placeholderMesh = graySphere.createInstance('');
             placeholderMesh.isVisible = true;
             placeholderMesh.scaling.x = placeholderMesh.scaling.y = placeholderMesh.scaling.z = 0.15
             placeholderMesh.position = mesh.position;
             noteOn.placeholderMesh = placeholderMesh;
+
+            let placeholderMeshMirror = placeholderMesh.clone('');
+            placeholderMeshMirror.position.y = -placeholderMeshMirror.position.y;
+            noteOn.placeholderMeshMirror = placeholderMeshMirror;
         }
 
         let pointSynthNoteStartIndex = 1;
@@ -268,13 +276,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const pointSynthNoteOn = (i) => {
             const note = pointSynthData[i].noteOn;
-            note.mesh.isVisible = true;
+            note.mesh.isVisible = note.meshMirror.isVisible = true;
         }
 
         const pointSynthNoteOff = (i) => {
             const note = pointSynthData[i].noteOn;
-            note.mesh.isVisible = false;
-            note.placeholderMesh.isVisible = !note.placeholderMesh.isVisible
+            note.mesh.isVisible = note.meshMirror.isVisible = false;
+            note.placeholderMesh.isVisible = note.placeholderMeshMirror.isVisible = !note.placeholderMesh.isVisible
         }
 
         // Update animations.
