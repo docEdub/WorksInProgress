@@ -77,7 +77,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -100), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -115,6 +115,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 
     { // Grid dots.
+        const majorGridDot = whiteSphere.clone('');
+        majorGridDot.addLODLevel(50, null);
+
+        const minorGridDot = graySphere.clone('');
+        minorGridDot.addLODLevel(25, null);
 
         const makeGridDot = (mesh, x, z) => {
             let dot = mesh.createInstance('');
@@ -129,21 +134,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const radius = i * 3;
 
             // Major grid lines.
-            makeGridDot(whiteSphere, radius, 0);
-            makeGridDot(whiteSphere, 0, radius);
-            makeGridDot(whiteSphere, 0, -radius);
-            makeGridDot(whiteSphere, -radius, 0);
+            makeGridDot(majorGridDot, radius, 0);
+            makeGridDot(majorGridDot, 0, radius);
+            makeGridDot(majorGridDot, 0, -radius);
+            makeGridDot(majorGridDot, -radius, 0);
 
             // Minor grid lines.
-            const dotsPerQuadrant = 8;
+            const dotsPerQuadrant = 8 + 8 * Math.floor(i / 16);
             for (let j = 1; j < dotsPerQuadrant; j++) {
                 const angle = Math.PI / 2 * (j / dotsPerQuadrant);
                 const x = radius * Math.sin(angle);
                 const z = radius * Math.cos(angle);
-                makeGridDot(graySphere, x, z);
-                makeGridDot(graySphere, x, -z);
-                makeGridDot(graySphere, -x, -z);
-                makeGridDot(graySphere, -x, z);
+                makeGridDot(minorGridDot, x, z);
+                makeGridDot(minorGridDot, x, -z);
+                makeGridDot(minorGridDot, -x, -z);
+                makeGridDot(minorGridDot, -x, z);
             }
         }
     }
