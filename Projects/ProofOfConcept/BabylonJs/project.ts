@@ -79,7 +79,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -50), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -219,48 +219,123 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynthMeshMaterial.freeze()
         pointSynthMesh.material = pointSynthMeshMaterial
 
+        const pointSynthRingMeshStartScale = 0.01;
+        const pointSynthRingMeshStartAlpha = 0.5;
+        const pointSynthRingMesh = BABYLON.Mesh.CreateTorus('', 5, 0.25, 64, scene);
+        pointSynthRingMesh.scaling = new BABYLON.Vector3(pointSynthRingMeshStartScale, pointSynthRingMeshStartScale, pointSynthRingMeshStartScale);
+        const pointSynthRingMeshMaterial = new BABYLON.StandardMaterial('', scene);
+        pointSynthRingMeshMaterial.emissiveColor = BABYLON.Color3.Gray();
+        pointSynthRingMeshMaterial.disableLighting = true;
+        pointSynthRingMesh.material = pointSynthRingMeshMaterial;
+        pointSynthRingMesh.material.alpha = pointSynthRingMeshStartAlpha
+
+        const pointSynthRingAnimationTime = 0.5; // seconds
+        const pointSynthRingAnimationFPS = 60;
+        const pointSynthRingAnimationFrameCount = pointSynthRingAnimationTime * pointSynthRingAnimationFPS;
+
+        let pointSynthRingScalingAnimation = new BABYLON.Animation('',
+            'scaling',
+            pointSynthRingAnimationFPS,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+        let pointSynthRingScalingAnimationKeys = [];
+        pointSynthRingScalingAnimationKeys.push({
+            frame: 0,
+            value: new BABYLON.Vector3(pointSynthRingMeshStartScale, pointSynthRingMeshStartScale, pointSynthRingMeshStartScale)
+        });
+        pointSynthRingScalingAnimationKeys.push({
+            frame: pointSynthRingAnimationFrameCount,
+            value: new BABYLON.Vector3(1, 1, 1)
+        });
+        pointSynthRingScalingAnimation.setKeys(pointSynthRingScalingAnimationKeys);
+        pointSynthRingMesh.animations.push(pointSynthRingScalingAnimation);
+
+        let pointSynthRingMaterialAlphaAnimation = new BABYLON.Animation('',
+            'material.alpha',
+            pointSynthRingAnimationFPS,
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+        let pointSynthRingMaterialAlphaAnimationKeys = [];
+        pointSynthRingMaterialAlphaAnimationKeys.push({
+            frame: 0,
+            value: pointSynthRingMeshStartAlpha
+        });
+        pointSynthRingMaterialAlphaAnimationKeys.push({
+            frame: pointSynthRingAnimationFrameCount,
+            value: 0
+        });
+        pointSynthRingMaterialAlphaAnimation.setKeys(pointSynthRingMaterialAlphaAnimationKeys);
+        pointSynthRingMesh.animations.push(pointSynthRingMaterialAlphaAnimation);
+
         // Initialize point synth notes.
         const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
         const pointSynthHeader = pointSynthData[0]
         console.debug('pointSynthHeader =', pointSynthHeader)
         for (let i = 1; i < pointSynthData.length; i++) {
             let noteOn = pointSynthData[i].noteOn
+
+            // Skip preallocation notes.
+            if (noteOn.time == 0.005) {
+                continue;
+            }
+
             // console.debug('noteOn event ', i, '=', noteOn)
             let mesh = pointSynthMesh.createInstance('')
-            mesh.isVisible = false // false
+            mesh.isVisible = false
             mesh.position = new BABYLON.Vector3(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]),
             noteOn.mesh = mesh
-            // noteOn.time += pointSynthData[0].fadeInTime
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
+
+            noteOn.ringMesh = pointSynthRingMesh.clone('');
+            noteOn.ringMesh.position = noteOn.mesh.position;
+            noteOn.ringMesh.material = pointSynthRingMeshMaterial.clone('');
+            noteOn.ringOffTime = noteOn.time + pointSynthRingAnimationTime + 1;
         }
 
-        // Incremented as elapsed time passes.
-        let nextPointSynthNoteOnIndex = 1
-        let nextPointSynthNoteOffIndex = 1
+        let pointSynthNoteStartIndex = 1;
+        for (let i = 1; i < pointSynthData.length; i++) {
+            if (!!pointSynthData[i].noteOn.mesh) {
+                pointSynthNoteStartIndex = i;
+                break;
+            }
+        }
+
+        // Initialized in render loop and incremented as elapsed time passes.
+        let nextPointSynthNoteOnIndex = 0;
+        let nextPointSynthNoteOffIndex = 0;
+        let nextPointSynthRingOffIndex = 0;
 
         const previousCameraMatrix = new Float32Array(16)
         const currentCameraMatrix = new Float32Array(16)
-        let currentCameraMatrixIsDirty = true    
+        let currentCameraMatrixIsDirty = true
 
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
-                nextPointSynthNoteOnIndex = 1
-                nextPointSynthNoteOffIndex = 1
-                return
+                nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
+                nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
+                nextPointSynthRingOffIndex = pointSynthNoteStartIndex;
+                return;
             }
             const time = document.audioContext.currentTime - startTime;
 
             while (nextPointSynthNoteOnIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= time) {
-                pointSynthData[nextPointSynthNoteOnIndex].noteOn.mesh.isVisible = true
-                nextPointSynthNoteOnIndex++
+                pointSynthData[nextPointSynthNoteOnIndex].noteOn.mesh.isVisible = true;
+                scene.beginAnimation(pointSynthData[nextPointSynthNoteOnIndex].noteOn.ringMesh, 0, pointSynthRingAnimationFrameCount, false);
+                nextPointSynthNoteOnIndex++;
             }
 
             while (nextPointSynthNoteOffIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime <= time) {
-                pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false
-                nextPointSynthNoteOffIndex++
+                pointSynthData[nextPointSynthNoteOffIndex].noteOn.mesh.isVisible = false;
+                nextPointSynthNoteOffIndex++;
+            }
+
+            while (nextPointSynthRingOffIndex < pointSynthData.length
+                    && pointSynthData[nextPointSynthRingOffIndex].noteOn.ringOffTime <= time) {
+                pointSynthData[nextPointSynthRingOffIndex].noteOn.ringMesh.isVisible = false;
+                nextPointSynthRingOffIndex++;
             }
         })
 
