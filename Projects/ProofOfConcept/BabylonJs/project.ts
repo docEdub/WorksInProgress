@@ -268,11 +268,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const currentCameraMatrix = new Float32Array(16)
         let currentCameraMatrixIsDirty = true
 
+        const logVisiblePointSynthPlaceholders = () => {
+            for (let i = pointSynthNoteStartIndex; i < pointSynthData.length; i++) {
+                if (pointSynthData[i].noteOn.placeholderMesh.isVisible) {
+                    console.warn('point synth placeholder mesh index', i, 'is still visible!')
+                }
+            }
+        }
+
         // Update animations.
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
                 nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
+                if (csoundRestartCount % 2 == 1) {
+                    logVisiblePointSynthPlaceholders();
+                }
                 return;
             }
             const time = document.audioContext.currentTime - startTime;
@@ -329,6 +340,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let isAudioEngineUnlocked = false
     let isCsoundLoaded = false
     let isCsoundStarted = false
+    let csoundRestartCount = 0;
 
     const onAudioEngineUnlocked = () => {
         document.audioContext.resume()
@@ -345,6 +357,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const restartCsound = async () => {
         console.debug('Restarting Csound ...')
         isCsoundStarted = false;
+        csoundRestartCount++;
         await document.csound.rewindScore();
         console.debug('Restarting Csound - done')
     }
