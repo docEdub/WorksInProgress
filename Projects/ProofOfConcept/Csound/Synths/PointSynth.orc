@@ -183,9 +183,10 @@ instr INSTRUMENT_ID
             iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
 
+            // Minimum Y = 10.
             // Note number range 80 to 105 (range = 25).
-            // Height range 0 to 3.5.
-            iY init ((iNoteNumber - 80) / 25) * 3.5
+            // Height range 0 to 20.
+            iY init 10 + ((iNoteNumber - 80) / 25) * 20
 
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
             ; if (changed(kDistance) == true) then
