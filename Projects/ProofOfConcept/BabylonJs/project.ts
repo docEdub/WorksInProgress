@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs";
+import { Vector3 } from "babylonjs/Maths/math.vector";
 import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
@@ -77,16 +78,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 5), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 10));
+    camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
-    let light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene);
-    light.intensity = 0.7;
+    // let light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene);
+    // light.intensity = 0.7;
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -97,56 +98,64 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     });
     environment.ground.checkCollisions = true;
 
+    const whiteColor = BABYLON.Color3.White();
+    const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+
+    const whiteMaterial = new BABYLON.StandardMaterial('', scene);
+    whiteMaterial.emissiveColor = whiteColor;
+    whiteMaterial.disableLighting = true;
+    whiteMaterial.freeze();
+
+    const grayMaterial = new BABYLON.StandardMaterial('', scene);
+    grayMaterial.emissiveColor = grayColor;
+    grayMaterial.disableLighting = true;
+    grayMaterial.freeze();
+
     const whiteSphere = BABYLON.Mesh.CreateSphere('', 8, 1, scene);
     whiteSphere.isVisible = false;
-    const whiteSphereMaterial = new BABYLON.StandardMaterial('', scene);
-    whiteSphereMaterial.emissiveColor = BABYLON.Color3.White();
-    whiteSphereMaterial.disableLighting = true;
-    whiteSphereMaterial.freeze();
-    whiteSphere.material = whiteSphereMaterial;
+    whiteSphere.material = whiteMaterial;
 
-    const graySphere = BABYLON.Mesh.CreateSphere('', 8, 1, scene);
+    const graySphere = whiteSphere.clone('');
     graySphere.isVisible = false;
-    const graySphereMaterial = new BABYLON.StandardMaterial('', scene);
-    graySphereMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-    graySphereMaterial.disableLighting = true;
-    graySphereMaterial.freeze();
-    graySphere.material = graySphereMaterial;
+    graySphere.material = grayMaterial;
 
-
-    { // Grid dots.
-
-        const makeGridDot = (mesh, x, z) => {
-            let dot = mesh.createInstance('');
-            dot.isVisible = true;
-            dot.scaling.x = dot.scaling.z = 0.1
-            dot.scaling.y = 0;
-            dot.position.x = x;
-            dot.position.z = z;
-        }
-
-        for (let i = 1; i < 100; i++) {
-            const radius = i * 3;
-
-            // Major grid lines.
-            makeGridDot(whiteSphere, radius, 0);
-            makeGridDot(whiteSphere, 0, radius);
-            makeGridDot(whiteSphere, 0, -radius);
-            makeGridDot(whiteSphere, -radius, 0);
-
-            // Minor grid lines.
-            const dotsPerQuadrant = 8;
-            for (let j = 1; j < dotsPerQuadrant; j++) {
-                const angle = Math.PI / 2 * (j / dotsPerQuadrant);
-                const x = radius * Math.sin(angle);
-                const z = radius * Math.cos(angle);
-                makeGridDot(graySphere, x, z);
-                makeGridDot(graySphere, x, -z);
-                makeGridDot(graySphere, -x, -z);
-                makeGridDot(graySphere, -x, z);
-            }
-        }
+    const makeAngleGridLine = (color) => {
+        const mesh = BABYLON.Mesh.CreateDashedLines('', [ new BABYLON.Vector3(-50.025, 0, 0), new BABYLON.Vector3(50.975, 0, 0) ], .05, .95, 101, scene);
+        mesh.isVisible = false;
+        mesh.color = color;
+        return mesh;
     }
+
+    const whiteGridLine = makeAngleGridLine(whiteColor);
+    whiteGridLine.isVisible = false;
+    whiteGridLine.color = whiteColor;
+
+    const xGridLine = whiteGridLine.clone('');
+    xGridLine.isVisible = false;
+
+    for (let i = 0; i < 4; i++) {
+        const gridLine = whiteGridLine.clone('');
+        gridLine.isVisible = true;
+        gridLine.rotation.y = Math.PI * i / 4;
+    }
+
+    let borderGridLinePoints = new Array<BABYLON.Vector3>();
+    const pointCount = 32;
+    for (let i = 0; i < pointCount; i++) {
+        const t = 2 * Math.PI * (i / pointCount) - 0.0004;
+        borderGridLinePoints.push(new BABYLON.Vector3(50 * Math.sin(t), 0, 50 * Math.cos(t)));
+    }
+    borderGridLinePoints.push(borderGridLinePoints[0]);
+    console.log(borderGridLinePoints);
+    const borderGridLine = BABYLON.Mesh.CreateDashedLines('', borderGridLinePoints, 0.01, 0.99 , 2 * pointCount + 1, scene);
+    borderGridLine.color = whiteColor;
+
+    for (let i = 1; i < 4; i++) {
+        const gridLine = borderGridLine.createInstance('');
+        gridLine.scaling.x = gridLine.scaling.z = i / 4
+    }
+
+
     { // Walls
 
         const wall = BABYLON.MeshBuilder.CreatePlane('', {
