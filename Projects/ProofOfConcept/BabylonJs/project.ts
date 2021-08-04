@@ -17,6 +17,7 @@ declare global {
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
     const logCsoundMessages = true;
     const logDebugMessages = true;
+    const showGroundGrid = false;
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
@@ -119,42 +120,43 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     graySphere.isVisible = false;
     graySphere.material = grayMaterial;
 
-    const makeAngleGridLine = (color) => {
-        const mesh = BABYLON.Mesh.CreateDashedLines('', [ new BABYLON.Vector3(-50.025, 0, 0), new BABYLON.Vector3(50.975, 0, 0) ], .05, .95, 101, scene);
-        mesh.isVisible = false;
-        mesh.color = color;
-        return mesh;
+    if (showGroundGrid) {
+        const makeAngleGridLine = (color) => {
+            const mesh = BABYLON.Mesh.CreateDashedLines('', [ new BABYLON.Vector3(-50.025, 0, 0), new BABYLON.Vector3(50.975, 0, 0) ], .05, .95, 101, scene);
+            mesh.isVisible = false;
+            mesh.color = color;
+            return mesh;
+        }
+
+        const whiteGridLine = makeAngleGridLine(whiteColor);
+        whiteGridLine.isVisible = false;
+        whiteGridLine.color = whiteColor;
+
+        const xGridLine = whiteGridLine.clone('');
+        xGridLine.isVisible = false;
+
+        for (let i = 0; i < 4; i++) {
+            const gridLine = whiteGridLine.clone('');
+            gridLine.isVisible = true;
+            gridLine.rotation.y = Math.PI * i / 4;
+        }
+
+        let borderGridLinePoints = new Array<BABYLON.Vector3>();
+        const pointCount = 32;
+        for (let i = 0; i < pointCount; i++) {
+            const t = 2 * Math.PI * (i / pointCount) - 0.0004;
+            borderGridLinePoints.push(new BABYLON.Vector3(50 * Math.sin(t), 0, 50 * Math.cos(t)));
+        }
+        borderGridLinePoints.push(borderGridLinePoints[0]);
+        console.log(borderGridLinePoints);
+        const borderGridLine = BABYLON.Mesh.CreateDashedLines('', borderGridLinePoints, 0.01, 0.99 , 2 * pointCount + 1, scene);
+        borderGridLine.color = whiteColor;
+
+        for (let i = 1; i < 4; i++) {
+            const gridLine = borderGridLine.createInstance('');
+            gridLine.scaling.x = gridLine.scaling.z = i / 4
+        }
     }
-
-    const whiteGridLine = makeAngleGridLine(whiteColor);
-    whiteGridLine.isVisible = false;
-    whiteGridLine.color = whiteColor;
-
-    const xGridLine = whiteGridLine.clone('');
-    xGridLine.isVisible = false;
-
-    for (let i = 0; i < 4; i++) {
-        const gridLine = whiteGridLine.clone('');
-        gridLine.isVisible = true;
-        gridLine.rotation.y = Math.PI * i / 4;
-    }
-
-    let borderGridLinePoints = new Array<BABYLON.Vector3>();
-    const pointCount = 32;
-    for (let i = 0; i < pointCount; i++) {
-        const t = 2 * Math.PI * (i / pointCount) - 0.0004;
-        borderGridLinePoints.push(new BABYLON.Vector3(50 * Math.sin(t), 0, 50 * Math.cos(t)));
-    }
-    borderGridLinePoints.push(borderGridLinePoints[0]);
-    console.log(borderGridLinePoints);
-    const borderGridLine = BABYLON.Mesh.CreateDashedLines('', borderGridLinePoints, 0.01, 0.99 , 2 * pointCount + 1, scene);
-    borderGridLine.color = whiteColor;
-
-    for (let i = 1; i < 4; i++) {
-        const gridLine = borderGridLine.createInstance('');
-        gridLine.scaling.x = gridLine.scaling.z = i / 4
-    }
-
 
     { // Walls
 
