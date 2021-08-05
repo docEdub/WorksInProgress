@@ -1,5 +1,4 @@
 import * as BABYLON from "babylonjs";
-import { Vector3 } from "babylonjs/Maths/math.vector";
 import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
@@ -17,7 +16,7 @@ declare global {
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
     const logCsoundMessages = true;
     const logDebugMessages = true;
-    const showGroundGrid = false;
+    const showGroundGrid = true;
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
@@ -86,9 +85,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-
-    // let light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene);
-    // light.intensity = 0.7;
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -226,7 +222,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let csdData = JSON.parse(csdJson)
         console.debug('csdData =', csdData)
 
+        const noteMeshInstanceCount = 40;
+        let noteMeshInstanceIndex = 0;
+        let noteMeshInstances = [];
+        let noteMeshInstance = whiteSphere.createInstance('');
+        noteMeshInstance.isVisible = false;
+        noteMeshInstance.scaling.x = noteMeshInstance.scaling.y = noteMeshInstance.scaling.z = 0.25;
+        for (let i = 0; i < noteMeshInstanceCount; i++) {
+            noteMeshInstances.push(noteMeshInstance.clone(''));
+        }
+
         // Initialize point synth notes.
+        let pointSynthNoteStartIndex = 0;
         const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
         const pointSynthHeader = pointSynthData[0]
         console.debug('pointSynthHeader =', pointSynthHeader)
@@ -237,36 +244,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (noteOn.time == 0.005) {
                 continue;
             }
-
-            // console.debug('noteOn event ', i, '=', noteOn)
-            let mesh = whiteSphere.createInstance('')
-            mesh.isVisible = false
-            mesh.scaling.x = mesh.scaling.y = mesh.scaling.z = 0.25
-            mesh.position = new BABYLON.Vector3(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]),
-            noteOn.mesh = mesh
-            noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
-
-            let meshMirror = mesh.clone('');
-            meshMirror.position.y = -meshMirror.position.y;
-            noteOn.meshMirror = meshMirror;
-
-            let placeholderMesh = graySphere.createInstance('');
-            placeholderMesh.isVisible = true;
-            placeholderMesh.scaling.x = placeholderMesh.scaling.y = placeholderMesh.scaling.z = 0.15
-            placeholderMesh.position = mesh.position;
-            noteOn.placeholderMesh = placeholderMesh;
-
-            let placeholderMeshMirror = placeholderMesh.clone('');
-            placeholderMeshMirror.position.y = -placeholderMeshMirror.position.y;
-            noteOn.placeholderMeshMirror = placeholderMeshMirror;
-        }
-
-        let pointSynthNoteStartIndex = 1;
-        for (let i = 1; i < pointSynthData.length; i++) {
-            if (!!pointSynthData[i].noteOn.mesh) {
+            else if (pointSynthNoteStartIndex == 0) {
                 pointSynthNoteStartIndex = i;
-                break;
             }
+
+            noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
         }
 
         // Initialized in render loop and incremented as elapsed time passes.
@@ -277,23 +259,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const currentCameraMatrix = new Float32Array(16)
         let currentCameraMatrixIsDirty = true
 
-        const logVisiblePointSynthPlaceholders = () => {
-            for (let i = pointSynthNoteStartIndex; i < pointSynthData.length; i++) {
-                if (pointSynthData[i].noteOn.placeholderMesh.isVisible) {
-                    console.warn('point synth placeholder mesh index', i, 'is still visible!')
-                }
-            }
-        }
-
         const pointSynthNoteOn = (i) => {
             const note = pointSynthData[i].noteOn;
-            note.mesh.isVisible = note.meshMirror.isVisible = true;
+            note.instanceIndex = noteMeshInstanceIndex;
+            let mesh = noteMeshInstances[note.instanceIndex];
+            let mirrorMesh = noteMeshInstances[note.instanceIndex + 1];
+            mesh.position.x = mirrorMesh.position.x = note.xyz[0];
+            mesh.position.y = note.xyz[1];
+            mirrorMesh.position.y = -note.xyz[1];
+            mesh.position.z = mirrorMesh.position.z = note.xyz[2];
+            mesh.isVisible = mirrorMesh.isVisible = true;
+
+            noteMeshInstanceIndex += 2;
+            if (noteMeshInstanceIndex == noteMeshInstanceCount) {
+                noteMeshInstanceIndex = 0;
+            }
         }
 
         const pointSynthNoteOff = (i) => {
             const note = pointSynthData[i].noteOn;
-            note.mesh.isVisible = note.meshMirror.isVisible = false;
-            note.placeholderMesh.isVisible = note.placeholderMeshMirror.isVisible = !note.placeholderMesh.isVisible
+            noteMeshInstances[note.instanceIndex].isVisible = false;
+            noteMeshInstances[note.instanceIndex + 1].isVisible = false;
         }
 
         // Update animations.
@@ -302,7 +288,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
                 nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
                 if (csoundRestartCount % 2 == 1) {
-                    logVisiblePointSynthPlaceholders();
                 }
                 return;
             }
