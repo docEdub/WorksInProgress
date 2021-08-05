@@ -16,7 +16,7 @@ declare global {
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
     const logCsoundMessages = true;
     const logDebugMessages = true;
-    const showGroundGrid = true;
+    const showGroundGrid = false;
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
@@ -108,7 +108,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     grayMaterial.disableLighting = true;
     grayMaterial.freeze();
 
-    const whiteSphere = BABYLON.Mesh.CreateSphere('', 8, 1, scene);
+    const whiteSphere = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
     whiteSphere.isVisible = false;
     whiteSphere.material = whiteMaterial;
 
@@ -227,10 +227,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let noteMeshInstances = [];
         let noteMeshInstance = whiteSphere.createInstance('');
         noteMeshInstance.isVisible = false;
-        noteMeshInstance.scaling.x = noteMeshInstance.scaling.y = noteMeshInstance.scaling.z = 0.25;
+        noteMeshInstance.scaling.x = noteMeshInstance.scaling.y = noteMeshInstance.scaling.z = 0.06;
         for (let i = 0; i < noteMeshInstanceCount; i++) {
             noteMeshInstances.push(noteMeshInstance.clone(''));
         }
+
+        const placeholderMesh = graySphere.clone('');
+        placeholderMesh.scaling.x = placeholderMesh.scaling.y = placeholderMesh.scaling.z = 0.05;
+        placeholderMesh.bakeCurrentTransformIntoVertices();
+        placeholderMesh.isVisible = true;
 
         // Initialize point synth notes.
         let pointSynthNoteStartIndex = 0;
@@ -249,6 +254,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
 
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
+
+            const refreshInstances = i == pointSynthData.length - 1;
+            placeholderMesh.thinInstanceAdd(
+                BABYLON.Matrix.Translation(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
+            placeholderMesh.thinInstanceAdd(
+                BABYLON.Matrix.Translation(noteOn.xyz[0], -noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
         }
 
         // Initialized in render loop and incremented as elapsed time passes.
