@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "babylonjs": "^4.2.0",
+    "babylonjs-materials": "^4.2.0",
     "console-log-html": "^2.0.2"
   }
 }

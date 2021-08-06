@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs";
+import * as BABYLON_MATERIALS from "babylonjs-materials";
 import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
@@ -122,42 +123,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     graySphere.isVisible = false;
     graySphere.material = grayMaterial;
 
-    if (showGroundGrid) {
-        const minimumDistance = groundHoleRadius + 1;
-        
-        const majorGridDot = BABYLON.MeshBuilder.CreateDisc('', { radius: 0.03, tessellation: 16 }, scene);
-        majorGridDot.material = whiteMaterial;
-        majorGridDot.rotation.x = Math.PI / 2;
-        majorGridDot.bakeCurrentTransformIntoVertices();
-        majorGridDot.addLODLevel(20, null);
-        majorGridDot.isVisible = false;
-
-        const minorGridDot = majorGridDot.clone('');
-        minorGridDot.material = grayMaterial;
-    
-        // Major grid dots.
-        for (let x = -halfGroundSize; x < halfGroundSize; x += 5) {
-            for (let z = -halfGroundSize; z < halfGroundSize; z += 5) {
-                if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
-                const instance = majorGridDot.createInstance('');
-                instance.position.set(x, 0, z);
-                instance.isVisible = true;
-            }
-        }
-
-        // Minor grid dots.
-        for (let x = -halfGroundSize; x < halfGroundSize; x += 1) {
-            if (x % 5 == 0) continue;
-            for (let z = -halfGroundSize; z < halfGroundSize; z += 1) {
-                if (z % 5 == 0) continue;
-                if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
-                const instance = minorGridDot.createInstance('');
-                instance.position.set(x, 0, z);
-                instance.isVisible = true;
-            }
-        }
-    }
-
     { // Walls
 
         const wall = BABYLON.MeshBuilder.CreatePlane('', {
@@ -198,13 +163,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // Add cylinder for ground with center tube cut out.
     const groundLedge = BABYLON.MeshBuilder.CreateLathe('', {
         shape: [
-            new BABYLON.Vector3(groundHoleRadius, -1000, 0),
+            new BABYLON.Vector3(groundSize, 0, 0),
             new BABYLON.Vector3(groundHoleRadius, 0, 0),
-            new BABYLON.Vector3(groundSize, 0, 0)
+            new BABYLON.Vector3(groundHoleRadius, -1000, 0)
         ],
         tessellation: 90
     }, scene);
-    groundLedge.material = blackMaterial;
+
+    if (showGroundGrid) {
+        const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
+        // gridMaterial.gridRatio = .25;
+        gridMaterial.lineColor.set(0.2, 0.2, 0.2);
+        gridMaterial.minorUnitVisibility = 0;
+        groundLedge.material = gridMaterial;
+    }
+    else {
+        groundLedge.material = blackMaterial;
+    }
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
