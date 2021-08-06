@@ -124,18 +124,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     if (showGroundGrid) {
         const minimumDistance = groundHoleRadius + 1;
-        const gridDot = BABYLON.MeshBuilder.CreateDisc('', { radius: 0.03, tessellation: 16 }, scene);
-        gridDot.material = whiteMaterial;
-        gridDot.rotation.x = Math.PI / 2;
-        gridDot.bakeCurrentTransformIntoVertices();
-        gridDot.thinInstanceRegisterAttribute('color', 4);
+        
+        const majorGridDot = BABYLON.MeshBuilder.CreateDisc('', { radius: 0.03, tessellation: 16 }, scene);
+        majorGridDot.material = whiteMaterial;
+        majorGridDot.rotation.x = Math.PI / 2;
+        majorGridDot.bakeCurrentTransformIntoVertices();
+        majorGridDot.addLODLevel(20, null);
+        majorGridDot.isVisible = false;
+
+        const minorGridDot = majorGridDot.clone('');
+        minorGridDot.material = grayMaterial;
     
         // Major grid dots.
         for (let x = -halfGroundSize; x < halfGroundSize; x += 5) {
             for (let z = -halfGroundSize; z < halfGroundSize; z += 5) {
                 if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
-                const i = gridDot.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false);
-                gridDot.thinInstanceSetAttributeAt('color', i, [ 1, 1, 1, 1 ], false);
+                const instance = majorGridDot.createInstance('');
+                instance.position.set(x, 0, z);
+                instance.isVisible = true;
             }
         }
 
@@ -145,8 +151,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             for (let z = -halfGroundSize; z < halfGroundSize; z += 1) {
                 if (z % 5 == 0) continue;
                 if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
-                const i = gridDot.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false);
-                gridDot.thinInstanceSetAttributeAt('color', i, [ 0.2, 0.2, 0.2, 1 ], false);
+                const instance = minorGridDot.createInstance('');
+                instance.position.set(x, 0, z);
+                instance.isVisible = true;
             }
         }
     }
