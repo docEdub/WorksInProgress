@@ -16,13 +16,15 @@ declare global {
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
     const logCsoundMessages = true;
     const logDebugMessages = true;
-    const showGroundGrid = false;
+    const showGroundGrid = true;
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
-    const groundSize = 1000;
+    const groundSize = 200;
+    const groundHoleDiameter = 100;
 
     const halfGroundSize = groundSize / 2;
+    const groundHoleRadius = groundHoleDiameter / 2;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
@@ -78,13 +80,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 5), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -60), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 2, 50));
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -108,6 +110,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     grayMaterial.disableLighting = true;
     grayMaterial.freeze();
 
+    const blackMaterial = new BABYLON.StandardMaterial('', scene);
+    grayMaterial.disableLighting = true;
+    grayMaterial.freeze();
+
     const whiteSphere = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
     whiteSphere.isVisible = false;
     whiteSphere.material = whiteMaterial;
@@ -117,40 +123,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     graySphere.material = grayMaterial;
 
     if (showGroundGrid) {
-        const makeAngleGridLine = (color) => {
-            const mesh = BABYLON.Mesh.CreateDashedLines('', [ new BABYLON.Vector3(-50.025, 0, 0), new BABYLON.Vector3(50.975, 0, 0) ], .05, .95, 101, scene);
-            mesh.isVisible = false;
-            mesh.color = color;
-            return mesh;
+        const minimumDistance = groundHoleRadius + 1;
+        const gridDot = BABYLON.MeshBuilder.CreateDisc('', { radius: 0.03, tessellation: 16 }, scene);
+        gridDot.material = whiteMaterial;
+        gridDot.rotation.x = Math.PI / 2;
+        gridDot.bakeCurrentTransformIntoVertices();
+        gridDot.thinInstanceRegisterAttribute('color', 4);
+    
+        // Major grid dots.
+        for (let x = -halfGroundSize; x < halfGroundSize; x += 5) {
+            for (let z = -halfGroundSize; z < halfGroundSize; z += 5) {
+                if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
+                const i = gridDot.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false);
+                gridDot.thinInstanceSetAttributeAt('color', i, [ 1, 1, 1, 1 ], false);
+            }
         }
 
-        const whiteGridLine = makeAngleGridLine(whiteColor);
-        whiteGridLine.isVisible = false;
-        whiteGridLine.color = whiteColor;
-
-        const xGridLine = whiteGridLine.clone('');
-        xGridLine.isVisible = false;
-
-        for (let i = 0; i < 4; i++) {
-            const gridLine = whiteGridLine.clone('');
-            gridLine.isVisible = true;
-            gridLine.rotation.y = Math.PI * i / 4;
-        }
-
-        let borderGridLinePoints = new Array<BABYLON.Vector3>();
-        const pointCount = 32;
-        for (let i = 0; i < pointCount; i++) {
-            const t = 2 * Math.PI * (i / pointCount) - 0.0004;
-            borderGridLinePoints.push(new BABYLON.Vector3(50 * Math.sin(t), 0, 50 * Math.cos(t)));
-        }
-        borderGridLinePoints.push(borderGridLinePoints[0]);
-        console.log(borderGridLinePoints);
-        const borderGridLine = BABYLON.Mesh.CreateDashedLines('', borderGridLinePoints, 0.01, 0.99 , 2 * pointCount + 1, scene);
-        borderGridLine.color = whiteColor;
-
-        for (let i = 1; i < 4; i++) {
-            const gridLine = borderGridLine.createInstance('');
-            gridLine.scaling.x = gridLine.scaling.z = i / 4
+        // Minor grid dots.
+        for (let x = -halfGroundSize; x < halfGroundSize; x += 1) {
+            if (x % 5 == 0) continue;
+            for (let z = -halfGroundSize; z < halfGroundSize; z += 1) {
+                if (z % 5 == 0) continue;
+                if (Math.sqrt(x * x + z * z) < minimumDistance) continue;
+                const i = gridDot.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false);
+                gridDot.thinInstanceSetAttributeAt('color', i, [ 0.2, 0.2, 0.2, 1 ], false);
+            }
         }
     }
 
@@ -186,6 +183,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         westWall.rotation.y = -Math.PI / 2;
 
     }
+
+    // Add gray ring on ground.
+    const groundRing = BABYLON.Mesh.CreateTorus('', groundHoleDiameter, 0.25, 90, scene);
+    groundRing.material = grayMaterial;
+
+    // Add cylinder for ground with center tube cut out.
+    const groundLedge = BABYLON.MeshBuilder.CreateLathe('', {
+        shape: [
+            new BABYLON.Vector3(groundHoleRadius, -1000, 0),
+            new BABYLON.Vector3(groundHoleRadius, 0, 0),
+            new BABYLON.Vector3(groundSize, 0, 0)
+        ],
+        tessellation: 90
+    }, scene);
+    groundLedge.material = blackMaterial;
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
@@ -227,13 +239,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let noteMeshInstances = [];
         let noteMeshInstance = whiteSphere.createInstance('');
         noteMeshInstance.isVisible = false;
-        noteMeshInstance.scaling.x = noteMeshInstance.scaling.y = noteMeshInstance.scaling.z = 0.06;
+        noteMeshInstance.scaling.setAll(0.15);
         for (let i = 0; i < noteMeshInstanceCount; i++) {
             noteMeshInstances.push(noteMeshInstance.clone(''));
         }
 
         const placeholderMesh = graySphere.clone('');
-        placeholderMesh.scaling.x = placeholderMesh.scaling.y = placeholderMesh.scaling.z = 0.05;
+        placeholderMesh.scaling.setAll(0.14);
         placeholderMesh.bakeCurrentTransformIntoVertices();
         placeholderMesh.isVisible = true;
 
@@ -298,8 +310,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!isCsoundStarted) {
                 nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
                 nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
-                if (csoundRestartCount % 2 == 1) {
-                }
                 return;
             }
             const time = document.audioContext.currentTime - startTime;
