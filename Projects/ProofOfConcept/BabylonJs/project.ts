@@ -21,6 +21,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // if (!BABYLON_MATERIALS)
     //     var BABYLON_MATERIALS = BABYLON;
 
+    const showBabylonInspector = true;
     const logCsoundMessages = true;
     const logDebugMessages = true;
     const showGroundGrid = true;
@@ -86,6 +87,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
+    if (showBabylonInspector) {
+        scene.debugLayer.show()
+    }
 
     let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(-99, 2, -99), scene);
     camera.applyGravity = true;
