@@ -21,7 +21,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // if (!BABYLON_MATERIALS)
     //     var BABYLON_MATERIALS = BABYLON;
 
-    const showBabylonInspector = true;
+    const showBabylonInspector = false;
     const logCsoundMessages = true;
     const logDebugMessages = true;
     const showGroundGrid = true;
