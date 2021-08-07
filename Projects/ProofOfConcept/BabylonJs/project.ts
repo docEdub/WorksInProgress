@@ -87,13 +87,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -60), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(-99, 2, -99), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 50));
+    camera.setTarget(new BABYLON.Vector3(0, 2, 0));
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
