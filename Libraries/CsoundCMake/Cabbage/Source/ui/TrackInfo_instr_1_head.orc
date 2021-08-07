@@ -7,11 +7,11 @@
 ${CSOUND_INCLUDE_GUARD_IFNDEF} TrackInfo_instr_1_head_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
-    log_i_trace("Calling instr `ReadMode` ...")
+    log_i_trace("Calling instr 'ReadMode' ...")
     event_i("i", "ReadMode", 0, -1)
 
     ${CSOUND_IFDEF} IS_FIRST_PLUGIN_IN_TRACK
-        log_i_trace("Calling instr `GetTrackIndex` ...")
+        log_i_trace("Calling instr 'GetTrackIndex' ...")
         if (gk_i == 0) then
             event("i", "GetTrackIndex", 0, -1)
             setPluginIndex(0)
@@ -196,13 +196,13 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
                                     log_k_debug("Master: track %d, channel %d set to %.2f", k_track, k_channel,
                                         k_volume)
                                     sendScoreMessage_k(sprintfk(
-                                        "i MasterInstrument %.03f 1 Track(%d) Channel(%d) Volume(%.2f)", elapsedTime(),
+                                        "i MasterInstrument %.03f 1 Track(%d) Channel(%d) Volume(%.2f)", elapsedTime_k(),
                                         k_track, k_channel, k_volume))
                                 ${CSOUND_ELSE}
                                     log_k_debug("Bus: track %d, channel %d set to %.2f", k_track, k_channel, k_volume)
                                     sendScoreMessage_k(sprintfk(
                                         "i AuxInstrument %.03f 1 Aux(%d) Track(%d) Channel(%d) Volume(%.2f)",
-                                        elapsedTime(), gk_trackIndex, k_track, k_channel, k_volume))
+                                        elapsedTime_k(), gk_trackIndex, k_track, k_channel, k_volume))
                                 ${CSOUND_ENDIF}
                                 if (isReferencingTrack(k_track) == false) then
                                     addTrackRef(k_track)

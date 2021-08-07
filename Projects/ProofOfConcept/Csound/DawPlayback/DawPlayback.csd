@@ -3,7 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---messagelevel=${CSOUND_MESSAGE_LEVEL}
+; --messagelevel=0
+--messagelevel=134
 --midi-device=0
 --nodisplays
 --nosound
@@ -12,36 +13,56 @@
 </CsOptions>
 <CsInstruments>
 
-ksmps = 64
-nchnls = 6
+giPresetUuidPreallocationCount[] = fillarray( \
+    4,  /* instr 4 -- CircleSynth */ \
+    1,  /* instr 5 -- PowerLineSynth */ \
+    9   /* instr 6 -- PointSynth */ \
+)
+
+${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT
+${CSOUND_DEFINE} OUTPUT_CHANNEL_COUNT #2#
+${CSOUND_ENDIF}
+
+${CSOUND_IFNDEF} INTERNAL_CHANNEL_COUNT
+${CSOUND_DEFINE} INTERNAL_CHANNEL_COUNT #6#
+${CSOUND_ENDIF}
+
+sr = 48000
+kr = 200
+nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 
-#define Init_instrnum 1
-#define ClearSignals_instrnum 2
+#define Init_instrnum 2
+#define ClearSignals_instrnum 3
 
 #include "_.mode3_TrackDefines.h"
 
 ${CSOUND_DEFINE} INSTANCE_NAME #"TestSynth playback"#
-${CSOUND_INCLUDE} "core_global.orc"
-${CSOUND_INCLUDE} "time.orc"
+${CSOUND_INCLUDE} "af_global.orc"
 
 #define LOW_CHANNEL_COUNT_INDEX 0
 #define HIGH_CHANNEL_COUNT_INDEX 1
 
 gi_instrumentCount = 1
 gi_instrumentIndexOffset = 0
-gaInstrumentSignals[][] init gi_instrumentCount, nchnls
+gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
 
 gi_auxCount = 1
 gi_auxIndexOffset = 0
 giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2 // 3rd column contains { [0]: low index, [1]: high index }
-ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, nchnls
-ga_auxSignals[][] init gi_auxCount, nchnls
+ga_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+ga_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
 
 gi_trackCount = gi_instrumentCount + gi_auxCount
 giMasterChannelIndexRanges[][] init gi_trackCount, 2 // 2nd column contains { [0]: low index, [1]: high index }
-ga_masterVolumes[][] init gi_trackCount, nchnls
-ga_masterSignals[] init nchnls
+ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
+ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
+
+
+instr 1
+    AF_3D_UpdateListenerRotationMatrix(0.01)
+    AF_3D_UpdateListenerPosition(0.01)
+endin
 
 
 instr Init_instrnum
@@ -51,7 +72,7 @@ instr Init_instrnum
     gi_auxIndexOffset = p7
     gi_trackCount = gi_instrumentCount + gi_auxCount
 
-    a_instrumentSignals[][] init gi_instrumentCount, nchnls
+    a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
     gaInstrumentSignals = a_instrumentSignals
 
     // TODO: Make the DAW service set these using score lines.
@@ -61,17 +82,17 @@ instr Init_instrnum
         iJ = 0
         while (iJ < gi_instrumentCount) do
             iAuxChannelIndexRanges[iI][iJ][LOW_CHANNEL_COUNT_INDEX] = 0
-            iAuxChannelIndexRanges[iI][iJ][HIGH_CHANNEL_COUNT_INDEX] = nchnls - 1
+            iAuxChannelIndexRanges[iI][iJ][HIGH_CHANNEL_COUNT_INDEX] = $INTERNAL_CHANNEL_COUNT - 1
             iJ += 1
         od
         iI += 1
     od
     giAuxChannelIndexRanges = iAuxChannelIndexRanges
 
-    a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, nchnls
+    a_auxVolumes[][][] init gi_auxCount, gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
     ga_auxVolumes = a_auxVolumes
 
-    a_auxSignals[][] init gi_auxCount, nchnls
+    a_auxSignals[][] init gi_auxCount, $INTERNAL_CHANNEL_COUNT
     ga_auxSignals = a_auxSignals
 
 
@@ -80,20 +101,20 @@ instr Init_instrnum
     iI = 0
     while (iI < gi_trackCount) do
         iMasterChannelIndexRanges[iI][LOW_CHANNEL_COUNT_INDEX] = 0
-        iMasterChannelIndexRanges[iI][HIGH_CHANNEL_COUNT_INDEX] = nchnls - 1
+        iMasterChannelIndexRanges[iI][HIGH_CHANNEL_COUNT_INDEX] = $INTERNAL_CHANNEL_COUNT - 1
         iI += 1
     od
     giMasterChannelIndexRanges = iMasterChannelIndexRanges
 
-    a_masterVolumes[][] init gi_trackCount, nchnls
+    a_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
     ga_masterVolumes = a_masterVolumes
 
-    a_masterSignals[] init nchnls
+    a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     ga_masterSignals = a_masterSignals
 
     event_i("i", ClearSignals_instrnum, 0, -1)      // clear signals
-    event_i("i", AuxMixInstrument, 0, -1) // mix instruments into auxes
-    event_i("i", FinalMixInstrument, 0, -1)   // mix signals
+    event_i("i", AuxMixInstrument, 1, -1) // mix instruments into auxes
+    event_i("i", FinalMixInstrument, 1, -1)   // mix signals
 
     turnoff
 endin
@@ -107,7 +128,7 @@ instr ClearSignals_instrnum
     k_instrument = 0
     while (k_instrument < gi_instrumentCount) do
         k_channel = 0
-        while (k_channel < nchnls) do
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
             gaInstrumentSignals[k_instrument][k_channel] = 0
             k_channel += 1
         od
@@ -117,7 +138,7 @@ instr ClearSignals_instrnum
     k_bus = 0
     while (k_bus < gi_auxCount) do
         k_channel = 0
-        while (k_channel < nchnls) do
+        while (k_channel < $INTERNAL_CHANNEL_COUNT) do
             ga_auxSignals[k_bus][k_channel] = 0
             k_channel += 1
         od
@@ -125,7 +146,7 @@ instr ClearSignals_instrnum
     od
 
     k_channel = 0
-    while (k_channel < nchnls) do
+    while (k_channel < $INTERNAL_CHANNEL_COUNT) do
         ga_masterSignals[k_channel] = 0
         k_channel += 1
     od
@@ -180,7 +201,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         iWriteComma = false
 
         while (true == true) do
-            SFileName = sprintf("%s.%d.json", SPluginUuid, iI)
+            SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
 
             iJ = 0
             while (iJ != -1) do
@@ -284,7 +305,7 @@ endin
 //
 instr FinalMixInstrument
     kChannel = 0
-    while (kChannel < nchnls) do
+    while (kChannel < $INTERNAL_CHANNEL_COUNT) do
         ga_masterSignals[kChannel] = 0
         kChannel += 1
     od
@@ -303,7 +324,7 @@ instr FinalMixInstrument
     od
 
     // Mix aux tracks into master.
-    // NB: `kTrack` is not reset before entering the next loop. This is intentional.
+    // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
     kAux = 0
     while (kAux < gi_auxCount) do
         kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
@@ -317,16 +338,74 @@ instr FinalMixInstrument
         kAux += 1
     od
 
-    // Output master.
-    kChannel = 0
-    while (kChannel < nchnls) do
-        outch(kChannel + 1, ga_masterSignals[kChannel])
-        kChannel += 1
-    od
+    // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
+    aw = ga_masterSignals[0]
+    ay = ga_masterSignals[1]
+    az = ga_masterSignals[2]
+    ax = ga_masterSignals[3]
+    km0 = gk_AF_3D_ListenerRotationMatrix[0]
+    km1 = gk_AF_3D_ListenerRotationMatrix[1]
+    km2 = gk_AF_3D_ListenerRotationMatrix[2]
+    km3 = gk_AF_3D_ListenerRotationMatrix[3]
+    km4 = gk_AF_3D_ListenerRotationMatrix[4]
+    km5 = gk_AF_3D_ListenerRotationMatrix[5]
+    km6 = gk_AF_3D_ListenerRotationMatrix[6]
+    km7 = gk_AF_3D_ListenerRotationMatrix[7]
+    km8 = gk_AF_3D_ListenerRotationMatrix[8]
+    ayr = -(ay * km0 + az * km3 + ax * km6)
+    azr =   ay * km1 + az * km4 + ax * km7
+    axr = -(ay * km2 + az * km5 + ax * km8)
+    aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
+    ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
+    az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
+    ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
+    aL = aw - ay + az + ax
+    aR = aw + ay + az + ax
+
+    // Add reverb.
+    aL += ga_masterSignals[4]
+    aR += ga_masterSignals[5]
+
+    outs(aL, aR)
 endin
+
+
+instr EndOfInstrumentAllocations
+    // If you see instrument allocation messages like `new alloc for instr 8:` after this message is printed, slower
+    // devices like the Oculus Quest 2 will hit buffer underruns.
+    prints("-------------------------------------------------------------------------------------------------------\n")
+    prints("Add preallocation score lines for all instruments allocated after this message.\n")
+    prints("-------------------------------------------------------------------------------------------------------\n")
+    turnoff
+endin
+
+
+instr SendStartupMessage
+    // If the duration is not -1 then this is the preallocation instance of this instrument.
+    // Only sound the tone if this is not the preallocation instance.
+    if (p3 == -1) then
+        prints("csd:started\n")
+    endif
+    turnoff
+endin
+
+
+instr SendEndedMessage
+    // If the duration is not -1 then this is the preallocation instance of this instrument.
+    // Only sound the tone if this is not the preallocation instance.
+    if (p3 == -1) then
+        prints("csd:ended\n")
+    endif
+    turnoff
+endin
+
 
 </CsInstruments>
 <CsScore>
+
+${CSOUND_IFNDEF} SCORE_START_DELAY
+    ${CSOUND_DEFINE} SCORE_START_DELAY #5#
+${CSOUND_ENDIF}
 
 #define Cc _(EVENT_CC)
 #define NoteOn -1 _(EVENT_NOTE_ON)
@@ -345,13 +424,23 @@ endin
 #define Velocity(x) x
 #define Volume(x) x
 
+i 1 0 -1
+i "SendEndedMessage" 0 1 // preallocation instance
+i "PointSynth_ResetNextXYZ_i" 0 -1
+
 #include "_.mode3_TrackSet.sco"
 #include "_.mode3.sco"
 #include "_.mode4.sco"
 
+s
+; Allow time for the reverb tail to fade out.
+i "SendEndedMessage" 10 -1
+
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    s
     i "GenerateJson" 0 1
+${CSOUND_ELSE}
+    ; Allow time to rewind the score. Csound will error out if the score times out before it is rewound.
+    e 60
 ${CSOUND_ENDIF}
 
 </CsScore>

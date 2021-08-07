@@ -16,7 +16,12 @@ gk_dawPlayStartTime init 0
 gk_isPlugin init false
 
 
-opcode elapsedTime, k, 0
+opcode elapsedTime_i, i, 0
+    xout time_i() - i(gk_dawPlayStartTime)
+endop
+
+
+opcode elapsedTime_k, k, 0
     xout time_k() - gk_dawPlayStartTime
 endop
 

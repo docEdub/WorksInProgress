@@ -37,28 +37,47 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "math.orc"
 
-giPointSynth_DistanceMin = 5
-giPointSynth_DistanceMax = 100
-giPointSynth_DistanceMinAttenuation = AF_3D_Audio_DistanceAttenuation_i(0, giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+giPointSynth_DistanceMin = 1
+giPointSynth_DistanceMax = 50
+giPointSynth_ReferenceDistance = 5
+giPointSynth_RolloffFactor = 1
+giPointSynth_PlaybackVolumeAdjustment = 10
+giPointSynth_PlaybackReverbAdjustment = 0.5
 
-${CSOUND_DEFINE} POINT_SYNTH_NEXT_RTZ_COUNT #16384#
-giPointSynthNextRT[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_RTZ_COUNT, 2
-giPointSynthNextRTZ_i init 0
+${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
+giPointSynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
+giPointSynthNextXYZ_i init 0
+
+instr PointSynth_ResetNextXYZ_i
+    giPointSynthNextXYZ_i = 0
+    turnoff
+endin
 
 iI = 0
 while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
-    while (iJ < $POINT_SYNTH_NEXT_RTZ_COUNT) do
-        giPointSynthNextRT[iI][iJ][$R] = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
-        giPointSynthNextRT[iI][iJ][$T] = rnd(359.999)
+    while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
+        iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+        iT = rnd(359.999)
+        iXYZ[] = math_rytToXyz(iR, 0, iT)
+        giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
+        giPointSynthNextXYZ[iI][iJ][$Y] = 2
+        giPointSynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
         iJ += 1
     od
     iI += 1
 od
 
 giPointSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+gkPointSynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
+gkPointSynth_LastNoteOnTime[] init ORC_INSTANCE_COUNT
+
+giFadeInTime init 0.05
+giFadeOutTime init 0.05
+giTotalTime init giFadeInTime + giFadeOutTime
 
 #endif // #ifndef PointSynth_orc__include_guard
 
@@ -68,9 +87,11 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
     instr PointSynth_Json
-        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"fadeInTime\":%.02f", giFadeInTime))
+        fprints(SJsonFile, sprintf(",\"fadeOutTime\":%.02f", giFadeOutTime))
         fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPointSynth_DistanceMin)
         fprints(SJsonFile, ",\"soundDistanceMax\":%d", giPointSynth_DistanceMax)
         fprints(SJsonFile, "}")
@@ -87,12 +108,11 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        iFadeInTime = 0.01
-        iFadeOutTime = 0.01
-        iTotalTime = iFadeInTime + iFadeOutTime
-        iSeed = iNoteNumber / 128
+
+#if !IS_PLAYBACK
         if (iNoteNumber < 128) then
-            kI init 0
+            iSeed = iNoteNumber / 128
+
             kCountdownNeedsInit init true
             if (kCountdownNeedsInit == true) then
                 kJ = 0
@@ -104,70 +124,99 @@ instr INSTRUMENT_ID
             endif
             kCountdown -= 1 / kr
             if (kCountdown <= 0) then
+                kCountdownNeedsInit = true
+
                 // Generate new note.
-                kI += 1
-                if (kI == 1000) then
-                    kI = 1
+                gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] + 1
+                if (gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] == 1000) then
+                    gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = 1
                 endif
-                kInstrumentNumber = p1 + kI / 1000000
                 kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
                 kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
-                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", kInstrumentNumber, iTotalTime, p4,
+                if (i(gk_mode) == 4) then
+                    kInstrumentNumberFraction = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX]
+                    // Skip to end if track index is -1 due to mode switch lag.
+                    if (gk_trackIndex == -1) kgoto end
+
+                    // The Oculus Quest 2 can't handle 2 note on events at the same time, even if this instrument is
+                    // preallocated with the prealloc opcode. This spaces them out so there's never 2 instances playitng
+                    // at the same time.
+                    // TODO: Undo this. The Quest 2 can handle 2 notes just fine if the instrument is preallocated using
+                    // a score event instead of relying on the prealloc opcode.
+                    kNoteOnTime = elapsedTime_k()
+                    ; if (kNoteOnTime - gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (giTotalTime + giTotalTime)) then
+                    ;     kNoteOnTime = gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + giTotalTime + giTotalTime
+                    ; endif
+                    gkPointSynth_LastNoteOnTime[ORC_INSTANCE_INDEX] = kNoteOnTime
+
+                    sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
+                        STRINGIZE(${InstrumentName}), gk_trackIndex, kInstrumentNumberFraction, kNoteOnTime, giTotalTime, kNoteNumber, kVelocity))
+                    goto end
+                endif
+                kInstrumentNumberFraction = gkPointSynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] / 1000000
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", p1 + kInstrumentNumberFraction, giTotalTime, p4,
                     kNoteNumber,
                     kVelocity)
-                log_k_debug("SEvent = %s", SEvent)
                 scoreline(SEvent, 1)
-                kCountdownNeedsInit = true
             endif
             
-            #if !IS_PLAYBACK
-                if (gkReloaded == true) then
-                    turnoff
-                endif
-            #endif
+            if (gkReloaded == true) then
+                turnoff
+            endif
         else ; iNoteNumber > 127 : Instance was generated recursively.
+#endif // #if !IS_PLAYBACK
             iNoteNumber -= 1000
             if (iNoteNumber > 127) then
                 log_k_error("Note number is greater than 127 (iNoteNumber = %f.", iNoteNumber)
-                igoto endin
+                igoto end
                 turnoff
             endif
-            iCps = cpsmidinn(p5 - 1000)
+            iCps = cpsmidinn(iNoteNumber)
             iAmp = 0.05
 
-            kCps = linseg(iCps, iTotalTime, iCps + 100)
+            kCps = linseg(iCps, giTotalTime, iCps + 100)
 
             aOut = oscil(iAmp, kCps)
-            aEnvelope = adsr_linsegr(iFadeInTime, 0, 1, iFadeOutTime)
+            aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
             aOut *= aEnvelope
 
-            iR init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$R]
-            iT init giPointSynthNextRT[ORC_INSTANCE_INDEX][giPointSynthNextRTZ_i][$T]
-            iZ init 10 + 10 * (iNoteNumber / 127)
-            kR init iR
-            kT init iT
-            kZ init iZ
-            log_i_debug("rtz = (%f, %f, %f)", i(kR), i(kT), i(kZ))
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(sqrt(kR * kR + kZ * kZ), giPointSynth_DistanceMin, giPointSynth_DistanceMax)
+            iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
+            iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
+
+            // Minimum Y = 10.
+            // Note number range 80 to 105 (range = 25).
+            // Height range 0 to 20.
+            iY init 10 + ((iNoteNumber - 80) / 25) * 20
+
+            kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+            ; if (changed(kDistance) == true) then
+            ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
+            ; endif
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
+            #if IS_PLAYBACK
+                kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
+            #endif
             aOutDistanced = aOut * kDistanceAmp
 
-            giPointSynthNextRTZ_i += 1
-            if (giPointSynthNextRTZ_i == $POINT_SYNTH_NEXT_RTZ_COUNT) then
-                giPointSynthNextRTZ_i = 0
+            giPointSynthNextXYZ_i += 1
+            if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
+                giPointSynthNextXYZ_i = 0
             endif
-            kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains_RTZ(kR, kT, kZ)
-            a1 = kAmbisonicChannelGains[0] * aOutDistanced
-            a2 = kAmbisonicChannelGains[1] * aOutDistanced
-            a3 = kAmbisonicChannelGains[2] * aOutDistanced
-            a4 = kAmbisonicChannelGains[3] * aOutDistanced
+            AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+            a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+            a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+            a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+            a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+            aReverbOut = aOut
 
             #if IS_PLAYBACK
+                aReverbOut *= giPointSynth_PlaybackReverbAdjustment
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
             #else
                 kReloaded init false
                 kFadeTimeLeft init 0.1
@@ -192,13 +241,28 @@ instr INSTRUMENT_ID
                     scoreline_i("i \"PointSynth_Json\" 0 0")
                 endif
                 giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-                SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
-                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"rtz\":[%.3f,%.3f,%.3f]}}", times(),
-                    iNoteNumber, iR, iT, iZ)
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
+                    iNoteNumber, iX, iY, iZ)
             ${CSOUND_ENDIF}
+#if !IS_PLAYBACK
         endif
+#endif
     endif
-endin:
+end:
 endin
+
+
+#if IS_PLAYBACK
+    instr CONCAT(Preallocate_, INSTRUMENT_ID)
+        ii = 0
+        while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
+            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1063 63", INSTRUMENT_ID, ii, EVENT_NOTE_ON))
+            ii += 1
+        od
+        turnoff
+    endin
+    scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------

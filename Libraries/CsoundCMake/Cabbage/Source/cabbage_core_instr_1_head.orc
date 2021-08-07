@@ -29,7 +29,7 @@
     #if LOG_INFO
         if (ksmps < gk_i && k_instanceNameChanged == true) then
             k_instanceNameChanged = false
-            log_k_info("Instance name changed to `%s`", gS_instanceName)
+            log_k_info("Instance name changed to '%s'", gS_instanceName)
             if (k_isCsdInfoLogged == false) then
                 k_isCsdInfoLogged = true
                 if (gk_isPlugin == true) then
@@ -37,7 +37,7 @@
                 else
                     S_isPlugin = string_k("false")
                 endif
-                // --->                         # 1  2  3  4  5  6  7  8  9  10 11
+                /* --->                         # 1  2  3  4  5  6  7  8  9  10 11 */
                 S_info = sprintfk("CSD info ...\n %s %s %s %s %s %s %s %s %s %s %s",
                     /*  1 */ "--------------------------------------------------------------------------------------\n",
                     /*  2 */ sprintfk(" csd    = %s\n", gS_csdFileName),

@@ -85,7 +85,7 @@ instr 2
 
                 if (gk_mode == 4) then
                     SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
-                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime(), "Cc", kI, kValue)
+                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
                     sendScoreMessage_k(SScoreLine)
                 else
                     SInstrument = "\"${InstrumentName}\""
@@ -108,7 +108,7 @@ massign 0, 3
 
 // Disable MIDI program change messages.
 // NB: The Apple Logic DAW sends MIDI program change messages on each MIDI track at startup. If they are not disabled,
-// Csound will route MIDI messages to instruments other than the one set using `massign`.
+// Csound will route MIDI messages to instruments other than the one set using 'massign'.
 pgmassign 0, 0
 
 gi_noteId init 0
@@ -132,7 +132,7 @@ instr 3
     endif
 
     if (i(gk_mode) == 1) goto mode_1
-    if (i(gk_mode) == 4) goto mode_4
+    if (i(gk_mode) == 4) goto mode_1
     goto end
 
     mode_1:
@@ -153,41 +153,41 @@ instr 3
             event("i", -i_instrument, k_releaseDeltaTime, 1)
         endif
         log_i_info("instr 3, mode_1 - done")
-        goto end
+        ; goto end
 
-    mode_4:
-        log_i_info("instr 3, mode_4 ...")
-        xtratim 2 / kr
-        log_i_debug("gi_noteId = %d", gi_noteId)
+    ; mode_4:
+    ;     log_i_info("instr 3, mode_4 ...")
+    ;     xtratim 2 / kr
+    ;     log_i_debug("gi_noteId = %d", gi_noteId)
 
-        // Skip to end if track index is -1 due to mode switch lag.
-        if (gk_trackIndex == -1) kgoto end
+    ;     // Skip to end if track index is -1 due to mode switch lag.
+    ;     if (gk_trackIndex == -1) kgoto end
 
-        k_noteOnSent init false
-        if (k_noteOnSent == false) then
-            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f NoteOn Note(%d) Velocity(%d)",
-                STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime(), notnum(), veloc()))
-            k_noteOnSent = true
-        endif
+    ;     k_noteOnSent init false
+    ;     if (k_noteOnSent == false) then
+    ;         sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f NoteOn Note(%d) Velocity(%d)",
+    ;             STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime_k(), notnum(), veloc()))
+    ;         k_noteOnSent = true
+    ;     endif
 
-        k_noteOffSent init false
-        #if LOG_DEBUG
-            if (changed(k_released) == true) then
-                log_k_debug("note %d, k_released = %d, k_noteOffSent = %d", gi_noteId, k_released, k_noteOffSent)
-            endif
-        #endif
-        if (k_released == true && k_noteOffSent == false) then
-            sendScoreMessage_k(sprintfk("i CONCAT(-%s_%d, .%03d) %.03f NoteOff", STRINGIZE(${InstrumentName}),
-                gk_trackIndex, i_noteId, elapsedTime() + k_releaseDeltaTime))
-            ; turnoff
-            // N.B. The `turnoff` opcode isn't working as expected here so a `k_noteOffSent` flag is used to prevent
-            // duplicate scorelines.
-            k_noteOffSent = true
-        endif
-        log_i_info("instr 3, mode_4 - done")
-        goto end
+    ;     k_noteOffSent init false
+    ;     #if LOG_DEBUG
+    ;         if (changed(k_released) == true) then
+    ;             log_k_debug("note %d, k_released = %d, k_noteOffSent = %d", gi_noteId, k_released, k_noteOffSent)
+    ;         endif
+    ;     #endif
+    ;     if (k_released == true && k_noteOffSent == false) then
+    ;         sendScoreMessage_k(sprintfk("i CONCAT(-%s_%d, .%03d) %.03f NoteOff", STRINGIZE(${InstrumentName}),
+    ;             gk_trackIndex, i_noteId, elapsedTime_k() + k_releaseDeltaTime))
+    ;         ; turnoff
+    ;         // N.B. The 'turnoff' opcode isn't working as expected here so a 'k_noteOffSent' flag is used to prevent
+    ;         // duplicate scorelines.
+    ;         k_noteOffSent = true
+    ;     endif
+    ;     log_i_info("instr 3, mode_4 - done")
+    ;     goto end
 
-    end:
+end:
 endin
 
 

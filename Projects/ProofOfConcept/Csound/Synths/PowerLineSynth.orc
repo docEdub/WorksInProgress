@@ -66,6 +66,9 @@ giMaxNoteOffSpeed = 100 // per second
 giPowerLineSynth_DistanceMin = 5
 giPowerLineSynth_DistanceMax = 100
 
+giRiserTableId = ftgen(0, 0, giRiserTableSize + GUARD_POINT_SIZE, 16, 0, giRiserTableSize, -10, 1)
+giWobbleTableId = ftgen(0, 0, 1024, 10, 1)
+
 instr PowerLineSynth_NoteOn
     iNoteNumber = p4
     iVelocity = p5 / 127
@@ -95,13 +98,12 @@ instr PowerLineSynth_NoteOn
     kReleased = release()
     
     // Exponential curve from 0 to 1, slowing when approaching 1.
-    iRiserTableId = ftgenonce(0, 0, giRiserTableSize + GUARD_POINT_SIZE, 16, 0, giRiserTableSize, -10, 1)
     iRiserTableIncrementI = iSecondsPerKPass * (giRiserTableSize / giMaxRiseTime)
     kRiserTableI init 0
     if (kRiserTableI < giRiserTableSize && kReleased == false) then
         kRiserTableI += iRiserTableIncrementI
     endif
-    kRiserTableValue = tablei(kRiserTableI, iRiserTableId)
+    kRiserTableValue = tablei(kRiserTableI, giRiserTableId)
 
     if (kReleased == false) then
         // kRiserTableI is less than giRiserTableSize for the entire duration of giMaxRiseTime.
@@ -111,9 +113,16 @@ instr PowerLineSynth_NoteOn
             kPosition[$Z] = kPosition[$Z] + iNoteOnIncrementZ
         endif
     else
-        // This is the longest the note off duration can be. If the entire duration is not needed, skip to endin until
-        // the instrument times out since a subinstrument can't use the turnoff opcode.
-        iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
+        if (p3 == -1) then
+            // If this is a tied note then set iExtraTime to the longest the note off duration can be. If the entire
+            // duration is not needed, skip to end until the instrument times out since a subinstrument can't use the
+            // turnoff opcode.
+            iExtraTime = abs(giNoteOffEndZ - giNoteOnStartPosition[$Z]) / giMinNoteOffSpeed
+        elseif (p1 > 0) then
+            // If this is not a tied note then it's being used for preallocation. Set iExtraTime to zero so Csound makes
+            // this instrument allocation available immediately.
+            iExtraTime = 0.01
+        endif
         xtratim(iExtraTime)
  
         kNoteOffSpeed init giMinNoteOffSpeed
@@ -132,7 +141,6 @@ instr PowerLineSynth_NoteOn
     endif
 
     // 1 cycle of a sine wave.
-    iWobbleTableId = ftgenonce(0, 0, 1024, 10, 1)
     iWobbleTableIncrementI = giNoteNumberWobbleSpeed * (iSecondsPerKPass * giWobbleTableSize)
     kWobbleTableI init 0
     kWobbleTableI += iWobbleTableIncrementI
@@ -141,7 +149,7 @@ instr PowerLineSynth_NoteOn
 
     kNoteNumber = iNoteNumber
     kNoteNumber += kRiserTableValue * iMaxRiseAmount
-    kNoteNumber += tablei(kWobbleTableI, iWobbleTableId) * kNoteNumberWobbleAmp
+    kNoteNumber += tablei(kWobbleTableI, giWobbleTableId) * kNoteNumberWobbleAmp
     if (kNoteNumber > 127) then
         kNoteNumber = 127
         #ifdef LOGGING
@@ -164,15 +172,26 @@ instr PowerLineSynth_NoteOn
     aOut = tone(aOut, 5000)
 
     kSourceDistance = AF_3D_Audio_SourceDistance(kPosition)
-    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, k(giPowerLineSynth_DistanceMin), k(giPowerLineSynth_DistanceMax))
+    kDistanceAttenuation = AF_3D_Audio_DistanceAttenuation(kSourceDistance, giPowerLineSynth_DistanceMax)
     aOutDistanced = aOut * kDistanceAttenuation
     aOut = aOut * (2 * kDistanceAttenuation)
-    kAmbisonicChannelGains[] = AF_3D_Audio_ChannelGains(kPosition, 1)
-    a1 = kAmbisonicChannelGains[0] * aOutDistanced
-    a2 = kAmbisonicChannelGains[1] * aOutDistanced
-    a3 = kAmbisonicChannelGains[2] * aOutDistanced
-    a4 = kAmbisonicChannelGains[3] * aOutDistanced
-    outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut)
+    AF_3D_Audio_ChannelGains(kPosition, 1)
+
+    #if IS_PLAYBACK
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + gkAmbisonicChannelGains[0] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + gkAmbisonicChannelGains[1] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + gkAmbisonicChannelGains[2] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + gkAmbisonicChannelGains[3] * aOutDistanced
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+    #else
+        outch(
+            1, gkAmbisonicChannelGains[0] * aOutDistanced,
+            2, gkAmbisonicChannelGains[1] * aOutDistanced,
+            3, gkAmbisonicChannelGains[2] * aOutDistanced,
+            4, gkAmbisonicChannelGains[3] * aOutDistanced,
+            5, aOut)
+    #endif
 
     log_i_trace("PowerLineSynth_NoteOn - done")
 endin:
@@ -196,7 +215,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
     instr PowerLineSynth_Json
-        SJsonFile = sprintf("%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, ",\"maxRiseTime\":%d", giMaxRiseTime)
@@ -222,29 +241,46 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-
-        iInstrumentNumber = p1 + 0.0001
-        SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, EVENT_NOTE_GENERATED, iNoteNumber, iVelocity)
-        scoreline_i(SOnEvent)
-
         kReleased = release()
-        if (kReleased == true) then
-            SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
-            scoreline(SOffEvent, 1)
-            turnoff
-        endif
+#if !IS_PLAYBACK
+        if (i(gk_mode) == 1) then
+#endif
+            iInstrumentNumber = p1 + 0.0001
+            SOnEvent = sprintf("i %.4f 0 -1 %d %d %d", iInstrumentNumber, EVENT_NOTE_GENERATED, iNoteNumber, iVelocity)
+            scoreline_i(SOnEvent)
 
-        ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"PowerLineSynth_Json\" 0 0")
-            endif
-            giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
             if (kReleased == true) then
-                fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+                SOffEvent = sprintfk("i -%.4f 0 1", iInstrumentNumber)
+                scoreline(SOffEvent, 1)
             endif
-        ${CSOUND_ENDIF}
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                    scoreline_i("i \"PowerLineSynth_Json\" 0 0")
+                endif
+                giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
+                if (kReleased == true) then
+                    fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+                endif
+            ${CSOUND_ENDIF}
+#if !IS_PLAYBACK
+        elseif (i(gk_mode) == 4) then
+            giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            if (giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] == 1000) then
+                giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX] = 1
+            endif
+            iInstrumentNumberFraction = giPowerLineSynth_NoteIndex[ORC_INSTANCE_INDEX]
+            sendScoreMessage_i(sprintf("i  CONCAT(%s_%d, .%03d) %.03f -1 EVENT_NOTE_GENERATED Note(%d) Velocity(%d)",
+                STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_i(), iNoteNumber, iVelocity))
+
+            if (kReleased == true) then
+                sendScoreMessage_k(sprintfk("i  CONCAT(-%s_%d, .%03d) %.03f NoteOff",
+                    STRINGIZE(${InstrumentName}), gk_trackIndex, iInstrumentNumberFraction, elapsedTime_k()))
+            endif
+        endif
+#endif
 
         if (kReleased == true) then
             turnoff
@@ -253,26 +289,20 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
-            iNoteNumber,
-            iVelocity,
-            ORC_INSTANCE_INDEX,
-            INSTRUMENT_TRACK_INDEX
-
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+            ; aDummy subinstr giPowerLineSynthNoteInstrumentNumber,
+            ;     iNoteNumber,
+            ;     iVelocity,
+            ;     ORC_INSTANCE_INDEX,
+            ;     INSTRUMENT_TRACK_INDEX
         #else
-            outch(1, a1)
-            outch(2, a2)
-            outch(3, a3)
-            outch(4, a4)
-            outch(5, aOut)
-            outch(6, aOut)
+            a1, a2, a3, a4, aOut subinstr giPowerLineSynthNoteInstrumentNumber,
+                iNoteNumber,
+                iVelocity,
+                ORC_INSTANCE_INDEX,
+                INSTRUMENT_TRACK_INDEX
+
+            outch(1, a1, 2, a2, 3, a3, 4, a4, 5, aOut, 6, aOut)
 
             if (gkReloaded == true) then
                 log_k_debug("Turning off instrument %.04f due to reload.", p1)
@@ -282,5 +312,18 @@ instr INSTRUMENT_ID
     endif
 endin:
 endin
+
+
+#if IS_PLAYBACK
+    instr CONCAT(Preallocate_, INSTRUMENT_ID)
+        ii = 0
+        while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
+            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", INSTRUMENT_ID, ii, EVENT_NOTE_GENERATED))
+            ii += 1
+        od
+        turnoff
+    endin
+    scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------

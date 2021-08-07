@@ -13,6 +13,12 @@
 </CsOptions>
 <CsInstruments>
 
+gSPresetUuidOrder[] = fillarray( \
+    "baeea327-af4b-4b10-a843-6614c20ea958", /* CircleSynth */ \
+    "069e83fd-1c94-47e9-95ec-126e0fbefec3", /* PowerLineSynth */ \
+    "b4f7a35c-6198-422f-be6e-fa126f31b007"  /* PointSynth */ \
+)
+
 #include "core_global.h"
 
 // Override core_global.h ksmps.
@@ -30,7 +36,7 @@ ${CSOUND_INCLUDE} "time.orc"
 ${CSOUND_INCLUDE} "uuid.orc"
 
 
-// TODO: Rename `gk_mode` to `gk_dawMode`
+// TODO: Rename 'gk_mode' to 'gk_dawMode'
 gk_mode init 0
 gS_mode_channels[] = fillarray("mode-1", "mode-2", "mode-3", "mode-4")
 
@@ -103,6 +109,21 @@ opcode getNextTrackIndex, i, 0
     od
     log_i_info("opcode getNextTrackIndex() - done => %d", i_returnValue)
     xout i_returnValue
+endop
+
+
+opcode getPresetTrackIndexForUuid, i, S
+    SUuid xin
+    ii = 0
+    while (ii < lenarray(gSPresetUuidOrder)) do
+        if (strcmp(SUuid, gSPresetUuidOrder[ii]) == 0) then
+            goto end
+        endif
+        ii += 1
+    od
+    ii = -1
+end:
+    xout ii
 endop
 
 
@@ -332,7 +353,7 @@ endin
 
 // Read float from _.mode.txt.
 // Note that _.mode.txt must have a float in it followed by a new line, otherwise Cabbage will crash. If the file does not
-// exist, this instrument will error out, so make sure it's only called from the `event` opcode, otherwise it will
+// exist, this instrument will error out, so make sure it's only called from the 'event' opcode, otherwise it will
 // cause Csound to stop processing the score and exit.
 //
 instr ReadMode
@@ -349,7 +370,7 @@ endin
 //
 instr WriteMode
     log_ik_info("%s ...", nstrstr(p1))
-    // Note that opening the file for write with the `fiopen` opcode clears the file.
+    // Note that opening the file for write with the 'fiopen' opcode clears the file.
     i_fileHandle = fiopen( "_.mode.txt", 0)
     fouti(i_fileHandle, 0, 0, p4)
     ficlose(i_fileHandle)
@@ -415,7 +436,7 @@ instr HandleOscMessages
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
                     if (k_argCount < 6) then
-                        log_k_error("OSC path `%s` requires 7 arguments but was given %d.",
+                        log_k_error("OSC path '%s' requires 7 arguments but was given %d.",
                             DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = port
@@ -439,7 +460,7 @@ instr HandleOscMessages
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH) == true) then
                     if (k_argCount < 4) then
-                        log_k_error("OSC path `%s` requires 4 arguments but was given %d.",
+                        log_k_error("OSC path '%s' requires 4 arguments but was given %d.",
                             DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, k_argCount)
                     else
                         // 2 = track index
@@ -456,7 +477,7 @@ instr HandleOscMessages
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_LOG_MESSAGE_PATH) == true) then
                     if (k_argCount < 1) then
-                        log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                        log_k_error("OSC path '%s' requires 1 argument but was given %d.",
                             DAW_SERVICE_OSC_LOG_MESSAGE_PATH, k_argCount)
                     else
                         // 2 = message
@@ -469,7 +490,7 @@ instr HandleOscMessages
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH) == true) then
                     if (k_argCount < 2) then
-                        log_k_error("OSC path `%s` requires 2 arguments but was given %d.",
+                        log_k_error("OSC path '%s' requires 2 arguments but was given %d.",
                             DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, k_argCount)
                     else
                         // 2 = port
@@ -483,7 +504,7 @@ instr HandleOscMessages
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
                     if (k_argCount < 1) then
-                        log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                        log_k_error("OSC path '%s' requires 1 argument but was given %d.",
                             DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, k_argCount)
                     else
                         // 2 = port
@@ -509,10 +530,15 @@ instr RegisterTrack
     log_ik_info(
         "instr RegisterTrack(i_oscPort = %d, i_trackType = %d, S_orcPath = %s, S_instrumentName = %s, SInstanceName = %s, SUuid = %s) ...",
         i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
-    i_trackIndex = getTrackIndexForPort(i_oscPort)
-    if (i_trackIndex == -1) then
-        i_trackIndex = getNextTrackIndex()
+    i_trackIndex = getPresetTrackIndexForUuid(SUuid)
+    if (i_trackIndex != -1) then
         setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
+    else
+        i_trackIndex = getTrackIndexForPort(i_oscPort)
+        if (i_trackIndex == -1) then
+            i_trackIndex = getNextTrackIndex()
+            setTrack(i_trackIndex, i_oscPort, i_trackType, S_orcPath, S_instrumentName, SInstanceName, SUuid)
+        endif
     endif
     log_ik_debug("i_trackIndex = %d", i_trackIndex)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, i_oscPort, sprintfk("%s/%d", TRACK_INFO_OSC_TRACK_SET_INDEX_PATH, i_oscPort),
@@ -639,6 +665,14 @@ instr HandleOscScoreGenerationMessages
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3.sco"
     elseif (i_mode == 4) then
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode4.sco"
+        
+        fprints(S_filename, "i \"EndOfInstrumentAllocations\" 3 -1\n")
+        fprints(S_filename, "i \"SendStartupMessage\" 0 1\n") // preallocation instance
+        fprints(S_filename, "i \"SendStartupMessage\" 4 -1\n")
+
+        // This is broken into two lines so Csound doesn't see it as a macro yet.
+        fprints(S_filename, "b $")
+        fprints(S_filename, "SCORE_START_DELAY\n")
     endif
     S_oscMessages[] init 10
     k_oscDataCount = -1
@@ -662,18 +696,18 @@ instr HandleOscScoreGenerationMessages
             //
             if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_SCORE_GENERATION_PATH) == true) then
                 if (k_argCount < 1) then
-                    log_k_error("OSC path `%s` requires 1 argument but was given %d.",
+                    log_k_error("OSC path '%s' requires 1 argument but was given %d.",
                         DAW_SERVICE_OSC_SCORE_GENERATION_PATH, k_argCount)
                 elseif (k_argCount > 1) then
-                    log_k_warning("OSC path `%s` takes 1 argument but was given %d.",
+                    log_k_warning("OSC path '%s' takes 1 argument but was given %d.",
                         DAW_SERVICE_OSC_SCORE_GENERATION_PATH, k_argCount)
                 else
                     S_scoreline init ""
                     S_scoreline = S_oscMessages[k(2)]
                     log_k_debug("Writing score line %s", S_scoreline)
-                    // NB `fprintks` requires a literal string in arg 2. Passing a string variable to arg2 results
+                    // NB 'fprintks' requires a literal string in arg 2. Passing a string variable to arg2 results
                     // in garbage file contents, or the same line repeated over and over again.
-                    // NB `fprintks` using only %s in format doesn't work on MacOS. Work around by adding an extra
+                    // NB 'fprintks' using only %s in format doesn't work on MacOS. Work around by adding an extra
                     // Unused(%d) pfield set to 0 which will get removed when the playback csd is preprocessed.
                     //     See Github issue https://github.com/csound/csound/issues/1377.
                     fprintks(S_filename, "%s Unused(%d)\n", S_scoreline, 0)
@@ -685,7 +719,7 @@ instr HandleOscScoreGenerationMessages
             //
             if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REFERENCING_PATH) == true) then
                 if (k_argCount < 2) then
-                    log_k_error("OSC path `%s` requires 2 arguments but was given %d.",
+                    log_k_error("OSC path '%s' requires 2 arguments but was given %d.",
                         DAW_SERVICE_OSC_TRACK_REFERENCING_PATH, k_argCount)
                 else
                     S_trackIndex = S_oscMessages[k(2)]
@@ -1086,7 +1120,7 @@ instr WriteTracksetScoFile
                     kI, kJ)
                 // NB: A fractional instrument is used here so it doesn't get turned off by the non-fractional CC event
                 // score lines.
-                fprintks(S_filename, "i %s.1 0 -1 EVENT_EFFECT_ON Unused(%d)\n", SInstrumentName, 0)
+                fprintks(S_filename, "i CONCAT(%s, .1) 0 -1 EVENT_EFFECT_ON 0 0 Unused(%d)\n", SInstrumentName, 0)
                 kJ += 1
             else
                 // Break out of loop.

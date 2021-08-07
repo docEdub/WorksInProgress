@@ -23,6 +23,7 @@ set(CsoundCMake_Core_OrcFiles
     "af_spatial_tables.orc"
     "core_global.orc"
     "core_instr_1_head.orc"
+    "definitions.orc"
     "instrument_cc.orc"
     "log.orc"
     "log.orc.h"

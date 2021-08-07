@@ -13,7 +13,7 @@ ${CSOUND_INCLUDE} "string.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 // Logging to the DAW via OSC in a user-defined opcode doesn't work from instruments in their release stage, but it
-// does work from an instrument triggered via the `scoreline_i` or `scoreline` Csound opcodes.
+// does work from an instrument triggered via the 'scoreline_i' or 'scoreline' Csound opcodes.
 //
 instr LogToDAW
     S_message init strget(p4)

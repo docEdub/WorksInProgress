@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 // File: log.orc.h
 //
-// N.B. #define log_level to `trace`, `debug`, `info`, `warning`, `error` or `fatal` before including this file.
+// N.B. #define log_level to 'trace', 'debug', 'info', 'warning', 'error' or 'fatal' before including this file.
 //----------------------------------------------------------------------------------------------------------------------
 
 #if LOGGING

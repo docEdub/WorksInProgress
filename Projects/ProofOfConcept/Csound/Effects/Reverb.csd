@@ -45,7 +45,7 @@ instr 1
     a_signal[] init nchnls
 
     // For each output channel that has a matching input channel, read the host DAW input channel into the signal array.
-    // Note that the `k_chnl` variable used in the `inch` opcode is always less than `nchnls_i`.
+    // Note that the 'k_chnl' variable used in the 'inch' opcode is always less than 'nchnls_i'.
     k_chnl = 0
     while (k_chnl < kMaxChannel && k_chnl < nchnls_i) do
         a_signal[k_chnl] = inch(k_chnl + 1)
@@ -111,7 +111,7 @@ instr 2
 
             if (gk_mode == 4) then
                 SInstrument = sprintfk("%s_%d_%d", STRINGIZE(${InstrumentName}), gk_trackIndex, gk_pluginIndex - 1)
-                SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime(), "Cc", kI, kValue)
+                SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
                 sendScoreMessage_k(SScoreLine)
             else
                 SInstrument = "\"${InstrumentName}\""

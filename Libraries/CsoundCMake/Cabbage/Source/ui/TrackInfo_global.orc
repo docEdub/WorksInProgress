@@ -13,7 +13,7 @@ ${CSOUND_IFNDEF} PLUGIN_TRACK_TYPE
     ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_NONE#
 ${CSOUND_ENDIF}
 
-// TODO: Rename `gk_mode` to `gk_dawMode`
+// TODO: Rename 'gk_mode' to 'gk_dawMode'
 gk_mode init 1
 gk_playing init false
 gk_pluginIndex init -1
@@ -84,9 +84,9 @@ opcode setPluginUuid, 0, S
 endop
 
 
-// A separate instrument needs to be used for the Csound `readk` opcode because setting the `period` argument to zero
-// causes Reaper to crash? (When this happened it might have been unrelated to the `period` argument being zero).
-// TODO: Investigate. Does the `readk` opcode really crash Reaper when the `period` argument is zero?
+// A separate instrument needs to be used for the Csound 'readk' opcode because setting the 'period' argument to zero
+// causes Reaper to crash? (When this happened it might have been unrelated to the 'period' argument being zero).
+// TODO: Investigate. Does the 'readk' opcode really crash Reaper when the 'period' argument is zero?
 //
 instr ReadMode
     log_ik_info("%s ...", nstrstr(p1))
@@ -108,8 +108,8 @@ instr InitializeOSC
     // then the next port will be tried next time instead of trying the same port over and over again.
     gi_oscPort += 1
 
-    // The `OSCinit` opcode only works in the Csound global instrument, which can be accessed from this instrument
-    // using the `evalstr` opcode.
+    // The 'OSCinit' opcode only works in the Csound global instrument, which can be accessed from this instrument
+    // using the 'evalstr' opcode.
     log_i_trace("gi_oscHandle initialized to %d", gi_oscHandle)
     i_ = evalstr(sprintf("gi_oscHandle OSCinit %d", gi_oscPort - 1))
     log_i_trace("gi_oscHandle set to %d", gi_oscHandle)

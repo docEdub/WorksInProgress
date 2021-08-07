@@ -44,7 +44,7 @@ macro(add_tab)
     set(tab_index MATH "${tab_index} + 1")
     set(next_tab_x MATH "${next_tab_x} + ${${tab_variable}_width} + ${tab_padding}")
 
-    # Update `tab_channels` variable used in Tab.orc.
+    # Update 'tab_channels' variable used in Tab.orc.
     list(APPEND tab_channels "${tab_variable}")
 endmacro()
 

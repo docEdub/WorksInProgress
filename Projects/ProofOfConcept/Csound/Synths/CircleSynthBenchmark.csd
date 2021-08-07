@@ -17,11 +17,13 @@
 
 #define OUT_CHANNEL_COUNT 6
 
-#include "core_global.h"
+${CSOUND_INCLUDE} "cabbage_synth_global.orc"
 
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_INCLUDE} "core_global.orc"
 
+gk_mode init 1
+gk_trackIndex init 0
 gkReloaded init false
 
 instr 1
