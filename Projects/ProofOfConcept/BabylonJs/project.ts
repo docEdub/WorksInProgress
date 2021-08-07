@@ -15,6 +15,12 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
+
+    // The BabylonJS playground adds the materials extension to BABYLON.
+    // Uncomment this when copy/pasting to the BabylonJS playground.
+    // if (!BABYLON_MATERIALS)
+    //     var BABYLON_MATERIALS = BABYLON;
+
     const logCsoundMessages = true;
     const logDebugMessages = true;
     const showGroundGrid = true;

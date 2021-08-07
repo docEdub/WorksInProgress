@@ -24,3 +24,9 @@
             - (assuming still on Galaxy S10e, Android 11, latest chrome)
         - Discord:**yinch** ...
             - Posted a video showing audio works glitch free on Huawei P30
+
+- 2021-08-07: https://playground.babylonjs.com/#SY0NY5#4
+    - Title: **ProofOfConcept - 2021-08-07--1113**
+    - Posted to:
+        - Twitter: https://twitter.com/docedub/status/1424047469378277378
+        - WebXR Discord show-off channel: https://discord.com/channels/758943204715659264/759559568321282109/873606743660310568
