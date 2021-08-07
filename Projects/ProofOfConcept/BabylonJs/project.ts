@@ -352,7 +352,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let isAudioEngineUnlocked = false
     let isCsoundLoaded = false
     let isCsoundStarted = false
-    let csoundRestartCount = 0;
 
     const onAudioEngineUnlocked = () => {
         document.audioContext.resume()
@@ -369,7 +368,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const restartCsound = async () => {
         console.debug('Restarting Csound ...')
         isCsoundStarted = false;
-        csoundRestartCount++;
         await document.csound.rewindScore();
         console.debug('Restarting Csound - done')
     }
