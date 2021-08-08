@@ -1,0 +1,268 @@
+#include "definitions.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// File: DistanceDelaySynth.orc
+//----------------------------------------------------------------------------------------------------------------------
+
+#ifndef INSTRUMENT_NAME
+    #define INSTRUMENT_NAME ${InstrumentName}
+#endif
+
+#include "instrument_orc_definitions.h"
+
+
+#ifndef DistanceDelaySynth_orc__include_guard
+#define DistanceDelaySynth_orc__include_guard
+
+${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
+
+CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
+_(\)
+    "example",                                  "bool",     "false",            "synced", _(\)
+_(\)
+    "",                                         "",         "",                 "") // dummy line
+
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+
+#include "instrument_cc.orc"
+
+instr CreateCcIndexesInstrument
+    CREATE_CC_INDEX(example)
+
+    turnoff
+endin
+
+event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
+
+//----------------------------------------------------------------------------------------------------------------------
+
+${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "math.orc"
+
+giDistanceDelaySynth_DistanceMin = 1
+giDistanceDelaySynth_DistanceMax = 50
+giDistanceDelaySynth_ReferenceDistance = 5
+giDistanceDelaySynth_RolloffFactor = 1
+giDistanceDelaySynth_PlaybackVolumeAdjustment = 10
+giDistanceDelaySynth_PlaybackReverbAdjustment = 0.5
+
+${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
+giDistanceDelaySynthNextXYZ[][][] init ORC_INSTANCE_COUNT, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
+giDistanceDelaySynthNextXYZ_i init 0
+
+instr DistanceDelaySynth_ResetNextXYZ_i
+    giDistanceDelaySynthNextXYZ_i = 0
+    turnoff
+endin
+
+iI = 0
+while (iI < ORC_INSTANCE_COUNT) do
+    seed(1 + iI * 1000)
+    iJ = 0
+    while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
+        iR = giDistanceDelaySynth_DistanceMin + rnd(giDistanceDelaySynth_DistanceMax - giDistanceDelaySynth_DistanceMin)
+        iT = rnd(359.999)
+        iXYZ[] = math_rytToXyz(iR, 0, iT)
+        giDistanceDelaySynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
+        giDistanceDelaySynthNextXYZ[iI][iJ][$Y] = 2
+        giDistanceDelaySynthNextXYZ[iI][iJ][$Z] = iXYZ[$Z]
+        iJ += 1
+    od
+    iI += 1
+od
+
+giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
+gkDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
+gkDistanceDelaySynth_LastNoteOnTime[] init ORC_INSTANCE_COUNT
+
+giFadeInTime init 0.05
+giFadeOutTime init 0.05
+giTotalTime init giFadeInTime + giFadeOutTime
+
+#endif // #ifndef DistanceDelaySynth_orc__include_guard
+
+//----------------------------------------------------------------------------------------------------------------------
+
+${CSOUND_IFDEF} IS_GENERATING_JSON
+    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+
+    instr DistanceDelaySynth_Json
+        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        fprints(SJsonFile, "{")
+        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"fadeInTime\":%.02f", giFadeInTime))
+        fprints(SJsonFile, sprintf(",\"fadeOutTime\":%.02f", giFadeOutTime))
+        fprints(SJsonFile, ",\"soundDistanceMin\":%d", giDistanceDelaySynth_DistanceMin)
+        fprints(SJsonFile, ",\"soundDistanceMax\":%d", giDistanceDelaySynth_DistanceMax)
+        fprints(SJsonFile, "}")
+        turnoff
+    endin
+${CSOUND_ENDIF}
+
+
+instr INSTRUMENT_ID
+
+    iEventType = p4
+    if (iEventType == EVENT_CC) then
+        turnoff
+    elseif (iEventType == EVENT_NOTE_ON) then
+        iNoteNumber = p5
+        iVelocity = p6
+
+#if !IS_PLAYBACK
+        if (iNoteNumber < 128) then
+            iSeed = iNoteNumber / 128
+
+            kCountdownNeedsInit init true
+            if (kCountdownNeedsInit == true) then
+                kJ = 0
+                while (kJ < iNoteNumber) do
+                    kCountdown = 0.5 + abs(rand(0.5, iSeed))
+                    kJ += 1
+                od
+                kCountdownNeedsInit = false
+            endif
+            kCountdown -= 1 / kr
+            if (kCountdown <= 0) then
+                kCountdownNeedsInit = true
+
+                // Generate new note.
+                gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] + 1
+                if (gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] == 1000) then
+                    gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = 1
+                endif
+                kNoteNumber = 1000 + iNoteNumber + abs(rand(12, iSeed))
+                kVelocity = min(iVelocity + rand:k(16, iSeed), 127)
+                if (i(gk_mode) == 4) then
+                    kInstrumentNumberFraction = gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX]
+                    // Skip to end if track index is -1 due to mode switch lag.
+                    if (gk_trackIndex == -1) kgoto end
+
+                    // The Oculus Quest 2 can't handle 2 note on events at the same time, even if this instrument is
+                    // preallocated with the prealloc opcode. This spaces them out so there's never 2 instances playitng
+                    // at the same time.
+                    // TODO: Undo this. The Quest 2 can handle 2 notes just fine if the instrument is preallocated using
+                    // a score event instead of relying on the prealloc opcode.
+                    kNoteOnTime = elapsedTime_k()
+                    ; if (kNoteOnTime - gkDistanceDelaySynth_LastNoteOnTime[ORC_INSTANCE_INDEX] < (giTotalTime + giTotalTime)) then
+                    ;     kNoteOnTime = gkDistanceDelaySynth_LastNoteOnTime[ORC_INSTANCE_INDEX] + giTotalTime + giTotalTime
+                    ; endif
+                    gkDistanceDelaySynth_LastNoteOnTime[ORC_INSTANCE_INDEX] = kNoteOnTime
+
+                    sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
+                        STRINGIZE(${InstrumentName}), gk_trackIndex, kInstrumentNumberFraction, kNoteOnTime, giTotalTime, kNoteNumber, kVelocity))
+                    goto end
+                endif
+                kInstrumentNumberFraction = gkDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] / 1000000
+                SEvent = sprintfk("i %.6f 0 %.2f %d %.3f %.3f", p1 + kInstrumentNumberFraction, giTotalTime, p4,
+                    kNoteNumber,
+                    kVelocity)
+                scoreline(SEvent, 1)
+            endif
+            
+            if (gkReloaded == true) then
+                turnoff
+            endif
+        else ; iNoteNumber > 127 : Instance was generated recursively.
+#endif // #if !IS_PLAYBACK
+            iNoteNumber -= 1000
+            if (iNoteNumber > 127) then
+                log_k_error("Note number is greater than 127 (iNoteNumber = %f.", iNoteNumber)
+                igoto end
+                turnoff
+            endif
+            iCps = cpsmidinn(iNoteNumber)
+            iAmp = 0.05
+
+            kCps = linseg(iCps, giTotalTime, iCps + 100)
+
+            aOut = oscil(iAmp, kCps)
+            aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
+            aOut *= aEnvelope
+
+            iX init giDistanceDelaySynthNextXYZ[ORC_INSTANCE_INDEX][giDistanceDelaySynthNextXYZ_i][$X]
+            iZ init giDistanceDelaySynthNextXYZ[ORC_INSTANCE_INDEX][giDistanceDelaySynthNextXYZ_i][$Z]
+
+            // Minimum Y = 10.
+            // Note number range 80 to 105 (range = 25).
+            // Height range 0 to 20.
+            iY init 10 + ((iNoteNumber - 80) / 25) * 20
+
+            kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+            ; if (changed(kDistance) == true) then
+            ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
+            ; endif
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
+            #if IS_PLAYBACK
+                kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
+            #endif
+            aOutDistanced = aOut * kDistanceAmp
+
+            giDistanceDelaySynthNextXYZ_i += 1
+            if (giDistanceDelaySynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
+                giDistanceDelaySynthNextXYZ_i = 0
+            endif
+            AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+            a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+            a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+            a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+            a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+            aReverbOut = aOut
+
+            #if IS_PLAYBACK
+                aReverbOut *= giDistanceDelaySynth_PlaybackReverbAdjustment
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
+            #else
+                kReloaded init false
+                kFadeTimeLeft init 0.1
+                if (gkReloaded == true) then
+                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                    aEnvelope = linseg(1, 0.1, 0)
+                    kReloaded = gkReloaded
+                endif
+
+                outc(a1, a2, a3, a4, aOut, aOut)
+
+                if (kReloaded == true) then
+                    kFadeTimeLeft -= 1 / kr
+                    if (kFadeTimeLeft <= 0) then
+                        turnoff
+                    endif
+                endif
+            #endif
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                if (giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                    scoreline_i("i \"DistanceDelaySynth_Json\" 0 0")
+                endif
+                giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] = giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
+                    iNoteNumber, iX, iY, iZ)
+            ${CSOUND_ENDIF}
+#if !IS_PLAYBACK
+        endif
+#endif
+    endif
+end:
+endin
+
+
+#if IS_PLAYBACK
+    instr CONCAT(Preallocate_, INSTRUMENT_ID)
+        ii = 0
+        while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
+            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1063 63", INSTRUMENT_ID, ii, EVENT_NOTE_ON))
+            ii += 1
+        od
+        turnoff
+    endin
+    scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
