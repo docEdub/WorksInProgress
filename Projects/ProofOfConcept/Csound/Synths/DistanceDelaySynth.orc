@@ -141,6 +141,9 @@ instr INSTRUMENT_ID
         iCps = cpsmidinn(iNoteNumber)
         iCpsRandomized = iCps * random:i(0.999, 1.001)
         
+        // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
+        // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
+
         ;; 6-OP FM
         asig = foscili(iCps, iAmp, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
         asig += foscili(iCps * ampdbfs(-18) * expon(1, 1, 0.001), iAmp * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))    
