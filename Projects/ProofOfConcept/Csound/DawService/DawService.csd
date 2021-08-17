@@ -14,7 +14,7 @@
 <CsInstruments>
 
 gSPresetUuidOrder[] = fillarray( \
-    "193d1b76-d7cf-4725-a113-481ff1b14337", /* DistanceDelaySynth */ \
+    "6c9f37ab-392f-429b-8217-eac09f295362", /* DistanceDelaySynth */ \
     "069e83fd-1c94-47e9-95ec-126e0fbefec3", /* PowerLineSynth */ \
     "b4f7a35c-6198-422f-be6e-fa126f31b007"  /* PointSynth */ \
 )
