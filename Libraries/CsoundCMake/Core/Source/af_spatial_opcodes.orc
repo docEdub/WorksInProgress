@@ -240,13 +240,13 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_elevation = taninv2(k_direction[$Z],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
 
-    #if LOGGING
-        if (changed(k_azimuth) == true || changed(k_elevation) == true) then
-            log_k_debug("xyz = (%f, %f, %f), azimuth = %f, elevation = %f",
-                k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-                k_azimuth, k_elevation)
-        endif
-    #endif
+    ; #if LOGGING
+    ;     if (changed(k_azimuth) == true || changed(k_elevation) == true) then
+    ;         log_k_debug("xyz = (%f, %f, %f), azimuth = %f, elevation = %f",
+    ;             k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
+    ;             k_azimuth, k_elevation)
+    ;     endif
+    ; #endif
 
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 
