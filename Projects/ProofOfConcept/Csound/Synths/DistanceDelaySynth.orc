@@ -39,7 +39,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giDistanceDelaySynth_DelayTime = 0.25 // second
+giDistanceDelaySynth_DelayTime = 0.333 // second
 giDistanceDelaySynth_DelayCount = 20
 giDistanceDelaySynth_DistanceMin = 1
 giDistanceDelaySynth_DistanceMax = 50
@@ -187,7 +187,7 @@ instr INSTRUMENT_ID
         a2 = gkAmbisonicChannelGains[1] * aOutDistanced
         a3 = gkAmbisonicChannelGains[2] * aOutDistanced
         a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-        aReverbOut = asig * 0.1
+        aReverbOut = asig * 2 * kDistanceAmp
 
         #if IS_PLAYBACK
             aReverbOut *= giDistanceDelaySynth_PlaybackReverbAdjustment
