@@ -27,7 +27,7 @@ instr ListenForChangedOrcFile
     log_i_trace("instr ListenForChangedOrcFile(port = %d) ...", gi_oscPort)
 
     kSignal init -1
-    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
+    kReceived = OSClisten(gi_oscHandle, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
         kSignal)
     if (kReceived == true) then
         log_k_debug("${InstrumentName}.orc changed. Port = %d", gi_oscPort)
