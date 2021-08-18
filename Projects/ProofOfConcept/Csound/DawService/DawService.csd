@@ -632,7 +632,7 @@ instr WatchOrcFile
         kModifiedTime = pyleval(SPythonCode)
         if (kPreviousModifiedTime < kModifiedTime) then
             if (kPreviousModifiedTime > 0) then
-                log_k_trace("%s changed", SOrcPath)
+                log_k_trace("%s changed. Port = %d", SOrcPath, iOscPort)
                 OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
                     sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
                 kSignal += 1
