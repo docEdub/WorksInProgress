@@ -15,8 +15,8 @@
 
 giPresetUuidPreallocationCount[] = fillarray( \
     4,  /* instr 4 -- DistanceDelaySynth */ \
-    1,  /* instr 5 -- PowerLineSynth */ \
-    9   /* instr 6 -- PointSynth */ \
+    9,  /* instr 6 -- PointSynth */ \
+    1   /* instr 5 -- PowerLineSynth */ \
 )
 
 ${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT
