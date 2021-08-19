@@ -96,14 +96,15 @@ instr INSTRUMENT_ID
             iI = 0
             while (iI < giDistanceDelaySynth_DelayCount) do
                 sendScoreMessage_i(sprintf(
-                    "i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_GENERATED Note(%d) Velocity(%d)",
+                    "i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_GENERATED Note(%d) Velocity(%d) %d",
                     STRINGIZE(${InstrumentName}),
                     i(gk_trackIndex),
                     iInstrumentNumberFraction,
                     iNoteOnTime,
                     giDistanceDelaySynth_Duration,
                     iNoteNumber,
-                    iVelocity))
+                    iVelocity,
+                    iI))
                 iI += 1
                 iNoteOnTime += giDistanceDelaySynth_DelayTime
                 iInstrumentNumberFraction += 1
@@ -234,7 +235,7 @@ endin
     instr CONCAT(Preallocate_, INSTRUMENT_ID)
         ii = 0
         while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
-            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1 1", INSTRUMENT_ID, ii, EVENT_NOTE_ON))
+            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1 1 0", INSTRUMENT_ID, ii, EVENT_NOTE_GENERATED))
             ii += 1
         od
         turnoff
