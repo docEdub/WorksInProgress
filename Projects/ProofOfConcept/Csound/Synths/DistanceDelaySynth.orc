@@ -215,6 +215,16 @@ instr INSTRUMENT_ID
                 endif
             endif
         #endif
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i("i \"DistanceDelaySynth_Json\" 0 0")
+            endif
+            giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] = giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
+            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
+                iNoteNumber, iVelocity, iX, iY, iZ)
+        ${CSOUND_ENDIF}
     endif
 end:
 endin
