@@ -234,8 +234,17 @@ endin
 #if IS_PLAYBACK
     instr CONCAT(Preallocate_, INSTRUMENT_ID)
         ii = 0
-        while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
-            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1 1 0", INSTRUMENT_ID, ii, EVENT_NOTE_GENERATED))
+        iCount = giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]
+        iMaxDuration = 3
+        while (ii < iCount) do
+            iStartTime = (iMaxDuration - 0.1) * (ii / iCount)
+            iDuration = iMaxDuration - iStartTime
+            scoreline_i(sprintf("i %d.%.3d %.3f %.3f %d 1 1 0",
+                INSTRUMENT_ID,
+                ii,
+                iStartTime,
+                iDuration,
+                EVENT_NOTE_GENERATED))
             ii += 1
         od
         turnoff

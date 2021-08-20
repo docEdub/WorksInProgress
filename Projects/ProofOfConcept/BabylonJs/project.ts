@@ -11,8 +11,8 @@ declare global {
     }
 }
 
-// var ConsoleLogHTML = require('console-log-html')
-// ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
+var ConsoleLogHTML = require('console-log-html')
+ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
@@ -54,7 +54,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     csoundImportScript.type = 'module'
     csoundImportScript.innerText = `
         console.debug("Csound importing ...");
-        import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
+        import { Csound } from "./csound.esm.js";
         document.Csound = Csound;
     `
     document.body.appendChild(csoundImportScript)
@@ -224,7 +224,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
-        console.debug('csdData =', csdData)
+        // console.debug('csdData =', csdData)
 
         const noteMeshInstanceCount = 40;
         let noteMeshInstanceIndex = 0;
@@ -449,7 +449,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         --nosound
         </CsOptions>
         <CsInstruments>
-        giPresetUuidPreallocationCount[] = fillarray( 100, /* instr 4 -- DistanceDelaySynth */ 9, /* instr 6 -- PointSynth */ 1 /* instr 5 -- PowerLineSynth */ )
+        giPresetUuidPreallocationCount[] = fillarray( 17, /* instr 4 -- DistanceDelaySynth */ 9, /* instr 6 -- PointSynth */ 1 /* instr 5 -- PowerLineSynth */ )
          #ifndef OUTPUT_CHANNEL_COUNT
          #define OUTPUT_CHANNEL_COUNT #2#
          #end
@@ -2160,8 +2160,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         endin
             instr Preallocate_4
                 ii = 0
-                while (ii < giPresetUuidPreallocationCount[0]) do
-                    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 1 1 0", 4, ii, 3))
+                iCount = giPresetUuidPreallocationCount[0]
+                iMaxDuration = 3
+                while (ii < iCount) do
+                    iStartTime = (iMaxDuration - 0.1) * (ii / iCount)
+                    iDuration = iMaxDuration - iStartTime
+                    scoreline_i(sprintf("i %d.%.3d %.3f %.3f %d 1 1 0",
+                        4,
+                        ii,
+                        iStartTime,
+                        iDuration,
+                        3))
                     ii += 1
                 od
                 turnoff
