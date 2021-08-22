@@ -39,15 +39,16 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giDistanceDelaySynth_DelayTime = 0.333 // second
-giDistanceDelaySynth_DelayCount = 20
-giDistanceDelaySynth_DistanceMin = 1
-giDistanceDelaySynth_DistanceMax = 50
+giDistanceDelaySynth_StartDistance = 50
+giDistanceDelaySynth_DelayDistance = 40
+giDistanceDelaySynth_DelayTime = 0.5 // seconds
+giDistanceDelaySynth_Duration = 0.49 // seconds
+giDistanceDelaySynth_DelayCount = 5
+giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
 giDistanceDelaySynth_ReferenceDistance = 5
 giDistanceDelaySynth_RolloffFactor = 1
 giDistanceDelaySynth_PlaybackVolumeAdjustment = 10
-giDistanceDelaySynth_PlaybackReverbAdjustment = 0.5
-giDistanceDelaySynth_Duration = 0.5
+giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
@@ -106,7 +107,7 @@ instr INSTRUMENT_ID
                     iVelocity,
                     iI))
                 iI += 1
-                iNoteOnTime += giDistanceDelaySynth_DelayTime
+                iNoteOnTime += iI * giDistanceDelaySynth_DelayTime
                 iInstrumentNumberFraction += 1
             od
             giDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = iInstrumentNumberFraction
@@ -128,7 +129,7 @@ instr INSTRUMENT_ID
                 iI)
             scoreline_i(SEvent)
             iI += 1
-            iNoteOnTime += giDistanceDelaySynth_DelayTime
+            iNoteOnTime += iI * giDistanceDelaySynth_DelayTime
             iInstrumentNumberFraction += 1
         od
         giDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = iInstrumentNumberFraction
@@ -170,14 +171,15 @@ instr INSTRUMENT_ID
         ;; Declick
         asig *= linen:a(1, 0, p3, 0.001)
         
-        iTheta = (iNoteNumber / 127) * (1.5 * PI)
-        iRadius = 50 + 50 * iDelayIndex
+        iTheta = PI; / 2 ;(iNoteNumber / 127) * (1.5 * PI)
+        iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
         iX = iRadius * sin(iTheta)
         iZ = iRadius * cos(iTheta)
         iY = 2
 
         kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
+        kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
         #if IS_PLAYBACK
             kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
         #endif
@@ -235,15 +237,10 @@ endin
     instr CONCAT(Preallocate_, INSTRUMENT_ID)
         ii = 0
         iCount = giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]
-        iMaxDuration = 3
         while (ii < iCount) do
-            iStartTime = (iMaxDuration - 0.1) * (ii / iCount)
-            iDuration = iMaxDuration - iStartTime
-            scoreline_i(sprintf("i %d.%.3d %.3f %.3f %d 1 1 0",
+            scoreline_i(sprintf("i %d.%.3d 0 1 %d 1 1 0",
                 INSTRUMENT_ID,
                 ii,
-                iStartTime,
-                iDuration,
                 EVENT_NOTE_GENERATED))
             ii += 1
         od
