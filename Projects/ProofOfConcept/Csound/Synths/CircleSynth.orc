@@ -165,6 +165,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, ",\"soundDistanceMin\":%d", giCircleSynth_DistanceMin)
         fprints(SJsonFile, ",\"soundDistanceMax\":%d", giCircleSynth_DistanceMax)
         fprints(SJsonFile, "}")
+        ficlose(SJsonFile)
         turnoff
     endin
 ${CSOUND_ENDIF}
@@ -200,6 +201,7 @@ instr INSTRUMENT_ID
                 fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"velocity\":%.3f},", times(), iNoteNumber, iVelocity)
                 if (kReleased == true) then
                     fprintks(SJsonFile, "\"noteOff\":{\"time\":%.3f}}", times:k())
+                    // TODO: Add an instrument to close SJsonFile with the ficlose opcode, and run it with a score line here.
                 endif
             ${CSOUND_ENDIF}
 #if !IS_PLAYBACK

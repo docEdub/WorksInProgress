@@ -58,9 +58,6 @@ if (os.type() === 'Darwin') {
     });
 
     if (process.argv.indexOf('--with-json') != -1) {
-        // NB: If the ~10000 max open file limit is hit on macOS, use `sudo launchctl limit maxfiles 655360 1048576` to
-        // increase it.
-
         // Wipe the json folder.
         if (fs.existsSync(jsonDir)) {
             fs.rmdirSync(jsonDir, { recursive: true });

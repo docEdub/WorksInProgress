@@ -227,6 +227,7 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
             fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
                 iNoteNumber, iVelocity, iX, iY, iZ)
+            ficlose(SJsonFile)
         ${CSOUND_ENDIF}
     endif
 end:
