@@ -47,7 +47,7 @@ giDistanceDelaySynth_DelayCount = 5
 giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
 giDistanceDelaySynth_ReferenceDistance = 5
 giDistanceDelaySynth_RolloffFactor = 1
-giDistanceDelaySynth_PlaybackVolumeAdjustment = 10
+giDistanceDelaySynth_PlaybackVolumeAdjustment = 5
 giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
@@ -171,35 +171,64 @@ instr INSTRUMENT_ID
         ;; Declick
         asig *= linen:a(1, 0, p3, 0.001)
         
-        iTheta = PI; / 2 ;(iNoteNumber / 127) * (1.5 * PI)
         iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
-        iX = iRadius * sin(iTheta)
-        iZ = iRadius * cos(iTheta)
-        iY = 2
 
-        kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
-        kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
+        aSignals[][] init 3, 6
+        kRotationIndex = 0
+        while (kRotationIndex < 3) do
+            kTheta = (PI / 2) + ((2 * PI / 2) * kRotationIndex)
+            kX = sin(kTheta) * iRadius
+            kZ = cos(kTheta) * iRadius
+            kY = 2
+
+            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
+            kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
+            #if IS_PLAYBACK
+                kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
+            #endif
+            aOutDistanced = asig * kDistanceAmp
+
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+            iPlaybackReverbAdjustment init 1
+            #if IS_PLAYBACK
+                iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
+            #endif
+
+            aSignals[kRotationIndex][0] = gkAmbisonicChannelGains[0] * aOutDistanced
+            aSignals[kRotationIndex][1] = gkAmbisonicChannelGains[1] * aOutDistanced
+            aSignals[kRotationIndex][2] = gkAmbisonicChannelGains[2] * aOutDistanced
+            aSignals[kRotationIndex][3] = gkAmbisonicChannelGains[3] * aOutDistanced
+            aSignals[kRotationIndex][4] = asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+            aSignals[kRotationIndex][5] = aSignals[kRotationIndex][4]
+
+            #if !IS_PLAYBACK
+                kReloaded init false
+                kFadeTimeLeft init 0.1
+                if (gkReloaded == true) then
+                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                    aEnvelope = linseg(1, 0.1, 0)
+                    kReloaded = gkReloaded
+                endif
+
+                if (kReloaded == true) then
+                    kFadeTimeLeft -= 1 / kr
+                    if (kFadeTimeLeft <= 0) then
+                        turnoff
+                    endif
+                endif
+            #endif
+
+            kRotationIndex += 1
+        od
+
         #if IS_PLAYBACK
-            kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
-        #endif
-        aOutDistanced = asig * kDistanceAmp
-
-        AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
-        a1 = gkAmbisonicChannelGains[0] * aOutDistanced
-        a2 = gkAmbisonicChannelGains[1] * aOutDistanced
-        a3 = gkAmbisonicChannelGains[2] * aOutDistanced
-        a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-        aReverbOut = asig * 2 * kDistanceAmp
-
-        #if IS_PLAYBACK
-            aReverbOut *= giDistanceDelaySynth_PlaybackReverbAdjustment
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + aSignals[0][0] + aSignals[1][0] + aSignals[2][0]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + aSignals[0][1] + aSignals[1][1] + aSignals[2][1]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + aSignals[0][2] + aSignals[1][2] + aSignals[2][2]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + aSignals[0][3] + aSignals[1][3] + aSignals[2][3]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aSignals[0][4] + aSignals[1][4] + aSignals[2][4]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aSignals[0][5] + aSignals[1][5] + aSignals[2][5]
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -208,26 +237,32 @@ instr INSTRUMENT_ID
                 aEnvelope = linseg(1, 0.1, 0)
                 kReloaded = gkReloaded
             endif
-
-            outc(a1, a2, a3, a4, aReverbOut, aReverbOut)
-
-            if (kReloaded == true) then
-                kFadeTimeLeft -= 1 / kr
-                if (kFadeTimeLeft <= 0) then
-                    turnoff
-                endif
-            endif
+            outc(
+                aSignals[0][0], aSignals[1][0], aSignals[2][0],
+                aSignals[0][1], aSignals[1][1], aSignals[2][1],
+                aSignals[0][2], aSignals[1][2], aSignals[2][2],
+                aSignals[0][3], aSignals[1][3], aSignals[2][3],
+                aSignals[0][4], aSignals[1][4], aSignals[2][4],
+                aSignals[0][5], aSignals[1][5], aSignals[2][5])
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"DistanceDelaySynth_Json\" 0 0")
-            endif
-            giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] = giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
-                iNoteNumber, iVelocity, iX, iY, iZ)
-            ficlose(SJsonFile)
+            iRotationIndex = 0
+            while (iRotationIndex < 3) do
+                iTheta = (PI / 2) + ((2 * PI / 3) * iRotationIndex)
+                iX = sin(iTheta) * iRadius
+                iZ = cos(iTheta) * iRadius
+                iY = 2
+                if (giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                    scoreline_i("i \"DistanceDelaySynth_Json\" 0 0")
+                endif
+                giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] = giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
+                    iNoteNumber, iVelocity, iX, iY, iZ)
+                ficlose(SJsonFile)
+                iRotationIndex += 1
+            od
         ${CSOUND_ENDIF}
     endif
 end:

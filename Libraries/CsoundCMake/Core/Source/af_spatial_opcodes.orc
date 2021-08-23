@@ -415,6 +415,28 @@ endop
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the distance and direction from the listener to the given source position.
 //
+// in  k: Source's position x.
+// in  k: Source's position y.
+// in  k: Source's position z.
+//
+// out k  : Distance from listener to given source position.
+//
+opcode AF_3D_Audio_SourceDistance, k, kkk
+    kSourcePositionX, kSourcePositionY, kSourcePositionZ xin
+    kVector[] init 3
+    kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
+
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
 // in  i[]: Source's position [x, y, z].
 //
 // out k  : Distance from listener to given source position.
