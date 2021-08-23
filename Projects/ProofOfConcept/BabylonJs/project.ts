@@ -270,10 +270,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let nextPointSynthNoteOnIndex = 0;
         let nextPointSynthNoteOffIndex = 0;
 
-        const previousCameraMatrix = new Float32Array(16)
-        const currentCameraMatrix = new Float32Array(16)
-        let currentCameraMatrixIsDirty = true
-
         const pointSynthNoteOn = (i) => {
             const note = pointSynthData[i].noteOn;
             note.instanceIndex = noteMeshInstanceIndex;
@@ -297,19 +293,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteMeshInstances[note.instanceIndex + 1].isVisible = false;
         }
 
-        // Update animations.
-        engine.runRenderLoop(() => {
-            if (!isCsoundStarted) {
-                nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
-                nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
-                return;
-            }
-            const time = document.audioContext.currentTime - startTime;
+        const pointSynthRenderInit = () => {
+            nextPointSynthNoteOnIndex = pointSynthNoteStartIndex;
+            nextPointSynthNoteOffIndex = pointSynthNoteStartIndex;
+        }
 
+        const pointSynthRender = (time) => {
             while (nextPointSynthNoteOnIndex < pointSynthData.length
-                    && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= time) {
-                pointSynthNoteOn(nextPointSynthNoteOnIndex);
-                nextPointSynthNoteOnIndex++;
+                && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= time) {
+            pointSynthNoteOn(nextPointSynthNoteOnIndex);
+            nextPointSynthNoteOnIndex++;
             }
 
             while (nextPointSynthNoteOffIndex < pointSynthData.length
@@ -317,7 +310,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 pointSynthNoteOff(nextPointSynthNoteOffIndex);
                 nextPointSynthNoteOffIndex++;
             }
+        }
+
+        // Update animations.
+        engine.runRenderLoop(() => {
+            if (!isCsoundStarted) {
+                pointSynthRenderInit()
+                return;
+            }
+            const time = document.audioContext.currentTime - startTime;
+            pointSynthRender(time)
         })
+
+        const previousCameraMatrix = new Float32Array(16)
+        const currentCameraMatrix = new Float32Array(16)
+        let currentCameraMatrixIsDirty = true
 
         // Send the camera matrix to Csound.
         setInterval(() => {
