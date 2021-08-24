@@ -64,8 +64,11 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"startDistance\":%d", giDistanceDelaySynth_StartDistance))
+        fprints(SJsonFile, sprintf(",\"delayDistance\":%d", giDistanceDelaySynth_DelayDistance))
         fprints(SJsonFile, sprintf(",\"delayTime\":%.02f", giDistanceDelaySynth_DelayTime))
-        fprints(SJsonFile, sprintf(",\"delayCount\":%.02f", giDistanceDelaySynth_DelayCount))
+        fprints(SJsonFile, sprintf(",\"duration\":%.01f", giDistanceDelaySynth_Duration))
+        fprints(SJsonFile, sprintf(",\"delayCount\":%d", giDistanceDelaySynth_DelayCount))
         fprints(SJsonFile, "}")
         turnoff
     endin
@@ -176,7 +179,7 @@ instr INSTRUMENT_ID
         aSignals[][] init 3, 6
         kRotationIndex = 0
         while (kRotationIndex < 3) do
-            kTheta = (PI / 2) + ((2 * PI / 2) * kRotationIndex)
+            kTheta = PI + (2 * PI / 3) * kRotationIndex
             kX = sin(kTheta) * iRadius
             kZ = cos(kTheta) * iRadius
             kY = 2
@@ -247,22 +250,16 @@ instr INSTRUMENT_ID
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            iRotationIndex = 0
-            while (iRotationIndex < 3) do
-                iTheta = (PI / 2) + ((2 * PI / 3) * iRotationIndex)
-                iX = sin(iTheta) * iRadius
-                iZ = cos(iTheta) * iRadius
-                iY = 2
+            if (iDelayIndex == 0) then
                 if (giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
                     scoreline_i("i \"DistanceDelaySynth_Json\" 0 0")
                 endif
                 giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] = giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
                 SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giDistanceDelaySynth_NoteIndex[ORC_INSTANCE_INDEX])
-                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
-                    iNoteNumber, iVelocity, iX, iY, iZ)
+                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%d,\"velocity\":%d}}",
+                    times(), iNoteNumber, iVelocity)
                 ficlose(SJsonFile)
-                iRotationIndex += 1
-            od
+            endif
         ${CSOUND_ENDIF}
     endif
 end:
