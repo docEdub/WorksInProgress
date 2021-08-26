@@ -1,6 +1,5 @@
 import * as BABYLON from "babylonjs";
 import * as BABYLON_MATERIALS from "babylonjs-materials";
-import { SineEase } from "babylonjs/Animations/easing";
 import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
