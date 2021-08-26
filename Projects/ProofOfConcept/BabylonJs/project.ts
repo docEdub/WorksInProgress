@@ -226,21 +226,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let csdData = JSON.parse(csdJson)
         // console.debug('csdData =', csdData)
 
-        const noteMeshInstanceCount = 40;
-        let noteMeshInstanceIndex = 0;
-        let noteMeshInstances = [];
-        let noteMeshInstance = whiteSphere.createInstance('');
-        noteMeshInstance.isVisible = false;
-        noteMeshInstance.scaling.setAll(0.15);
-        for (let i = 0; i < noteMeshInstanceCount; i++) {
-            noteMeshInstances.push(noteMeshInstance.clone(''));
-        }
-
-        const placeholderMesh = graySphere.clone('');
-        placeholderMesh.scaling.setAll(0.14);
-        placeholderMesh.bakeCurrentTransformIntoVertices();
-        placeholderMesh.isVisible = true;
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // DistanceDelaySynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,20 +240,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         const distanceDelaySynthRotationAngle = 2 * Math.PI / 3
 
-        let distanceDelaySynthMeshes = [] // One mesh for the original and each delay.
-        for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
-            const mesh1 = whiteSphere.clone('')
-            mesh1.position.set(0, 2, distanceDelaySynthRadii[delayI])
-            mesh1.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.Up(), Math.PI)
-            const mesh2 = mesh1.clone('')
-            mesh2.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.Up(), distanceDelaySynthRotationAngle)
-            const mesh3 = mesh2.clone('')
-            mesh3.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.Up(), distanceDelaySynthRotationAngle)
-            const mesh = BABYLON.Mesh.MergeMeshes([mesh1, mesh2, mesh3], true)
-            mesh.isVisible = false
-            distanceDelaySynthMeshes.push(mesh)
-        }
-
         let distanceDelaySynthNotes = []
 
         const distanceDelaySynthNote = (noteNumber) => {
@@ -280,21 +251,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return undefined
         }
 
+        const distanceDelaySynthMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
+        const distanceDelaySynthMaterial = new BABYLON.StandardMaterial('', scene)
+        distanceDelaySynthMaterial.emissiveColor.set(1, 1, 1)
+        distanceDelaySynthMesh.material = distanceDelaySynthMaterial
+        distanceDelaySynthMesh.isVisible = true
+        distanceDelaySynthMesh.thinInstanceRegisterAttribute("color", 3)
+
         const makeDistanceDelaySynthNote = (noteNumber) => {
             let foundNote = distanceDelaySynthNote(noteNumber)
             if (!!foundNote) {
                 return foundNote
             }
             let delays = []
+            let height = noteNumber - 35
             for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
-                let mesh = distanceDelaySynthMeshes[delayI].createInstance('')
-                mesh.isVisible = false
+                const radius = distanceDelaySynthRadii[delayI]
+                let angle = Math.PI
+                let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), false)
+                angle += distanceDelaySynthRotationAngle
+                let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), false)
+                angle += distanceDelaySynthRotationAngle
+                let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), true)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, [.2, .2, .2], false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, [.2, .2, .2], false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, [.2, .2, .2], true)
                 let delay = {
                     onTimes: [],
                     offTimes: [],
                     onIndex: 0,
                     offIndex: 0,
-                    mesh: mesh
+                    instanceIndexes: [instanceIndex1, instanceIndex2, instanceIndex3]
                 }
                 delays.push(delay)
             }
@@ -321,7 +308,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 let delay = note.delays[delayI]
                 delay.onTimes.push(onTime)
                 delay.offTimes.push(onTime + distanceDelaySynthHeader.duration)
-                delay.mesh.position.y = noteOn.note - 35
             }
         }
 
@@ -339,12 +325,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     const delay = note.delays[delayI]
 
                     while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
-                        delay.mesh.isVisible = true
+                        // delay.mesh.isVisible = true
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], [1, 1, 1], false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], [1, 1, 1], false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], [1, 1, 1], true)
                         delay.onIndex++
                     }
 
                     while (delay.offIndex < delay.offTimes.length && delay.offTimes[delay.offIndex] <= time) {
-                        delay.mesh.isVisible = false
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], [.2, .2, .2], false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], [.2, .2, .2], false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], [.2, .2, .2], true)
                         delay.offIndex++
                     }
                 }
@@ -354,6 +345,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PointSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const noteMeshInstanceCount = 40;
+        let noteMeshInstanceIndex = 0;
+        let noteMeshInstances = [];
+        const noteMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
+        noteMesh.material = whiteMaterial.clone('')
+        noteMesh.isVisible = false
+        let noteMeshInstance = noteMesh.createInstance('');
+        noteMeshInstance.isVisible = false;
+        noteMeshInstance.scaling.setAll(0.15);
+        for (let i = 0; i < noteMeshInstanceCount; i++) {
+            noteMeshInstances.push(noteMeshInstance.clone(''));
+        }
+
+        const pointSynthPlaceholderMesh = graySphere.clone('');
+        pointSynthPlaceholderMesh.scaling.setAll(0.14);
+        pointSynthPlaceholderMesh.bakeCurrentTransformIntoVertices();
+        pointSynthPlaceholderMesh.isVisible = true;
 
         // Initialize point synth notes.
         let pointSynthNoteStartIndex = 0;
@@ -374,9 +383,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
 
             const refreshInstances = i == pointSynthData.length - 1;
-            placeholderMesh.thinInstanceAdd(
+            pointSynthPlaceholderMesh.thinInstanceAdd(
                 BABYLON.Matrix.Translation(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
-            placeholderMesh.thinInstanceAdd(
+            pointSynthPlaceholderMesh.thinInstanceAdd(
                 BABYLON.Matrix.Translation(noteOn.xyz[0], -noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
         }
 
