@@ -221,6 +221,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     startXr();
 
     let startTime = 0;
+    let distanceDelaySynthNoteNumbers = []
 
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
@@ -299,6 +300,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // Skip preallocation notes.
             if (noteOn.time == 0.005) {
                 continue;
+            }
+
+            if (!distanceDelaySynthNoteNumbers.includes(noteOn.note)) {
+                distanceDelaySynthNoteNumbers.push(noteOn.note)
             }
 
             let note = makeDistanceDelaySynthNote(noteOn.note)
@@ -563,7 +568,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         console.debug('Csound initialized successfully');
+        let distanceDelaySynthNoteCacheArrayMacro = "fillarray "
+        for(let i = 0; i < distanceDelaySynthNoteNumbers.length; i++) {
+            if(i != 0) {
+                distanceDelaySynthNoteCacheArrayMacro += "\, "
+            }
+            distanceDelaySynthNoteCacheArrayMacro += distanceDelaySynthNoteNumbers[i]
+        }
         await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
+        await csound.setOption('--omacro:DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY=' + distanceDelaySynthNoteCacheArrayMacro)
         console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
         if (csoundErrorCode != 0) {
@@ -2234,6 +2247,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
         giDistanceDelaySynth_NoteIndex[] init 1
         giDistanceDelaySynth_InstrumentNumberFraction[] init 1
+         #ifndef DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
+         #define DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 0#
+         #end
+        giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
+        gkDistanceDelaySynth_SampleCache[][] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers), sr * giDistanceDelaySynth_Duration
          #ifdef IS_GENERATING_JSON
             setPluginUuid(0, 0, "6c9f37ab-392f-429b-8217-eac09f295362")
             instr DistanceDelaySynth_Json
@@ -2253,26 +2271,71 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             iEventType = p4
             if (iEventType == 4) then
                 turnoff
-            elseif (iEventType == 3) then
+            elseif (iEventType == 3 || iEventType == 5) then
                 iNoteNumber = p5
                 iVelocity = p6
                 iDelayIndex = p7
-                iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
-                iCps = cpsmidinn(iNoteNumber)
-                iCpsRandomized = iCps * random:i(0.999, 1.001)
-                asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
-                asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))
-                asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))
-                asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
-                ioct = octcps(iCpsRandomized)
-                asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)
-                asig = K35_hpf(asig, iCpsRandomized, 0.5)
-                ain = asig * ampdbfs(-60)
-                a1 = mode(ain, 500, 20)
-                a1 += mode(ain, 900, 10)
-                a1 += mode(ain, 1700, 6)
-                asig += a1
-                asig *= linen:a(1, 0, p3, 0.001)
+                iSampleCacheI = -1
+                iI = 0
+                while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+                    if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
+                        iSampleCacheI = iI
+                        iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)
+                    endif
+                    iI += 1
+                od
+                if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
+                    turnoff
+                endif
+                    iIsPlayback = 1
+                a1 init 0
+                asig init 0
+                if(iIsPlayback == 0 || iEventType == 5) then
+                    iAmp init 0
+                    if (iIsPlayback == 0) then
+                        iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
+                    else
+                        iAmp = 1
+                    endif
+                    iCps = cpsmidinn(iNoteNumber)
+                    iCpsRandomized = iCps * random:i(0.999, 1.001)
+                    asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
+                    asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))
+                    asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))
+                    asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
+                    ioct = octcps(iCpsRandomized)
+                    asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)
+                    asig = K35_hpf(asig, iCpsRandomized, 0.5)
+                    ain = asig * ampdbfs(-60)
+                    a1 = mode(ain, 500, 20)
+                    a1 += mode(ain, 900, 10)
+                    a1 += mode(ain, 1700, 6)
+                    asig *= linen:a(1, 0, p3, 0.001)
+                    asig += a1
+                    if (iEventType == 5) then
+                        kPass init 0
+                        kSourceI = 0
+                        kSampleI = kPass * ksmps
+                        while (kSourceI < ksmps) do
+                            gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI] = vaget(kSourceI, asig)
+                            kSourceI += 1
+                            kSampleI += 1
+                        od
+                        kPass += 1
+                        goto end
+                    endif
+                endif
+                if (iIsPlayback == 1) then
+                    kPass init 0
+                    kSignalI = 0
+                    kSampleI = kPass * ksmps
+                    while (kSignalI < ksmps) do
+                        vaset(gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI], kSignalI, asig)
+                        kSignalI += 1
+                        kSampleI += 1
+                    od
+                    kPass += 1
+                endif
                 iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
                 aSignals[][] init 3, 6
                 kRotationIndex = 0
@@ -2331,6 +2394,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 turnoff
             endin
             scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
+            instr FillSampleCache_4
+                iI = 0
+                while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+                    prints("Filling DistanceDelaySynth sample cache for note %d\\n", giDistanceDelaySynth_SampleCacheNoteNumbers[iI])
+                    scoreline_i(sprintf(
+                        "i %d 0 %f %d %d 127 0",
+                        4,
+                        giDistanceDelaySynth_Duration,
+                        5,
+                        giDistanceDelaySynth_SampleCacheNoteNumbers[iI]))
+                    iI += 1
+                od
+                turnoff
+            endin
+            scoreline_i(sprintf("i \\"FillSampleCache_%d\\" 0 -1", 4))
          #ifndef ADSR_LINSEGR_UDO_ORC
          #define ADSR_LINSEGR_UDO_ORC ##
         opcode adsr_linsegr, a, iiii

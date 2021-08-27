@@ -85,6 +85,7 @@
 #define EVENT_NOTE_OFF       2
 #define EVENT_NOTE_GENERATED 3
 #define EVENT_CC             4
+#define EVENT_NOTE_CACHE     5
 
 #define LOG_TRACE _(${CsoundLog_Level0Trace})
 #define LOG_DEBUG _(${CsoundLog_Level1Debug})

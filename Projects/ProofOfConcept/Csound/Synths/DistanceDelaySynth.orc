@@ -53,6 +53,13 @@ giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
 
+${CSOUND_IFNDEF} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
+${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 0#
+${CSOUND_ENDIF}
+
+giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
+gkDistanceDelaySynth_SampleCache[][] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers), sr * giDistanceDelaySynth_Duration
+
 #endif // #ifndef DistanceDelaySynth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -138,41 +145,99 @@ instr INSTRUMENT_ID
         giDistanceDelaySynth_InstrumentNumberFraction[ORC_INSTANCE_INDEX] = iInstrumentNumberFraction
 #endif
 
-    elseif (iEventType == EVENT_NOTE_GENERATED) then
+    elseif (iEventType == EVENT_NOTE_GENERATED || iEventType == EVENT_NOTE_CACHE) then
         iNoteNumber = p5
         iVelocity = p6
         iDelayIndex = p7
-        
-        iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
-        iCps = cpsmidinn(iNoteNumber)
-        iCpsRandomized = iCps * random:i(0.999, 1.001)
-        
-        // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
-        // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
 
-        ;; 6-OP FM
-        asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
-        asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))    
-        asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))  
-        
-        asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
-        
-        ;; Filter
-        ioct = octcps(iCpsRandomized)
-        asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)  
-        asig = K35_hpf(asig, iCpsRandomized, 0.5)    
-        
-        ;; Resonant Body
-        ain = asig * ampdbfs(-60)
-        
-        a1 = mode(ain, 500, 20)
-        a1 += mode(ain, 900, 10)  
-        a1 += mode(ain, 1700, 6)    
-        
-        asig += a1
+        iSampleCacheI = -1
+        iI = 0
+        while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+            if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
+                iSampleCacheI = iI
+                iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers) // kick out of while loop
+            endif
+            iI += 1
+        od
+        if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
+            log_i_warning("Sample cache for note number %d not found", iNoteNumber)
+            turnoff
+        endif
+        ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
 
-        ;; Declick
-        asig *= linen:a(1, 0, p3, 0.001)
+        #if IS_PLAYBACK
+            iIsPlayback = true
+        #else
+            iIsPlayback = false
+        #endif
+
+        a1 init 0
+        asig init 0
+
+        if(iIsPlayback == false || iEventType == EVENT_NOTE_CACHE) then
+            iAmp init 0
+            if (iIsPlayback == false) then
+                iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
+            else
+                iAmp = 1
+            endif
+            iCps = cpsmidinn(iNoteNumber)
+            iCpsRandomized = iCps * random:i(0.999, 1.001)
+            
+            // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
+            // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
+
+            ;; 6-OP FM
+            asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
+            asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))    
+            asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))  
+            
+            asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
+            
+            ;; Filter
+            ioct = octcps(iCpsRandomized)
+            asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)  
+            asig = K35_hpf(asig, iCpsRandomized, 0.5)    
+            
+            ;; Resonant Body
+            ain = asig * ampdbfs(-60)
+            
+            a1 = mode(ain, 500, 20)
+            a1 += mode(ain, 900, 10)  
+            a1 += mode(ain, 1700, 6)    
+
+            ;; Declick
+            asig *= linen:a(1, 0, p3, 0.001)
+
+            asig += a1
+
+            if (iEventType == EVENT_NOTE_CACHE) then
+                // Copy `asig` into cache sample array starting at `kPass` sample.
+                kPass init 0
+                kSourceI = 0
+                kSampleI = kPass * ksmps
+                while (kSourceI < ksmps) do
+                    gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI] = vaget(kSourceI, asig)
+                    kSourceI += 1
+                    kSampleI += 1
+                od
+                kPass += 1
+                goto end
+            endif
+        endif
+
+        if (iIsPlayback == true) then
+            // Copy cache sample array starting at `kPass` sample into `asig`.
+            kPass init 0
+            kSignalI = 0
+            kSampleI = kPass * ksmps
+            while (kSignalI < ksmps) do
+                vaset(gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI], kSignalI, asig)
+                kSignalI += 1
+                kSampleI += 1
+            od
+            kPass += 1
+        endif
         
         iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
 
@@ -280,6 +345,22 @@ endin
         turnoff
     endin
     scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
+
+    instr CONCAT(FillSampleCache_, INSTRUMENT_ID)
+        iI = 0
+        while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+            prints("Filling DistanceDelaySynth sample cache for note %d\n", giDistanceDelaySynth_SampleCacheNoteNumbers[iI])
+            scoreline_i(sprintf(
+                "i %d 0 %f %d %d 127 0",
+                INSTRUMENT_ID,
+                giDistanceDelaySynth_Duration,
+                EVENT_NOTE_CACHE,
+                giDistanceDelaySynth_SampleCacheNoteNumbers[iI]))
+            iI += 1
+        od
+        turnoff
+    endin
+    scoreline_i(sprintf("i \"FillSampleCache_%d\" 0 -1", INSTRUMENT_ID))
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
