@@ -607,7 +607,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #define INTERNAL_CHANNEL_COUNT #6#
          #end
         sr = 48000
-        kr = 200
+        kr = 4800
         nchnls = $OUTPUT_CHANNEL_COUNT
         0dbfs = 1
          #define INSTANCE_NAME #"TestSynth playback"#
