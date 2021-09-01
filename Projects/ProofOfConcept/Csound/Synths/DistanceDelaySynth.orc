@@ -58,7 +58,20 @@ ${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 0#
 ${CSOUND_ENDIF}
 
 giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
-gkDistanceDelaySynth_SampleCache[][] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers), sr * giDistanceDelaySynth_Duration
+giDistanceDelaySynth_SampleCacheTableNumbers[] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)
+giDistanceDelaySynth_SampleCacheLength init sr * giDistanceDelaySynth_Duration
+giDistanceDelaySynth_SampleCacheTableLength = 2
+while (giDistanceDelaySynth_SampleCacheTableLength < giDistanceDelaySynth_SampleCacheLength) do
+    giDistanceDelaySynth_SampleCacheTableLength *= 2
+od
+; prints("giDistanceDelaySynth_SampleCacheTableLength = %d\n", giDistanceDelaySynth_SampleCacheTableLength)
+
+iI = 0
+while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+    // Generate empty tables to hold each note's sample cache.
+    giDistanceDelaySynth_SampleCacheTableNumbers[iI] = ftgen(0, 0, giDistanceDelaySynth_SampleCacheTableLength, 2, 0)
+    iI += 1
+od
 
 #endif // #ifndef DistanceDelaySynth_orc__include_guard
 
@@ -212,36 +225,37 @@ instr INSTRUMENT_ID
             asig += a1
 
             if (iEventType == EVENT_NOTE_CACHE) then
-                // Copy `asig` into cache sample array starting at `kPass` sample.
+                prints("Copying asig into note's sample cache table.\n")
+                // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
                 kPass init 0
-                kSourceI = 0
-                kSampleI = kPass * ksmps
-                while (kSourceI < ksmps) do
-                    gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI] = vaget(kSourceI, asig)
-                    kSourceI += 1
-                    kSampleI += 1
-                od
+                kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
                 kPass += 1
                 goto end
             endif
         endif
 
-        if (iIsPlayback == true) then
-            // Copy cache sample array starting at `kPass` sample into `asig`.
-            kPass init 0
-            kSignalI = 0
-            kSampleI = kPass * ksmps
-            while (kSignalI < ksmps) do
-                vaset(gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI], kSignalI, asig)
-                kSignalI += 1
-                kSampleI += 1
-            od
-            kPass += 1
+        if (iIsPlayback == true && iSampleCacheI >= 0) then
+            // Read `asig` from note's sample cache.
+            ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
+            asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
         endif
         
         iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
 
-        aSignals[][] init 3, 6
+        #if IS_PLAYBACK
+            a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
+            a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
+            a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
+            a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
+            a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
+        #else
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = 0
+            a5 = 0 // Reverb
+        #endif
+
         kRotationIndex = 0
         while (kRotationIndex < 3) do
             kTheta = PI + (2 * PI / 3) * kRotationIndex
@@ -263,55 +277,36 @@ instr INSTRUMENT_ID
                 iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
             #endif
 
-            aSignals[kRotationIndex][0] = gkAmbisonicChannelGains[0] * aOutDistanced
-            aSignals[kRotationIndex][1] = gkAmbisonicChannelGains[1] * aOutDistanced
-            aSignals[kRotationIndex][2] = gkAmbisonicChannelGains[2] * aOutDistanced
-            aSignals[kRotationIndex][3] = gkAmbisonicChannelGains[3] * aOutDistanced
-            aSignals[kRotationIndex][4] = asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
-            aSignals[kRotationIndex][5] = aSignals[kRotationIndex][4]
-
-            #if !IS_PLAYBACK
-                kReloaded init false
-                kFadeTimeLeft init 0.1
-                if (gkReloaded == true) then
-                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
-                    aEnvelope = linseg(1, 0.1, 0)
-                    kReloaded = gkReloaded
-                endif
-
-                if (kReloaded == true) then
-                    kFadeTimeLeft -= 1 / kr
-                    if (kFadeTimeLeft <= 0) then
-                        turnoff
-                    endif
-                endif
-            #endif
+            a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+            a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+            a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+            a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+            a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
 
             kRotationIndex += 1
         od
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + aSignals[0][0] + aSignals[1][0] + aSignals[2][0]
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + aSignals[0][1] + aSignals[1][1] + aSignals[2][1]
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + aSignals[0][2] + aSignals[1][2] + aSignals[2][2]
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + aSignals[0][3] + aSignals[1][3] + aSignals[2][3]
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aSignals[0][4] + aSignals[1][4] + aSignals[2][4]
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aSignals[0][5] + aSignals[1][5] + aSignals[2][5]
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a5
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a5
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
             if (gkReloaded == true) then
                 log_k_debug("Turning off instrument %.04f due to reload.", p1)
-                aEnvelope = linseg(1, 0.1, 0)
                 kReloaded = gkReloaded
             endif
-            outc(
-                aSignals[0][0], aSignals[1][0], aSignals[2][0],
-                aSignals[0][1], aSignals[1][1], aSignals[2][1],
-                aSignals[0][2], aSignals[1][2], aSignals[2][2],
-                aSignals[0][3], aSignals[1][3], aSignals[2][3],
-                aSignals[0][4], aSignals[1][4], aSignals[2][4],
-                aSignals[0][5], aSignals[1][5], aSignals[2][5])
+            if (kReloaded == true) then
+                kFadeTimeLeft -= 1 / kr
+                if (kFadeTimeLeft <= 0) then
+                    turnoff
+                endif
+            endif
+            outc(a1, a2, a3, a4, a5, a5)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON

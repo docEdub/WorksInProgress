@@ -2256,7 +2256,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
          #define DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 0#
          #end
         giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
-        gkDistanceDelaySynth_SampleCache[][] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers), sr * giDistanceDelaySynth_Duration
+        giDistanceDelaySynth_SampleCacheTableNumbers[] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)
+        giDistanceDelaySynth_SampleCacheLength init sr * giDistanceDelaySynth_Duration
+        giDistanceDelaySynth_SampleCacheTableLength = 2
+        while (giDistanceDelaySynth_SampleCacheTableLength < giDistanceDelaySynth_SampleCacheLength) do
+            giDistanceDelaySynth_SampleCacheTableLength *= 2
+        od
+        iI = 0
+        while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+            giDistanceDelaySynth_SampleCacheTableNumbers[iI] = ftgen(0, 0, giDistanceDelaySynth_SampleCacheTableLength, 2, 0)
+            iI += 1
+        od
          #ifdef IS_GENERATING_JSON
             setPluginUuid(0, 0, "6c9f37ab-392f-429b-8217-eac09f295362")
             instr DistanceDelaySynth_Json
@@ -2318,31 +2328,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     asig *= linen:a(1, 0, p3, 0.001)
                     asig += a1
                     if (iEventType == 5) then
+                        prints("Copying asig into note's sample cache table.\\n")
                         kPass init 0
-                        kSourceI = 0
-                        kSampleI = kPass * ksmps
-                        while (kSourceI < ksmps) do
-                            gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI] = vaget(kSourceI, asig)
-                            kSourceI += 1
-                            kSampleI += 1
-                        od
+                        kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
                         kPass += 1
                         goto end
                     endif
                 endif
-                if (iIsPlayback == 1) then
-                    kPass init 0
-                    kSignalI = 0
-                    kSampleI = kPass * ksmps
-                    while (kSignalI < ksmps) do
-                        vaset(gkDistanceDelaySynth_SampleCache[iSampleCacheI][kSampleI], kSignalI, asig)
-                        kSignalI += 1
-                        kSampleI += 1
-                    od
-                    kPass += 1
+                if (iIsPlayback == 1 && iSampleCacheI >= 0) then
+                    asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
                 endif
                 iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
-                aSignals[][] init 3, 6
+                    a1 = gaInstrumentSignals[0][0]
+                    a2 = gaInstrumentSignals[0][1]
+                    a3 = gaInstrumentSignals[0][2]
+                    a4 = gaInstrumentSignals[0][3]
+                    a5 = gaInstrumentSignals[0][4]
                 kRotationIndex = 0
                 while (kRotationIndex < 3) do
                     kTheta = 3.141592653589793 + (2 * 3.141592653589793 / 3) * kRotationIndex
@@ -2357,20 +2358,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
                     iPlaybackReverbAdjustment init 1
                         iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
-                    aSignals[kRotationIndex][0] = gkAmbisonicChannelGains[0] * aOutDistanced
-                    aSignals[kRotationIndex][1] = gkAmbisonicChannelGains[1] * aOutDistanced
-                    aSignals[kRotationIndex][2] = gkAmbisonicChannelGains[2] * aOutDistanced
-                    aSignals[kRotationIndex][3] = gkAmbisonicChannelGains[3] * aOutDistanced
-                    aSignals[kRotationIndex][4] = asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
-                    aSignals[kRotationIndex][5] = aSignals[kRotationIndex][4]
+                    a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+                    a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+                    a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+                    a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+                    a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
                     kRotationIndex += 1
                 od
-                    gaInstrumentSignals[0][0] = gaInstrumentSignals[0][0] + aSignals[0][0] + aSignals[1][0] + aSignals[2][0]
-                    gaInstrumentSignals[0][1] = gaInstrumentSignals[0][1] + aSignals[0][1] + aSignals[1][1] + aSignals[2][1]
-                    gaInstrumentSignals[0][2] = gaInstrumentSignals[0][2] + aSignals[0][2] + aSignals[1][2] + aSignals[2][2]
-                    gaInstrumentSignals[0][3] = gaInstrumentSignals[0][3] + aSignals[0][3] + aSignals[1][3] + aSignals[2][3]
-                    gaInstrumentSignals[0][4] = gaInstrumentSignals[0][4] + aSignals[0][4] + aSignals[1][4] + aSignals[2][4]
-                    gaInstrumentSignals[0][5] = gaInstrumentSignals[0][5] + aSignals[0][5] + aSignals[1][5] + aSignals[2][5]
+                    gaInstrumentSignals[0][0] = a1
+                    gaInstrumentSignals[0][1] = a2
+                    gaInstrumentSignals[0][2] = a3
+                    gaInstrumentSignals[0][3] = a4
+                    gaInstrumentSignals[0][4] = a5
+                    gaInstrumentSignals[0][5] = a5
                 #ifdef IS_GENERATING_JSON
                     if (iDelayIndex == 0) then
                         if (giDistanceDelaySynth_NoteIndex[0] == 0) then
