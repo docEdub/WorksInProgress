@@ -28,7 +28,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
-    const groundSize = 200;
+    const groundSize = 1000;
     const groundHoleDiameter = 100;
 
     const halfGroundSize = groundSize / 2;
