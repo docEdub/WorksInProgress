@@ -96,6 +96,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
+    let sunLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(1, -1, 1), scene)
+    var ambientLight = new BABYLON.HemisphericLight('', new BABYLON.Vector3(0, 1, 0), scene);
+
+    console.debug('ambientLight ...')
+    console.debug(ambientLight)
+
     let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(99, 2, 99), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
@@ -258,9 +264,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return undefined
         }
 
-        const distanceDelaySynthMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
+        // const distanceDelaySynthMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
+        const distanceDelaySynthMesh = BABYLON.MeshBuilder.CreateCylinder('', {
+            height: 1,
+            diameter: 1,
+            tessellation: 32
+        })
         const distanceDelaySynthMaterial = new BABYLON.StandardMaterial('', scene)
-        distanceDelaySynthMaterial.emissiveColor.set(1, 1, 1)
+        // distanceDelaySynthMaterial.emissiveColor.set(1, 1, 1)
+        distanceDelaySynthMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+        distanceDelaySynthMaterial.diffuseColor.set(1, 1, 1)
+        distanceDelaySynthMaterial.specularColor.set(0.25, 0.25, 0.25)
         distanceDelaySynthMesh.material = distanceDelaySynthMaterial
         distanceDelaySynthMesh.isVisible = true
         distanceDelaySynthMesh.thinInstanceRegisterAttribute("color", 3)
@@ -273,14 +287,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             let delays = []
             let height = (noteNumber - 35) * distanceDelaySynthHeader.noteNumberToHeightScale
             // console.debug('height =', height)
+            const scalingMatrix = BABYLON.Matrix.Scaling(10, 2, 10)
             for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
                 const radius = distanceDelaySynthRadii[delayI]
                 let angle = Math.PI
-                let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), false)
+                let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
                 angle += distanceDelaySynthRotationAngle
-                let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), false)
+                let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
                 angle += distanceDelaySynthRotationAngle
-                let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle)), true)
+                let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), true)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, [.2, .2, .2], false)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, [.2, .2, .2], false)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, [.2, .2, .2], true)
