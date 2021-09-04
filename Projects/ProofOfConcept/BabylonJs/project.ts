@@ -52,16 +52,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     let csoundImportScript = document.createElement('script');
     csoundImportScript.type = 'module'
-    // csoundImportScript.innerText = `
-    //     console.debug("Csound importing ...");
-    //     import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
-    //     document.Csound = Csound;
-    // `
     csoundImportScript.innerText = `
         console.debug("Csound importing ...");
-        import { Csound } from "./csound.esm.js";
+        import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser/dist/csound.esm.js";
         document.Csound = Csound;
     `
+    // csoundImportScript.innerText = `
+    //     console.debug("Csound importing ...");
+    //     import { Csound } from "./csound.esm.js";
+    //     document.Csound = Csound;
+    // `
     document.body.appendChild(csoundImportScript)
 
     function browser() {
