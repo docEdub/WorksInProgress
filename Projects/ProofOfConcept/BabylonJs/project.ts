@@ -557,6 +557,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return
         }
         document.csound = csound;
+        console.log('Csound version =', await csound.getVersion())
         
         const audioContext = await csound.getAudioContext()
         console.debug('audioContext =', audioContext)
