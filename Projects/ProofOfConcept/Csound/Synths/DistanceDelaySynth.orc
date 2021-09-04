@@ -39,14 +39,15 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giDistanceDelaySynth_StartDistance = 50
-giDistanceDelaySynth_DelayDistance = 40
+giDistanceDelaySynth_StartDistance = 60
+giDistanceDelaySynth_DelayDistance = 100
+giDistanceDelaySynth_NoteNumberToHeightScale = 5
 giDistanceDelaySynth_DelayTime = 0.5 // seconds
 giDistanceDelaySynth_Duration = 0.49 // seconds
 giDistanceDelaySynth_DelayCount = 5
-giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
+giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.333
 giDistanceDelaySynth_ReferenceDistance = 5
-giDistanceDelaySynth_RolloffFactor = 1
+giDistanceDelaySynth_RolloffFactor = 0.5
 giDistanceDelaySynth_PlaybackVolumeAdjustment = 5
 giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 
@@ -54,9 +55,14 @@ giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
 
 ${CSOUND_IFNDEF} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
-${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 0#
+    ${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 1#
 ${CSOUND_ENDIF}
 
+${CSOUND_IFNDEF} DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER
+    ${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER #0#
+${CSOUND_ENDIF}
+
+giDistanceDelaySynth_LowestNoteNumber = $DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER
 giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
 giDistanceDelaySynth_SampleCacheTableNumbers[] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)
 giDistanceDelaySynth_SampleCacheLength init sr * giDistanceDelaySynth_Duration
@@ -86,6 +92,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, sprintf(",\"startDistance\":%d", giDistanceDelaySynth_StartDistance))
         fprints(SJsonFile, sprintf(",\"delayDistance\":%d", giDistanceDelaySynth_DelayDistance))
+        fprints(SJsonFile, sprintf(",\"noteNumberToHeightScale\":%.02f", giDistanceDelaySynth_NoteNumberToHeightScale))
         fprints(SJsonFile, sprintf(",\"delayTime\":%.02f", giDistanceDelaySynth_DelayTime))
         fprints(SJsonFile, sprintf(",\"duration\":%.01f", giDistanceDelaySynth_Duration))
         fprints(SJsonFile, sprintf(",\"delayCount\":%d", giDistanceDelaySynth_DelayCount))
@@ -225,7 +232,7 @@ instr INSTRUMENT_ID
             asig += a1
 
             if (iEventType == EVENT_NOTE_CACHE) then
-                prints("Copying asig into note's sample cache table.\n")
+                ; prints("Copying asig into note's sample cache table.\n")
                 // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
                 kPass init 0
                 kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
@@ -239,8 +246,6 @@ instr INSTRUMENT_ID
             ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
             asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
         endif
-        
-        iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
 
         #if IS_PLAYBACK
             a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
@@ -255,13 +260,14 @@ instr INSTRUMENT_ID
             a4 = 0
             a5 = 0 // Reverb
         #endif
-
+        
+        kY init (iNoteNumber - giDistanceDelaySynth_LowestNoteNumber) * giDistanceDelaySynth_NoteNumberToHeightScale
+        iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
         kRotationIndex = 0
         while (kRotationIndex < 3) do
             kTheta = PI + (2 * PI / 3) * kRotationIndex
             kX = sin(kTheta) * iRadius
             kZ = cos(kTheta) * iRadius
-            kY = 2
 
             kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
