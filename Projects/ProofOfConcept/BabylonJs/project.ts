@@ -29,10 +29,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
-    const groundHoleDiameter = 100;
+    const groundRingDiameter = 100;
 
     const halfGroundSize = groundSize / 2;
-    const groundHoleRadius = groundHoleDiameter / 2;
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
@@ -184,28 +183,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     // Add gray ring on ground.
-    const groundRing = BABYLON.Mesh.CreateTorus('', groundHoleDiameter, 0.25, 90, scene);
+    const groundRing = BABYLON.Mesh.CreateTorus('', groundRingDiameter, 0.25, 90, scene);
     groundRing.material = grayMaterial;
 
-    // Add cylinder for ground with center tube cut out.
-    const groundLedge = BABYLON.MeshBuilder.CreateLathe('', {
-        shape: [
-            new BABYLON.Vector3(groundSize, 0, 0),
-            new BABYLON.Vector3(groundHoleRadius, 0, 0),
-            new BABYLON.Vector3(groundHoleRadius, -1000, 0)
-        ],
-        tessellation: 90
-    }, scene);
+    const ground = BABYLON.MeshBuilder.CreatePlane('', {
+        size: groundSize
+    })
+    ground.rotation.set(Math.PI / 2, 0, 0)
 
     if (showGroundGrid) {
         const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
         // gridMaterial.gridRatio = .25;
         gridMaterial.lineColor.set(0.2, 0.2, 0.2);
         gridMaterial.minorUnitVisibility = 0;
-        groundLedge.material = gridMaterial;
+        ground.material = gridMaterial;
     }
     else {
-        groundLedge.material = blackMaterial;
+        ground.material = blackMaterial;
     }
     
     // This gets updated when switching between flat-screen camera and XR camera.
