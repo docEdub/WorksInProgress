@@ -45,10 +45,10 @@ giDistanceDelaySynth_NoteNumberToHeightScale = 5
 giDistanceDelaySynth_DelayTime = 0.5 // seconds
 giDistanceDelaySynth_Duration = 0.49 // seconds
 giDistanceDelaySynth_DelayCount = 5
-giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.25
-giDistanceDelaySynth_ReferenceDistance = 5
-giDistanceDelaySynth_RolloffFactor = 0.5
-giDistanceDelaySynth_PlaybackVolumeAdjustment = 5
+giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.9
+giDistanceDelaySynth_ReferenceDistance = 2
+giDistanceDelaySynth_RolloffFactor = 0.125
+giDistanceDelaySynth_PlaybackVolumeAdjustment = 2.5
 giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
