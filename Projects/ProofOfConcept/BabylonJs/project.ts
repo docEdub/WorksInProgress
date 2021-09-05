@@ -449,8 +449,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const refreshInstances = i == pointSynthData.length - 1;
             pointSynthPlaceholderMesh.thinInstanceAdd(
                 BABYLON.Matrix.Translation(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
-            pointSynthPlaceholderMesh.thinInstanceAdd(
-                BABYLON.Matrix.Translation(noteOn.xyz[0], -noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
         }
 
         // Initialized in render loop and incremented as elapsed time passes.
@@ -462,13 +460,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             note.instanceIndex = noteMeshInstanceIndex;
             let mesh = noteMeshInstances[note.instanceIndex];
             let mirrorMesh = noteMeshInstances[note.instanceIndex + 1];
-            mesh.position.x = mirrorMesh.position.x = note.xyz[0];
+            mesh.position.x = note.xyz[0];
             mesh.position.y = note.xyz[1];
-            mirrorMesh.position.y = -note.xyz[1];
-            mesh.position.z = mirrorMesh.position.z = note.xyz[2];
-            mesh.isVisible = mirrorMesh.isVisible = true;
+            mesh.position.z = note.xyz[2];
+            mesh.isVisible = true;
 
-            noteMeshInstanceIndex += 2;
+            noteMeshInstanceIndex++;
             if (noteMeshInstanceIndex == noteMeshInstanceCount) {
                 noteMeshInstanceIndex = 0;
             }
@@ -477,7 +474,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const pointSynthNoteOff = (i) => {
             const note = pointSynthData[i].noteOn;
             noteMeshInstances[note.instanceIndex].isVisible = false;
-            noteMeshInstances[note.instanceIndex + 1].isVisible = false;
         }
 
         const resetPointSynthIndexes = () => {
