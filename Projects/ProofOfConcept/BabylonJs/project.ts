@@ -2314,8 +2314,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceDelaySynth_NoteIndex[] init 1
         giDistanceDelaySynth_InstrumentNumberFraction[] init 1
          #ifndef DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
-         #define DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 1#
+            #define DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #init 1#
          #end
+         #ifndef DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER
+            #define DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER #0#
+         #end
+        giDistanceDelaySynth_LowestNoteNumber = $DISTANCE_DELAY_SYNTH_LOWEST_NOTE_NUMBER
         giDistanceDelaySynth_SampleCacheNoteNumbers[] $DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
         giDistanceDelaySynth_SampleCacheTableNumbers[] init lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)
         giDistanceDelaySynth_SampleCacheLength init sr * giDistanceDelaySynth_Duration
