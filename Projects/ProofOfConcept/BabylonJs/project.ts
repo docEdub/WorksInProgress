@@ -96,9 +96,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let sunLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(1, -1, 1), scene)
-    var ambientLight = new BABYLON.HemisphericLight('', new BABYLON.Vector3(0, 1, 0), scene);
-
     console.debug('ambientLight ...')
     console.debug(ambientLight)
 
@@ -109,6 +106,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
     camera.setTarget(new BABYLON.Vector3(0, 2, 0));
+
+    let sunLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(1, -1, 1), scene)
+    var ambientLight = new BABYLON.HemisphericLight('', new BABYLON.Vector3(0, 1, 0), scene);
+
+    sunLight.direction.set(
+        camera.target.x - camera.position.x,
+        camera.target.y - camera.position.y,
+        camera.target.z - camera.position.z,        
+        )
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -243,6 +249,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // DistanceDelaySynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        const distanceDelaySynthLitBrightness = 0.5
+        const distanceDelaySynthUnlitBrightness = 0.05
+
+        const distanceDelaySynthLitBrightnessRGB = [ distanceDelaySynthLitBrightness, distanceDelaySynthLitBrightness, distanceDelaySynthLitBrightness ]
+        const distanceDelaySynthUnlitBrightnessRGB = [ distanceDelaySynthUnlitBrightness, distanceDelaySynthUnlitBrightness, distanceDelaySynthUnlitBrightness ]
+
         const distanceDelaySynthData = csdData['6c9f37ab-392f-429b-8217-eac09f295362']
         const distanceDelaySynthHeader = distanceDelaySynthData[0]
         console.debug('distanceDelaySynthHeader =', distanceDelaySynthHeader)
@@ -271,13 +283,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             tessellation: 32
         })
         const distanceDelaySynthMaterial = new BABYLON.StandardMaterial('', scene)
-        // distanceDelaySynthMaterial.emissiveColor.set(1, 1, 1)
         distanceDelaySynthMaterial.emissiveColor.set(0.5, 0.5, 0.5)
         distanceDelaySynthMaterial.diffuseColor.set(1, 1, 1)
         distanceDelaySynthMaterial.specularColor.set(0.25, 0.25, 0.25)
+        distanceDelaySynthMaterial.specularPower = 5
         distanceDelaySynthMesh.material = distanceDelaySynthMaterial
         distanceDelaySynthMesh.isVisible = true
         distanceDelaySynthMesh.thinInstanceRegisterAttribute("color", 3)
+
+        // Pillars
+        const pillarWidth = 5
+        const height = 130
+        const scalingMatrix = BABYLON.Matrix.Scaling(pillarWidth, height, pillarWidth)
+        for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
+            let radius = distanceDelaySynthRadii[delayI]
+            let angle = Math.PI
+            let pillarIndex1 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height / 2, radius * Math.cos(angle))), false)
+            angle += distanceDelaySynthRotationAngle
+            let pillarIndex2 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height / 2, radius * Math.cos(angle))), false)
+            angle += distanceDelaySynthRotationAngle
+            let pillarIndex3 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height / 2, radius * Math.cos(angle))), false)
+            distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', pillarIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
+            distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', pillarIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
+            distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', pillarIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
+        }
 
         const makeDistanceDelaySynthNote = (noteNumber) => {
             let foundNote = distanceDelaySynthNote(noteNumber)
@@ -287,7 +316,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             let delays = []
             let height = (noteNumber - 35) * distanceDelaySynthHeader.noteNumberToHeightScale
             // console.debug('height =', height)
-            const scalingMatrix = BABYLON.Matrix.Scaling(10, 2, 10)
+            const scalingMatrix = BABYLON.Matrix.Scaling(pillarWidth + 1, 4.5, pillarWidth + 1)
             for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
                 const radius = distanceDelaySynthRadii[delayI]
                 let angle = Math.PI
@@ -296,9 +325,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
                 angle += distanceDelaySynthRotationAngle
                 let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), true)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, [.2, .2, .2], false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, [.2, .2, .2], false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, [.2, .2, .2], true)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
                 let delay = {
                     onTimes: [],
                     offTimes: [],
@@ -361,16 +390,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
                     while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
                         // delay.mesh.isVisible = true
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], [1, 1, 1], false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], [1, 1, 1], false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], [1, 1, 1], true)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], distanceDelaySynthLitBrightnessRGB, false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], distanceDelaySynthLitBrightnessRGB, false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], distanceDelaySynthLitBrightnessRGB, true)
                         delay.onIndex++
                     }
 
                     while (delay.offIndex < delay.offTimes.length && delay.offTimes[delay.offIndex] <= time) {
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], [.2, .2, .2], false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], [.2, .2, .2], false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], [.2, .2, .2], true)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], distanceDelaySynthUnlitBrightnessRGB, false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], distanceDelaySynthUnlitBrightnessRGB, false)
+                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], distanceDelaySynthUnlitBrightnessRGB, true)
                         delay.offIndex++
                     }
                 }
