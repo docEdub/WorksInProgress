@@ -39,11 +39,11 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giPointSynth_DistanceMin = 1
-giPointSynth_DistanceMax = 50
+giPointSynth_DistanceMin = 50
+giPointSynth_DistanceMax = 500
 giPointSynth_ReferenceDistance = 5
-giPointSynth_RolloffFactor = 1
-giPointSynth_PlaybackVolumeAdjustment = 10
+giPointSynth_RolloffFactor = 0.25
+giPointSynth_PlaybackVolumeAdjustment = 4
 giPointSynth_PlaybackReverbAdjustment = 0.5
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#
@@ -184,10 +184,10 @@ instr INSTRUMENT_ID
             iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
 
-            // Minimum Y = 10.
+            // Minimum Y = 100.
             // Note number range 80 to 105 (range = 25).
-            // Height range 0 to 20.
-            iY init 10 + ((iNoteNumber - 80) / 25) * 20
+            // Height range 0 to 100.
+            iY init 50 + ((iNoteNumber - 80) / 25) * 300
 
             kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
             ; if (changed(kDistance) == true) then
@@ -204,14 +204,19 @@ instr INSTRUMENT_ID
                 giPointSynthNextXYZ_i = 0
             endif
             AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+
+            iPlaybackReverbAdjustment init 1
+            #if IS_PLAYBACK
+                iPlaybackReverbAdjustment = giPointSynth_PlaybackReverbAdjustment
+            #endif
+
             a1 = gkAmbisonicChannelGains[0] * aOutDistanced
             a2 = gkAmbisonicChannelGains[1] * aOutDistanced
             a3 = gkAmbisonicChannelGains[2] * aOutDistanced
             a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-            aReverbOut = aOut
+            aReverbOut = aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
 
             #if IS_PLAYBACK
-                aReverbOut *= giPointSynth_PlaybackReverbAdjustment
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
                 gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
