@@ -2306,7 +2306,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceDelaySynth_DelayTime = 0.5
         giDistanceDelaySynth_Duration = 0.49
         giDistanceDelaySynth_DelayCount = 5
-        giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.333
+        giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.25
         giDistanceDelaySynth_ReferenceDistance = 5
         giDistanceDelaySynth_RolloffFactor = 0.5
         giDistanceDelaySynth_PlaybackVolumeAdjustment = 5
