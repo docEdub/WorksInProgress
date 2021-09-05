@@ -14,9 +14,9 @@
 <CsInstruments>
 
 giPresetUuidPreallocationCount[] = fillarray( \
-    4,  /* instr 4 -- CircleSynth */ \
-    1,  /* instr 5 -- PowerLineSynth */ \
-    9   /* instr 6 -- PointSynth */ \
+    9,  /* instr 4 -- DistanceDelaySynth */ \
+    9,   /* instr 5 -- PointSynth */ \
+    0    /* instr 6 -- PowerLineSynth */ \
 )
 
 ${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT

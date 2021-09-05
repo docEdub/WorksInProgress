@@ -16,6 +16,7 @@ add_csd_targets(
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
         "Synths/CircleSynth.csd"
+        "Synths/DistanceDelaySynth.csd"
         "Synths/PointSynth.csd"
         "Synths/PowerLineSynth.csd"
         "Synths/SubtractiveSynth.csd"

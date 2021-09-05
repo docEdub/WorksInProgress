@@ -14,9 +14,9 @@
 <CsInstruments>
 
 gSPresetUuidOrder[] = fillarray( \
-    "baeea327-af4b-4b10-a843-6614c20ea958", /* CircleSynth */ \
-    "069e83fd-1c94-47e9-95ec-126e0fbefec3", /* PowerLineSynth */ \
-    "b4f7a35c-6198-422f-be6e-fa126f31b007"  /* PointSynth */ \
+    "6c9f37ab-392f-429b-8217-eac09f295362", /* DistanceDelaySynth */ \
+    "b4f7a35c-6198-422f-be6e-fa126f31b007", /* PointSynth */ \
+    "069e83fd-1c94-47e9-95ec-126e0fbefec3"  /* PowerLineSynth */ \
 )
 
 #include "core_global.h"
@@ -632,7 +632,7 @@ instr WatchOrcFile
         kModifiedTime = pyleval(SPythonCode)
         if (kPreviousModifiedTime < kModifiedTime) then
             if (kPreviousModifiedTime > 0) then
-                log_k_trace("%s changed", SOrcPath)
+                log_k_trace("%s changed. Port = %d", SOrcPath, iOscPort)
                 OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
                     sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
                 kSignal += 1

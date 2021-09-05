@@ -240,13 +240,13 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_elevation = taninv2(k_direction[$Z],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
 
-    #if LOGGING
-        if (changed(k_azimuth) == true || changed(k_elevation) == true) then
-            log_k_debug("xyz = (%f, %f, %f), azimuth = %f, elevation = %f",
-                k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-                k_azimuth, k_elevation)
-        endif
-    #endif
+    ; #if LOGGING
+    ;     if (changed(k_azimuth) == true || changed(k_elevation) == true) then
+    ;         log_k_debug("xyz = (%f, %f, %f), azimuth = %f, elevation = %f",
+    ;             k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
+    ;             k_azimuth, k_elevation)
+    ;     endif
+    ; #endif
 
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 
@@ -405,6 +405,28 @@ opcode AF_3D_Audio_SourceDistance, k, iii
     kVector[$X] = iSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = iSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = iSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
+
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
+// in  k: Source's position x.
+// in  k: Source's position y.
+// in  k: Source's position z.
+//
+// out k  : Distance from listener to given source position.
+//
+opcode AF_3D_Audio_SourceDistance, k, kkk
+    kSourcePositionX, kSourcePositionY, kSourcePositionZ xin
+    kVector[] init 3
+    kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
 
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop

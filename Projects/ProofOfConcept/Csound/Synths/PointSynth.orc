@@ -95,6 +95,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, ",\"soundDistanceMin\":%d", giPointSynth_DistanceMin)
         fprints(SJsonFile, ",\"soundDistanceMax\":%d", giPointSynth_DistanceMax)
         fprints(SJsonFile, "}")
+        ficlose(SJsonFile)
         turnoff
     endin
 ${CSOUND_ENDIF}
@@ -244,6 +245,7 @@ instr INSTRUMENT_ID
                 SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giPointSynth_NoteIndex[ORC_INSTANCE_INDEX])
                 fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"note\":%.3f,\"xyz\":[%.3f,%.3f,%.3f]}}", times(),
                     iNoteNumber, iX, iY, iZ)
+                ficlose(SJsonFile)
             ${CSOUND_ENDIF}
 #if !IS_PLAYBACK
         endif

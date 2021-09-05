@@ -29,4 +29,13 @@
     - Title: **ProofOfConcept - 2021-08-07--1113**
     - Posted to:
         - Twitter: https://twitter.com/docedub/status/1424047469378277378
-        - WebXR Discord show-off channel: https://discord.com/channels/758943204715659264/759559568321282109/873606743660310568
+        - WebXR Discord `show-off` channel: https://discord.com/channels/758943204715659264/759559568321282109/873606743660310568
+
+- 2021-08-20: https://playground.babylonjs.com/#SY0NY5#5
+    - Title: **ProofOfConcept - 2021-08-26--2019**
+    - Posted to:
+        - WebXR Discord `browser` channel: https://discord.com/channels/758943204715659264/805647111625375764/880609996277186590
+    - Notes:
+        - Works in Chrome.
+        - Doesn't work in Quest 2. Hits mystery WASM memory limit?
+    

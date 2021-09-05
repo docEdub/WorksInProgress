@@ -12,28 +12,30 @@ instr CompileOrc
         turnoff
     endif
 
-    log_i_info("Compiling CircleSynth.orc ...")
+    log_i_info("Compiling ${InstrumentName}.orc ...")
     iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/${InstrumentName}.orc")
     if (iResult == 0) then
-        log_i_info("Compiling CircleSynth.orc - succeeded")
+        log_i_info("Compiling ${InstrumentName}.orc - succeeded")
     else
-        log_i_info("Compiling CircleSynth.orc - failed")
+        log_i_info("Compiling ${InstrumentName}.orc - failed")
     endif
     gkReloaded = true
 endin
 
 
 instr ListenForChangedOrcFile
-    log_i_trace("instr ListenForChangedOrcFile ...")
+    log_i_trace("instr ListenForChangedOrcFile(port = %d) ...", gi_oscPort)
 
     kSignal init -1
-    kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
+    kReceived = OSClisten(gi_oscHandle, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, gi_oscPort), "i",
         kSignal)
     if (kReceived == true) then
+        log_k_debug("${InstrumentName}.orc changed. Port = %d", gi_oscPort)
         event("i", "CompileOrc", 0, -1)
     endif
+    ; printks("Listening ...\n", 1)
 
-    log_i_trace("instr ListenForChangedOrcFile - done")
+    log_i_trace("instr ListenForChangedOrcFile(port = %d) - done", gi_oscPort)
 endin
 
 
