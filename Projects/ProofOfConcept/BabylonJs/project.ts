@@ -2394,7 +2394,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     asig *= linen:a(1, 0, p3, 0.001)
                     asig += a1
                     if (iEventType == 5) then
-                        prints("Copying asig into note's sample cache table.\\n")
                         kPass init 0
                         kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
                         kPass += 1
@@ -2409,7 +2408,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a3 = gaInstrumentSignals[0][2]
                     a4 = gaInstrumentSignals[0][3]
                     a5 = gaInstrumentSignals[0][4]
-                kY = (iNoteNumber - 35) * giDistanceDelaySynth_NoteNumberToHeightScale
+                kY init (iNoteNumber - giDistanceDelaySynth_LowestNoteNumber) * giDistanceDelaySynth_NoteNumberToHeightScale
                 iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
                 kRotationIndex = 0
                 while (kRotationIndex < 3) do
