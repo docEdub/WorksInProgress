@@ -250,7 +250,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const pillarWidth = 5
-        const pillarHeight = 130
+        const pillarHeight = 160
 
         const distanceDelaySynthLitBrightness = 0.75
         const distanceDelaySynthUnlitBrightness = 0.05
@@ -353,7 +353,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 return foundNote
             }
             let delays = []
-            let height = (noteNumber - 35) * distanceDelaySynthHeader.noteNumberToHeightScale
+            let height = (noteNumber - distanceDelaySynthLowestNoteNumber) * distanceDelaySynthHeader.noteNumberToHeightScale
             for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
                 const radius = distanceDelaySynthRadii[delayI]
                 let angle = Math.PI
@@ -397,6 +397,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return note
         }
 
+        // Make note numbers array and find lowest note number before making note meshes.
         for (let noteI = 1; noteI < distanceDelaySynthData.length; noteI++) {
             let noteOn = distanceDelaySynthData[noteI].noteOn
 
@@ -414,6 +415,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     distanceDelaySynthLowestNoteNumber = Math.min(noteOn.note, distanceDelaySynthLowestNoteNumber)
                 }
             }
+        }
+        distanceDelaySynthLowestNoteNumber -= 5
+        console.debug('distanceDelaySynthLowestNoteNumber =', distanceDelaySynthLowestNoteNumber)
+
+        for (let noteI = 1; noteI < distanceDelaySynthData.length; noteI++) {
+            let noteOn = distanceDelaySynthData[noteI].noteOn
+
+            // Skip preallocation notes.
+            if (noteOn.time == 0.005) {
+                continue;
+            }
 
             let note = makeDistanceDelaySynthNote(noteOn.note)
             let onTime = noteOn.time
@@ -424,8 +436,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 delay.offTimes.push(onTime + distanceDelaySynthHeader.duration)
             }
         }
-        distanceDelaySynthLowestNoteNumber--
-        console.debug('distanceDelaySynthLowestNoteNumber =', distanceDelaySynthLowestNoteNumber)
 
         const resetDistanceDelaySynthIndexes = () => {
             distanceDelaySynthNotes.forEach((note) => {
@@ -557,25 +567,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const cameraRadiusMax = 400
-        const cameraSpeed = 1100
-        let cameraTarget = new BABYLON.Vector3(0, 40, -50)
-        let cameraRadius = 60
+        let cameraSpeed = 4000
+        let cameraTargetY = pillarHeight / 3
+        let cameraTarget = new BABYLON.Vector3(0, cameraTargetY, -50)
+        let cameraRadius = 65
         let cameraRadiusX = -1
-        let cameraAngle = Math.PI + 0.06
+        let cameraAngle = Math.PI
 
         const updateCamera = (time) => {
-            if (cameraRadius < 50 || cameraRadius > cameraRadiusMax) {
+            if (cameraRadius < 10 || cameraRadius > cameraRadiusMax) {
                 cameraRadiusX *= -1
             }
-            cameraRadius -= time / cameraSpeed * cameraRadiusX
-            cameraAngle += Math.PI * time / (500 * cameraSpeed)
+            cameraRadius -= time / (cameraSpeed / 2) * cameraRadiusX
+            cameraAngle += Math.PI * time / (360 * cameraSpeed)
             cameraAngle %= 2 * Math.PI
 
             camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
+            // cameraTarget.set(0, Math.min(cameraTargetY + time / 10, 400), -50)
             camera.setTarget(cameraTarget)
 
             ambientLight.direction = camera.target.subtract(camera.position)
             ambientLight.direction.y = 0
+
+            if (restartCount > 0) {
+                cameraSpeed *= 1.0025
+            }
         }
 
         engine.runRenderLoop(() => {
@@ -651,12 +667,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let restartCount = 0
 
     const restartCsound = async () => {
-        console.debug('Restarting Csound ...')
-        isCsoundStarted = false;
-        await document.csound.rewindScore();
-        console.debug('Restarting Csound - done')
+        // console.debug('Restarting Csound ...')
+        // isCsoundStarted = false;
+        // await document.csound.rewindScore();
+        // console.debug('Restarting Csound - done')
         restartCount++
-        console.debug('Restart count =', restartCount)
+        // console.debug('Restart count =', restartCount)
     }
 
     const startCsound = async () => {
