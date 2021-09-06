@@ -114,18 +114,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         camera.target.y - camera.position.y,
         camera.target.z - camera.position.z,        
         )
-    
-    const resetRenderingPipeline = (cameras) => {
-        var pipeline = new BABYLON.DefaultRenderingPipeline('', false, scene, cameras)
-        pipeline.bloomEnabled = true
-        pipeline.bloomKernel = 16
-        pipeline.bloomScale = 0.1
-        pipeline.bloomThreshold = 0.2
-        pipeline.bloomWeight = 10
-        pipeline.fxaaEnabled = true;
-        pipeline.samples = 4
-        pipeline.prepare()
-    }
+
+    const glowLayer = new BABYLON.GlowLayer('', scene)
+    glowLayer.blurKernelSize = 16
+    glowLayer.intensity = 1
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -216,7 +208,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
-    resetRenderingPipeline([ camera ])
 
     const startXr = async () => {
         try {
@@ -227,16 +218,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         if (currentCamera != camera) {
                             console.debug('Switched to flat-screen camera')
                             currentCamera = camera
-                            resetRenderingPipeline([ currentCamera ])
                         }
                     }
                     else {
                         if (currentCamera != xr.baseExperience.camera) {
                             console.debug('Switched to XR camera')
                             currentCamera = xr.baseExperience.camera
-                            console.debug('xr camera:')
-                            console.debug(currentCamera)
-                            resetRenderingPipeline(currentCamera.rigCameras)
                         }
                     }
                 })
@@ -294,13 +281,26 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             tessellation: 32
         })
         const distanceDelaySynthMaterial = new BABYLON.StandardMaterial('', scene)
-        distanceDelaySynthMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+        // distanceDelaySynthMaterial.emissiveColor.set(0.5, 0.5, 0.5)
         distanceDelaySynthMaterial.diffuseColor.set(1, 1, 1)
         distanceDelaySynthMaterial.specularColor.set(0.25, 0.25, 0.25)
         distanceDelaySynthMaterial.specularPower = 5
         distanceDelaySynthMesh.material = distanceDelaySynthMaterial
         distanceDelaySynthMesh.isVisible = true
-        distanceDelaySynthMesh.thinInstanceRegisterAttribute("color", 3)
+        distanceDelaySynthMesh.thinInstanceRegisterAttribute('color', 3)
+        distanceDelaySynthMesh.thinInstanceRegisterAttribute('emissiveColor', 3)
+
+        const distanceDelaySynthGlowMesh = BABYLON.MeshBuilder.CreateCylinder('', {
+            height: 1,
+            diameter: 1,
+            tessellation: 32
+        })
+        const distanceDelaySynthGlowMaterial = new BABYLON.StandardMaterial('', scene)
+        distanceDelaySynthGlowMaterial.emissiveColor.set(1, 1, 1)
+        distanceDelaySynthGlowMesh.material = distanceDelaySynthGlowMaterial
+        distanceDelaySynthGlowMesh.isVisible = true
+        distanceDelaySynthGlowMesh.thinInstanceRegisterAttribute('color', 3)
+        distanceDelaySynthGlowMesh.thinInstanceRegisterAttribute('emissiveColor', 3)
 
         // Pillars
         const pillarWidth = 5
@@ -319,6 +319,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', pillarIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
         }
 
+        const zeroScalingMatrix = BABYLON.Matrix.Scaling(0, 0, 0)
+        const distanceDelaySynthNoteScalingMatrix = BABYLON.Matrix.Scaling(pillarWidth + 1.5, 4.5, pillarWidth + 1.5)
+        const distanceDelaySynthNoteGlowScalingMatrix = BABYLON.Matrix.Scaling(pillarWidth + 3, 5, pillarWidth + 3)
+
         const makeDistanceDelaySynthNote = (noteNumber) => {
             let foundNote = distanceDelaySynthNote(noteNumber)
             if (!!foundNote) {
@@ -326,28 +330,40 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             let delays = []
             let height = (noteNumber - 35) * distanceDelaySynthHeader.noteNumberToHeightScale
-            // console.debug('height =', height)
-            const scalingMatrix = BABYLON.Matrix.Scaling(pillarWidth + 1, 4.5, pillarWidth + 1)
             for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
                 const radius = distanceDelaySynthRadii[delayI]
                 let angle = Math.PI
-                let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
+                const translationMatrix1 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
+                const instanceMatrix1 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix1)
+                const glowInstanceMatrix1 = distanceDelaySynthNoteGlowScalingMatrix.multiply(translationMatrix1)
+                let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix1, false)
+                let glowInstanceIndex1 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, false)
                 angle += distanceDelaySynthRotationAngle
-                let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
+                const translationMatrix2 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
+                const instanceMatrix2 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix2)
+                const glowInstanceMatrix2 = distanceDelaySynthNoteGlowScalingMatrix.multiply(translationMatrix2)
+                let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix2, false)
+                let glowInstanceIndex2 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, false)
                 angle += distanceDelaySynthRotationAngle
-                let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), true)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthLitBrightnessRGB, false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthLitBrightnessRGB, false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthLitBrightnessRGB, true)
-                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
-                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
-                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
+                const translationMatrix3 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
+                const instanceMatrix3 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix3)
+                const glowInstanceMatrix3 = distanceDelaySynthNoteGlowScalingMatrix.multiply(translationMatrix3)
+                let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix3, true)
+                let glowInstanceIndex3 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, true)
+                // let glowInstanceIndex3 = distanceDelaySynthGlowMesh.thinInstanceAdd(glowInstanceMatrix3, true)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
+                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex1, [1, 1, 1], false)
+                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex2, [1, 1, 1], false)
+                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex3, [1, 1, 1], true)
                 let delay = {
                     onTimes: [],
                     offTimes: [],
                     onIndex: 0,
                     offIndex: 0,
-                    instanceIndexes: [instanceIndex1, instanceIndex2, instanceIndex3]
+                    glowInstanceIndexes: [glowInstanceIndex1, glowInstanceIndex2, glowInstanceIndex3],
+                    glowInstanceMatrixes: [glowInstanceMatrix1, glowInstanceMatrix2, glowInstanceMatrix3]
                 }
                 delays.push(delay)
             }
@@ -403,17 +419,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     const delay = note.delays[delayI]
 
                     while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
-                        // delay.mesh.isVisible = true
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], distanceDelaySynthLitBrightnessRGB, false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], distanceDelaySynthLitBrightnessRGB, false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], distanceDelaySynthLitBrightnessRGB, true)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[0], delay.glowInstanceMatrixes[0], false)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[1], delay.glowInstanceMatrixes[1], false)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[2], delay.glowInstanceMatrixes[2], true)
                         delay.onIndex++
                     }
 
                     while (delay.offIndex < delay.offTimes.length && delay.offTimes[delay.offIndex] <= time) {
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[0], distanceDelaySynthUnlitBrightnessRGB, false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[1], distanceDelaySynthUnlitBrightnessRGB, false)
-                        distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', delay.instanceIndexes[2], distanceDelaySynthUnlitBrightnessRGB, true)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[0], zeroScalingMatrix, false)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[1], zeroScalingMatrix, false)
+                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[2], zeroScalingMatrix, true)
                         delay.offIndex++
                     }
                 }
