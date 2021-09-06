@@ -558,7 +558,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const cameraRadiusMax = 400
         const cameraSpeed = 1100
-        let cameraTarget = new BABYLON.Vector3(0, 30, -50)
+        let cameraTarget = new BABYLON.Vector3(0, 40, -50)
         let cameraRadius = 60
         let cameraRadiusX = -1
         let cameraAngle = Math.PI + 0.06
@@ -568,11 +568,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 cameraRadiusX *= -1
             }
             cameraRadius -= time / cameraSpeed * cameraRadiusX
-            cameraAngle += Math.PI * time / (1000 * cameraSpeed)
+            cameraAngle += Math.PI * time / (500 * cameraSpeed)
             cameraAngle %= 2 * Math.PI
-            camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
 
-            // cameraTarget.y = 100 * (cameraRadius / cameraRadiusMax)
+            camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
             camera.setTarget(cameraTarget)
 
             ambientLight.direction = camera.target.subtract(camera.position)
