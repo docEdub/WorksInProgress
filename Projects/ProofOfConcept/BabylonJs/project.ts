@@ -556,18 +556,41 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // Update note animations.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        engine.runRenderLoop(() => {
+        const cameraRadiusMax = 400
+        const cameraSpeed = 1100
+        let cameraTarget = new BABYLON.Vector3(0, 30, -50)
+        let cameraRadius = 60
+        let cameraRadiusX = -1
+        let cameraAngle = Math.PI + 0.06
+
+        const updateCamera = (time) => {
+            if (cameraRadius < 50 || cameraRadius > cameraRadiusMax) {
+                cameraRadiusX *= -1
+            }
+            cameraRadius -= time / cameraSpeed * cameraRadiusX
+            cameraAngle += Math.PI * time / (1000 * cameraSpeed)
+            cameraAngle %= 2 * Math.PI
+            camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
+
+            // cameraTarget.y = 100 * (cameraRadius / cameraRadiusMax)
+            camera.setTarget(cameraTarget)
+
             ambientLight.direction = camera.target.subtract(camera.position)
             ambientLight.direction.y = 0
+        }
 
+        engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 resetDistanceDelaySynthIndexes()
                 resetPointSynthIndexes()
+                updateCamera(0)
                 return;
             }
+
             const time = document.audioContext.currentTime - startTime;
             distanceDelaySynthRender(time)
             pointSynthRender(time)
+            updateCamera(time)
         })
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
