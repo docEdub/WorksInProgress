@@ -114,6 +114,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         camera.target.y - camera.position.y,
         camera.target.z - camera.position.z,        
         )
+    
+    const resetRenderingPipeline = (cameras) => {
+        var pipeline = new BABYLON.DefaultRenderingPipeline('', false, scene, cameras)
+        pipeline.bloomEnabled = true
+        pipeline.bloomKernel = 16
+        pipeline.bloomScale = 0.1
+        pipeline.bloomThreshold = 0.2
+        pipeline.bloomWeight = 10
+        pipeline.fxaaEnabled = true;
+        pipeline.samples = 4
+        pipeline.prepare()
+    }
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
     const environment = scene.createDefaultEnvironment({
@@ -204,6 +216,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
+    resetRenderingPipeline([ camera ])
 
     const startXr = async () => {
         try {
@@ -214,12 +227,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         if (currentCamera != camera) {
                             console.debug('Switched to flat-screen camera')
                             currentCamera = camera
+                            resetRenderingPipeline([ currentCamera ])
                         }
                     }
                     else {
                         if (currentCamera != xr.baseExperience.camera) {
                             console.debug('Switched to XR camera')
                             currentCamera = xr.baseExperience.camera
+                            console.debug('xr camera:')
+                            console.debug(currentCamera)
+                            resetRenderingPipeline(currentCamera.rigCameras)
                         }
                     }
                 })
@@ -243,7 +260,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // DistanceDelaySynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const distanceDelaySynthLitBrightness = 0.5
+        const distanceDelaySynthLitBrightness = 0.75
         const distanceDelaySynthUnlitBrightness = 0.05
 
         const distanceDelaySynthLitBrightnessRGB = [ distanceDelaySynthLitBrightness, distanceDelaySynthLitBrightness, distanceDelaySynthLitBrightness ]
@@ -319,9 +336,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), false)
                 angle += distanceDelaySynthRotationAngle
                 let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(scalingMatrix.multiply(BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))), true)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
-                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthLitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthLitBrightnessRGB, false)
+                distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthLitBrightnessRGB, true)
+                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
+                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
+                // distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
                 let delay = {
                     onTimes: [],
                     offTimes: [],
