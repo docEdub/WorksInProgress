@@ -38,4 +38,19 @@
     - Notes:
         - Works in Chrome.
         - Doesn't work in Quest 2. Hits mystery WASM memory limit?
-    
+
+- 2021-09-06: https://playground.babylonjs.com/#SY0NY5#6
+    - Title: **ProofOfConcept - 2021-09-06--1719**
+    - Posted to:
+        - Twitter: https://twitter.com/docedub/status/1434994932704481290
+        - Csound Discord `showcase` channel: https://discord.com/channels/784849854270537790/786239999259181073/884557106873774151
+        - WebXR Discord `show-off` channel: https://discord.com/channels/758943204715659264/759559568321282109/884556318206214234
+        - BabylonJS `Demos and Projects -> Programmers Corner` board: https://forum.babylonjs.com/t/programmers-corner/22892/89?u=docedub
+    - Notes:
+        - Works around float allocation error by not restarting Csound score.
+        - Has pre-made camera animation.
+    - Testing results:
+        - @slt on WebXR Discord tested on a HoloLens 2 and posted here: https://discord.com/channels/758943204715659264/759559637254275084/885153831841828915
+            - Audio is a bit glitchy, about the same as on iOS Safari. Using panning for spatial audio might resolve this instead of using ambisonic convolutions.
+            - FPS is about 10hz, which is not good. It's probably the glow effect causing this since it requires a 2-pass render to texture step, which is bad on mobile devices due to tiling (I think).
+            - @slt sent a video using Google drive and I uploaded it to Vimeo at https://vimeo.com/600273627.
