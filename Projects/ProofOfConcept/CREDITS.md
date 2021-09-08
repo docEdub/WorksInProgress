@@ -16,3 +16,5 @@ Discord WebXR channel:
     - davehill00 (Oculus)
     - De-Panther
     - yinch
+    - slt
+        - Tested on Hololens2 on 9/8/2021.
