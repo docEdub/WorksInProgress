@@ -26,6 +26,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const logDebugMessages = true;
     const showGroundGrid = true;
 
+    const animateCamera = false;
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
@@ -95,13 +96,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(99, 2, 99), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(500, 2, 500), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 90, 0));
 
     const ambientLightIntensity = 2
     // const ambientLight = new BABYLON.HemisphericLight('', new BABYLON.Vector3(0, -1, 0), scene);
@@ -575,6 +576,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let cameraAngle = Math.PI
 
         const updateCamera = (time) => {
+            if (!animateCamera) {
+                return
+            }
+
             if (cameraRadius < 10 || cameraRadius > cameraRadiusMax) {
                 cameraRadiusX *= -1
             }
