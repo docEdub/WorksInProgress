@@ -587,7 +587,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // NB: The camera radius only comes inside 50 when the music is ending for the first time.
             if (cameraRadius < 50) {
                 cameraSpeed *= 1.0025
-                console.debug('cameraSpeed =', cameraSpeed)
+                // console.debug('cameraSpeed =', cameraSpeed)
                 if (cameraSpeed > 50000) {
                     animateCamera = false
                     console.log('Camera animation lock released: restart count > 0')
