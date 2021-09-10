@@ -26,7 +26,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const logDebugMessages = true;
     const showGroundGrid = true;
 
-    const animateCamera = false;
+    let animateCamera = true;
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
@@ -571,16 +571,29 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let cameraSpeed = 4000
         let cameraTargetY = pillarHeight / 3
         let cameraTarget = new BABYLON.Vector3(0, cameraTargetY, -50)
+        let cameraTargetIsUserDefined = false
         let cameraRadius = 65
         let cameraRadiusX = -1
         let cameraAngle = Math.PI
 
         const updateCamera = (time) => {
+            ambientLight.direction = camera.target.subtract(camera.position)
+            ambientLight.direction.y = 0
+
             if (!animateCamera) {
                 return
             }
 
-            if (cameraRadius < 10 || cameraRadius > cameraRadiusMax) {
+            // NB: The camera radius only comes inside 50 when the music is ending for the first time.
+            if (cameraRadius < 50) {
+                cameraSpeed *= 1.0025
+                console.debug('cameraSpeed =', cameraSpeed)
+                if (cameraSpeed > 50000) {
+                    animateCamera = false
+                    console.log('Camera animation lock released: restart count > 0')
+                }
+            }
+            else if (cameraRadius > cameraRadiusMax) {
                 cameraRadiusX *= -1
             }
             cameraRadius -= time / (cameraSpeed / 2) * cameraRadiusX
@@ -588,17 +601,88 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             cameraAngle %= 2 * Math.PI
 
             camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
-            // cameraTarget.set(0, Math.min(cameraTargetY + time / 10, 400), -50)
-            camera.setTarget(cameraTarget)
 
-            ambientLight.direction = camera.target.subtract(camera.position)
-            ambientLight.direction.y = 0
+            if (!cameraTargetIsUserDefined) {
+                camera.setTarget(cameraTarget)
+            }
 
             if (restartCount > 0) {
-                cameraSpeed *= 1.0025
             }
         }
 
+        let pointerIsDown = false
+
+        const onPointerDown = (e) => {
+            if (e.button !== 0) {
+                return;
+            }
+            pointerIsDown = true
+        }
+    
+        const onPointerUp = () => {
+            pointerIsDown = false
+        }
+    
+        const onPointerMove = (e) => {
+            if (animateCamera && !cameraTargetIsUserDefined && pointerIsDown) {
+                cameraTargetIsUserDefined = true
+                console.log('Camera target lock released: mouse drag detected')
+            }
+        }
+
+        const cameraUsesInputKey = (key) => {
+            for (let i = 0; i < camera.keysDown.length; i++) {
+                if (key == camera.keysDown[i]) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < camera.keysDownward.length; i++) {
+                if (key == camera.keysDown[i]) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < camera.keysLeft.length; i++) {
+                if (key == camera.keysLeft[i]) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < camera.keysRight.length; i++) {
+                if (key == camera.keysRight[i]) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < camera.keysUp.length; i++) {
+                if (key == camera.keysUp[i]) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < camera.keysUpward.length; i++) {
+                if (key == camera.keysUpward[i]) {
+                    return true;
+                }
+            }
+            return false
+        }
+
+        const onKeyDown = (e) => {
+            if (animateCamera && cameraUsesInputKey(e.keyCode)) {
+                animateCamera = false
+                console.log('Camera animation lock released: key press detected')
+            }
+        }
+    
+        canvas.addEventListener("pointerdown", onPointerDown, false)
+        canvas.addEventListener("pointerup", onPointerUp, false)
+        document.addEventListener("pointermove", onPointerMove, false)
+        document.addEventListener("keydown", onKeyDown, false)
+    
+        scene.onDispose = function () {
+            canvas.removeEventListener("pointerdown", onPointerDown)
+            canvas.removeEventListener("pointerup", onPointerUp)
+            document.removeEventListener("pointermove", onPointerMove)
+            document.removeEventListener("onkeydown", onKeyDown)
+        }
+        
         engine.runRenderLoop(() => {
             if (!isCsoundStarted) {
                 resetDistanceDelaySynthIndexes()
@@ -6404,7 +6488,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         i 5.427 195.856 0.100 1 1106 51
         i 5.428 196.444 0.100 1 1106 54
         s
-        i "SendEndedMessage" 10 -1
+        i "SendEndedMessage" 30 -1
          #ifdef IS_GENERATING_JSON
             i "GenerateJson" 0 1
          #else

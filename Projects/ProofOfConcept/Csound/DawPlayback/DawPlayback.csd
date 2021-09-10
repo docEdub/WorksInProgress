@@ -433,8 +433,8 @@ i "PointSynth_ResetNextXYZ_i" 0 -1
 #include "_.mode4.sco"
 
 s
-; Allow time for the reverb tail to fade out.
-i "SendEndedMessage" 10 -1
+; Allow time for the reverb tail to fade out and the camera animation speed to slow down to zero.
+i "SendEndedMessage" 30 -1
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     i "GenerateJson" 0 1
