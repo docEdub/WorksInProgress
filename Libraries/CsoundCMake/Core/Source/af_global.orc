@@ -7,6 +7,7 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_global_orc ${CSOUND_INCLUDE_GUARD_
 // vice-versa.
 ${CSOUND_INCLUDE} "core_global.orc"
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "time.orc"
 
 //---------------------------------------------------------------------------------------------------------------------
 // File: af_global.orc
@@ -121,7 +122,7 @@ opcode AF_3D_UpdateListenerPosition, 0, i
     ;     kChanged = true
     ; endif    
     ; if (kChanged == true) then
-    ;     printsk("Raw Csound listener position = [%.3f, %.3f, %.3f]\n", kX, kY, kZ)
+    ;     printsk("%s: Raw Csound listener position = [%.3f, %.3f, %.3f]\n", time_string_k(), kX, kY, kZ)
     ; endif
 endop
 
