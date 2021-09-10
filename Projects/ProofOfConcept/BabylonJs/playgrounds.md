@@ -46,6 +46,7 @@
         - Csound Discord `showcase` channel: https://discord.com/channels/784849854270537790/786239999259181073/884557106873774151
         - WebXR Discord `show-off` channel: https://discord.com/channels/758943204715659264/759559568321282109/884556318206214234
         - BabylonJS `Demos and Projects -> Programmers Corner` board: https://forum.babylonjs.com/t/programmers-corner/22892/89?u=docedub
+        - BabylonJS `Demos and Projects` as a separate thread: https://forum.babylonjs.com/t/spatial-audio-experience-proofofconcept/23712
     - Notes:
         - Works around float allocation error by not restarting Csound score.
         - Has pre-made camera animation.
