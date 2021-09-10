@@ -672,12 +672,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let restartCount = 0
 
     const restartCsound = async () => {
-        // console.debug('Restarting Csound ...')
-        // isCsoundStarted = false;
-        // await document.csound.rewindScore();
-        // console.debug('Restarting Csound - done')
+        console.debug('Restarting Csound ...')
+        isCsoundStarted = false;
+        await document.csound.rewindScore();
+        console.debug('Restarting Csound - done')
         restartCount++
-        // console.debug('Restart count =', restartCount)
+        console.debug('Restart count =', restartCount)
     }
 
     const startCsound = async () => {
