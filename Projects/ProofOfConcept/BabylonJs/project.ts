@@ -332,7 +332,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // Pillars
         for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
             let radius = distanceDelaySynthRadii[delayI]
-            console.debug('radius =', radius)
+            // console.debug('radius =', radius)
             let angle = Math.PI
             let pillarIndex1 = distanceDelaySynthPillarMesh.thinInstanceAdd(BABYLON.Matrix.Translation(radius * Math.sin(angle), pillarHeight / 2, radius * Math.cos(angle)), false)
             angle += distanceDelaySynthRotationAngle
