@@ -534,7 +534,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const note = pointSynthData[i].noteOn;
             note.instanceIndex = noteMeshInstanceIndex;
             let mesh = noteMeshInstances[note.instanceIndex];
-            let mirrorMesh = noteMeshInstances[note.instanceIndex + 1];
             mesh.position.x = note.xyz[0];
             mesh.position.y = note.xyz[1];
             mesh.position.z = note.xyz[2];
