@@ -96,13 +96,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(500, 2, 500), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 90, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 2, 1));
 
     const lightIntensity = 0.5
     const ambientLightParent = new BABYLON.TransformNode('', scene)
@@ -571,6 +571,65 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // GroundBubbleSynth
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const groundBubbleSynth_RadiusMax = 10
+        const groundBubbleSynth_RadiusMin = 5
+        const groundBubbleSynth_RadiusIncrement = 5
+        const groundBubbleSynth_AngleIncrement = Math.PI / 4
+
+        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 32, 1, scene, false)
+        const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
+        // groundBubbleSynth_Material.ambientColor.set(1, 1, 1)
+        // groundBubbleSynth_Material.diffuseColor.set(1, 1, 1)
+        let power = 0.5
+        groundBubbleSynth_Material.specularColor.set(power, power, power)
+        groundBubbleSynth_Material.specularPower = 100
+        groundBubbleSynth_Material.alpha = 0.25
+        groundBubbleSynth_Material.alphaMode = BABYLON.Engine.ALPHA_ADD
+        groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
+
+        let groundBubbleSynth_Meshes = []
+
+        for (let height = 0; height < 500; height += 5) {
+            for (let radius = groundBubbleSynth_RadiusMin; radius < groundBubbleSynth_RadiusMax; radius += groundBubbleSynth_RadiusIncrement) {
+                const diameter = 1
+                for (let angle = 0; angle < 2 * Math.PI; angle += groundBubbleSynth_AngleIncrement) {
+                    const x = radius * Math.sin(angle)
+                    const z = radius * Math.cos(angle)
+                    const mesh = groundBubbleSynth_Mesh.clone('')
+                    mesh.scaling.setAll(diameter)
+                    mesh.position.set(x, -height, z)
+                    groundBubbleSynth_Meshes.push(mesh)
+                }
+            }
+        }
+
+        const groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes(groundBubbleSynth_Meshes, true, true)
+
+        let groundBubbleSynth_AnimationStarted = false
+        const groundBubbleSynth_Render = (time) => {
+            if (groundBubbleSynth_AnimationStarted) {
+                return
+            }
+            const animation = new BABYLON.Animation('', 'position.y', 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE)
+            let keys = []
+            keys.push({
+                frame: 0,
+                value: 0
+            })
+            keys.push({
+                frame: 10, 
+                value: 1
+            })
+            animation.setKeys(keys)
+            groundBubbleSynth_MergedMeshes.animations.push(animation)
+            scene.beginAnimation(groundBubbleSynth_MergedMeshes, 0, 10, true, 10)
+            groundBubbleSynth_AnimationStarted = true
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Update note animations.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -690,7 +749,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             document.removeEventListener("onkeydown", onKeyDown)
         }
         
-        engine.runRenderLoop(() => {
+        scene.registerBeforeRender(() => {
             if (!isCsoundStarted) {
                 resetDistanceDelaySynthIndexes()
                 resetPointSynthIndexes()
@@ -701,6 +760,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const time = document.audioContext.currentTime - startTime;
             distanceDelaySynthRender(time)
             pointSynthRender(time)
+            groundBubbleSynth_Render(time)
             updateCamera(time)
         })
 
