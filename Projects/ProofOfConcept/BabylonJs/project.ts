@@ -96,7 +96,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(200, 2, 200), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -574,15 +574,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const groundBubbleSynth_RadiusMax = 10
-        const groundBubbleSynth_RadiusMin = 5
-        const groundBubbleSynth_RadiusIncrement = 5
-        const groundBubbleSynth_AngleIncrement = Math.PI / 4
+        const groundBubbleSynth_Diameter = 5
+        const groundBubbleSynth_OffsetXZ = 100
+        const groundBubbleSynth_OffsetY = 100
 
-        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 32, 1, scene, false)
+        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 32, groundBubbleSynth_Diameter, scene, false)
         const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
-        // groundBubbleSynth_Material.ambientColor.set(1, 1, 1)
-        // groundBubbleSynth_Material.diffuseColor.set(1, 1, 1)
         let power = 0.5
         groundBubbleSynth_Material.specularColor.set(power, power, power)
         groundBubbleSynth_Material.specularPower = 100
@@ -590,23 +587,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         groundBubbleSynth_Material.alphaMode = BABYLON.Engine.ALPHA_ADD
         groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
 
-        let groundBubbleSynth_Meshes = []
-
-        for (let height = 0; height < 500; height += 5) {
-            for (let radius = groundBubbleSynth_RadiusMin; radius < groundBubbleSynth_RadiusMax; radius += groundBubbleSynth_RadiusIncrement) {
-                const diameter = 1
-                for (let angle = 0; angle < 2 * Math.PI; angle += groundBubbleSynth_AngleIncrement) {
-                    const x = radius * Math.sin(angle)
-                    const z = radius * Math.cos(angle)
-                    const mesh = groundBubbleSynth_Mesh.clone('')
-                    mesh.scaling.setAll(diameter)
-                    mesh.position.set(x, -height, z)
-                    groundBubbleSynth_Meshes.push(mesh)
-                }
-            }
+        let groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes([ groundBubbleSynth_Mesh ], true, true)
+        let currentY = groundBubbleSynth_OffsetY
+        for (let i = 0; i < 4; i++) {
+            const mesh = groundBubbleSynth_MergedMeshes.clone('')
+            mesh.position.y = -currentY
+            groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes([ groundBubbleSynth_MergedMeshes, mesh ], true, true)
+            currentY *= 2
         }
 
-        const groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes(groundBubbleSynth_Meshes, true, true)
+        for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
+            for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
+                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false)
+                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, -z), false)
+                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, 0, -z), false)
+                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, 0, z), false)
+            }
+        }
 
         let groundBubbleSynth_AnimationStarted = false
         const groundBubbleSynth_Render = (time) => {
@@ -671,9 +668,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!cameraTargetIsUserDefined) {
                 camera.setTarget(cameraTarget)
             }
-
-            if (restartCount > 0) {
-            }
         }
 
         let pointerIsDown = false
@@ -691,8 +685,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     
         const onPointerMove = (e) => {
             if (animateCamera && !cameraTargetIsUserDefined && pointerIsDown) {
-                cameraTargetIsUserDefined = true
-                console.log('Camera target lock released: mouse drag detected')
+                unlockCameraTarget()
             }
         }
 
@@ -732,21 +725,34 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const onKeyDown = (e) => {
             if (animateCamera && cameraUsesInputKey(e.keyCode)) {
-                animateCamera = false
-                console.log('Camera animation lock released: key press detected')
+                unlockCameraPosition()
             }
         }
     
-        canvas.addEventListener("pointerdown", onPointerDown, false)
-        canvas.addEventListener("pointerup", onPointerUp, false)
-        document.addEventListener("pointermove", onPointerMove, false)
-        document.addEventListener("keydown", onKeyDown, false)
-    
-        scene.onDispose = function () {
+        if (animateCamera) {
+            canvas.addEventListener("pointerdown", onPointerDown, false)
+            canvas.addEventListener("pointerup", onPointerUp, false)
+            document.addEventListener("pointermove", onPointerMove, false)
+            document.addEventListener("keydown", onKeyDown, false)
+        }
+
+        const unlockCameraPosition = () => {
+            animateCamera = false
             canvas.removeEventListener("pointerdown", onPointerDown)
             canvas.removeEventListener("pointerup", onPointerUp)
-            document.removeEventListener("pointermove", onPointerMove)
             document.removeEventListener("onkeydown", onKeyDown)
+            console.log('Camera animation lock released: key press detected')
+        }
+    
+        const unlockCameraTarget = () => {
+            cameraTargetIsUserDefined = true
+            document.removeEventListener("pointermove", onPointerMove)
+            console.log('Camera target lock released: mouse drag detected')
+        }
+    
+        scene.onDispose = () => {
+            unlockCameraTarget()
+            unlockCameraPosition()
         }
         
         scene.registerBeforeRender(() => {
