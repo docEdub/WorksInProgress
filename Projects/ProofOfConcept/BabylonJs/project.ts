@@ -127,7 +127,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     glowLayer.intensity = 0.5
 
     // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
-    const skyBrightness = 0.01
+    const skyBrightness = 0.002
     const environment = scene.createDefaultEnvironment({
         groundOpacity: 0,
         groundSize: groundSize,
