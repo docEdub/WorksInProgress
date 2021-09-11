@@ -41,7 +41,7 @@ ${CSOUND_INCLUDE} "math.orc"
 
 giDistanceDelaySynth_StartDistance = 60
 giDistanceDelaySynth_DelayDistance = 100
-giDistanceDelaySynth_NoteNumberToHeightScale = 5
+giDistanceDelaySynth_NoteNumberToHeightScale = 7.5
 giDistanceDelaySynth_DelayTime = 0.5 // seconds
 giDistanceDelaySynth_Duration = 0.49 // seconds
 giDistanceDelaySynth_DelayCount = 5
