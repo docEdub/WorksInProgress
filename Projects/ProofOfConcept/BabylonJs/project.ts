@@ -502,6 +502,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynthPlaceholderMesh.scaling.setAll(1);
         pointSynthPlaceholderMesh.bakeCurrentTransformIntoVertices();
         pointSynthPlaceholderMesh.isVisible = true;
+        glowLayer.addExcludedMesh(pointSynthPlaceholderMesh)
 
         // Initialize point synth notes.
         let pointSynthNoteStartIndex = 0;
