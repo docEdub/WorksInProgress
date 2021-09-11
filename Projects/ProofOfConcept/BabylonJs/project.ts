@@ -590,19 +590,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes([ groundBubbleSynth_Mesh ], true, true)
         let currentY = groundBubbleSynth_OffsetY
         for (let i = 0; i < 4; i++) {
-            const mesh = groundBubbleSynth_MergedMeshes.clone('')
-            mesh.position.y = -currentY
-            groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes([ groundBubbleSynth_MergedMeshes, mesh ], true, true)
-            currentY *= 2
-        }
-
-        for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
-            for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
-                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, z), false)
-                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, 0, -z), false)
-                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, 0, -z), false)
-                groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, 0, z), false)
+            for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
+                for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
+                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, -currentY, z), false)
+                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, -currentY, -z), false)
+                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, -currentY, -z), false)
+                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, -currentY, z), false)
+                }
             }
+            currentY *= 2
         }
 
         let groundBubbleSynth_AnimationStarted = false
