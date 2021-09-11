@@ -46,8 +46,8 @@ giDistanceDelaySynth_DelayTime = 0.5 // seconds
 giDistanceDelaySynth_Duration = 0.49 // seconds
 giDistanceDelaySynth_DelayCount = 5
 giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
-giDistanceDelaySynth_ReferenceDistance = 2
-giDistanceDelaySynth_RolloffFactor = 0.125
+giDistanceDelaySynth_ReferenceDistance = 0.1
+giDistanceDelaySynth_RolloffFactor = 0.0025
 giDistanceDelaySynth_PlaybackVolumeAdjustment = 2.5
 giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
 
