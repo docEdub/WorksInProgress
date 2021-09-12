@@ -21,7 +21,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // if (!BABYLON_MATERIALS)
     //     var BABYLON_MATERIALS = BABYLON;
 
-    const showBabylonInspector = false;
+    const showBabylonInspector = true;
     const logCsoundMessages = true;
     const logDebugMessages = true;
     const showGroundGrid = true;
@@ -96,7 +96,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(200, 2, 200), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -104,25 +104,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.attachControl(canvas, true);
     camera.setTarget(new BABYLON.Vector3(0, 2, 1));
 
-    const lightIntensity = 0.5
+    const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
-    const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
-    pointLight.intensity = lightIntensity
-    pointLight.parent = ambientLightParent
-    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, 0, 1), scene)
+    // const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
+    // pointLight.intensity = lightIntensity
+    // pointLight.parent = ambientLightParent
+    // const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, 0, 1), scene)
+    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
     directionalLight.intensity = lightIntensity
     directionalLight.parent = ambientLightParent
 
     const setAmbientLightPosition = (position) => {
-        ambientLightParent.position = position
+        // ambientLightParent.position = position
     }
 
     const setAmbientLightDirection = (direction) => {
-        direction.y = 0
-        ambientLightParent.setDirection(direction)
+        // direction.y = 0
+        // ambientLightParent.setDirection(direction)
+    }
+
+    const ambientLightExcludeMesh = (mesh) => {
+        directionalLight.excludedMeshes.push(mesh)
     }
 
     const glowLayer = new BABYLON.GlowLayer('', scene)
+    glowLayer.isEnabled = false
     glowLayer.blurKernelSize = 64
     glowLayer.intensity = 0.5
 
@@ -289,7 +295,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const distanceDelaySynthPillarMesh = BABYLON.MeshBuilder.CreateCylinder('Pillars', {
             height: pillarHeight,
             diameter: pillarWidth,
-            tessellation: 32
+            tessellation: 12
         })
 
         const torusDiameter = pillarWidth * 3
@@ -308,6 +314,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         })
 
         const distanceDelaySynthPillarMaterial = new BABYLON.StandardMaterial('', scene)
+        distanceDelaySynthPillarMaterial.ambientColor.set(1, 1, 1)
         distanceDelaySynthPillarMaterial.diffuseColor.set(1, 1, 1)
         distanceDelaySynthPillarMaterial.specularColor.set(0.25, 0.25, 0.25)
         distanceDelaySynthPillarMaterial.specularPower = 2
@@ -315,6 +322,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         
 
         const distanceDelaySynthMaterial = new BABYLON.StandardMaterial('', scene)
+        distanceDelaySynthMaterial.ambientColor.set(1, 1, 1)
         distanceDelaySynthMaterial.diffuseColor.set(1, 1, 1)
         distanceDelaySynthMaterial.specularColor.set(0.25, 0.25, 0.25)
         distanceDelaySynthMaterial.specularPower = 2
@@ -489,7 +497,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let noteMeshInstanceIndex = 0;
         let noteMeshInstances = [];
         const noteMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
-        noteMesh.material = whiteMaterial.clone('')
+        const noteMaterial = new BABYLON.StandardMaterial('', scene)
+        noteMesh.material = noteMaterial
         noteMesh.isVisible = false
         let noteMeshInstance = noteMesh.createInstance('');
         noteMeshInstance.isVisible = false;
@@ -498,10 +507,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteMeshInstances.push(noteMeshInstance.clone(''));
         }
 
-        const pointSynthPlaceholderMesh = graySphere.clone('');
+        const pointSynthPlaceholderMesh = BABYLON.MeshBuilder.CreateDisc('', {
+            radius: 1,
+            tessellation: 5
+        })
         pointSynthPlaceholderMesh.scaling.setAll(1);
+        pointSynthPlaceholderMesh.rotation.x = -Math.PI / 2
         pointSynthPlaceholderMesh.bakeCurrentTransformIntoVertices();
         pointSynthPlaceholderMesh.isVisible = true;
+        // pointSynthPlaceholderMesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
+        pointSynthPlaceholderMesh.material = grayMaterial.clone('')
         glowLayer.addExcludedMesh(pointSynthPlaceholderMesh)
 
         // Initialize point synth notes.
@@ -578,7 +593,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_OffsetXZ = 100
         const groundBubbleSynth_OffsetY = 100
 
-        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 32, groundBubbleSynth_Diameter, scene, false)
+        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 1, groundBubbleSynth_Diameter, scene, false)
         const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
         let power = 0.5
         groundBubbleSynth_Material.specularColor.set(power, power, power)
@@ -587,19 +602,33 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         groundBubbleSynth_Material.alphaMode = BABYLON.Engine.ALPHA_ADD
         groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
 
-        let groundBubbleSynth_MergedMeshes = BABYLON.Mesh.MergeMeshes([ groundBubbleSynth_Mesh ], true, true)
-        let currentY = groundBubbleSynth_OffsetY
-        for (let i = 0; i < 4; i++) {
-            for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
-                for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
-                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, -currentY, z), false)
-                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(x, -currentY, -z), false)
-                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, -currentY, -z), false)
-                    groundBubbleSynth_MergedMeshes.thinInstanceAdd(BABYLON.Matrix.Translation(-x, -currentY, z), false)
+        const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
+        groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, 10000)
+        const groundBubbleSynth_MergedMeshes = groundBubbleSynth_SolidParticleSystem.buildMesh()
+        groundBubbleSynth_MergedMeshes.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, -1000, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
+
+        groundBubbleSynth_SolidParticleSystem.initParticles = () => {
+            let particleIndex = 0
+            for (let y = 0; y < 100; y += groundBubbleSynth_OffsetXZ) {
+                for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
+                    for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
+                        const particle1 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
+                        const particle2 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 1]
+                        const particle3 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 2]
+                        const particle4 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 3]
+                        particle1.position.set(x, -y, z)
+                        particle2.position.set(x, -y, -z)
+                        particle3.position.set(-x, -y, -z)
+                        particle4.position.set(-x, -y, z)
+                        particleIndex += 4
+                    }
                 }
             }
-            currentY *= 2
+            console.log('bubble count =', particleIndex)
         }
+
+        groundBubbleSynth_SolidParticleSystem.initParticles()
+        groundBubbleSynth_SolidParticleSystem.setParticles()
 
         let groundBubbleSynth_AnimationStarted = false
         const groundBubbleSynth_Render = (time) => {
