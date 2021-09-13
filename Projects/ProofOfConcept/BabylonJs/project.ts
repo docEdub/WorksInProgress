@@ -453,6 +453,102 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
+        // Calculate the max number of DistanceDelaySynth notes playing at any one time.
+        let distanceDelaySynth_MaxGlowNotes_NoteMap = null
+        const calculateMaxNumberOfDistanceDelaySynthNotes = () => {
+            let noteMap = []
+            //  {
+            //      onTime,
+            //      offTime,
+            //      tally
+            //  }
+
+            const insertNewNoteMapItem = (i, onTime, offTime) => {
+                noteMap.splice(i, 0, {
+                    onTime: onTime,
+                    offTime: offTime,
+                    tally: 1
+                })
+            }
+
+            const splitNoteMapItem = (i, splitTime) => {
+                let noteMapItem = noteMap[i]
+                let newNoteMapItem = {
+                    onTime: splitTime,
+                    offTime: noteMapItem.offTime,
+                    tally: noteMapItem.tally
+                }
+                noteMap.splice(i + 1, 0, newNoteMapItem)
+                noteMapItem.offTime = splitTime
+            }
+
+            const addNoteMapItem = (onTime, offTime) => {
+                // Find the note map item matching the given on time.
+                if (onTime == 18.5) {
+                    console.debug('break here')
+                }
+                for (let i = 0; i < noteMap.length; i++) {
+                    let noteMapItem = noteMap[i]
+                    if (onTime < noteMapItem.onTime) {
+                        if (offTime <= noteMapItem.onTime) {
+                            insertNewNoteMapItem(i, onTime, offTime)
+                            return
+                        }
+                        insertNewNoteMapItem(i, onTime, noteMapItem.onTime)
+                        addNoteMapItem(noteMapItem.onTime, offTime)
+                        return
+                    }
+                    if (onTime == noteMapItem.onTime) {
+                        if (offTime < noteMapItem.offTime) {
+                            splitNoteMapItem(i, offTime)
+                            addNoteMapItem(onTime, offTime)
+                            return
+                        }
+                        if (offTime == noteMapItem.offTime) {
+                            noteMapItem.tally++
+                            return
+                        }
+                        if (offTime > noteMapItem.offTime) {
+                            addNoteMapItem(onTime, noteMapItem.offTime)
+                            addNoteMapItem(noteMapItem.offTime, offTime)
+                            return
+                        }
+                    }
+                    if (onTime > noteMapItem.onTime) {
+                        if (onTime < noteMapItem.offTime || offTime <= noteMapItem.offTime) {
+                            splitNoteMapItem(i, onTime)
+                            addNoteMapItem(onTime, offTime)
+                            return
+                        }
+                    }
+                }
+                noteMap.push({
+                    onTime: onTime,
+                    offTime: offTime,
+                    tally: 1
+                })
+            }
+
+            distanceDelaySynthNotes.forEach((note) => {
+                for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
+                    const delay = note.delays[delayI]
+                    for (let i = 0; i < delay.onTimes.length; i++) {
+                        addNoteMapItem(delay.onTimes[i], delay.offTimes[i])
+                    }
+                }
+            })
+
+            let maxNotes = 0
+            noteMap.forEach((noteMapItem) => {
+                maxNotes = Math.max(maxNotes, noteMapItem.tally)
+            })
+            distanceDelaySynth_MaxGlowNotes_NoteMap = noteMap
+            return maxNotes + 1
+        }
+
+        const distanceDelaySynth_MaxGlowNotes = calculateMaxNumberOfDistanceDelaySynthNotes()
+        console.debug('distanceDelaySynth_MaxGlowNotes =', distanceDelaySynth_MaxGlowNotes)
+
         const resetDistanceDelaySynthIndexes = () => {
             distanceDelaySynthNotes.forEach((note) => {
                 note.delays.forEach((delay) => {
