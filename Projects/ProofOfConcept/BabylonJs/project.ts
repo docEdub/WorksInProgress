@@ -428,6 +428,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         distanceDelaySynthLowestNoteNumber -= 5
         console.debug('distanceDelaySynthLowestNoteNumber =', distanceDelaySynthLowestNoteNumber)
 
+        // Make DistanceDelaySynth note objects.
         for (let noteI = 1; noteI < distanceDelaySynthData.length; noteI++) {
             let noteOn = distanceDelaySynthData[noteI].noteOn
 
