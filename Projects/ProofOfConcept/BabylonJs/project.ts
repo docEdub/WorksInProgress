@@ -375,31 +375,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 const translationMatrix1 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
                 const instanceMatrix1 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix1)
                 let instanceIndex1 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix1, false)
-                let glowInstanceIndex1 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, false)
                 angle += distanceDelaySynthRotationAngle
                 const translationMatrix2 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
                 const instanceMatrix2 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix2)
                 let instanceIndex2 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix2, false)
-                let glowInstanceIndex2 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, false)
                 angle += distanceDelaySynthRotationAngle
                 const translationMatrix3 = BABYLON.Matrix.Translation(radius * Math.sin(angle), height, radius * Math.cos(angle))
                 const instanceMatrix3 = distanceDelaySynthNoteScalingMatrix.multiply(translationMatrix3)
                 let instanceIndex3 = distanceDelaySynthMesh.thinInstanceAdd(instanceMatrix3, true)
-                let glowInstanceIndex3 = distanceDelaySynthGlowMesh.thinInstanceAdd(zeroScalingMatrix, true)
-                // let glowInstanceIndex3 = distanceDelaySynthGlowMesh.thinInstanceAdd(glowInstanceMatrix3, true)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex1, distanceDelaySynthUnlitBrightnessRGB, false)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex2, distanceDelaySynthUnlitBrightnessRGB, false)
                 distanceDelaySynthMesh.thinInstanceSetAttributeAt('color', instanceIndex3, distanceDelaySynthUnlitBrightnessRGB, true)
-                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex1, [1, 1, 1], false)
-                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex2, [1, 1, 1], false)
-                distanceDelaySynthGlowMesh.thinInstanceSetAttributeAt('color', glowInstanceIndex3, [1, 1, 1], true)
                 let delay = {
                     onTimes: [],
                     offTimes: [],
                     onIndex: 0,
                     offIndex: 0,
                     instanceIndexes: [ instanceIndex1, instanceIndex2, instanceIndex3 ],
-                    glowInstanceIndexes: [ glowInstanceIndex1, glowInstanceIndex2, glowInstanceIndex3 ],
+                    glowInstanceIndexes: [],
                     instanceMatrixes: [ instanceMatrix1, instanceMatrix2, instanceMatrix3 ]
                 }
                 delays.push(delay)
@@ -562,24 +555,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 for (let delayI = 0; delayI < distanceDelaySynthHeader.delayCount; delayI++) {
                     const delay = note.delays[delayI]
 
-                    while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], zeroScalingMatrix, false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], zeroScalingMatrix, false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], zeroScalingMatrix, true)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[0], delay.instanceMatrixes[0], false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[1], delay.instanceMatrixes[1], false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[2], delay.instanceMatrixes[2], true)
-                        delay.onIndex++
-                    }
-
                     while (delay.offIndex < delay.offTimes.length && delay.offTimes[delay.offIndex] <= time) {
                         distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], delay.instanceMatrixes[0], false)
                         distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], delay.instanceMatrixes[1], false)
                         distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], delay.instanceMatrixes[2], true)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[0], zeroScalingMatrix, false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[1], zeroScalingMatrix, false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(delay.glowInstanceIndexes[2], zeroScalingMatrix, true)
                         delay.offIndex++
+                    }
+
+                    while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
+                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], zeroScalingMatrix, false)
+                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], zeroScalingMatrix, false)
+                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], zeroScalingMatrix, true)
+                        delay.onIndex++
+                    }
                     }
                 }
             })
