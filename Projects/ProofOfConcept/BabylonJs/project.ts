@@ -616,18 +616,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         `)
         const pointSynth_Texture = BABYLON.Texture.LoadFromDataString('', pointSynth_Svg, scene)
 
-        const testMesh = BABYLON.MeshBuilder.CreatePlane('test', {
-            size: 5
-        })
-        testMesh.position.set(0, 5, 10)
-        const testMaterial = new BABYLON.StandardMaterial('', scene)
-        testMaterial.emissiveColor.set(1, 1, 1)
-        testMaterial.diffuseTexture = pointSynth_Texture
-        testMaterial.opacityTexture = pointSynth_Texture
-        testMesh.material = testMaterial
-        testMesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
-        
-
         const noteMeshInstanceCount = 40;
         let noteMeshInstanceIndex = 0;
         let noteMeshInstances = [];
@@ -642,16 +630,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteMeshInstances.push(noteMeshInstance.clone(''));
         }
 
-        const pointSynthPlaceholderMesh = BABYLON.MeshBuilder.CreateDisc('', {
-            radius: 1,
-            tessellation: 5
-        })
-        pointSynthPlaceholderMesh.scaling.setAll(1);
+        const pointSynthPlaceholderMesh = BABYLON.MeshBuilder.CreatePlane('', { size: 2 })
         pointSynthPlaceholderMesh.rotation.x = -Math.PI / 2
         pointSynthPlaceholderMesh.bakeCurrentTransformIntoVertices();
         pointSynthPlaceholderMesh.isVisible = true;
-        // pointSynthPlaceholderMesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
-        pointSynthPlaceholderMesh.material = grayMaterial.clone('')
+        const pointSynth_PlaceholderMaterial = new BABYLON.StandardMaterial('', scene)
+        pointSynth_PlaceholderMaterial.emissiveColor.set(.2, .2, .2)
+        pointSynth_PlaceholderMaterial.diffuseTexture = pointSynth_Texture
+        pointSynth_PlaceholderMaterial.opacityTexture = pointSynth_Texture
+        pointSynthPlaceholderMesh.material = pointSynth_PlaceholderMaterial
         glowLayer.addExcludedMesh(pointSynthPlaceholderMesh)
 
         // Initialize point synth notes.
