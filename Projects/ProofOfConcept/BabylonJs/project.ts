@@ -605,6 +605,29 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // PointSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        const encodeSvg = (svg) => {
+            BABYLON.Texture.LoadFromDataString('', 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
+        }
+
+        const pointSynth_Svg = encodeSvg(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+                <circle cx="64" cy="64" r="64" fill="white" />
+            </svg>
+        `)
+        const pointSynth_Texture = BABYLON.Texture.LoadFromDataString('', pointSynth_Svg, scene)
+
+        const testMesh = BABYLON.MeshBuilder.CreatePlane('test', {
+            size: 5
+        })
+        testMesh.position.set(0, 5, 10)
+        const testMaterial = new BABYLON.StandardMaterial('', scene)
+        testMaterial.emissiveColor.set(1, 1, 1)
+        testMaterial.diffuseTexture = pointSynth_Texture
+        testMaterial.opacityTexture = pointSynth_Texture
+        testMesh.material = testMaterial
+        testMesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
+        
+
         const noteMeshInstanceCount = 40;
         let noteMeshInstanceIndex = 0;
         let noteMeshInstances = [];
