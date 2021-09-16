@@ -682,12 +682,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynth_Placeholder_SolidParticleSystem.initParticles()
         pointSynth_Placeholder_SolidParticleSystem.setParticles()
 
-        // // NB: Turning on `billboard` requires a call to setParticles() in registerBeforeRender().
-        // pointSynth_Placeholder_SolidParticleSystem.billboard = true
-        // scene.registerBeforeRender(() => {
-        //     pointSynth_Placeholder_SolidParticleSystem.setParticles()
-        // })
-
         // These variables are initialized in render loop and incremented as elapsed time passes.
         let nextPointSynthNoteOnIndex = 0;
         let nextPointSynthNoteOffIndex = 0;
