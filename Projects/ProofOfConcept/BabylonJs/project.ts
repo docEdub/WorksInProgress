@@ -21,7 +21,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // if (!BABYLON_MATERIALS)
     //     var BABYLON_MATERIALS = BABYLON;
 
-    const showBabylonInspector = true;
+    const showBabylonInspector = false;
     const logCsoundMessages = true;
     const logDebugMessages = true;
     const showGroundGrid = true;
@@ -604,6 +604,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PointSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
+        const pointSynthHeader = pointSynthData[0]
+        console.debug('pointSynthHeader =', pointSynthHeader)
+
+        let pointSynthNoteStartIndex = 0;
+        let pointSynth_NoteCount = 0
+        for (let i = 1; i < pointSynthData.length; i++) {
+            let noteOn = pointSynthData[i].noteOn
+
+            // Skip preallocation notes.
+            if (noteOn.time == 0.005) {
+                continue;
+            }
+            else if (pointSynthNoteStartIndex == 0) {
+                pointSynthNoteStartIndex = i;
+            }
+
+            noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
+            pointSynth_NoteCount++
+        }
 
         const encodeSvg = (svg) => {
             BABYLON.Texture.LoadFromDataString('', 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
@@ -630,41 +651,44 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             noteMeshInstances.push(noteMeshInstance.clone(''));
         }
 
-        const pointSynthPlaceholderMesh = BABYLON.MeshBuilder.CreatePlane('', { size: 2 })
-        pointSynthPlaceholderMesh.rotation.x = -Math.PI / 2
-        pointSynthPlaceholderMesh.bakeCurrentTransformIntoVertices();
-        pointSynthPlaceholderMesh.isVisible = true;
-        const pointSynth_PlaceholderMaterial = new BABYLON.StandardMaterial('', scene)
-        pointSynth_PlaceholderMaterial.emissiveColor.set(.2, .2, .2)
-        pointSynth_PlaceholderMaterial.diffuseTexture = pointSynth_Texture
-        pointSynth_PlaceholderMaterial.opacityTexture = pointSynth_Texture
-        pointSynthPlaceholderMesh.material = pointSynth_PlaceholderMaterial
-        glowLayer.addExcludedMesh(pointSynthPlaceholderMesh)
+        const pointSynth_Placeholder_Mesh = BABYLON.MeshBuilder.CreatePlane('', { size: 2 })
+        pointSynth_Placeholder_Mesh.rotation.x = -Math.PI / 2
+        pointSynth_Placeholder_Mesh.bakeCurrentTransformIntoVertices();
+        pointSynth_Placeholder_Mesh.isVisible = true;
+        const pointSynth_Placeholder_Material = new BABYLON.StandardMaterial('', scene)
+        pointSynth_Placeholder_Material.emissiveColor.set(.2, .2, .2)
+        pointSynth_Placeholder_Material.diffuseTexture = pointSynth_Texture
+        pointSynth_Placeholder_Material.opacityTexture = pointSynth_Texture
+        pointSynth_Placeholder_Mesh.material = pointSynth_Placeholder_Material
+        glowLayer.addExcludedMesh(pointSynth_Placeholder_Mesh)
 
-        // Initialize point synth notes.
-        let pointSynthNoteStartIndex = 0;
-        const pointSynthData = csdData['b4f7a35c-6198-422f-be6e-fa126f31b007']
-        const pointSynthHeader = pointSynthData[0]
-        console.debug('pointSynthHeader =', pointSynthHeader)
-        for (let i = 1; i < pointSynthData.length; i++) {
-            let noteOn = pointSynthData[i].noteOn
+        const pointSynth_Placeholder_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
+        pointSynth_Placeholder_SolidParticleSystem.addShape(pointSynth_Placeholder_Mesh, pointSynth_NoteCount)
+        const pointSynth_Placeholder_SolidParticleSystem_Mesh = pointSynth_Placeholder_SolidParticleSystem.buildMesh()
+        pointSynth_Placeholder_SolidParticleSystem_Mesh.name = 'pointSynth_Placeholder_SolidParticleSystem_Mesh'
+        pointSynth_Placeholder_SolidParticleSystem_Mesh.setBoundingInfo(new BABYLON.BoundingInfo(
+            new BABYLON.Vector3(-1000, -1000, -1000),
+            new BABYLON.Vector3(1000, 1000, 1000)
+        ))
+        pointSynth_Placeholder_SolidParticleSystem_Mesh.material = pointSynth_Placeholder_Material
 
-            // Skip preallocation notes.
-            if (noteOn.time == 0.005) {
-                continue;
+        pointSynth_Placeholder_SolidParticleSystem.initParticles = () => {
+            for (let i = 0; i < pointSynth_Placeholder_SolidParticleSystem.particles.length; i++) {
+                const particle = pointSynth_Placeholder_SolidParticleSystem.particles[i]
+                const noteOn = pointSynthData[pointSynthNoteStartIndex + i].noteOn
+                particle.position.set(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2])
             }
-            else if (pointSynthNoteStartIndex == 0) {
-                pointSynthNoteStartIndex = i;
-            }
-
-            noteOn.offTime = noteOn.time + 0.1 // pointSynthData[0].fadeOutTime
-
-            const refreshInstances = i == pointSynthData.length - 1;
-            pointSynthPlaceholderMesh.thinInstanceAdd(
-                BABYLON.Matrix.Translation(noteOn.xyz[0], noteOn.xyz[1], noteOn.xyz[2]), refreshInstances);
         }
+        pointSynth_Placeholder_SolidParticleSystem.initParticles()
+        pointSynth_Placeholder_SolidParticleSystem.setParticles()
 
-        // Initialized in render loop and incremented as elapsed time passes.
+        // // NB: Turning on `billboard` requires a call to setParticles() in registerBeforeRender().
+        // pointSynth_Placeholder_SolidParticleSystem.billboard = true
+        // scene.registerBeforeRender(() => {
+        //     pointSynth_Placeholder_SolidParticleSystem.setParticles()
+        // })
+
+        // These variables are initialized in render loop and incremented as elapsed time passes.
         let nextPointSynthNoteOnIndex = 0;
         let nextPointSynthNoteOffIndex = 0;
 
