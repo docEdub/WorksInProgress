@@ -654,13 +654,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const pointSynth_Placeholder_Mesh = BABYLON.MeshBuilder.CreatePlane('', { size: 2 })
         pointSynth_Placeholder_Mesh.rotation.x = -Math.PI / 2
         pointSynth_Placeholder_Mesh.bakeCurrentTransformIntoVertices();
-        pointSynth_Placeholder_Mesh.isVisible = true;
         const pointSynth_Placeholder_Material = new BABYLON.StandardMaterial('', scene)
         pointSynth_Placeholder_Material.emissiveColor.set(.2, .2, .2)
         pointSynth_Placeholder_Material.diffuseTexture = pointSynth_Texture
         pointSynth_Placeholder_Material.opacityTexture = pointSynth_Texture
         pointSynth_Placeholder_Mesh.material = pointSynth_Placeholder_Material
-        glowLayer.addExcludedMesh(pointSynth_Placeholder_Mesh)
 
         const pointSynth_Placeholder_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
         pointSynth_Placeholder_SolidParticleSystem.addShape(pointSynth_Placeholder_Mesh, pointSynth_NoteCount)
@@ -671,7 +669,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             new BABYLON.Vector3(1000, 1000, 1000)
         ))
         pointSynth_Placeholder_SolidParticleSystem_Mesh.material = pointSynth_Placeholder_Material
-
         pointSynth_Placeholder_SolidParticleSystem.initParticles = () => {
             for (let i = 0; i < pointSynth_Placeholder_SolidParticleSystem.particles.length; i++) {
                 const particle = pointSynth_Placeholder_SolidParticleSystem.particles[i]
@@ -681,6 +678,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         pointSynth_Placeholder_SolidParticleSystem.initParticles()
         pointSynth_Placeholder_SolidParticleSystem.setParticles()
+        pointSynth_Placeholder_Mesh.dispose()
 
         // These variables are initialized in render loop and incremented as elapsed time passes.
         let nextPointSynthNoteOnIndex = 0;
