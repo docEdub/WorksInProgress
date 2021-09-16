@@ -735,67 +735,67 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const groundBubbleSynth_Diameter = 5
-        const groundBubbleSynth_OffsetXZ = 100
-        const groundBubbleSynth_OffsetY = 100
+        // const groundBubbleSynth_Diameter = 5
+        // const groundBubbleSynth_OffsetXZ = 100
+        // const groundBubbleSynth_OffsetY = 100
 
-        const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 1, groundBubbleSynth_Diameter, scene, false)
-        const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
-        let power = 0.5
-        groundBubbleSynth_Material.specularColor.set(power, power, power)
-        groundBubbleSynth_Material.specularPower = 100
-        groundBubbleSynth_Material.alpha = 0.25
-        groundBubbleSynth_Material.alphaMode = BABYLON.Engine.ALPHA_ADD
-        groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
+        // const groundBubbleSynth_Mesh = BABYLON.Mesh.CreateSphere('', 1, groundBubbleSynth_Diameter, scene, false)
+        // const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
+        // let power = 0.5
+        // groundBubbleSynth_Material.specularColor.set(power, power, power)
+        // groundBubbleSynth_Material.specularPower = 100
+        // groundBubbleSynth_Material.alpha = 0.25
+        // groundBubbleSynth_Material.alphaMode = BABYLON.Engine.ALPHA_ADD
+        // groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
 
-        const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
-        groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, 10000)
-        const groundBubbleSynth_MergedMeshes = groundBubbleSynth_SolidParticleSystem.buildMesh()
-        groundBubbleSynth_MergedMeshes.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, -1000, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
+        // const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
+        // groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, 10000)
+        // const groundBubbleSynth_MergedMeshes = groundBubbleSynth_SolidParticleSystem.buildMesh()
+        // groundBubbleSynth_MergedMeshes.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, -1000, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
 
-        groundBubbleSynth_SolidParticleSystem.initParticles = () => {
-            let particleIndex = 0
-            for (let y = 0; y < 100; y += groundBubbleSynth_OffsetXZ) {
-                for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
-                    for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
-                        const particle1 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
-                        const particle2 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 1]
-                        const particle3 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 2]
-                        const particle4 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 3]
-                        particle1.position.set(x, -y, z)
-                        particle2.position.set(x, -y, -z)
-                        particle3.position.set(-x, -y, -z)
-                        particle4.position.set(-x, -y, z)
-                        particleIndex += 4
-                    }
-                }
-            }
-            console.log('bubble count =', particleIndex)
-        }
+        // groundBubbleSynth_SolidParticleSystem.initParticles = () => {
+        //     let particleIndex = 0
+        //     for (let y = 0; y < 100; y += groundBubbleSynth_OffsetXZ) {
+        //         for (let x = groundBubbleSynth_OffsetXZ; x <= 500; x += groundBubbleSynth_OffsetXZ) {
+        //             for (let z = groundBubbleSynth_OffsetXZ; z <= 500; z += groundBubbleSynth_OffsetXZ) {
+        //                 const particle1 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
+        //                 const particle2 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 1]
+        //                 const particle3 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 2]
+        //                 const particle4 = groundBubbleSynth_SolidParticleSystem.particles[particleIndex + 3]
+        //                 particle1.position.set(x, -y, z)
+        //                 particle2.position.set(x, -y, -z)
+        //                 particle3.position.set(-x, -y, -z)
+        //                 particle4.position.set(-x, -y, z)
+        //                 particleIndex += 4
+        //             }
+        //         }
+        //     }
+        //     console.log('bubble count =', particleIndex)
+        // }
 
-        groundBubbleSynth_SolidParticleSystem.initParticles()
-        groundBubbleSynth_SolidParticleSystem.setParticles()
+        // groundBubbleSynth_SolidParticleSystem.initParticles()
+        // groundBubbleSynth_SolidParticleSystem.setParticles()
 
-        let groundBubbleSynth_AnimationStarted = false
-        const groundBubbleSynth_Render = (time) => {
-            if (groundBubbleSynth_AnimationStarted) {
-                return
-            }
-            const animation = new BABYLON.Animation('', 'position.y', 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE)
-            let keys = []
-            keys.push({
-                frame: 0,
-                value: 0
-            })
-            keys.push({
-                frame: 10, 
-                value: 1
-            })
-            animation.setKeys(keys)
-            groundBubbleSynth_MergedMeshes.animations.push(animation)
-            scene.beginAnimation(groundBubbleSynth_MergedMeshes, 0, 10, true, 10)
-            groundBubbleSynth_AnimationStarted = true
-        }
+        // let groundBubbleSynth_AnimationStarted = false
+        // const groundBubbleSynth_Render = (time) => {
+        //     if (groundBubbleSynth_AnimationStarted) {
+        //         return
+        //     }
+        //     const animation = new BABYLON.Animation('', 'position.y', 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE)
+        //     let keys = []
+        //     keys.push({
+        //         frame: 0,
+        //         value: 0
+        //     })
+        //     keys.push({
+        //         frame: 10, 
+        //         value: 1
+        //     })
+        //     animation.setKeys(keys)
+        //     groundBubbleSynth_MergedMeshes.animations.push(animation)
+        //     scene.beginAnimation(groundBubbleSynth_MergedMeshes, 0, 10, true, 10)
+        //     groundBubbleSynth_AnimationStarted = true
+        // }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Update note animations.
@@ -937,7 +937,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const time = document.audioContext.currentTime - startTime;
             distanceDelaySynthRender(time)
             pointSynthRender(time)
-            groundBubbleSynth_Render(time)
+            // groundBubbleSynth_Render(time)
             updateCamera(time)
         })
 
