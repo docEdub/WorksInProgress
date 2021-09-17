@@ -96,7 +96,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(500, 2, -500), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -735,6 +735,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_OffsetXZ = 30
         const groundBubbleSynth_SpanXZ = groundBubbleSynth_ParticleCountXZ * groundBubbleSynth_OffsetXZ
         const groundBubbleSynth_HalfSpanXZ = groundBubbleSynth_SpanXZ / 2
+        const groundBubbleSynth_ParticleAnimationY = []
 
         const groundBubbleSynth_Mesh = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundBubbleSynth_Diameter
@@ -750,11 +751,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             let particleIndex = 0
             let x = -groundBubbleSynth_HalfSpanXZ
             for (let i = 0; i < groundBubbleSynth_ParticleCountXZ; i++) {
+                groundBubbleSynth_ParticleAnimationY.push([])
                 let z = -groundBubbleSynth_HalfSpanXZ
                 for (let j = 0; j < groundBubbleSynth_ParticleCountXZ; j++) {
                     const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
                     particle.position.set(x, 0, z)
                     z += groundBubbleSynth_OffsetXZ
+                    groundBubbleSynth_ParticleAnimationY[i].push({ started: false })
                     particleIndex++
                 }
                 x += groundBubbleSynth_OffsetXZ
@@ -770,13 +773,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // groundBubbleSynth_SolidParticleSystem.billboard = true
         const billboardNode = new BABYLON.TransformNode('', scene)
         billboardNode.parent = groundBubbleSynth_SolidParticleSystem_Mesh
+
+        const speedY = 1 // units per second
+        let deltaTime = 0
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
             billboardNode.position = particle.position
             billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
             particle.rotation.set(billboardNode.rotation.x, billboardNode.rotation.y, billboardNode.rotation.z)
+            const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_ParticleCountXZ)][particle.idx % groundBubbleSynth_ParticleCountXZ]
+            if (animation.started) {
+                particle.position.y += speedY * deltaTime
+            }
             return particle
         }
+        const indexesPerSecond = 1
+        let nextAnimationIndexX = 0
+        let nextAnimationIndexZ = 0
+        let timeToNextIndex = 0
         scene.registerBeforeRender(() => {
+            deltaTime = engine.getDeltaTime() / 1000
+            timeToNextIndex += deltaTime
+            if (timeToNextIndex > (1 / indexesPerSecond)) {
+                const indexX = Math.floor(Math.random() * 29)
+                const indexZ = Math.floor(Math.random() * 29)
+                const animation = groundBubbleSynth_ParticleAnimationY[indexX][indexZ]
+                animation.started = true
+            }
             groundBubbleSynth_SolidParticleSystem.setParticles()
         })
 
