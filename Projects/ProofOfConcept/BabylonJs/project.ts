@@ -205,22 +205,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     groundRing.material = grayMaterial;
     glowLayer.addExcludedMesh(groundRing)
 
-    const ground = BABYLON.MeshBuilder.CreatePlane('', {
-        size: groundSize
-    })
-    ground.rotation.set(Math.PI / 2, 0, 0)
+    // const ground = BABYLON.MeshBuilder.CreatePlane('', {
+    //     size: groundSize
+    // })
+    // ground.rotation.set(Math.PI / 2, 0, 0)
 
-    if (showGroundGrid) {
-        const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
-        gridMaterial.gridRatio = 3;
-        gridMaterial.lineColor.set(0.2, 0.2, 0.2);
-        gridMaterial.minorUnitVisibility = 0.333;
-        gridMaterial.opacity = 0.999
-        ground.material = gridMaterial;
-    }
-    else {
-        ground.material = blackMaterial;
-    }
+    // if (showGroundGrid) {
+    //     const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
+    //     gridMaterial.gridRatio = 3;
+    //     gridMaterial.lineColor.set(0.2, 0.2, 0.2);
+    //     gridMaterial.minorUnitVisibility = 0.333;
+    //     gridMaterial.opacity = 0.999
+    //     ground.material = gridMaterial;
+    // }
+    // else {
+    //     ground.material = blackMaterial;
+    // }
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
@@ -729,7 +729,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const groundBubbleSynth_Diameter = 0.5
+        const groundBubbleSynth_Diameter = 2
         const groundBubbleSynth_ParticleCountXZ = 30
         const groundBubbleSynth_ParticleCount = groundBubbleSynth_ParticleCountXZ * groundBubbleSynth_ParticleCountXZ
         const groundBubbleSynth_OffsetXZ = 30
@@ -786,18 +786,28 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             return particle
         }
-        const indexesPerSecond = 1
-        let nextAnimationIndexX = 0
-        let nextAnimationIndexZ = 0
+        const indexesPerSecond = 10
+        const secondsPerIndex = 1 / indexesPerSecond
         let timeToNextIndex = 0
+        let particlesStartedCount = 0
         scene.registerBeforeRender(() => {
             deltaTime = engine.getDeltaTime() / 1000
-            timeToNextIndex += deltaTime
-            if (timeToNextIndex > (1 / indexesPerSecond)) {
-                const indexX = Math.floor(Math.random() * 29)
-                const indexZ = Math.floor(Math.random() * 29)
-                const animation = groundBubbleSynth_ParticleAnimationY[indexX][indexZ]
-                animation.started = true
+            if (particlesStartedCount < groundBubbleSynth_ParticleCount) {
+                timeToNextIndex += deltaTime
+                while (timeToNextIndex > secondsPerIndex) {
+                    let started = false
+                    while (!started) {
+                        let indexX = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
+                        let indexZ = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
+                        const animation = groundBubbleSynth_ParticleAnimationY[indexX][indexZ]
+                        if (!animation.started) {
+                            animation.started = true
+                            timeToNextIndex -= secondsPerIndex
+                            started = true
+                            particlesStartedCount++
+                        }
+                    }
+                }
             }
             groundBubbleSynth_SolidParticleSystem.setParticles()
         })
