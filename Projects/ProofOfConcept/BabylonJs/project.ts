@@ -212,9 +212,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     if (showGroundGrid) {
         const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
-        // gridMaterial.gridRatio = .25;
+        gridMaterial.gridRatio = 3;
         gridMaterial.lineColor.set(0.2, 0.2, 0.2);
-        gridMaterial.minorUnitVisibility = 0;
+        gridMaterial.minorUnitVisibility = 0.333;
+        gridMaterial.opacity = 0.999
         ground.material = gridMaterial;
     }
     else {
@@ -656,8 +657,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynth_Placeholder_Mesh.bakeCurrentTransformIntoVertices();
         const pointSynth_Placeholder_Material = new BABYLON.StandardMaterial('', scene)
         pointSynth_Placeholder_Material.emissiveColor.set(.2, .2, .2)
-        pointSynth_Placeholder_Material.diffuseTexture = pointSynth_Texture
+        pointSynth_Placeholder_Material.ambientTexture = pointSynth_Texture
         pointSynth_Placeholder_Material.opacityTexture = pointSynth_Texture
+        pointSynth_Placeholder_Material.disableLighting = true
         pointSynth_Placeholder_Mesh.material = pointSynth_Placeholder_Material
 
         const pointSynth_Placeholder_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
@@ -727,10 +729,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const groundBubbleSynth_Diameter = 5
-        const groundBubbleSynth_OffsetXZ = 100
-        const groundBubbleSynth_OffsetY = 100
-        const groundBubbleSynth_ParticleCount = 1000
+        const groundBubbleSynth_Diameter = 0.5
+        const groundBubbleSynth_ParticleCountXZ = 30
+        const groundBubbleSynth_ParticleCount = groundBubbleSynth_ParticleCountXZ * groundBubbleSynth_ParticleCountXZ
+        const groundBubbleSynth_OffsetXZ = 30
+        const groundBubbleSynth_SpanXZ = groundBubbleSynth_ParticleCountXZ * groundBubbleSynth_OffsetXZ
+        const groundBubbleSynth_HalfSpanXZ = groundBubbleSynth_SpanXZ / 2
 
         const groundBubbleSynth_Mesh = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundBubbleSynth_Diameter
@@ -738,12 +742,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
         groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, groundBubbleSynth_ParticleCount)
         const groundBubbleSynth_SolidParticleSystem_Mesh = groundBubbleSynth_SolidParticleSystem.buildMesh()
-        groundBubbleSynth_SolidParticleSystem_Mesh.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, -1000, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
-        groundBubbleSynth_SolidParticleSystem_Mesh.material = pointSynth_Placeholder_Material.clone('')
+        groundBubbleSynth_SolidParticleSystem_Mesh.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, 0, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
+        const groundBubbleSynth_SolidParticleSystem_Material = pointSynth_Placeholder_Material.clone('')
+        groundBubbleSynth_SolidParticleSystem_Material.emissiveColor.set(.15, .15, .15)
+        groundBubbleSynth_SolidParticleSystem_Mesh.material = groundBubbleSynth_SolidParticleSystem_Material
         groundBubbleSynth_SolidParticleSystem.initParticles = () => {
-            for (let i = 0; i < groundBubbleSynth_SolidParticleSystem.nbParticles; i++) {
-                const particle = groundBubbleSynth_SolidParticleSystem.particles[i]
-                particle.position.y = -i * groundBubbleSynth_OffsetY
+            let particleIndex = 0
+            let x = -groundBubbleSynth_HalfSpanXZ
+            for (let i = 0; i < groundBubbleSynth_ParticleCountXZ; i++) {
+                let z = -groundBubbleSynth_HalfSpanXZ
+                for (let j = 0; j < groundBubbleSynth_ParticleCountXZ; j++) {
+                    const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
+                    particle.position.set(x, 0, z)
+                    z += groundBubbleSynth_OffsetXZ
+                    particleIndex++
+                }
+                x += groundBubbleSynth_OffsetXZ
             }
         }
 
@@ -768,6 +782,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         let groundBubbleSynth_AnimationStarted = false
         const groundBubbleSynth_Render = (time) => {
+            return
             if (groundBubbleSynth_AnimationStarted) {
                 return
             }
