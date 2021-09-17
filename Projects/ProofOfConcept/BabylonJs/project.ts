@@ -780,28 +780,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             groundBubbleSynth_SolidParticleSystem.setParticles()
         })
 
-        let groundBubbleSynth_AnimationStarted = false
-        const groundBubbleSynth_Render = (time) => {
-            return
-            if (groundBubbleSynth_AnimationStarted) {
-                return
-            }
-            const animation = new BABYLON.Animation('', 'position.y', 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE)
-            let keys = []
-            keys.push({
-                frame: 0,
-                value: 0
-            })
-            keys.push({
-                frame: 10, 
-                value: 1
-            })
-            animation.setKeys(keys)
-            groundBubbleSynth_SolidParticleSystem_Mesh.animations.push(animation)
-            scene.beginAnimation(groundBubbleSynth_SolidParticleSystem_Mesh, 0, 10, true, 10)
-            groundBubbleSynth_AnimationStarted = true
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Update note animations.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -942,7 +920,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const time = document.audioContext.currentTime - startTime;
             distanceDelaySynthRender(time)
             pointSynthRender(time)
-            groundBubbleSynth_Render(time)
             updateCamera(time)
         })
 
