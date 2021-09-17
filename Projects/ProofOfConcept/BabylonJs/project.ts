@@ -96,7 +96,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(500, 2, -500), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 500), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -756,8 +756,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 for (let j = 0; j < groundBubbleSynth_ParticleCountXZ; j++) {
                     const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
                     particle.position.set(x, 0, z)
+                    const angle = Math.atan2(z, x)
+                    const radius = Math.sqrt(x * x + z * z)
+                    groundBubbleSynth_ParticleAnimationY[i].push({ started: false, radius: radius, angle: angle })
                     z += groundBubbleSynth_OffsetXZ
-                    groundBubbleSynth_ParticleAnimationY[i].push({ started: false })
                     particleIndex++
                 }
                 x += groundBubbleSynth_OffsetXZ
@@ -774,7 +776,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const billboardNode = new BABYLON.TransformNode('', scene)
         billboardNode.parent = groundBubbleSynth_SolidParticleSystem_Mesh
 
-        const speedY = 1 // units per second
+        const speedY = 5 // units per second
+        const speedAngle = 0.1 // degrees per second
+        let speedAngleInRadians = speedAngle * 0.0174533
+        const speedAngleAcceleration = 0.001 // degrees per second
+        const speedAngleAccelerationRadians = speedAngleAcceleration * 0.0174533
         let deltaTime = 0
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
             billboardNode.position = particle.position
@@ -782,32 +788,41 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             particle.rotation.set(billboardNode.rotation.x, billboardNode.rotation.y, billboardNode.rotation.z)
             const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_ParticleCountXZ)][particle.idx % groundBubbleSynth_ParticleCountXZ]
             if (animation.started) {
-                particle.position.y += speedY * deltaTime
+                animation.angle -= speedAngleInRadians * deltaTime
+                particle.position.set(
+                    animation.radius * Math.cos(animation.angle),
+                    particle.position.y + speedY * deltaTime,
+                    animation.radius * Math.sin(animation.angle))
             }
             return particle
         }
-        const indexesPerSecond = 10
+        const groundBubbleSynth_AnimationStartTime = 115 // seconds
+        const indexesPerSecond = 15
         const secondsPerIndex = 1 / indexesPerSecond
         let timeToNextIndex = 0
         let particlesStartedCount = 0
         scene.registerBeforeRender(() => {
-            deltaTime = engine.getDeltaTime() / 1000
-            if (particlesStartedCount < groundBubbleSynth_ParticleCount) {
-                timeToNextIndex += deltaTime
-                while (timeToNextIndex > secondsPerIndex) {
-                    let started = false
-                    while (!started) {
-                        let indexX = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
-                        let indexZ = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
-                        const animation = groundBubbleSynth_ParticleAnimationY[indexX][indexZ]
-                        if (!animation.started) {
-                            animation.started = true
-                            timeToNextIndex -= secondsPerIndex
-                            started = true
-                            particlesStartedCount++
+            const time = document.audioContext.currentTime - startTime
+            if (time >= groundBubbleSynth_AnimationStartTime) {
+                deltaTime = engine.getDeltaTime() / 1000
+                if (particlesStartedCount < groundBubbleSynth_ParticleCount) {
+                    timeToNextIndex += deltaTime
+                    while (timeToNextIndex > secondsPerIndex) {
+                        let started = false
+                        while (!started) {
+                            let indexX = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
+                            let indexZ = Math.min((groundBubbleSynth_ParticleCountXZ - 1), Math.floor(Math.random() * (groundBubbleSynth_ParticleCountXZ)))
+                            const animation = groundBubbleSynth_ParticleAnimationY[indexX][indexZ]
+                            if (!animation.started) {
+                                animation.started = true
+                                timeToNextIndex -= secondsPerIndex
+                                started = true
+                                particlesStartedCount++
+                            }
                         }
                     }
                 }
+                speedAngleInRadians += speedAngleAccelerationRadians
             }
             groundBubbleSynth_SolidParticleSystem.setParticles()
         })
