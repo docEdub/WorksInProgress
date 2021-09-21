@@ -106,7 +106,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -20), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 500), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -223,7 +223,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     if (showGroundGrid) {
         const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
         gridMaterial.gridRatio = 3;
-        gridMaterial.lineColor.set(0.2, 0.2, 0.2);
+        gridMaterial.lineColor.set(0.333, 0.333, 0.333);
         gridMaterial.minorUnitVisibility = 0;
         gridMaterial.opacity = 0.999
         ground.material = gridMaterial;
@@ -488,9 +488,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             const addNoteMapItem = (onTime, offTime) => {
                 // Find the note map item matching the given on time.
-                if (onTime == 18.5) {
-                    console.debug('break here')
-                }
                 for (let i = 0; i < noteMap.length; i++) {
                     let noteMapItem = noteMap[i]
                     if (onTime < noteMapItem.onTime) {
@@ -741,7 +738,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         `)
 
         const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
-        groundBubbleSynth_Material.emissiveColor.set(.2, .2, .2)
+        groundBubbleSynth_Material.emissiveColor.set(.333, .333, .333)
         groundBubbleSynth_Material.ambientTexture = groundBubbleSynth_Texture
         groundBubbleSynth_Material.opacityTexture = groundBubbleSynth_Texture
         groundBubbleSynth_Material.disableLighting = true
@@ -758,9 +755,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             size: groundBubbleSynth_Diameter
         })
         groundBubbleSynth_Mesh.rotation.x = Math.PI / 2
-        groundBubbleSynth_Mesh.bakeCurrentTransformIntoVertices()
-        // groundBubbleSynth_Mesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
-        // groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
         const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
         groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, groundBubbleSynth_ParticleCount)
         const groundBubbleSynth_SolidParticleSystem_Mesh = groundBubbleSynth_SolidParticleSystem.buildMesh()
@@ -797,21 +791,33 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const speedY = 5 // units per second
         const speedAngle = 0.1 // degrees per second
+        const speedAngleAcceleration = 0.0001 // degrees per second
+        const fullBillboardHeight = groundBubbleSynth_Diameter
         let speedAngleInRadians = speedAngle * 0.0174533
-        const speedAngleAcceleration = 0.001 // degrees per second
         const speedAngleAccelerationRadians = speedAngleAcceleration * 0.0174533
         let deltaTime = 0
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
-            // billboardNode.position = particle.position
-            // billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
-            // particle.rotation.set(billboardNode.rotation.x, billboardNode.rotation.y, billboardNode.rotation.z)
             const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_ParticleCountXZ)][particle.idx % groundBubbleSynth_ParticleCountXZ]
             if (animation.started) {
                 animation.angle -= speedAngleInRadians * deltaTime
                 particle.position.set(
                     animation.radius * Math.cos(animation.angle),
                     particle.position.y + speedY * deltaTime,
-                    animation.radius * Math.sin(animation.angle))
+                    animation.radius * Math.sin(animation.angle)
+                )
+                billboardNode.position = particle.position
+                billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
+                let rotationX = billboardNode.rotation.x
+                let rotationZ = billboardNode.rotation.z
+                if (particle.position.y < fullBillboardHeight) {
+                    const rotationAmount = 1 - particle.position.y / fullBillboardHeight
+                    rotationX = billboardNode.rotation.x + rotationAmount * (Math.PI / 2)
+                    rotationZ = billboardNode.rotation.z
+                }
+                particle.rotation.set(rotationX, billboardNode.rotation.y, rotationZ)
+            }
+            else {
+                particle.rotation.x = Math.PI / 2
             }
             return particle
         }
