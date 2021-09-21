@@ -90,19 +90,29 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const detectedBrowser = browser();
     console.log('Browser detected =', detectedBrowser)
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Utility functions.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const createSvgTexture = (name, svg) => {
+        // Setting a unique name is required otherwise the first texture created gets used all the time.
+        // See https://forum.babylonjs.com/t/why-does-2nd-texture-use-first-svg/23975.
+        return BABYLON.Texture.LoadFromDataString(name, 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
+    }
+
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
     if (showBabylonInspector) {
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 500), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -20), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 1));
+    camera.setTarget(new BABYLON.Vector3(0, 2, 0));
 
     const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
@@ -205,22 +215,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     groundRing.material = grayMaterial;
     glowLayer.addExcludedMesh(groundRing)
 
-    // const ground = BABYLON.MeshBuilder.CreatePlane('', {
-    //     size: groundSize
-    // })
-    // ground.rotation.set(Math.PI / 2, 0, 0)
+    const ground = BABYLON.MeshBuilder.CreatePlane('', {
+        size: groundSize
+    })
+    ground.rotation.set(Math.PI / 2, 0, 0)
 
-    // if (showGroundGrid) {
-    //     const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
-    //     gridMaterial.gridRatio = 3;
-    //     gridMaterial.lineColor.set(0.2, 0.2, 0.2);
-    //     gridMaterial.minorUnitVisibility = 0.333;
-    //     gridMaterial.opacity = 0.999
-    //     ground.material = gridMaterial;
-    // }
-    // else {
-    //     ground.material = blackMaterial;
-    // }
+    if (showGroundGrid) {
+        const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
+        gridMaterial.gridRatio = 3;
+        gridMaterial.lineColor.set(0.2, 0.2, 0.2);
+        gridMaterial.minorUnitVisibility = 0;
+        gridMaterial.opacity = 0.999
+        ground.material = gridMaterial;
+    }
+    else {
+        ground.material = blackMaterial;
+    }
     
     // This gets updated when switching between flat-screen camera and XR camera.
     let currentCamera = camera
@@ -627,16 +637,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             pointSynth_NoteCount++
         }
 
-        const encodeSvg = (svg) => {
-            BABYLON.Texture.LoadFromDataString('', 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
-        }
-
-        const pointSynth_Svg = encodeSvg(`
+        const pointSynth_Texture = createSvgTexture('pointSynth', `
             <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
                 <circle cx="64" cy="64" r="64" fill="white" />
             </svg>
         `)
-        const pointSynth_Texture = BABYLON.Texture.LoadFromDataString('', pointSynth_Svg, scene)
 
         const noteMeshInstanceCount = 40;
         let noteMeshInstanceIndex = 0;
@@ -729,6 +734,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        const groundBubbleSynth_Texture = createSvgTexture('groundBubbleSynth', `
+            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+                <circle cx="64" cy="64" r="48" stroke-width="16" stroke="white" fill="none" />
+            </svg>
+        `)
+
+        const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
+        groundBubbleSynth_Material.emissiveColor.set(.2, .2, .2)
+        groundBubbleSynth_Material.ambientTexture = groundBubbleSynth_Texture
+        groundBubbleSynth_Material.opacityTexture = groundBubbleSynth_Texture
+        groundBubbleSynth_Material.disableLighting = true
+
         const groundBubbleSynth_Diameter = 2
         const groundBubbleSynth_ParticleCountXZ = 30
         const groundBubbleSynth_ParticleCount = groundBubbleSynth_ParticleCountXZ * groundBubbleSynth_ParticleCountXZ
@@ -740,13 +757,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_Mesh = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundBubbleSynth_Diameter
         })
+        groundBubbleSynth_Mesh.rotation.x = Math.PI / 2
+        groundBubbleSynth_Mesh.bakeCurrentTransformIntoVertices()
+        // groundBubbleSynth_Mesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL
+        // groundBubbleSynth_Mesh.material = groundBubbleSynth_Material
         const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
         groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, groundBubbleSynth_ParticleCount)
         const groundBubbleSynth_SolidParticleSystem_Mesh = groundBubbleSynth_SolidParticleSystem.buildMesh()
         groundBubbleSynth_SolidParticleSystem_Mesh.setBoundingInfo(new BABYLON.BoundingInfo(new BABYLON.Vector3(-1000, 0, -1000), new BABYLON.Vector3(1000, 1000, 1000)))
-        const groundBubbleSynth_SolidParticleSystem_Material = pointSynth_Placeholder_Material.clone('')
-        groundBubbleSynth_SolidParticleSystem_Material.emissiveColor.set(.15, .15, .15)
-        groundBubbleSynth_SolidParticleSystem_Mesh.material = groundBubbleSynth_SolidParticleSystem_Material
+        groundBubbleSynth_SolidParticleSystem_Mesh.material = groundBubbleSynth_Material
         groundBubbleSynth_SolidParticleSystem.initParticles = () => {
             let particleIndex = 0
             let x = -groundBubbleSynth_HalfSpanXZ
@@ -783,9 +802,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const speedAngleAccelerationRadians = speedAngleAcceleration * 0.0174533
         let deltaTime = 0
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
-            billboardNode.position = particle.position
-            billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
-            particle.rotation.set(billboardNode.rotation.x, billboardNode.rotation.y, billboardNode.rotation.z)
+            // billboardNode.position = particle.position
+            // billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
+            // particle.rotation.set(billboardNode.rotation.x, billboardNode.rotation.y, billboardNode.rotation.z)
             const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_ParticleCountXZ)][particle.idx % groundBubbleSynth_ParticleCountXZ]
             if (animation.started) {
                 animation.angle -= speedAngleInRadians * deltaTime
