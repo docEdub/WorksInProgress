@@ -106,7 +106,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 500), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 400), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -733,7 +733,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const groundBubbleSynth_Texture = createSvgTexture('groundBubbleSynth', `
             <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-                <circle cx="64" cy="64" r="48" stroke-width="16" stroke="white" fill="none" />
+                <radialGradient id="gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#000" stop-opacity="0" />
+                    <stop offset="50%" stop-color="#000" stop-opacity="0" />
+                    <stop offset="75%" stop-color="#fff" stop-opacity="1" />
+                    <stop offset="100%" stop-color="#000" stop-opacity="0" />
+                </radialGradient>
+                <circle cx="50%" cy="50%" r="50%" fill="url('#gradient')" />
             </svg>
         `)
 
@@ -771,7 +777,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     particle.position.set(x, 0, z)
                     const angle = Math.atan2(z, x)
                     const radius = Math.sqrt(x * x + z * z)
-                    groundBubbleSynth_ParticleAnimationY[i].push({ started: false, radius: radius, angle: angle })
+                    // groundBubbleSynth_ParticleAnimationY[i].push({ started: false, radius: radius, angle: angle })
+                    groundBubbleSynth_ParticleAnimationY[i].push({ started: true, radius: radius, angle: angle })
                     z += groundBubbleSynth_OffsetXZ
                     particleIndex++
                 }
@@ -802,7 +809,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 animation.angle -= speedAngleInRadians * deltaTime
                 particle.position.set(
                     animation.radius * Math.cos(animation.angle),
-                    particle.position.y + speedY * deltaTime,
+                    // particle.position.y + speedY * deltaTime,
+                    3*fullBillboardHeight,
                     animation.radius * Math.sin(animation.angle)
                 )
                 billboardNode.position = particle.position
