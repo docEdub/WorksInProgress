@@ -658,7 +658,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynth_Placeholder_Mesh.rotation.x = -Math.PI / 2
         pointSynth_Placeholder_Mesh.bakeCurrentTransformIntoVertices();
         const pointSynth_Placeholder_Material = new BABYLON.StandardMaterial('', scene)
-        pointSynth_Placeholder_Material.emissiveColor.set(.2, .2, .2)
+        pointSynth_Placeholder_Material.emissiveColor.set(1, 1, 1)
         pointSynth_Placeholder_Material.ambientTexture = pointSynth_Texture
         pointSynth_Placeholder_Material.opacityTexture = pointSynth_Texture
         pointSynth_Placeholder_Material.disableLighting = true
@@ -668,6 +668,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pointSynth_Placeholder_SolidParticleSystem.addShape(pointSynth_Placeholder_Mesh, pointSynth_NoteCount)
         const pointSynth_Placeholder_SolidParticleSystem_Mesh = pointSynth_Placeholder_SolidParticleSystem.buildMesh()
         pointSynth_Placeholder_SolidParticleSystem_Mesh.name = 'pointSynth_Placeholder_SolidParticleSystem_Mesh'
+        pointSynth_Placeholder_SolidParticleSystem_Mesh.visibility = 0.2
         pointSynth_Placeholder_SolidParticleSystem_Mesh.setBoundingInfo(new BABYLON.BoundingInfo(
             new BABYLON.Vector3(-1000, -1000, -1000),
             new BABYLON.Vector3(1000, 1000, 1000)
