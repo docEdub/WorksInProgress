@@ -778,8 +778,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     particle.position.set(x, 0, z)
                     const angle = Math.atan2(z, x)
                     const radius = Math.sqrt(x * x + z * z)
-                    // groundBubbleSynth_ParticleAnimationY[i].push({ started: false, radius: radius, angle: angle })
-                    groundBubbleSynth_ParticleAnimationY[i].push({ started: true, radius: radius, angle: angle })
+                    groundBubbleSynth_ParticleAnimationY[i].push({ started: false, radius: radius, angle: angle })
+                    // groundBubbleSynth_ParticleAnimationY[i].push({ started: true, radius: radius, angle: angle })
                     z += groundBubbleSynth_OffsetXZ
                     particleIndex++
                 }
@@ -810,8 +810,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 animation.angle -= speedAngleInRadians * deltaTime
                 particle.position.set(
                     animation.radius * Math.cos(animation.angle),
-                    // particle.position.y + speedY * deltaTime,
-                    3*fullBillboardHeight,
+                    particle.position.y + speedY * deltaTime,
+                    // 3*fullBillboardHeight,
                     animation.radius * Math.sin(animation.angle)
                 )
                 billboardNode.position = particle.position
