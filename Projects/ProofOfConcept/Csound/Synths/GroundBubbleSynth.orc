@@ -182,10 +182,9 @@ instr INSTRUMENT_ID
             iGridColumn = giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0]
             iGridRow = giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1]
             SEvent = sprintf(
-                "i %.6f %.03f %.3f %d %.3f %.3f %d",
+                "i %.6f %.03f -1 %d %.3f %.3f %d",
                 p1 + iInstrumentNumberFraction / 1000000,
                 iNoteOnTime,
-                giGroundBubbleSynth_Duration,
                 EVENT_NOTE_GENERATED,
                 iGridColumn,
                 iGridRow)
