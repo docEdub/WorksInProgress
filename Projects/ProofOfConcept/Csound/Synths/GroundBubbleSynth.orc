@@ -39,7 +39,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giGroundBubbleSynth_Duration = 90 // Time in seconds for all notes to be started.
+giGroundBubbleSynth_Duration = 60 // Time in seconds for all notes to be started.
 giGroundBubbleSynth_GridColumnCount = 30
 giGroundBubbleSynth_GridRowCount = giGroundBubbleSynth_GridColumnCount
 giGroundBubbleSynth_GridCellSize = 30
