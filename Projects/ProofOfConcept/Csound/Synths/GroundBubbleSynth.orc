@@ -250,7 +250,7 @@ instr INSTRUMENT_ID
         a2 += gkAmbisonicChannelGains[1] * aOutDistanced
         a3 += gkAmbisonicChannelGains[2] * aOutDistanced
         a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-        a5 += aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+        a5 += 0.25 * aOutDistanced * iPlaybackReverbAdjustment
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
