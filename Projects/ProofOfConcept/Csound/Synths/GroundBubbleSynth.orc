@@ -43,7 +43,8 @@ giGroundBubbleSynth_Duration = 90 // Time in seconds for all notes to be started
 giGroundBubbleSynth_GridColumnCount = 30
 giGroundBubbleSynth_GridRowCount = giGroundBubbleSynth_GridColumnCount
 giGroundBubbleSynth_GridCellSize = 30
-giGroundBubbleSynth_StartY = 2
+giGroundBubbleSynth_StartY = 0
+giGroundBubbleSynth_FullVolumeY = 2
 giGroundBubbleSynth_SpeedY = 5 // Units per second.
 giGroundBubbleSynth_MaxAudibleDistance = 100 // Inaudible beyond max distance.
 giGroundBubbleSynth_MaxAudibleHeight = 100 // Inaudible above max height.
@@ -220,18 +221,23 @@ instr INSTRUMENT_ID
         fi
 
         kCps = iCps + kY * 10
+        kAmp = iAmp
+        if (kY < giGroundBubbleSynth_FullVolumeY) then
+            kAmp *= kY / giGroundBubbleSynth_FullVolumeY
+        fi
+        kAmp *= kDistance / giGroundBubbleSynth_MaxAudibleDistance
 
         aOut = tone(
-            oscil(iAmp + jspline(iAmp, 0.08, 0.05), kCps * 0.918) + \
-            oscil(iAmp + jspline(iAmp, 0.07, 0.49), kCps * 2.234) + \
-            oscil(iAmp + jspline(iAmp, 0.09, 0.50), kCps * 3.83) + \
-            oscil(iAmp + jspline(iAmp, 0.10, 0.45), kCps * 4.11) + \
-            oscil(iAmp + jspline(iAmp, 0.09, 0.51), kCps * 5.25) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.50), kCps * 6.093) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.50), kCps * 7.77) + \
-            oscil(iAmp + jspline(iAmp, 0.10, 0.40), kCps * 8.328) + \
-            oscil(iAmp + jspline(iAmp, 0.07, 0.55), kCps * 9.129) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.47), kCps * kCps / 100),
+            oscil(kAmp + jspline(kAmp, 0.08, 0.05), kCps * 0.918) + \
+            oscil(kAmp + jspline(kAmp, 0.07, 0.49), kCps * 2.234) + \
+            oscil(kAmp + jspline(kAmp, 0.09, 0.50), kCps * 3.83) + \
+            oscil(kAmp + jspline(kAmp, 0.10, 0.45), kCps * 4.11) + \
+            oscil(kAmp + jspline(kAmp, 0.09, 0.51), kCps * 5.25) + \
+            oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 6.093) + \
+            oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 7.77) + \
+            oscil(kAmp + jspline(kAmp, 0.10, 0.40), kCps * 8.328) + \
+            oscil(kAmp + jspline(kAmp, 0.07, 0.55), kCps * 9.129) + \
+            oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
             iCutoffFrequency)
 
         #if IS_PLAYBACK
