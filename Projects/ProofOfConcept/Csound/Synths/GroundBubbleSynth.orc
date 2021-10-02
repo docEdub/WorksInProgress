@@ -137,6 +137,8 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, sprintf(",\"gridColumnCount\":%d", giGroundBubbleSynth_GridColumnCount))
         fprints(SJsonFile, sprintf(",\"gridRowCount\":%d", giGroundBubbleSynth_GridRowCount))
         fprints(SJsonFile, sprintf(",\"gridCellSize\":%d", giGroundBubbleSynth_GridCellSize))
+        fprints(SJsonFile, sprintf(",\"fullVolumeY\":%d", giGroundBubbleSynth_FullVolumeY))
+        fprints(SJsonFile, sprintf(",\"speedY\":%d", giGroundBubbleSynth_SpeedY))        
         fprints(SJsonFile, sprintf(",\"maxDistance\":%d", giGroundBubbleSynth_MaxAudibleDistance))
         fprints(SJsonFile, sprintf(",\"maxHeight\":%d", giGroundBubbleSynth_MaxAudibleHeight))
         fprints(SJsonFile, "}")
