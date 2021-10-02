@@ -206,17 +206,19 @@ instr INSTRUMENT_ID
             kgoto end
         fi
 
+        kCps = iCps + kY * 10
+
         aOut = tone(
-            oscil(iAmp + jspline(iAmp, 0.08, 0.05), iCps * 0.918) + \
-            oscil(iAmp + jspline(iAmp, 0.07, 0.49), iCps * 2.234) + \
-            oscil(iAmp + jspline(iAmp, 0.09, 0.50), iCps * 3.83) + \
-            oscil(iAmp + jspline(iAmp, 0.10, 0.45), iCps * 4.11) + \
-            oscil(iAmp + jspline(iAmp, 0.09, 0.51), iCps * 5.25) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.50), iCps * 6.093) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.50), iCps * 7.77) + \
-            oscil(iAmp + jspline(iAmp, 0.10, 0.40), iCps * 8.328) + \
-            oscil(iAmp + jspline(iAmp, 0.07, 0.55), iCps * 9.129) + \
-            oscil(iAmp + jspline(iAmp, 0.08, 0.47), iCps * iCps / 100),
+            oscil(iAmp + jspline(iAmp, 0.08, 0.05), kCps * 0.918) + \
+            oscil(iAmp + jspline(iAmp, 0.07, 0.49), kCps * 2.234) + \
+            oscil(iAmp + jspline(iAmp, 0.09, 0.50), kCps * 3.83) + \
+            oscil(iAmp + jspline(iAmp, 0.10, 0.45), kCps * 4.11) + \
+            oscil(iAmp + jspline(iAmp, 0.09, 0.51), kCps * 5.25) + \
+            oscil(iAmp + jspline(iAmp, 0.08, 0.50), kCps * 6.093) + \
+            oscil(iAmp + jspline(iAmp, 0.08, 0.50), kCps * 7.77) + \
+            oscil(iAmp + jspline(iAmp, 0.10, 0.40), kCps * 8.328) + \
+            oscil(iAmp + jspline(iAmp, 0.07, 0.55), kCps * 9.129) + \
+            oscil(iAmp + jspline(iAmp, 0.08, 0.47), kCps * kCps / 100),
             iCutoffFrequency)
 
         #if IS_PLAYBACK
