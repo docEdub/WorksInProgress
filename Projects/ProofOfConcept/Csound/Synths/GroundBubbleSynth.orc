@@ -297,16 +297,14 @@ instr INSTRUMENT_ID
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (iDelayIndex == 0) then
-                if (giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                    scoreline_i("i \"GroundBubbleSynth_Json\" 0 0")
-                endif
-                giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] = giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-                SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX])
-                fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"column\":%d,\"row\":%d}}",
-                    times(), iGridColumn, iGridRow)
-                ficlose(SJsonFile)
+            if (giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i("i \"GroundBubbleSynth_Json\" 0 0")
             endif
+            giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] = giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX])
+            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"column\":%d,\"row\":%d}}",
+                times(), iGridColumn, iGridRow)
+            ficlose(SJsonFile)
         ${CSOUND_ENDIF}
     endif
 end:
