@@ -58,51 +58,62 @@ giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giGroundBubbleSynth_GridCellCount = giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridRowCount
 giGroundBubbleSynth_GridCellLaunchPattern[][] init giGroundBubbleSynth_GridCellCount, 2
 
-iGridCellIndex = 0
+giGroundBubbleSynth_GridCellIndex = 0
+giGroundBubbleSynth_GridCellIndexIncrementAmount = 30
+giGroundBubbleSynth_GridCellIndexBase = 0
+
+opcode incrementGridCellIndex, 0, 0
+    giGroundBubbleSynth_GridCellIndex += giGroundBubbleSynth_GridCellIndexIncrementAmount
+    if (giGroundBubbleSynth_GridCellIndex >= giGroundBubbleSynth_GridCellCount) then
+        giGroundBubbleSynth_GridCellIndexBase += 1
+        giGroundBubbleSynth_GridCellIndex = giGroundBubbleSynth_GridCellIndexBase
+    fi
+endop
+
 iSpiralIndex = 0
 while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
     // Across top, left to right.
     iSpiralColumnIndex = iSpiralIndex
     iSpiralRowIndex = iSpiralIndex
     while (iSpiralColumnIndex < giGroundBubbleSynth_GridColumnCount - iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", iGridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1] = iSpiralRowIndex
+        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex
         iSpiralColumnIndex += 1
-        iGridCellIndex += 1
+        incrementGridCellIndex()
     od
     iSpiralColumnIndex -= 1
 
     // Down right side.
     iSpiralRowIndex += 1
     while (iSpiralRowIndex < giGroundBubbleSynth_GridRowCount - iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", iGridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1] = iSpiralRowIndex        
+        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
         iSpiralRowIndex += 1
-        iGridCellIndex += 1
+        incrementGridCellIndex()
     od
     iSpiralRowIndex -= 1
 
     // Across bottom, right to left.
     iSpiralColumnIndex -= 1
     while (iSpiralColumnIndex >= iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", iGridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1] = iSpiralRowIndex        
+        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
         iSpiralColumnIndex -= 1
-        iGridCellIndex += 1
+        incrementGridCellIndex()
     od
     iSpiralColumnIndex += 1
 
     // Up left side.
     iSpiralRowIndex -= 1
     while (iSpiralRowIndex > iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", iGridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1] = iSpiralRowIndex        
+        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
         iSpiralRowIndex -= 1
-        iGridCellIndex += 1
+        incrementGridCellIndex()
     od
 
     iSpiralIndex += 1
