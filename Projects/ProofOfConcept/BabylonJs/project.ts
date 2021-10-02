@@ -1111,7 +1111,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('audioContext =', audioContext)
         console.debug('audioContext.audioWorklet =', audioContext.audioWorklet)
         console.debug('audioContext.baseLatency =', audioContext.baseLatency)
-        console.debug('audioContext.outputLatency =', audioContext.outputLatency)
         console.debug('audioContext.sampleRate =', audioContext.sampleRate)
         console.debug('audioContext.state =', audioContext.state)
         document.audioContext = audioContext;
