@@ -1154,7 +1154,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         --nosound
         </CsOptions>
         <CsInstruments>
-        giPresetUuidPreallocationCount[] = fillarray( 9, /* instr 4 -- DistanceDelaySynth */ 9, /* instr 5 -- PointSynth */ 0 /* instr 6 -- PowerLineSynth */ )
+        giPresetUuidPreallocationCount[] = fillarray( 9, /* instr 4 -- DistanceDelaySynth */ 9, /* instr 5 -- PointSynth */ 900 /* instr 6 -- GroundBubbleSynth */ )
          #ifndef OUTPUT_CHANNEL_COUNT
          #define OUTPUT_CHANNEL_COUNT #2#
          #end
@@ -3459,6 +3459,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             endif
         end:
         endin
+            instr Preallocate_6
+                ii = 0
+                iCount = giPresetUuidPreallocationCount[2]
+                while (ii < iCount) do
+                    scoreline_i(sprintf("i %d.%.3d 0 1 %d 0 0",
+                        6,
+                        ii,
+                        3))
+                    ii += 1
+                od
+                turnoff
+            endin
+            scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
         gSCcInfo_Reverb[] = fillarray( \\
         \\
             "enabled", "bool", "false", "synced", \\
