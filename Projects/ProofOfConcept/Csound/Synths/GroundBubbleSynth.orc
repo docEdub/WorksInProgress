@@ -94,6 +94,8 @@ while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
         iSpiralRowIndex -= 1
         iGridCellIndex += 1
     od
+
+    iSpiralIndex += 1
 od
 
 #endif // #ifndef GroundBubbleSynth_orc__include_guard
