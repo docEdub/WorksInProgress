@@ -3320,7 +3320,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giGroundBubbleSynth_FullVolumeY = 2
         giGroundBubbleSynth_SpeedY = 10
         giGroundBubbleSynth_MaxAudibleDistance = 100
-        giGroundBubbleSynth_MaxAudibleHeight = 100
+        giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance
         giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
         giGroundBubbleSynth_ReferenceDistance = 0.1
         giGroundBubbleSynth_RolloffFactor = 0.0025
