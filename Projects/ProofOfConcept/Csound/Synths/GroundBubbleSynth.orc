@@ -57,6 +57,8 @@ giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giGroundBubbleSynth_GridCellCount = giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridRowCount
 giGroundBubbleSynth_GridCellLaunchPattern[][] init giGroundBubbleSynth_GridCellCount, 2
+giGroundBubbleSynth_GridCenterX = (giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridCellSize) / 2
+giGroundBubbleSynth_GridCenterZ = (giGroundBubbleSynth_GridRowCount * giGroundBubbleSynth_GridCellSize) / 2
 
 giGroundBubbleSynth_GridCellIndex = 0
 giGroundBubbleSynth_GridCellIndexIncrementAmount = 30
@@ -209,8 +211,9 @@ instr INSTRUMENT_ID
             turnoff
         fi
         
-        kX init iGridColumn * giGroundBubbleSynth_GridCellSize
-        kZ init iGridRow * giGroundBubbleSynth_GridCellSize
+        kX init iGridColumn * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterX
+        kZ init iGridRow * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterZ
+        ; log_i_debug("xyz = (%.3f, %.3f, %.3f)", i(kX), i(kY), i(kZ))
         kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
         if (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
             kgoto end
