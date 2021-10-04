@@ -50,9 +50,9 @@ giGroundBubbleSynth_MaxAudibleDistance = 100 // Inaudible beyond max distance.
 giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance // Instrument turns off at max height.
 giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
 giGroundBubbleSynth_ReferenceDistance = 0.1
-giGroundBubbleSynth_RolloffFactor = 0.0025
-giGroundBubbleSynth_PlaybackVolumeAdjustment = 2.5
-giGroundBubbleSynth_PlaybackReverbAdjustment = 0.25
+giGroundBubbleSynth_RolloffFactor = 0.01
+giGroundBubbleSynth_PlaybackVolumeAdjustment = 1
+giGroundBubbleSynth_PlaybackReverbAdjustment = 1
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -73,54 +73,69 @@ opcode incrementGridCellIndex, 0, 0
     fi
 endop
 
-iSpiralIndex = 0
-while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
-    // Across top, left to right.
-    iSpiralColumnIndex = iSpiralIndex
-    iSpiralRowIndex = iSpiralIndex
-    while (iSpiralColumnIndex < giGroundBubbleSynth_GridColumnCount - iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex
-        iSpiralColumnIndex += 1
-        incrementGridCellIndex()
-    od
-    iSpiralColumnIndex -= 1
+; iSpiralIndex = 0
+; while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
+;     // Across top, left to right.
+;     iSpiralColumnIndex = iSpiralIndex
+;     iSpiralRowIndex = iSpiralIndex
+;     while (iSpiralColumnIndex < giGroundBubbleSynth_GridColumnCount - iSpiralIndex) do
+;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex
+;         iSpiralColumnIndex += 1
+;         incrementGridCellIndex()
+;     od
+;     iSpiralColumnIndex -= 1
 
-    // Down right side.
-    iSpiralRowIndex += 1
-    while (iSpiralRowIndex < giGroundBubbleSynth_GridRowCount - iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-        iSpiralRowIndex += 1
-        incrementGridCellIndex()
-    od
-    iSpiralRowIndex -= 1
+;     // Down right side.
+;     iSpiralRowIndex += 1
+;     while (iSpiralRowIndex < giGroundBubbleSynth_GridRowCount - iSpiralIndex) do
+;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
+;         iSpiralRowIndex += 1
+;         incrementGridCellIndex()
+;     od
+;     iSpiralRowIndex -= 1
 
-    // Across bottom, right to left.
-    iSpiralColumnIndex -= 1
-    while (iSpiralColumnIndex >= iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-        iSpiralColumnIndex -= 1
-        incrementGridCellIndex()
-    od
-    iSpiralColumnIndex += 1
+;     // Across bottom, right to left.
+;     iSpiralColumnIndex -= 1
+;     while (iSpiralColumnIndex >= iSpiralIndex) do
+;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
+;         iSpiralColumnIndex -= 1
+;         incrementGridCellIndex()
+;     od
+;     iSpiralColumnIndex += 1
 
-    // Up left side.
-    iSpiralRowIndex -= 1
-    while (iSpiralRowIndex > iSpiralIndex) do
-        log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-        iSpiralRowIndex -= 1
-        incrementGridCellIndex()
-    od
+;     // Up left side.
+;     iSpiralRowIndex -= 1
+;     while (iSpiralRowIndex > iSpiralIndex) do
+;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
+;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
+;         iSpiralRowIndex -= 1
+;         incrementGridCellIndex()
+;     od
 
-    iSpiralIndex += 1
+;     iSpiralIndex += 1
+; od
+
+iCellIndex = 0
+iColumnIndex = 0
+while (iColumnIndex < giGroundBubbleSynth_GridColumnCount) do
+    iRowIndex = 0
+    while (iRowIndex < giGroundBubbleSynth_GridRowCount) do
+        giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
+        giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
+        iRowIndex += 1
+        iCellIndex += 1
+    od
+    iColumnIndex += 1
 od
+
+gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset init 0
 
 #endif // #ifndef GroundBubbleSynth_orc__include_guard
 
@@ -148,6 +163,13 @@ ${CSOUND_ENDIF}
 
 
 instr INSTRUMENT_ID
+    if (gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset == 0) then
+        gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = AF_3D_Audio_DistanceAttenuation(
+            giGroundBubbleSynth_MaxAudibleHeight,
+            giGroundBubbleSynth_ReferenceDistance,
+            giGroundBubbleSynth_RolloffFactor)
+        printsk("gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = %f\n", gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset)
+    fi
 
     iEventType = p4
     if (iEventType == EVENT_CC) then
@@ -187,7 +209,7 @@ instr INSTRUMENT_ID
             iGridColumn = giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][0]
             iGridRow = giGroundBubbleSynth_GridCellLaunchPattern[iGridCellIndex][1]
             SEvent = sprintf(
-                "i %.6f %.03f -1 %d %.3f %.3f %d",
+                "i %.6f %.03f -1 %d %d %d",
                 p1 + iInstrumentNumberFraction / 1000000,
                 iNoteOnTime,
                 EVENT_NOTE_GENERATED,
@@ -257,6 +279,7 @@ instr INSTRUMENT_ID
         #endif
 
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
+        kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
         kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
         #if IS_PLAYBACK
             kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
@@ -273,7 +296,7 @@ instr INSTRUMENT_ID
         a2 += gkAmbisonicChannelGains[1] * aOutDistanced
         a3 += gkAmbisonicChannelGains[2] * aOutDistanced
         a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-        a5 += 0.25 * aOutDistanced * iPlaybackReverbAdjustment
+        a5 += 0.1 * aOutDistanced * iPlaybackReverbAdjustment
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
