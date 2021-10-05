@@ -39,7 +39,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giGroundBubbleSynth_Duration = 60 // Time in seconds for all notes to be started.
+giGroundBubbleSynth_Duration = 80 // Time in seconds for all notes to be started.
 giGroundBubbleSynth_GridColumnCount = 30
 giGroundBubbleSynth_GridRowCount = giGroundBubbleSynth_GridColumnCount
 giGroundBubbleSynth_GridCellSize = 30
@@ -51,7 +51,7 @@ giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance //
 giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
 giGroundBubbleSynth_ReferenceDistance = 0.1
 giGroundBubbleSynth_RolloffFactor = 0.01
-giGroundBubbleSynth_PlaybackVolumeAdjustment = 1
+giGroundBubbleSynth_PlaybackVolumeAdjustment = 3
 giGroundBubbleSynth_PlaybackReverbAdjustment = 1
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
@@ -73,6 +73,7 @@ opcode incrementGridCellIndex, 0, 0
     fi
 endop
 
+// Spiral in from lower left of grid toward center of grid.
 ; iSpiralIndex = 0
 ; while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
 ;     // Across top, left to right.
@@ -122,17 +123,43 @@ endop
 ;     iSpiralIndex += 1
 ; od
 
+// Straight negative to positive across grid.
+; iCellIndex = 0
+; iColumnIndex = 0
+; while (iColumnIndex < giGroundBubbleSynth_GridColumnCount) do
+;     iRowIndex = 0
+;     while (iRowIndex < giGroundBubbleSynth_GridRowCount) do
+;         giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
+;         giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
+;         iRowIndex += 1
+;         iCellIndex += 1
+;     od
+;     iColumnIndex += 1
+; od
+
+// Randomized
 iCellIndex = 0
-iColumnIndex = 0
-while (iColumnIndex < giGroundBubbleSynth_GridColumnCount) do
-    iRowIndex = 0
-    while (iRowIndex < giGroundBubbleSynth_GridRowCount) do
-        giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
-        giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
-        iRowIndex += 1
-        iCellIndex += 1
+iCellIndexIsSet[] init giGroundBubbleSynth_GridCellCount
+while (iCellIndex < giGroundBubbleSynth_GridCellCount) do
+    iRandomIndex = min(floor(random(0, giGroundBubbleSynth_GridCellCount)), giGroundBubbleSynth_GridCellCount)
+    iSearchCount = 0
+    while (iCellIndexIsSet[iRandomIndex] == true && iSearchCount < giGroundBubbleSynth_GridCellCount) do
+        iRandomIndex += 1
+        if (iRandomIndex >= giGroundBubbleSynth_GridCellCount) then
+            iRandomIndex = 0
+        fi
+        iSearchCount += 1
+        if (iSearchCount >= giGroundBubbleSynth_GridCellCount) then
+            log_i_warning("Failed to find available index")
+            
+        fi
     od
-    iColumnIndex += 1
+    iCellIndexIsSet[iRandomIndex] = true
+    iColumnIndex = floor(iRandomIndex / giGroundBubbleSynth_GridColumnCount)
+    iRowIndex = iRandomIndex % giGroundBubbleSynth_GridRowCount
+    giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
+    giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
+    iCellIndex += 1
 od
 
 gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset init 0
@@ -238,7 +265,7 @@ instr INSTRUMENT_ID
         
         kX init iGridColumn * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterX
         kZ init iGridRow * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterZ
-        ; log_i_debug("xyz = (%.3f, %.3f, %.3f)", i(kX), i(kY), i(kZ))
+        ; prints("grid[%d][%d] = xyz(%.3f, %.3f, %.3f)\n", iGridColumn, iGridRow, i(kX), i(kY), i(kZ))
         kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
         if (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
             kgoto end
