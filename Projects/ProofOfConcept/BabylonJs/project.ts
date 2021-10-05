@@ -106,13 +106,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(10, 2, 10), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(430, 2, 430), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 120, 0));
 
     const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
@@ -3301,10 +3301,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giGroundBubbleSynth_MaxAudibleDistance = 100
         giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance
         giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
-        giGroundBubbleSynth_ReferenceDistance = 0.1
-        giGroundBubbleSynth_RolloffFactor = 0.01
-        giGroundBubbleSynth_PlaybackVolumeAdjustment = 3
-        giGroundBubbleSynth_PlaybackReverbAdjustment = 1
+        giGroundBubbleSynth_ReferenceDistance = 1
+        giGroundBubbleSynth_RolloffFactor = 1
+        giGroundBubbleSynth_PlaybackVolumeAdjustment = 20
+        giGroundBubbleSynth_PlaybackReverbAdjustment = 0.1
         giGroundBubbleSynth_NoteIndex[] init 1
         giGroundBubbleSynth_GridCellCount = giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridRowCount
         giGroundBubbleSynth_GridCellLaunchPattern[][] init giGroundBubbleSynth_GridCellCount, 2
@@ -3384,7 +3384,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 fi
                 kX init iGridColumn * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterX
                 kZ init iGridRow * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterZ
-                prints("grid[%d][%d] = xyz(%.3f, %.3f, %.3f)\\n", iGridColumn, iGridRow, i(kX), i(kY), i(kZ))
                 kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
                 if (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
                     kgoto end

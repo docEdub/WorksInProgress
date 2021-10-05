@@ -49,10 +49,10 @@ giGroundBubbleSynth_SpeedY = 10 // Units per second.
 giGroundBubbleSynth_MaxAudibleDistance = 100 // Inaudible beyond max distance.
 giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance // Instrument turns off at max height.
 giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
-giGroundBubbleSynth_ReferenceDistance = 0.1
-giGroundBubbleSynth_RolloffFactor = 0.01
-giGroundBubbleSynth_PlaybackVolumeAdjustment = 3
-giGroundBubbleSynth_PlaybackReverbAdjustment = 1
+giGroundBubbleSynth_ReferenceDistance = 1
+giGroundBubbleSynth_RolloffFactor = 1
+giGroundBubbleSynth_PlaybackVolumeAdjustment = 20
+giGroundBubbleSynth_PlaybackReverbAdjustment = 0.1
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
