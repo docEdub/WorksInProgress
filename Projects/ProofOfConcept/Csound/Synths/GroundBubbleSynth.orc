@@ -49,11 +49,11 @@ giGroundBubbleSynth_SpeedY = 10 // Units per second.
 giGroundBubbleSynth_MaxAudibleDistance = 100 // Inaudible beyond max distance.
 giGroundBubbleSynth_MaxReverbOnlyDistance = giGroundBubbleSynth_MaxAudibleDistance * 2
 giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance // Instrument turns off at max height.
-giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.5
+giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.25
 giGroundBubbleSynth_ReferenceDistance = 0.1
 giGroundBubbleSynth_RolloffFactor = 0.1
-giGroundBubbleSynth_PlaybackVolumeAdjustment = 2
-giGroundBubbleSynth_PlaybackReverbAdjustment = 0.1
+giGroundBubbleSynth_PlaybackVolumeAdjustment = 7.5 
+giGroundBubbleSynth_PlaybackReverbAdjustment = 0.25
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -163,7 +163,7 @@ while (iCellIndex < giGroundBubbleSynth_GridCellCount) do
     iCellIndex += 1
 od
 
-gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset init 0
+; gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset init 0
 
 #endif // #ifndef GroundBubbleSynth_orc__include_guard
 
@@ -191,13 +191,13 @@ ${CSOUND_ENDIF}
 
 
 instr INSTRUMENT_ID
-    if (gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset == 0) then
-        gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = AF_3D_Audio_DistanceAttenuation(
-            giGroundBubbleSynth_MaxAudibleHeight,
-            giGroundBubbleSynth_ReferenceDistance,
-            giGroundBubbleSynth_RolloffFactor)
-        printsk("gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = %f\n", gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset)
-    fi
+    ; if (gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset == 0) then
+    ;     gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = AF_3D_Audio_DistanceAttenuation(
+    ;         giGroundBubbleSynth_MaxAudibleHeight,
+    ;         giGroundBubbleSynth_ReferenceDistance,
+    ;         giGroundBubbleSynth_RolloffFactor)
+    ;     printsk("gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset = %f\n", gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset)
+    ; fi
 
     iEventType = p4
     if (iEventType == EVENT_CC) then
@@ -322,9 +322,9 @@ instr INSTRUMENT_ID
 
         
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
-        if (kIsReverbOnly == false) then
-            kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
-        fi
+        ; if (kIsReverbOnly == false) then
+        ;     kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
+        ; fi
         kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
         #if IS_PLAYBACK
             kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
