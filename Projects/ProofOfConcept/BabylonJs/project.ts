@@ -763,6 +763,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_SpanZ = groundBubbleSynth_GridCountZ * groundBubbleSynth_GridCellSize
         const groundBubbleSynth_HalfSpanX = groundBubbleSynth_SpanX / 2
         const groundBubbleSynth_HalfSpanZ = groundBubbleSynth_SpanZ / 2
+        const groundBubbleSynth_FadeStartY = groundBubbleSynth_DataHeader.maxHeight * 2
+        const groundBubbleSynth_FadeRangeY = 50
+
         const groundBubbleSynth_ParticleAnimationY = []
 
         const groundBubbleSynth_Mesh = BABYLON.MeshBuilder.CreatePlane('', {
@@ -820,6 +823,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     rotationZ = billboardNode.rotation.z
                 }
                 particle.rotation.set(rotationX, billboardNode.rotation.y, rotationZ)
+                const fadeOffset = particle.position.y - groundBubbleSynth_FadeStartY
+                if (fadeOffset > 0) {
+                    const color = 1 - fadeOffset / groundBubbleSynth_FadeRangeY
+                    particle.color.set(color, color, color, 1)
+                    if (fadeOffset > groundBubbleSynth_FadeRangeY) {
+                        animation.started = false
+                    }
+                }
             }
             return particle
         }
