@@ -106,7 +106,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(50, 2, -450), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -2877,7 +2877,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     else
                         iAmp = 1
                     endif
-                    iCps = cpsmidinn(iNoteNumber)
+                    iCps = cpsmidinn(iNoteNumber + 3)
                     iCpsRandomized = iCps * random:i(0.999, 1.001)
                     asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
                     asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))

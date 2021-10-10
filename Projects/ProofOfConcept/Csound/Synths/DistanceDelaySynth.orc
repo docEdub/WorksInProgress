@@ -201,7 +201,7 @@ instr INSTRUMENT_ID
             else
                 iAmp = 1
             endif
-            iCps = cpsmidinn(iNoteNumber)
+            iCps = cpsmidinn(iNoteNumber + 3)
             iCpsRandomized = iCps * random:i(0.999, 1.001)
             
             // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
