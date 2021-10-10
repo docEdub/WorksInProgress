@@ -2808,9 +2808,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceDelaySynth_DelayCount = 5
         giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
         giDistanceDelaySynth_ReferenceDistance = 0.1
-        giDistanceDelaySynth_RolloffFactor = 0.0025
-        giDistanceDelaySynth_PlaybackVolumeAdjustment = 2.5
-        giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
+        giDistanceDelaySynth_RolloffFactor = 0.00075
+        giDistanceDelaySynth_PlaybackVolumeAdjustment = 1
+        giDistanceDelaySynth_PlaybackReverbAdjustment = 0.2
         giDistanceDelaySynth_NoteIndex[] init 1
         giDistanceDelaySynth_InstrumentNumberFraction[] init 1
          #ifndef DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
@@ -2890,7 +2890,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a1 = mode(ain, 500, 20)
                     a1 += mode(ain, 900, 10)
                     a1 += mode(ain, 1700, 6)
-                    asig *= linen:a(1, 0, p3, 0.001)
+                    asig *= linen:a(1, 0.025, p3, 0.001)
                     asig += a1
                     if (iEventType == 5) then
                         kPass init 0
@@ -2922,16 +2922,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
                     iPlaybackReverbAdjustment init 1
                         iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
-                    aOutDistanced = compress2(
-                        aOutDistanced,
-                        aOutDistanced,
-                        -90,
-                        -10,
-                        -5,
-                        2,
-                        .1,
-                        .1,
-                        .02)
                     a1 += gkAmbisonicChannelGains[0] * aOutDistanced
                     a2 += gkAmbisonicChannelGains[1] * aOutDistanced
                     a3 += gkAmbisonicChannelGains[2] * aOutDistanced

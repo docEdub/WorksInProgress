@@ -47,9 +47,9 @@ giDistanceDelaySynth_Duration = 0.49 // seconds
 giDistanceDelaySynth_DelayCount = 5
 giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
 giDistanceDelaySynth_ReferenceDistance = 0.1
-giDistanceDelaySynth_RolloffFactor = 0.0025
-giDistanceDelaySynth_PlaybackVolumeAdjustment = 2.5
-giDistanceDelaySynth_PlaybackReverbAdjustment = 0.25
+giDistanceDelaySynth_RolloffFactor = 0.00075
+giDistanceDelaySynth_PlaybackVolumeAdjustment = 1
+giDistanceDelaySynth_PlaybackReverbAdjustment = 0.2
 
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT
@@ -219,15 +219,15 @@ instr INSTRUMENT_ID
             asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)  
             asig = K35_hpf(asig, iCpsRandomized, 0.5)    
             
-            ;; Resonant Body
+            ;; Resonant body
             ain = asig * ampdbfs(-60)
             
             a1 = mode(ain, 500, 20)
             a1 += mode(ain, 900, 10)  
             a1 += mode(ain, 1700, 6)    
 
-            ;; Declick
-            asig *= linen:a(1, 0, p3, 0.001)
+            ;; Attack envelope and declick
+            asig *= linen:a(1, 0.025, p3, 0.001)
 
             asig += a1
 
@@ -283,16 +283,16 @@ instr INSTRUMENT_ID
                 iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
             #endif
 
-            aOutDistanced = compress2(
-                aOutDistanced,
-                aOutDistanced,
-                -90,    // threshold
-                -10,    // low knee
-                -5,     // high knee
-                2,      // ratio
-                .1,     // attack time in seconds
-                .1,     // release time in seconds
-                .02)    // look-ahead time in seconds
+            ; aOutDistanced = compress2(
+            ;     aOutDistanced,
+            ;     aOutDistanced,
+            ;     -90,    // threshold
+            ;     -50,    // low knee
+            ;     -25,    // high knee
+            ;     1.02,   // ratio
+            ;     .1,     // attack time in seconds
+            ;     .5,     // release time in seconds
+            ;     .02)    // look-ahead time in seconds
 
             a1 += gkAmbisonicChannelGains[0] * aOutDistanced
             a2 += gkAmbisonicChannelGains[1] * aOutDistanced
