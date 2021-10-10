@@ -106,13 +106,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, 0), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 120, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 2, 0));
 
     const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
@@ -741,6 +741,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     <stop offset="100%" stop-color="#000" stop-opacity="0" />
                 </radialGradient>
                 <circle cx="50%" cy="50%" r="50%" fill="url('#gradient')" />
+                <circle cx="50%" cy="50%" r="10%" fill="#fff" />
             </svg>
         `)
 
