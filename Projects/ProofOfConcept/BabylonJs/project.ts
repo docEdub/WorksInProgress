@@ -265,6 +265,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let distanceDelaySynthLowestNoteNumber = 0
     let distanceDelaySynthNoteNumbers = []
 
+    let groundBubbleSynth_NoteOnIndex = 1
+    let groundBubbleSynth_IsResetting = false
+    const groundBubbleSynth_Reset = () => {
+        console.debug('groundBubbleSynth_Reset called')
+        groundBubbleSynth_NoteOnIndex = 1
+        groundBubbleSynth_IsResetting = true
+    }
+
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
         // console.debug('csdData =', csdData)
@@ -765,13 +773,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_HalfSpanZ = groundBubbleSynth_SpanZ / 2
         const groundBubbleSynth_FadeStartY = groundBubbleSynth_DataHeader.maxHeight * 2
         const groundBubbleSynth_FadeRangeY = 50
+        const groundBubbleSynth_RotationStartX = Math.PI / 2
 
         const groundBubbleSynth_ParticleAnimationY = []
 
         const groundBubbleSynth_Mesh = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundBubbleSynth_Diameter
         })
-        groundBubbleSynth_Mesh.rotation.x = Math.PI / 2
+        groundBubbleSynth_Mesh.rotation.x = groundBubbleSynth_RotationStartX
         const groundBubbleSynth_SolidParticleSystem = new BABYLON.SolidParticleSystem('', scene)
         groundBubbleSynth_SolidParticleSystem.addShape(groundBubbleSynth_Mesh, groundBubbleSynth_GridCellCount)
         const groundBubbleSynth_SolidParticleSystem_Mesh = groundBubbleSynth_SolidParticleSystem.buildMesh()
@@ -786,7 +795,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 for (let j = 0; j < groundBubbleSynth_GridCountZ; j++) {
                     const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
                     particle.position.set(x, 0, z)
-                    particle.rotation.x = Math.PI / 2
+                    particle.rotation.x = groundBubbleSynth_RotationStartX
                     groundBubbleSynth_ParticleAnimationY[i].push({ started: false, x: x, z: z })
                     // groundBubbleSynth_ParticleAnimationY[i].push({ started: true })
                     z += groundBubbleSynth_GridCellSize
@@ -811,7 +820,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let groundBubbleSynth_DeltaTime = 0
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
             const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_GridCountX)][particle.idx % groundBubbleSynth_GridCountZ]
-            if (animation.started) {
+            if (groundBubbleSynth_IsResetting) {
+                particle.position.y = 0
+                particle.rotation.x = groundBubbleSynth_RotationStartX
+                animation.started = false
+            }
+            else if (animation.started) {
                 particle.position.y = particle.position.y + groundBubbleSynth_SpeedY * groundBubbleSynth_DeltaTime
                 billboardNode.position = particle.position
                 billboardNode.lookAt(currentCamera.position, 0, Math.PI, Math.PI, BABYLON.Space.WORLD)
@@ -819,7 +833,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 let rotationZ = billboardNode.rotation.z
                 if (particle.position.y < fullBillboardHeight) {
                     const rotationAmount = 1 - particle.position.y / fullBillboardHeight
-                    rotationX = billboardNode.rotation.x + rotationAmount * (Math.PI / 2)
+                    rotationX = billboardNode.rotation.x + rotationAmount * groundBubbleSynth_RotationStartX
                     rotationZ = billboardNode.rotation.z
                 }
                 particle.rotation.set(rotationX, billboardNode.rotation.y, rotationZ)
@@ -832,10 +846,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     }
                 }
             }
+            else if (particle.position.y == 0 && particle.color.r < 1) {
+                const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, 1)
+                particle.color.set(color, color, color, 1)
+            }
             return particle
         }
 
-        let groundBubbleSynth_NoteOnIndex = 1
         const groundBubbleSynth_Render = (time, deltaTime) => {
             groundBubbleSynth_DeltaTime = deltaTime
 
@@ -849,6 +866,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
 
             groundBubbleSynth_SolidParticleSystem.setParticles()
+            groundBubbleSynth_IsResetting = false
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1058,6 +1076,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('Restarting Csound ...')
         isCsoundStarted = false;
         await document.csound.rewindScore();
+        groundBubbleSynth_Reset()
         console.debug('Restarting Csound - done')
         restartCount++
         console.debug('Restart count =', restartCount)
