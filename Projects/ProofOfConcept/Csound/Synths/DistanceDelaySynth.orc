@@ -283,6 +283,17 @@ instr INSTRUMENT_ID
                 iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
             #endif
 
+            aOutDistanced = compress2(
+                aOutDistanced,
+                aOutDistanced,
+                -90,    // threshold
+                -10,    // low knee
+                -5,     // high knee
+                2,      // ratio
+                .1,     // attack time in seconds
+                .1,     // release time in seconds
+                .02)    // look-ahead time in seconds
+
             a1 += gkAmbisonicChannelGains[0] * aOutDistanced
             a2 += gkAmbisonicChannelGains[1] * aOutDistanced
             a3 += gkAmbisonicChannelGains[2] * aOutDistanced

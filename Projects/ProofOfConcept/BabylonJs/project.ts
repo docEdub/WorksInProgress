@@ -106,7 +106,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(50, 2, -450), scene);
+    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
@@ -2922,6 +2922,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
                     iPlaybackReverbAdjustment init 1
                         iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
+                    aOutDistanced = compress2(
+                        aOutDistanced,
+                        aOutDistanced,
+                        -90,
+                        -10,
+                        -5,
+                        2,
+                        .1,
+                        .1,
+                        .02)
                     a1 += gkAmbisonicChannelGains[0] * aOutDistanced
                     a2 += gkAmbisonicChannelGains[1] * aOutDistanced
                     a3 += gkAmbisonicChannelGains[2] * aOutDistanced
