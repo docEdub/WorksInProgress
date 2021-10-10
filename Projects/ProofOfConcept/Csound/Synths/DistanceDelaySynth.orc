@@ -181,7 +181,7 @@ instr INSTRUMENT_ID
         od
         if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
             log_i_warning("Sample cache for note number %d not found", iNoteNumber)
-            turnoff
+            ; turnoff
         endif
         ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
 
