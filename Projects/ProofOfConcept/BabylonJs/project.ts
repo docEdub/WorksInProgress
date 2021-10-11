@@ -26,7 +26,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const logDebugMessages = true;
     const showGroundGrid = true;
 
-    let animateCamera = false;
+    let animateCamera = true;
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
