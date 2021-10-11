@@ -55,3 +55,12 @@
             - Audio is a bit glitchy, about the same as on iOS Safari. Using panning for spatial audio might resolve this instead of using ambisonic convolutions.
             - FPS is about 10hz, which is not good. It's probably the glow effect causing this since it requires a 2-pass render to texture step, which is bad on mobile devices due to tiling (I think).
             - @slt sent a video using Google drive and I uploaded it to Vimeo at https://vimeo.com/600273627.
+
+- 2021-10-10: https://playground.babylonjs.com/#SY0NY5#9
+    - Title: **ProofOfConcept - 2021-10-10--2225**
+    - Posted to:
+        - Twitter: https://twitter.com/docedub/status/1447708212304678912
+        - Csound Discord `showcase` channel: https://discord.com/channels/784849854270537790/786239999259181073/897267916775489556
+        - WebXR Discord `show-off` channel: https://discord.com/channels/758943204715659264/759559568321282109/897268348121931836
+        - BabylonJS `Demos and Projects` as a separate thread: https://forum.babylonjs.com/t/spatial-audio-experience-proofofconcept/23712/2
+
