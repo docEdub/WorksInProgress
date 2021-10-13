@@ -3,6 +3,8 @@
 
 - Enable moving with WASD keys.
 
+- Make HTML canvas element non-selectable. Avoid blue outline on mouse-press.
+
 - Add thank you notes.
 
 - Add production `webpack.js`.
