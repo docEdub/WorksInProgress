@@ -26,7 +26,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const logDebugMessages = true;
     const showGroundGrid = true;
 
-    let animateCamera = true;
+    let animateCamera = false;
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 1000;
@@ -106,13 +106,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
-    let camera = new BABYLON.FreeCamera('', new BABYLON.Vector3(0, 2, -10), scene);
+    const cameraSettings = [
+        { position: new BABYLON.Vector3(0, 2, -10), target: new BABYLON.Vector3(0, 2, 0) },
+        { position: new BABYLON.Vector3(500, 2, 500), target: new BABYLON.Vector3(-50, 300, 0) }
+    ]
+    const cameraSetting = cameraSettings[1]
+
+    let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene);
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
     camera.speed = 0.25;
     camera.attachControl(canvas, true);
-    camera.setTarget(new BABYLON.Vector3(0, 2, 0));
+    camera.setTarget(cameraSetting.target);
 
     const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
@@ -852,12 +858,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     const fadeOutOffset = particle.position.y - groundBubbleSynth_FadeStartY
                     if (fadeOutOffset > 0) {
                         const color = 1 - fadeOutOffset / groundBubbleSynth_FadeRangeY
-                    particle.color.set(color, color, color, 1)
+                        particle.color.set(color, color, color, 1)
                         if (fadeOutOffset > groundBubbleSynth_FadeRangeY) {
-                        animation.started = false
+                            animation.started = false
+                        }
                     }
                 }
-            }
             }
             else if (particle.position.y == 0 && particle.color.r < groundBubbleSynth_StartColor) {
                 const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, groundBubbleSynth_StartColor)
