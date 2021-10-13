@@ -1,6 +1,4 @@
 
-- Fix PointSynth note-on meshes.
-
 - Fix bugs that happen when browser tab loses focus.
 
 - Enable moving with WASD keys.

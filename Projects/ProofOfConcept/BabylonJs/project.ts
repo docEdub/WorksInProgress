@@ -653,6 +653,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let noteMeshInstances = [];
         const noteMesh = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
         const noteMaterial = new BABYLON.StandardMaterial('', scene)
+        noteMaterial.emissiveColor.set(1, 1, 1)
         noteMesh.material = noteMaterial
         noteMesh.isVisible = false
         let noteMeshInstance = noteMesh.createInstance('');
