@@ -39,7 +39,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 
-giPointSynth_DistanceMin = 50
+giPointSynth_DistanceMin = 1
 giPointSynth_DistanceMax = 500
 giPointSynth_ReferenceDistance = 5
 giPointSynth_RolloffFactor = 0.25
@@ -60,7 +60,7 @@ while (iI < ORC_INSTANCE_COUNT) do
     seed(1 + iI * 1000)
     iJ = 0
     while (iJ < $POINT_SYNTH_NEXT_XYZ_COUNT) do
-        iR = giPointSynth_DistanceMin + rnd(giPointSynth_DistanceMax - giPointSynth_DistanceMin)
+        iR = random(giPointSynth_DistanceMin, giPointSynth_DistanceMax)
         iT = rnd(359.999)
         iXYZ[] = math_rytToXyz(iR, 0, iT)
         giPointSynthNextXYZ[iI][iJ][$X] = iXYZ[$X]
