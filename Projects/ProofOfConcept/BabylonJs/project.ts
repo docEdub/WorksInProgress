@@ -755,7 +755,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         `)
 
         const groundBubbleSynth_Material = new BABYLON.StandardMaterial('', scene)
-        groundBubbleSynth_Material.emissiveColor.set(.333, .333, .333)
+        groundBubbleSynth_Material.emissiveColor.set(1, 1, 1)
         groundBubbleSynth_Material.ambientTexture = groundBubbleSynth_Texture
         groundBubbleSynth_Material.opacityTexture = groundBubbleSynth_Texture
         groundBubbleSynth_Material.disableLighting = true
@@ -763,6 +763,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_Data = csdData['9037b759-36e4-4600-b2cb-03383ebd65c1']
         const groundBubbleSynth_DataHeader = groundBubbleSynth_Data[0]
 
+        const groundBubbleSynth_StartColor = .333
         const groundBubbleSynth_Diameter = 2
         const groundBubbleSynth_GridCountX = groundBubbleSynth_DataHeader.gridColumnCount
         const groundBubbleSynth_GridCountZ = groundBubbleSynth_DataHeader.gridRowCount
@@ -795,10 +796,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 let z = -groundBubbleSynth_HalfSpanZ
                 for (let j = 0; j < groundBubbleSynth_GridCountZ; j++) {
                     const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
+                    particle.color.set(groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, 1)
                     particle.position.set(x, 0, z)
                     particle.rotation.x = groundBubbleSynth_RotationStartX
                     groundBubbleSynth_ParticleAnimationY[i].push({ started: false, x: x, z: z })
-                    // groundBubbleSynth_ParticleAnimationY[i].push({ started: true })
+                    // groundBubbleSynth_ParticleAnimationY[i].push({ started: true, x: x, z: z })
                     z += groundBubbleSynth_GridCellSize
                     particleIndex++
                 }
@@ -838,17 +840,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     rotationZ = billboardNode.rotation.z
                 }
                 particle.rotation.set(rotationX, billboardNode.rotation.y, rotationZ)
-                const fadeOffset = particle.position.y - groundBubbleSynth_FadeStartY
-                if (fadeOffset > 0) {
-                    const color = 1 - fadeOffset / groundBubbleSynth_FadeRangeY
+                const fadeInMultiplier = (fullBillboardHeight - particle.position.y) / fullBillboardHeight
+                if (fadeInMultiplier >= 0 && fadeInMultiplier < 1) {
+                    const color = groundBubbleSynth_StartColor + (1 - fadeInMultiplier) * (1 - groundBubbleSynth_StartColor)
                     particle.color.set(color, color, color, 1)
-                    if (fadeOffset > groundBubbleSynth_FadeRangeY) {
+                    if (particle.position.x == 0 && particle.position.z == 0) {
+                        console.debug('particle: y =', particle.position.y, ', color =', color)
+                    }
+                }
+                else {
+                    const fadeOutOffset = particle.position.y - groundBubbleSynth_FadeStartY
+                    if (fadeOutOffset > 0) {
+                        const color = 1 - fadeOutOffset / groundBubbleSynth_FadeRangeY
+                    particle.color.set(color, color, color, 1)
+                        if (fadeOutOffset > groundBubbleSynth_FadeRangeY) {
                         animation.started = false
                     }
                 }
             }
-            else if (particle.position.y == 0 && particle.color.r < 1) {
-                const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, 1)
+            }
+            else if (particle.position.y == 0 && particle.color.r < groundBubbleSynth_StartColor) {
+                const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, groundBubbleSynth_StartColor)
                 particle.color.set(color, color, color, 1)
             }
             return particle
