@@ -254,7 +254,7 @@ instr INSTRUMENT_ID
         iGridColumn = p5
         iGridRow = p6
 
-        iCps = 220
+        iCps = cpsmidinn(random(58, 62))
         iAmp = 0.05
         iCutoffFrequency = 1000
         

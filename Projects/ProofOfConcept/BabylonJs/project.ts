@@ -3398,7 +3398,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iGridColumn = p5
                 iGridRow = p6
-                iCps = 220
+                iCps = cpsmidinn(random(58, 62))
                 iAmp = 0.05
                 iCutoffFrequency = 1000
                 kY init giGroundBubbleSynth_StartY

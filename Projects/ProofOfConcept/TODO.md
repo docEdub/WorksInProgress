@@ -1,6 +1,4 @@
 
-- Vary GroundBubbleSynth start pitches.
-
 - Fill PointSynth hole around y-axis.
 
 - Fix PointSynth note-on meshes.
