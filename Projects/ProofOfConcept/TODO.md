@@ -1,6 +1,4 @@
 
-- Remove invisible walls at boundary.
-
 - Enable moving with WASD keys.
 
 - Make HTML canvas element non-selectable. Avoid blue outline on mouse-press.

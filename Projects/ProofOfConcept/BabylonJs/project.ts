@@ -29,7 +29,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let animateCamera = false;
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
-    const groundSize = 1000;
+    const groundSize = 9000;
     const groundRingDiameter = 100;
 
     const halfGroundSize = groundSize / 2;
@@ -106,9 +106,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.debugLayer.show()
     }
 
+    const skyBrightness = 0.05
+    scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
+
     const cameraSettings = [
+        // 0
         { position: new BABYLON.Vector3(0, 2, -10), target: new BABYLON.Vector3(0, 2, 0) },
-        { position: new BABYLON.Vector3(500, 2, 500), target: new BABYLON.Vector3(-50, 300, 0) }
+        // 1
+        { position: new BABYLON.Vector3(500, 2, 500), target: new BABYLON.Vector3(-50, 300, 0) },
+        // 2
+        { position: new BABYLON.Vector3(halfGroundSize, 2, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+        // 3
+        { position: new BABYLON.Vector3(-halfGroundSize, 2, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) }
     ]
     const cameraSetting = cameraSettings[1]
 
@@ -147,16 +156,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     glowLayer.isEnabled = false
     glowLayer.blurKernelSize = 64
     glowLayer.intensity = 0.5
-
-    // For options docs see https://doc.babylonjs.com/typedoc/interfaces/babylon.ienvironmenthelperoptions.
-    const skyBrightness = 0.002
-    const environment = scene.createDefaultEnvironment({
-        groundOpacity: 0,
-        groundSize: groundSize,
-        skyboxColor: new BABYLON.Color3(skyBrightness, skyBrightness, skyBrightness),
-        skyboxSize: groundSize * 2
-    });
-    environment.ground.checkCollisions = true;
 
     const whiteColor = BABYLON.Color3.White();
     const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2);
@@ -225,13 +224,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         size: groundSize
     })
     ground.rotation.set(Math.PI / 2, 0, 0)
+    ground.checkCollisions = true
 
     if (showGroundGrid) {
         const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
         gridMaterial.gridRatio = 3;
         gridMaterial.lineColor.set(0.333, 0.333, 0.333);
         gridMaterial.minorUnitVisibility = 0;
-        gridMaterial.opacity = 0.999
         ground.material = gridMaterial;
     }
     else {
@@ -243,7 +242,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const startXr = async () => {
         try {
-            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ environment.ground ]});
+            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]});
             if (!!xr && !!xr.enterExitUI) {
                 xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                     if (eventData == null) {
