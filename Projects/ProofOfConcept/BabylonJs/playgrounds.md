@@ -64,3 +64,11 @@
         - WebXR Discord `show-off` channel: https://discord.com/channels/758943204715659264/759559568321282109/897268348121931836
         - BabylonJS `Demos and Projects` as a separate thread: https://forum.babylonjs.com/t/spatial-audio-experience-proofofconcept/23712/2
 
+- 2021-10-13: https://playground.babylonjs.com/#SY0NY5#12
+    - Title: **ProofOfConcept - 2021-10-13--1933**
+    - Shared with LinkedIn contacts:
+        - Joel Majors
+        - Velton Davis
+        - Heather Dodds (met at WebXR Design Summit)
+        - Karen Alexander (met at WebXR Design Summit)
+        - Christine Marsh (met at WebXR Design Summit)
