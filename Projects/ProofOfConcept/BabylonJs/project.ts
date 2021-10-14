@@ -258,6 +258,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                             currentCamera = xr.baseExperience.camera
                         }
                     }
+                    BABYLON.Engine.audioEngine.unlock()
                 })
             }
         }
