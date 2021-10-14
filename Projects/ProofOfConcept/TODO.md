@@ -7,8 +7,6 @@
 
 - Make HTML canvas element non-selectable. Avoid blue outline on mouse-press.
 
-- Use specific version of Csound WASM.
-
 - Add thank you notes.
 
 - Add production `webpack.js`.
