@@ -418,7 +418,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     offIndex: 0,
                     instanceIndexes: [ instanceIndex1, instanceIndex2, instanceIndex3 ],
                     glowInstanceIndex: -1,
-                    instanceMatrixes: [ instanceMatrix1, instanceMatrix2, instanceMatrix3 ]
+                    instanceMatrixes: [ instanceMatrix1, instanceMatrix2, instanceMatrix3 ],
+                    isOn: false
                 }
                 delays.push(delay)
             }
@@ -595,28 +596,34 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     const delay = note.delays[delayI]
 
                     while (delay.offIndex < delay.offTimes.length && delay.offTimes[delay.offIndex] <= time) {
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], delay.instanceMatrixes[0], false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], delay.instanceMatrixes[1], false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], delay.instanceMatrixes[2], true)
-                        const glowInstances = distanceDelaySynth_GlowNoteInstances[delay.glowInstanceIndex]
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index1, zeroScalingMatrix, false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index2, zeroScalingMatrix, false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index3, zeroScalingMatrix, true)
+                        if (delay.isOn) {
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], delay.instanceMatrixes[0], false)
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], delay.instanceMatrixes[1], false)
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], delay.instanceMatrixes[2], true)
+                            const glowInstances = distanceDelaySynth_GlowNoteInstances[delay.glowInstanceIndex]
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index1, zeroScalingMatrix, false)
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index2, zeroScalingMatrix, false)
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index3, zeroScalingMatrix, true)
+                            delay.isOn = false
+                        }
                         delay.offIndex++
                     }
 
                     while (delay.onIndex < delay.onTimes.length && delay.onTimes[delay.onIndex] <= time) {
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], zeroScalingMatrix, false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], zeroScalingMatrix, false)
-                        distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], zeroScalingMatrix, true)
-                        delay.glowInstanceIndex = distanceDelaySynth_GlowNoteInstanceIndex
-                        const glowInstances = distanceDelaySynth_GlowNoteInstances[delay.glowInstanceIndex]
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index1, delay.instanceMatrixes[0], false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index2, delay.instanceMatrixes[1], false)
-                        distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index3, delay.instanceMatrixes[2], true)
-                        distanceDelaySynth_GlowNoteInstanceIndex++
-                        if (distanceDelaySynth_GlowNoteInstanceIndex == distanceDelaySynth_MaxGlowNotes) {
-                            distanceDelaySynth_GlowNoteInstanceIndex = 0
+                        if (time < delay.offTimes[delay.onIndex]) {
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[0], zeroScalingMatrix, false)
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[1], zeroScalingMatrix, false)
+                            distanceDelaySynthMesh.thinInstanceSetMatrixAt(delay.instanceIndexes[2], zeroScalingMatrix, true)
+                            delay.glowInstanceIndex = distanceDelaySynth_GlowNoteInstanceIndex
+                            const glowInstances = distanceDelaySynth_GlowNoteInstances[delay.glowInstanceIndex]
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index1, delay.instanceMatrixes[0], false)
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index2, delay.instanceMatrixes[1], false)
+                            distanceDelaySynthGlowMesh.thinInstanceSetMatrixAt(glowInstances.index3, delay.instanceMatrixes[2], true)
+                            distanceDelaySynth_GlowNoteInstanceIndex++
+                            if (distanceDelaySynth_GlowNoteInstanceIndex == distanceDelaySynth_MaxGlowNotes) {
+                                distanceDelaySynth_GlowNoteInstanceIndex = 0
+                            }
+                            delay.isOn = true
                         }
                         delay.onIndex++
                     }
@@ -636,6 +643,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let pointSynth_NoteCount = 0
         for (let i = 1; i < pointSynthData.length; i++) {
             let noteOn = pointSynthData[i].noteOn
+            noteOn.isOn = false
 
             // Skip preallocation notes.
             if (noteOn.time == 0.005) {
@@ -718,11 +726,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (noteMeshInstanceIndex == noteMeshInstanceCount) {
                 noteMeshInstanceIndex = 0;
             }
+
+            note.isOn = true
         }
 
         const pointSynthNoteOff = (i) => {
             const note = pointSynthData[i].noteOn;
-            noteMeshInstances[note.instanceIndex].isVisible = false;
+            if (note.isOn) {
+                noteMeshInstances[note.instanceIndex].isVisible = false;
+                note.isOn = false
+            }
         }
 
         const resetPointSynthIndexes = () => {
@@ -733,7 +746,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const pointSynthRender = (time) => {
             while (nextPointSynthNoteOnIndex < pointSynthData.length
                     && pointSynthData[nextPointSynthNoteOnIndex].noteOn.time <= time) {
-                pointSynthNoteOn(nextPointSynthNoteOnIndex);
+                if (time < pointSynthData[nextPointSynthNoteOffIndex].noteOn.offTime) {
+                    pointSynthNoteOn(nextPointSynthNoteOnIndex);
+                }
                 nextPointSynthNoteOnIndex++;
             }
 

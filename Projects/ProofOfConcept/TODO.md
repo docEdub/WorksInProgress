@@ -1,6 +1,4 @@
 
-- Fix bugs that happen when browser tab loses focus.
-
 - Remove invisible walls at boundary.
 
 - Enable moving with WASD keys.
