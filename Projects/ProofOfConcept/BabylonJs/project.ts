@@ -117,9 +117,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // 2
         { position: new BABYLON.Vector3(halfGroundSize, 2, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
         // 3
-        { position: new BABYLON.Vector3(-halfGroundSize, 2, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) }
+        { position: new BABYLON.Vector3(-halfGroundSize, 2, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+        // 4
+        { position: new BABYLON.Vector3(-80, 2, 800), target: new BABYLON.Vector3(0, 200, 0) },
+        // 5
+        { position: new BABYLON.Vector3(-40, 2, 400), target: new BABYLON.Vector3(225, 180, 0) },
+        // 6
+        { position: new BABYLON.Vector3(0, 2, -100), target: new BABYLON.Vector3(0, 180, 0) }
     ]
-    const cameraSetting = cameraSettings[1]
+    const cameraSetting = cameraSettings[6]
 
     let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene);
     camera.applyGravity = true;
