@@ -43,7 +43,7 @@ giPointSynth_DistanceMin = 1
 giPointSynth_DistanceMax = 500
 giPointSynth_ReferenceDistance = 5
 giPointSynth_RolloffFactor = 0.25
-giPointSynth_PlaybackVolumeAdjustment = 4
+giPointSynth_PlaybackVolumeAdjustment = 7.5
 giPointSynth_PlaybackReverbAdjustment = 0.5
 
 ${CSOUND_DEFINE} POINT_SYNTH_NEXT_XYZ_COUNT #16384#

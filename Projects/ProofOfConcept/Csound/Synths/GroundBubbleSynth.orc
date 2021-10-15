@@ -49,11 +49,11 @@ giGroundBubbleSynth_SpeedY = 15 // Units per second.
 giGroundBubbleSynth_MaxAudibleDistance = 100 // Inaudible beyond max distance.
 giGroundBubbleSynth_MaxReverbOnlyDistance = giGroundBubbleSynth_MaxAudibleDistance * 2
 giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance // Instrument turns off at max height.
-giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.25
+giGroundBubbleSynth_MaxAmpWhenVeryClose = 1
 giGroundBubbleSynth_ReferenceDistance = 0.1
-giGroundBubbleSynth_RolloffFactor = 0.1
-giGroundBubbleSynth_PlaybackVolumeAdjustment = 7.5 
-giGroundBubbleSynth_PlaybackReverbAdjustment = 0.25
+giGroundBubbleSynth_RolloffFactor = 0.005
+giGroundBubbleSynth_PlaybackVolumeAdjustment = 0.9
+giGroundBubbleSynth_PlaybackReverbAdjustment = 0.667
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -343,7 +343,7 @@ instr INSTRUMENT_ID
             a3 += gkAmbisonicChannelGains[2] * aOutDistanced
             a4 += gkAmbisonicChannelGains[3] * aOutDistanced
         fi
-        a5 += 0.1 * aOutDistanced * iPlaybackReverbAdjustment
+        a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.03)
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1

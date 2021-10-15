@@ -49,7 +49,7 @@ giDistanceDelaySynth_MaxAmpWhenVeryClose = 0.5
 giDistanceDelaySynth_ReferenceDistance = 0.1
 giDistanceDelaySynth_RolloffFactor = 0.00075
 giDistanceDelaySynth_PlaybackVolumeAdjustment = 1
-giDistanceDelaySynth_PlaybackReverbAdjustment = 0.2
+giDistanceDelaySynth_PlaybackReverbAdjustment = 0.29
 
 giDistanceDelaySynth_NoteIndex[] init ORC_INSTANCE_COUNT
 giDistanceDelaySynth_InstrumentNumberFraction[] init ORC_INSTANCE_COUNT

@@ -2851,7 +2851,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giDistanceDelaySynth_ReferenceDistance = 0.1
         giDistanceDelaySynth_RolloffFactor = 0.00075
         giDistanceDelaySynth_PlaybackVolumeAdjustment = 1
-        giDistanceDelaySynth_PlaybackReverbAdjustment = 0.2
+        giDistanceDelaySynth_PlaybackReverbAdjustment = 0.29
         giDistanceDelaySynth_NoteIndex[] init 1
         giDistanceDelaySynth_InstrumentNumberFraction[] init 1
          #ifndef DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY
@@ -3138,7 +3138,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giPointSynth_DistanceMax = 500
         giPointSynth_ReferenceDistance = 5
         giPointSynth_RolloffFactor = 0.25
-        giPointSynth_PlaybackVolumeAdjustment = 4
+        giPointSynth_PlaybackVolumeAdjustment = 7.5
         giPointSynth_PlaybackReverbAdjustment = 0.5
          #define POINT_SYNTH_NEXT_XYZ_COUNT #16384#
         giPointSynthNextXYZ[][][] init 1, $POINT_SYNTH_NEXT_XYZ_COUNT, 3
@@ -3373,11 +3373,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giGroundBubbleSynth_MaxAudibleDistance = 100
         giGroundBubbleSynth_MaxReverbOnlyDistance = giGroundBubbleSynth_MaxAudibleDistance * 2
         giGroundBubbleSynth_MaxAudibleHeight = giGroundBubbleSynth_MaxAudibleDistance
-        giGroundBubbleSynth_MaxAmpWhenVeryClose = 0.25
+        giGroundBubbleSynth_MaxAmpWhenVeryClose = 1
         giGroundBubbleSynth_ReferenceDistance = 0.1
-        giGroundBubbleSynth_RolloffFactor = 0.1
-        giGroundBubbleSynth_PlaybackVolumeAdjustment = 7.5
-        giGroundBubbleSynth_PlaybackReverbAdjustment = 0.25
+        giGroundBubbleSynth_RolloffFactor = 0.005
+        giGroundBubbleSynth_PlaybackVolumeAdjustment = 0.9
+        giGroundBubbleSynth_PlaybackReverbAdjustment = 0.667
         giGroundBubbleSynth_NoteIndex[] init 1
         giGroundBubbleSynth_GridCellCount = giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridRowCount
         giGroundBubbleSynth_GridCellLaunchPattern[][] init giGroundBubbleSynth_GridCellCount, 2
@@ -3486,7 +3486,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a3 += gkAmbisonicChannelGains[2] * aOutDistanced
                     a4 += gkAmbisonicChannelGains[3] * aOutDistanced
                 fi
-                a5 += 0.1 * aOutDistanced * iPlaybackReverbAdjustment
+                a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.03)
                     gaInstrumentSignals[2][0] = a1
                     if (kIsReverbOnly == 0) then
                         gaInstrumentSignals[2][1] = a2
