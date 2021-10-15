@@ -3439,7 +3439,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             elseif (iEventType == 3) then
                 iGridColumn = p5
                 iGridRow = p6
-                iCps = cpsmidinn(random(58, 62))
+                iCps = cpsmidinn(random(56, 60))
                 iAmp = 0.05
                 iCutoffFrequency = 1000
                 kY init giGroundBubbleSynth_StartY
@@ -3456,7 +3456,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 elseif (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
                     kIsReverbOnly = 1
                 fi
-                kCps = iCps + kY * 10
+                kCps = iCps + kY * 5
                 kAmp = iAmp
                 if (kY < giGroundBubbleSynth_FullVolumeY) then
                     kAmp *= kY / giGroundBubbleSynth_FullVolumeY
