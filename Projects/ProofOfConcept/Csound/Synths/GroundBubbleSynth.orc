@@ -53,7 +53,7 @@ giGroundBubbleSynth_MaxAmpWhenVeryClose = 1
 giGroundBubbleSynth_ReferenceDistance = 0.1
 giGroundBubbleSynth_RolloffFactor = 0.005
 giGroundBubbleSynth_PlaybackVolumeAdjustment = 0.9
-giGroundBubbleSynth_PlaybackReverbAdjustment = 0.667
+giGroundBubbleSynth_PlaybackReverbAdjustment = 1.5
 
 giGroundBubbleSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -343,7 +343,7 @@ instr INSTRUMENT_ID
             a3 += gkAmbisonicChannelGains[2] * aOutDistanced
             a4 += gkAmbisonicChannelGains[3] * aOutDistanced
         fi
-        a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.03)
+        a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1

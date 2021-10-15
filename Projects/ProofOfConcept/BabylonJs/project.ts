@@ -3377,7 +3377,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         giGroundBubbleSynth_ReferenceDistance = 0.1
         giGroundBubbleSynth_RolloffFactor = 0.005
         giGroundBubbleSynth_PlaybackVolumeAdjustment = 0.9
-        giGroundBubbleSynth_PlaybackReverbAdjustment = 0.667
+        giGroundBubbleSynth_PlaybackReverbAdjustment = 1.5
         giGroundBubbleSynth_NoteIndex[] init 1
         giGroundBubbleSynth_GridCellCount = giGroundBubbleSynth_GridColumnCount * giGroundBubbleSynth_GridRowCount
         giGroundBubbleSynth_GridCellLaunchPattern[][] init giGroundBubbleSynth_GridCellCount, 2
@@ -3486,7 +3486,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     a3 += gkAmbisonicChannelGains[2] * aOutDistanced
                     a4 += gkAmbisonicChannelGains[3] * aOutDistanced
                 fi
-                a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.03)
+                a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
                     gaInstrumentSignals[2][0] = a1
                     if (kIsReverbOnly == 0) then
                         gaInstrumentSignals[2][1] = a2
