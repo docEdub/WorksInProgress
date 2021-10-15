@@ -800,6 +800,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const groundBubbleSynth_SpanZ = groundBubbleSynth_GridCountZ * groundBubbleSynth_GridCellSize
         const groundBubbleSynth_HalfSpanX = groundBubbleSynth_SpanX / 2
         const groundBubbleSynth_HalfSpanZ = groundBubbleSynth_SpanZ / 2
+        const groundBubbleSynth_StartY = 0.01
         const groundBubbleSynth_FadeStartY = groundBubbleSynth_DataHeader.maxHeight * 2
         const groundBubbleSynth_FadeRangeY = 50
         const groundBubbleSynth_RotationStartX = Math.PI / 2
@@ -824,7 +825,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 for (let j = 0; j < groundBubbleSynth_GridCountZ; j++) {
                     const particle = groundBubbleSynth_SolidParticleSystem.particles[particleIndex]
                     particle.color.set(groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, 1)
-                    particle.position.set(x, 0, z)
+                    particle.position.set(x, groundBubbleSynth_StartY, z)
                     particle.rotation.x = groundBubbleSynth_RotationStartX
                     groundBubbleSynth_ParticleAnimationY[i].push({ started: false, x: x, z: z })
                     // groundBubbleSynth_ParticleAnimationY[i].push({ started: true, x: x, z: z })
@@ -851,7 +852,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         groundBubbleSynth_SolidParticleSystem.updateParticle = (particle) => {
             const animation = groundBubbleSynth_ParticleAnimationY[Math.floor(particle.idx / groundBubbleSynth_GridCountX)][particle.idx % groundBubbleSynth_GridCountZ]
             if (groundBubbleSynth_IsResetting) {
-                particle.position.y = 0
+                particle.position.y = groundBubbleSynth_StartY
                 particle.rotation.x = groundBubbleSynth_RotationStartX
                 animation.started = false
             }
@@ -886,7 +887,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     }
                 }
             }
-            else if (particle.position.y == 0 && particle.color.r < groundBubbleSynth_StartColor) {
+            else if (particle.position.y == groundBubbleSynth_StartY && particle.color.r < groundBubbleSynth_StartColor) {
                 const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, groundBubbleSynth_StartColor)
                 particle.color.set(color, color, color, 1)
             }
