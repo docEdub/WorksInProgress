@@ -3,6 +3,19 @@
         <title>ProofOfConcept</title>
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <style>
+            .no-select {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            .no-select:focus {
+                outline: none !important;
+            }
+
             /* Need this to make BabylonJS debug layer explorer visible. */
             #scene-explorer-host {
                 z-index: 1;
@@ -33,9 +46,9 @@
         </style>
     </head>
     <body>
-        <canvas id="BabylonCanvas">
+        <canvas id="BabylonCanvas" class="no-select">
         </canvas>
         <ul id="ConsoleOutput">
         </ul>
-</body>
+    </body>
 </html>
