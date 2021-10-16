@@ -125,9 +125,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // 5
         { position: new BABYLON.Vector3(-40, 2, 400), target: new BABYLON.Vector3(225, 180, 0) },
         // 6
-        { position: new BABYLON.Vector3(0, 2, -100), target: new BABYLON.Vector3(0, 180, 0) }
+        { position: new BABYLON.Vector3(0, 2, -100), target: new BABYLON.Vector3(0, 180, 0) },
+        // 7: Safari mixdown location.
+        { position: new BABYLON.Vector3(0, 2, 250), target: new BABYLON.Vector3(0, 125, 0) }
     ]
-    const cameraSetting = cameraSettings[6]
+    const cameraSetting = cameraSettings[7]
 
     let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene);
     camera.applyGravity = true;
