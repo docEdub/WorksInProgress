@@ -27,6 +27,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const showGroundGrid = true;
 
     let animateCamera = false;
+    const slowCameraSpeed = 0.25
+    const fastCameraSpeed = 1.5
     const csoundCameraUpdatesPerSecond = 10;
     const csoundIoBufferSize = 128;
     const groundSize = 9000;
@@ -131,7 +133,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.applyGravity = true;
     camera.checkCollisions = true;
     camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
-    camera.speed = 0.25;
+    camera.speed = slowCameraSpeed;
     camera.attachControl(canvas, true);
     camera.setTarget(cameraSetting.target);
 
@@ -140,7 +142,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         W: 87,
         A: 65,
         S: 83,
-        D: 68
+        D: 68,
+        CapsLock: 20,
+        Shift: 16,
+        Space: 32
     }
     camera.keysUp.push(KeyCode.W)
     camera.keysLeft.push(KeyCode.A)
@@ -1020,24 +1025,45 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return false
         }
 
+        let keyIsDown = {}
+
+        const updateCameraSpeed = () => {
+            if (keyIsDown[KeyCode.CapsLock] || keyIsDown[KeyCode.Shift] || keyIsDown[KeyCode.Space]) {
+                camera.speed = fastCameraSpeed
+            }
+            else {
+                camera.speed = slowCameraSpeed
+            }
+        }
+
         const onKeyDown = (e) => {
+            // console.log('key', e.keyCode, 'down')
             if (animateCamera && cameraUsesInputKey(e.keyCode)) {
                 unlockCameraPosition()
             }
+            keyIsDown[e.keyCode] = true
+            updateCameraSpeed()
         }
+
+        const onKeyUp = (e) => {
+            // console.log('key', e.keyCode, 'up')
+            keyIsDown[e.keyCode] = false
+            updateCameraSpeed()
+        }
+
+        document.addEventListener("keydown", onKeyDown, false)
+        document.addEventListener("keyup", onKeyUp, false)
     
         if (animateCamera) {
             canvas.addEventListener("pointerdown", onPointerDown, false)
             canvas.addEventListener("pointerup", onPointerUp, false)
             document.addEventListener("pointermove", onPointerMove, false)
-            document.addEventListener("keydown", onKeyDown, false)
         }
 
         const unlockCameraPosition = () => {
             animateCamera = false
             canvas.removeEventListener("pointerdown", onPointerDown)
             canvas.removeEventListener("pointerup", onPointerUp)
-            document.removeEventListener("onkeydown", onKeyDown)
             console.log('Camera animation lock released: key press detected')
         }
     
