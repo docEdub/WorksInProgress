@@ -891,17 +891,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 else {
                     const fadeOutOffset = particle.position.y - groundBubbleSynth_FadeStartY
                     if (fadeOutOffset > 0) {
-                        const color = 1 - fadeOutOffset / groundBubbleSynth_FadeRangeY
-                        particle.color.set(color, color, color, 1)
+                        particle.scale.setAll(1 - fadeOutOffset / groundBubbleSynth_FadeRangeY);
                         if (fadeOutOffset > groundBubbleSynth_FadeRangeY) {
                             animation.started = false
                         }
                     }
                 }
             }
-            else if (particle.position.y == groundBubbleSynth_StartY && particle.color.r < groundBubbleSynth_StartColor) {
-                const color = Math.min(particle.color.r + 0.1 * groundBubbleSynth_DeltaTime, groundBubbleSynth_StartColor)
-                particle.color.set(color, color, color, 1)
+            else if (particle.position.y == groundBubbleSynth_StartY && particle.scale.x < 1) {
+                // Reset color.
+                particle.color.set(groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, groundBubbleSynth_StartColor, 1)
+                // Increase scale until it reaches 1.
+                particle.scale.setAll(Math.min(particle.scale.x + 0.1 * groundBubbleSynth_DeltaTime, 1));
             }
             return particle
         }
