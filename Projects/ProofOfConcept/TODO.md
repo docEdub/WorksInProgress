@@ -1,8 +1,6 @@
 
 - Add thank you notes.
 
-- Add production `webpack.js`.
-
 - Add options UI?
 
 - Add startup options UI?
@@ -10,8 +8,6 @@
 - Add mobile device UI?
 
 - Add branding.
-
-- Minify download.
 
 - Update README.md.
 

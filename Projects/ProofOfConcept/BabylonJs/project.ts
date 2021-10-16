@@ -52,6 +52,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         originalConsoleLog.apply(console, arguments)
     }
 
+    if (document.getElementById('csound-script') === null) {
         let csoundImportScript = document.createElement('script');
         csoundImportScript.type = 'module'
         csoundImportScript.innerText = `
@@ -65,6 +66,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         //     document.Csound = Csound;
         // `
         document.body.appendChild(csoundImportScript)
+    }
 
     function browser() {
         // Get the user-agent string

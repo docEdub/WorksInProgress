@@ -1,12 +1,15 @@
 {
   "scripts": {
     "build": "webpack --config ./webpack-dev.js --mode development --progress --color",
+    "build-prod": "webpack --config ./webpack-prod.js --mode production --progress --color",
     "start": "webpack serve --config ./webpack-dev.js --mode development --progress --color --https",
+    "start-prod": "webpack serve --config ./webpack-prod.js --mode development --progress --color --https",
     "help": "webpack serve --help=verbose"
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.3.1",
     "node-watch": "^0.7.1",
+    "terser-webpack-plugin": "^5.2.4",
     "ts-loader": "^9.2.2",
     "webpack": "^5.37.1",
     "webpack-cli": "^4.7.0",
