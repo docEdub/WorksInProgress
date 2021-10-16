@@ -135,6 +135,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.attachControl(canvas, true);
     camera.setTarget(cameraSetting.target);
 
+    // For full list see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode.
+    const KeyCode = {
+        W: 87,
+        A: 65,
+        S: 83,
+        D: 68
+    }
+    camera.keysUp.push(KeyCode.W)
+    camera.keysLeft.push(KeyCode.A)
+    camera.keysDown.push(KeyCode.S)
+    camera.keysRight.push(KeyCode.D)
+
     const lightIntensity = 1
     const ambientLightParent = new BABYLON.TransformNode('', scene)
     // const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
