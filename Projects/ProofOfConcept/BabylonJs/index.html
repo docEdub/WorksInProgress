@@ -1,13 +1,6 @@
 <html>
     <head>
         <title>ProofOfConcept</title>
-        <script src="https://cdn.babylonjs.com/babylon.js"></script>
-        <script id="csound-script" type="module">
-            console.debug("Csound importing ...");
-            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js";
-            // import { Csound } from "./csound.esm.js";
-            document.Csound = Csound;
-        </script>
         <style>
             .no-select {
                 -webkit-tap-highlight-color: transparent;
@@ -75,5 +68,12 @@
         </canvas>
         <ul id="ConsoleOutput">
         </ul>
+        <script src="https://cdn.babylonjs.com/babylon.js"></script>
+        <script id="csound-script" type="module">
+            console.debug("Csound importing ...");
+            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js";
+            // import { Csound } from "./csound.esm.js";
+            document.Csound = Csound;
+        </script>
     </body>
 </html>
