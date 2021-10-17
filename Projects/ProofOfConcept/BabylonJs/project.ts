@@ -129,7 +129,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // 6
         { position: new BABYLON.Vector3(0, 2, -100), target: new BABYLON.Vector3(0, 180, 0) },
         // 7: Safari mixdown location.
-        { position: new BABYLON.Vector3(0, 2, 250), target: new BABYLON.Vector3(0, 125, 0) }
+        { position: new BABYLON.Vector3(0, 2, 335), target: new BABYLON.Vector3(0, 135, 0) }
     ]
     const cameraSetting = cameraSettings[7]
 
