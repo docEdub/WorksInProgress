@@ -98,10 +98,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // Utility functions.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const createSvgTexture = (name, svg) => {
+    let svgTextureCount = 0
+
+    const createSvgTexture = (svg) => {
         // Setting a unique name is required otherwise the first texture created gets used all the time.
         // See https://forum.babylonjs.com/t/why-does-2nd-texture-use-first-svg/23975.
-        return BABYLON.Texture.LoadFromDataString(name, 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
+        svgTextureCount++
+        const name = svgTextureCount.toString()
+        const texture = BABYLON.Texture.LoadFromDataString(name, 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
+        return texture
     }
 
     // This creates a basic Babylon Scene object (non-mesh)
@@ -683,7 +688,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             pointSynth_NoteCount++
         }
 
-        const pointSynth_Texture = createSvgTexture('pointSynth', `
+        const pointSynth_Texture = createSvgTexture(`
             <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
                 <circle cx="64" cy="64" r="64" fill="white" />
             </svg>
@@ -789,7 +794,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // GroundBubbleSynth
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const groundBubbleSynth_Texture = createSvgTexture('groundBubbleSynth', `
+        const groundBubbleSynth_Texture = createSvgTexture(`
             <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
                 <radialGradient id="gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
                     <stop offset="0%" stop-color="#000" stop-opacity="0" />
