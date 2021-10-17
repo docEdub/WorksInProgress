@@ -1,5 +1,4 @@
 import * as BABYLON from "babylonjs";
-import * as BABYLON_MATERIALS from "babylonjs-materials";
 import * as CSOUND from "./@doc.e.dub/csound-browser";
 
 declare global {
@@ -259,10 +258,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ground.checkCollisions = true
 
     if (showGroundGrid) {
-        const gridMaterial = new BABYLON_MATERIALS.GridMaterial('', scene);
-        gridMaterial.gridRatio = 3;
-        gridMaterial.lineColor.set(0.333, 0.333, 0.333);
-        gridMaterial.minorUnitVisibility = 0;
+        const grid_Texture = createSvgTexture(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+                <rect width="100%" height="100%" style="fill: none; stroke: white; stroke-width: 4;" />
+            </svg>
+        `)
+        grid_Texture.uScale = grid_Texture.vScale = groundSize / 10
+        const gridMaterial = new BABYLON.StandardMaterial('', scene)
+        gridMaterial.emissiveColor.set(0.333, 0.333, 0.333)
+        gridMaterial.ambientTexture = grid_Texture
+        // gridMaterial.opacityTexture = grid_Texture
+        gridMaterial.disableLighting = true
         ground.material = gridMaterial;
     }
     else {
