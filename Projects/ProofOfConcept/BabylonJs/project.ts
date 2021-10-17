@@ -105,6 +105,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         svgTextureCount++
         const name = svgTextureCount.toString()
         const texture = BABYLON.Texture.LoadFromDataString(name, 'data:image/svg+xml;base64,' + window.btoa(svg), scene)
+        texture.onLoadObservable.addOnce(() => {
+            texture.updateSamplingMode(BABYLON.Texture.TRILINEAR_SAMPLINGMODE)
+        })
         return texture
     }
 

@@ -1,6 +1,4 @@
 
-- Use SVG for grid material.
-
 - Increase GroundBubbleSynth max volume when very close.
     - It sounds like items behind the camera are in front, and vice-versa, which may mean there's a bug in the spatial-
       audio azimuth calculated from the camera direction.
