@@ -74,96 +74,30 @@ opcode incrementGridCellIndex, 0, 0
     fi
 endop
 
-// Spiral in from lower left of grid toward center of grid.
-; iSpiralIndex = 0
-; while (iSpiralIndex < giGroundBubbleSynth_GridColumnCount / 2) do
-;     // Across top, left to right.
-;     iSpiralColumnIndex = iSpiralIndex
-;     iSpiralRowIndex = iSpiralIndex
-;     while (iSpiralColumnIndex < giGroundBubbleSynth_GridColumnCount - iSpiralIndex) do
-;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex
-;         iSpiralColumnIndex += 1
-;         incrementGridCellIndex()
-;     od
-;     iSpiralColumnIndex -= 1
-
-;     // Down right side.
-;     iSpiralRowIndex += 1
-;     while (iSpiralRowIndex < giGroundBubbleSynth_GridRowCount - iSpiralIndex) do
-;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-;         iSpiralRowIndex += 1
-;         incrementGridCellIndex()
-;     od
-;     iSpiralRowIndex -= 1
-
-;     // Across bottom, right to left.
-;     iSpiralColumnIndex -= 1
-;     while (iSpiralColumnIndex >= iSpiralIndex) do
-;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-;         iSpiralColumnIndex -= 1
-;         incrementGridCellIndex()
-;     od
-;     iSpiralColumnIndex += 1
-
-;     // Up left side.
-;     iSpiralRowIndex -= 1
-;     while (iSpiralRowIndex > iSpiralIndex) do
-;         log_i_debug("cell = %d, column = %d, row = %d", giGroundBubbleSynth_GridCellIndex, iSpiralColumnIndex, iSpiralRowIndex)
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][0] = iSpiralColumnIndex
-;         giGroundBubbleSynth_GridCellLaunchPattern[giGroundBubbleSynth_GridCellIndex][1] = iSpiralRowIndex        
-;         iSpiralRowIndex -= 1
-;         incrementGridCellIndex()
-;     od
-
-;     iSpiralIndex += 1
-; od
-
-// Straight negative to positive across grid.
-; iCellIndex = 0
-; iColumnIndex = 0
-; while (iColumnIndex < giGroundBubbleSynth_GridColumnCount) do
-;     iRowIndex = 0
-;     while (iRowIndex < giGroundBubbleSynth_GridRowCount) do
-;         giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
-;         giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
-;         iRowIndex += 1
-;         iCellIndex += 1
-;     od
-;     iColumnIndex += 1
-; od
-
 // Randomized
 iCellIndex = 0
-iCellIndexIsSet[] init giGroundBubbleSynth_GridCellCount
+iAvailableCellIndexes[] init giGroundBubbleSynth_GridCellCount
+iAvailableCellIndexesCount init giGroundBubbleSynth_GridCellCount
+while (iCellIndex < iAvailableCellIndexesCount) do
+    iAvailableCellIndexes[iCellIndex] = iCellIndex
+    iCellIndex += 1
+od
+iCellIndex = 0
 while (iCellIndex < giGroundBubbleSynth_GridCellCount) do
-    iRandomIndex = min(floor(random(0, giGroundBubbleSynth_GridCellCount)), giGroundBubbleSynth_GridCellCount)
-    iSearchCount = 0
-    while (iCellIndexIsSet[iRandomIndex] == true && iSearchCount < giGroundBubbleSynth_GridCellCount) do
-        iRandomIndex += 1
-        if (iRandomIndex >= giGroundBubbleSynth_GridCellCount) then
-            iRandomIndex = 0
-        fi
-        iSearchCount += 1
-        if (iSearchCount >= giGroundBubbleSynth_GridCellCount) then
-            log_i_warning("Failed to find available index")
-            
-        fi
-    od
-    iCellIndexIsSet[iRandomIndex] = true
+    iRandomCellIndex = min(floor(random(0, iAvailableCellIndexesCount)), iAvailableCellIndexesCount)
+    iRandomIndex = iAvailableCellIndexes[iRandomCellIndex]
     iColumnIndex = floor(iRandomIndex / giGroundBubbleSynth_GridColumnCount)
     iRowIndex = iRandomIndex % giGroundBubbleSynth_GridRowCount
     giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][0] = iColumnIndex
     giGroundBubbleSynth_GridCellLaunchPattern[iCellIndex][1] = iRowIndex
     iCellIndex += 1
+    iI = iRandomCellIndex + 1
+    while (iI < iAvailableCellIndexesCount) do
+        iAvailableCellIndexes[iI - 1] = iAvailableCellIndexes[iI]
+        iI += 1
+    od
+    iAvailableCellIndexesCount -= 1
 od
-
-; gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset init 0
 
 #endif // #ifndef GroundBubbleSynth_orc__include_guard
 
