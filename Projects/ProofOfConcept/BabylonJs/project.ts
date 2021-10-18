@@ -990,25 +990,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
-        let pointerIsDown = false
-
-        const onPointerDown = (e) => {
-            if (e.button !== 0) {
-                return;
-            }
-            pointerIsDown = true
-        }
-    
-        const onPointerUp = () => {
-            pointerIsDown = false
-        }
-    
-        const onPointerMove = (e) => {
-            if (animateCamera && !cameraTargetIsUserDefined && pointerIsDown) {
-                unlockCameraTarget()
-            }
-        }
-
         const cameraUsesInputKey = (key) => {
             for (let i = 0; i < camera.keysDown.length; i++) {
                 if (key == camera.keysDown[i]) {
@@ -1054,20 +1035,50 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
+        const onInputEvent = (e) => {
+            keyIsDown[KeyCode.CapsLock] = e.getModifierState("CapsLock")
+            keyIsDown[KeyCode.Shift] = e.getModifierState("Shift")
+        }
+
         const onKeyDown = (e) => {
             // console.log('key', e.keyCode, 'down')
             if (animateCamera && cameraUsesInputKey(e.keyCode)) {
                 unlockCameraPosition()
             }
             keyIsDown[e.keyCode] = true
+            onInputEvent(e)
             updateCameraSpeed()
         }
 
         const onKeyUp = (e) => {
             // console.log('key', e.keyCode, 'up')
             keyIsDown[e.keyCode] = false
+            onInputEvent(e)
             updateCameraSpeed()
         }
+
+        let pointerIsDown = false
+
+        const onPointerDown = (e) => {
+            onInputEvent(e)
+            if (e.button !== 0) {
+                return;
+            }
+            pointerIsDown = true
+        }
+    
+        const onPointerUp = (e) => {
+            onInputEvent(e)
+            pointerIsDown = false
+        }
+    
+        const onPointerMove = (e) => {
+            onInputEvent(e)
+            if (animateCamera && !cameraTargetIsUserDefined && pointerIsDown) {
+                unlockCameraTarget()
+            }
+        }
+
 
         document.addEventListener("keydown", onKeyDown, false)
         document.addEventListener("keyup", onKeyUp, false)
