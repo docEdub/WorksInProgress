@@ -43,11 +43,11 @@ if (os.type() === 'Darwin') {
         // Remove blank lines.
         data = data.replace(/\s*\n/g, '\n')
 
-        // Add 8 spaces before each line.
-        data = data.replace(/\n/g, '\n        ');
+        // Strip leading whitespace.
+        data = data.replace(/\n\s*/g, '\n')
 
         // Wrap with Javascript multiline string variable named `csdText`.
-        var output = '    const csdText = `' + data + '`\n'
+        var output = 'const csdText = `' + data + '`\n'
 
         fs.writeFile(csoundDir + '/build/bounce/DawPlayback.csd.js', output, 'ascii', function (err) {
             if (err) {
