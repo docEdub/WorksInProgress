@@ -49,7 +49,7 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, 'app'),
-        publicPath: '/',
+        publicPath: './',
         filename: '[name].js',
         clean: true,
     },
