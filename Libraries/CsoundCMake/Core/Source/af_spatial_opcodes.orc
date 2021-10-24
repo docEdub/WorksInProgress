@@ -174,9 +174,9 @@ opcode AF_3D_Audio_ChannelGains, 0, i[]kp
     k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
         i_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
         i_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
-    k_elevation = taninv2(k_direction[$Z],
-        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
+    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_elevation = taninv2(k_direction[$Y],
+        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
 
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
@@ -200,9 +200,9 @@ opcode AF_3D_Audio_ChannelGains, 0, k[]kp
     k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
         k_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
         k_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Y]) * $AF_MATH__RADIANS_TO_DEGREES
-    k_elevation = taninv2(k_direction[$Z],
-        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])) * $AF_MATH__RADIANS_TO_DEGREES
+    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_elevation = taninv2(k_direction[$Y],
+        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
 
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
