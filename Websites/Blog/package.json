@@ -6,14 +6,15 @@
   "scripts": {
     "build": "npm run logo:build && npm run hugo:build",
     "clean": "npm run logo:clean && npm run hugo:clean",
-    "serve": "npm run hugo:serve",
+    "start": "npm run hugo:start",
     "test": "echo \"Error: no test specified\" && exit 1",
 
     "hugo:build:help": "echo 'Builds the blog in the `_.build` folder using the `hugo` tool.'",
-    "hugo:build": "hugo -d _.build",
+    "hugo:build": "hugo --buildDrafts --destination _.build",
     "hugo:clean": "rm -rf _.build resources public",
-    "hugo:serve:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
-    "hugo:serve": "hugo server",
+    "hugo:start:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
+    "hugo:start": "hugo server --buildDrafts",
+    "hugo:start:prod": "hugo server",
 
     "logo:build:help": "echo 'Builds the blog's minified docEdub.svg logo using the `svgo` tool.'",
     "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ./config/svgo.js --multipass",
