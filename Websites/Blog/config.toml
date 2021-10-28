@@ -3,7 +3,7 @@ languageCode = "en-us"
 paginate = 5
 
 # https://themes.gohugo.io/hugo-theme-hello-friend/#new-cool-idea-or-feature-a-idfeature-
-theme = "hello-friend"
+theme = "hello-friend-ng"
 
 [params]
   # dir name of your blog content (default is `content/posts`).

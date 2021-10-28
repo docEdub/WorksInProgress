@@ -8,14 +8,12 @@
     "clean": "npm run logo:clean && npm run hugo:clean",
     "start": "npm run hugo:start",
     "test": "echo \"Error: no test specified\" && exit 1",
-
     "hugo:build:help": "echo 'Builds the blog in the `_.build` folder using the `hugo` tool.'",
     "hugo:build": "hugo --buildDrafts --destination _.build",
     "hugo:clean": "rm -rf _.build resources public",
     "hugo:start:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
     "hugo:start": "hugo server --buildDrafts",
     "hugo:start:prod": "hugo server",
-
     "logo:build:help": "echo 'Builds the blog's minified docEdub.svg logo using the `svgo` tool.'",
     "logo:build": "svgo ../../Libraries/ImageLibrary/Logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ./config/svgo.js --multipass",
     "logo:clean": "rm ./static/img/docEdub.svg"
@@ -23,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "hugo-bin": "^0.69.0",
+    "hugo-extended": "^0.88.1-patch1",
     "svgo": "^2.1.0"
   }
 }
