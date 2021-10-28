@@ -1,3 +1,7 @@
+.theme-toggle {
+    display: none;
+}
+
 .content {
     margin: 0;
 }
