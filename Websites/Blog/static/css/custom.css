@@ -6,10 +6,6 @@
     margin: 0;
 }
 
-.post-cover {
-    display: none;
-}
-
 .post-content img {
     margin: 0 auto;
     border-radius: 8px;
