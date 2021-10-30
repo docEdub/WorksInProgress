@@ -48,28 +48,27 @@ macro(add_tab)
     list(APPEND tab_channels "${tab_variable}")
 endmacro()
 
-function(process_tabs)
+macro(process_tabs)
     set(tab_ui_path "${CSD_CONFIGURED_FILES_DIR}/Tab.ui")
     set(tab_ui_path_tmp "${tab_ui_path}.tmp")
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${tab_ui_path_tmp}" "${tab_ui_path}")
 
     string(REPLACE ";" "\", \"" csound_tab_channels "\"${tab_channels}\"")
     configure_file("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.orc" "${CSD_CONFIGURED_FILES_DIR}/Tab.orc")
-endfunction()
+
+    if(NOT ${Build_InlineIncludes} EQUAL ON)
+        get_dependencies(dependencies "${CSD_CONFIGURED_FILES_DIR}/Tab.orc")
+        add_preprocess_file_command("${CSD_CONFIGURED_FILES_DIR}/Tab.orc" "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc"
+            DEPENDS CsoundCMake.Cabbage ${dependencies}
+            )
+
+        # Add this file's preprocessed file to the .csd file's preprocess target's dependencies.
+        # See CsoundCMakeConfig.cmake.
+        list(APPEND CSD_DEPENDS "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc")
+    endif()
+endmacro()
 
 # Cabbage has an issue causing the first tab button to fail almost all the time. To work around it, add a dummy tab with
 # zero width so it can't be seen.
 add_tab(first_tab_bug_workaround_tab "" 0)
 set(tab_channels "")
-
-
-if(NOT ${Build_InlineIncludes} EQUAL ON)
-    get_dependencies(dependencies "${CSD_CONFIGURED_FILES_DIR}/Tab.orc")
-    add_preprocess_file_command("${CSD_CONFIGURED_FILES_DIR}/Tab.orc" "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc"
-        DEPENDS CsoundCMake.Cabbage ${dependencies}
-        )
-
-    # Add this file's preprocessed file to the .csd file's preprocess target's dependencies.
-    # See CsoundCMakeConfig.cmake.
-    list(APPEND CSD_DEPENDS "${CSD_PREPROCESSED_FILES_DIR}/Tab.orc")
-endif()
