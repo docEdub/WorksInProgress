@@ -1,9 +1,9 @@
 {
   "scripts": {
     "build": "webpack --config ./webpack-dev.js --mode development --progress --color",
-    "build-prod": "webpack --config ./webpack-prod.js --mode production --progress --color",
+    "build:prod": "webpack --config ./webpack-prod.js --mode production --progress --color",
     "start": "webpack serve --config ./webpack-dev.js --mode development --progress --color --https",
-    "start-prod": "webpack serve --config ./webpack-prod.js --mode development --progress --color --https",
+    "start:prod": "webpack serve --config ./webpack-prod.js --mode development --progress --color --https",
     "help": "webpack serve --help=verbose"
   },
   "devDependencies": {
