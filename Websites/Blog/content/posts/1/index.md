@@ -42,7 +42,7 @@ Library | Version | Size
 [Csound](//csound.com) | [6.17.0-beta5](//npmjs.com/package/@doc.e.dub/csound-browser/v/6.17.0-beta5) | 1.9 MB
 [Babylon.js](//babylonjs.com) | [4.2.0](//www.npmjs.com/package/babylonjs/v/4.2.0) | 749 kB
 
-My custom Javascript compresses to 116 kB. Source code is [here](//github.com/docEdub/WorksInProgress/tree/Projects/1-ProofOfConcept/Projects/1-ProofOfConcept).
+My custom Javascript compresses to 116 kB. Source code is [here](//github.com/docEdub/WorksInProgress/tree/Projects/1-ProofOfConcept).
 
 #### Audio
 
