@@ -1,12 +1,8 @@
+/.logs/**
+/.vscode/launch.json
+/app/**
 
-*
+Csound/build/*
 
-# Whitelist
-!*/
-!/Libraries/CsoundCMake/**
-!/Projects/**
-!/.gitignore
-
-# Blacklist
-**/.vscode/settings.json
-.DS_Store
+# Cabbage generated files.
+testSessionData.txt

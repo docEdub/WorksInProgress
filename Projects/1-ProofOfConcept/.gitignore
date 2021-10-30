@@ -1,6 +1,0 @@
-/.logs/**
-/.vscode/launch.json
-/app/**
-
-# Cabbage generated files.
-testSessionData.txt

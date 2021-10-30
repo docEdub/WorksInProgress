@@ -10,7 +10,7 @@ I currently only build on macOS.
 ### Build Csound content
 - Install Xcode command line tools for clang, and install Node, CMake, Csound 6.16.0, and Cabbage 2.5.12. Make sure
   `clang`, `node` and `cmake` are on the PATH.
-- In `[...]/Projects/ProofOfConcept` folder, run commands:
+- In the `1-ProofOfConcept` folder, run commands:
     ```
     node configure
     node make
@@ -28,7 +28,7 @@ I currently only build on macOS.
     node make vst3
     ```
 
-The .csd files and plugins will be generated in `[...]/Projects/ProofOfConcept/Csound/build`.
+The .csd files and plugins will be generated in `1-ProofOfConcept/Csound/build`.
 
 If any of the above commands fail, try running them again. They may work the 2nd time.
 
