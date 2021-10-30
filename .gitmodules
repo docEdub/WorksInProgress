@@ -1,0 +1,9 @@
+[submodule "Blog-build"]
+	path = Blog-build
+	url = https://github.com/docEdub/docEdub.github.io.git
+[submodule "Blog-source"]
+	path = Blog-source
+	url = https://github.com/docEdub/WorksInProgress.git
+[submodule "Projects/1-ProofOfConcept"]
+	path = Projects/1-ProofOfConcept
+	url = https://github.com/docEdub/WorksInProgress.git
