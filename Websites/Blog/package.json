@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run logo:build && npm run hugo:build",
+    "build:prod": "npm run logo:build && npm run hugo:build:prod",
     "clean": "npm run logo:clean && npm run hugo:clean",
     "start": "npm run hugo:start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "hugo:build:help": "echo 'Builds the blog in the `_.build` folder using the `hugo` tool.'",
     "hugo:build": "hugo --buildDrafts --destination _.build",
+    "hugo:build:prod": "hugo --destination _.build",
     "hugo:clean": "rm -rf _.build resources public",
     "hugo:start:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
     "hugo:start": "hugo server --buildDrafts",
