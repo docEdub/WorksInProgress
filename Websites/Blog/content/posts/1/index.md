@@ -2,7 +2,7 @@
 title: "ProofOfConcept"
 date: 2021-10-25
 images: ["/posts/1/preview.jpg"]
-draft: true
+draft: false
 ---
 
 ["ProofOfConcept"](/1/) is my first virtual reality scene. I made it to prove out the tech stack I chose for making real-time music-driven VR experiences for web browsers.
