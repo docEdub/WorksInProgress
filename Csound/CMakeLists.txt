@@ -15,12 +15,6 @@ add_csd_targets(
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
-        "Synths/CircleSynth.csd"
-        "Synths/DistanceDelaySynth.csd"
-        "Synths/GroundBubbleSynth.csd"
-        "Synths/PointSynth.csd"
-        "Synths/PowerLineSynth.csd"
-        "Synths/SubtractiveSynth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
     PLAYBACK_SOURCES

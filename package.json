@@ -1,4 +1,5 @@
 {
+  "displayName": "2-PrimitiveTriangles",
   "scripts": {
     "build": "webpack --config ./webpack-dev.js --mode development --progress --color",
     "build:prod": "webpack --config ./webpack-prod.js --mode production --progress --color",
