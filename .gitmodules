@@ -7,3 +7,6 @@
 [submodule "Projects/1-ProofOfConcept"]
 	path = Projects/1-ProofOfConcept
 	url = https://github.com/docEdub/WorksInProgress.git
+[submodule "Projects/2-PrimitiveTriangles"]
+	path = Projects/2-PrimitiveTriangles
+	url = https://github.com/docEdub/WorksInProgress.git
