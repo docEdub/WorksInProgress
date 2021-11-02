@@ -1,3 +1,6 @@
-/_.build/**
+/.build.prod/**
 /node_modules/**
 /resources/**
+
+/static/*/app.js
+/static/*/index.html
