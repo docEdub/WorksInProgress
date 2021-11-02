@@ -1,0 +1,7 @@
+{
+    "scripts": {
+      "build:prod": "cd Scripts && node build.prod.mjs",
+      "clean:prod": "cd Scripts && node clean.prod.mjs"
+    }
+  }
+  
