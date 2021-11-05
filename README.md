@@ -8,7 +8,7 @@ This project is a work in progress.
 I currently only build on macOS. 
 
 ### Build Csound content
-- Install Xcode command line tools for clang, and install Node, CMake, Csound 6.16.0, and Cabbage 2.5.12. Make sure
+- Install Xcode command line tools for clang, and install Node, CMake, Csound 6.16.2, and Cabbage 2.5.12. Make sure
   `clang`, `node` and `cmake` are on the PATH.
 - In the `2-PrimitiveTrianglest` folder, run commands:
     ```
