@@ -206,8 +206,10 @@ instr RequestPluginUuid
     log_i_trace("instr RequestPluginUuid ...")
 
     if (gi_oscHandle == -1) then
+        log_k_trace("Request not sent. (gi_oscHandle == -1).")
         event("i", p1, 1, -1)
     else
+        log_i_debug("Requesting plugin uuid on port %d", gi_oscPort)
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, "i",
             gi_oscPort)
         event("i", "ListenForPluginUuid", 0, -1)

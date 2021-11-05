@@ -506,6 +506,7 @@ instr HandleOscMessages
                             DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, k_argCount)
                     else
                         // 2 = port
+                        log_k_trace("Generating UUID")
                         generateUuid(S_oscMessages[k(2)])
                     endif
                 endif
