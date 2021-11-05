@@ -650,8 +650,14 @@ instr GenerateUuid
 
     log_i_trace("instr GenerateUuid(iOscPort = %d) ...", iOscPort)
 
+    event_i("i", "UpdateUuid", 0, -1)
+
+    // Csound crashes when using gSUuid in OSCsend. Copying the string to a local variable works.
+    SUuid = strcpyk(gSUuid)
+
+    log_k_trace("Sending Uuid %s to port %d", SUuid, iOscPort)
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
-        "s", uuid())
+        "s", SUuid)
 
     turnoff
     log_i_trace("instr GenerateUuid(iOscPort = %d) - done", iOscPort)

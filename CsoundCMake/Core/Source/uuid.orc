@@ -10,15 +10,15 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_uuid_orc ${CSOUND_INCLUDE_GUARD_DEFIN
 ${CSOUND_INCLUDE} "log.orc"
 
 
-opcode uuid, S, 0
-    iResult = system_i(true, "python -c 'import sys,uuid; sys.stdout.write(uuid.uuid4().hex)' > uuid.txt")
-    iJ = 0
-    iFileHandle = fiopen("uuid.txt", 1)
-    SUuid, iJ readfi iFileHandle
-    ficlose iFileHandle
-    xout SUuid
-endop
+gSUuid init ""
 
+instr UpdateUuid
+    kResult = system(true, "python -c 'import sys,uuid; sys.stdout.write(uuid.uuid4().hex)' > uuid.txt")
+    kJ init 0
+    gSUuid, kJ readf "uuid.txt"
+    log_k_debug("gSUuid = %s", gSUuid)
+    turnoff
+endin
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
