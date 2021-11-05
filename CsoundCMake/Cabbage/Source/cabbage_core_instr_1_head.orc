@@ -30,6 +30,7 @@
         if (ksmps < gk_i && k_instanceNameChanged == true) then
             k_instanceNameChanged = false
             log_k_info("Instance name changed to '%s'", gS_instanceName)
+            log_k_info("OSC port = %d", gi_oscPort)
             if (k_isCsdInfoLogged == false) then
                 k_isCsdInfoLogged = true
                 if (gk_isPlugin == true) then
