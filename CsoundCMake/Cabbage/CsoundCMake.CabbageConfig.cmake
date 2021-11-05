@@ -17,7 +17,8 @@ set(CsoundCMake_Cabbage_OrcFiles
     "cabbage_synth_global.orc"
 )
 
-set(CABBAGE_PATH "/Applications/Cabbage.app" CACHE STRING " ")
+set(CABBAGE_PATH "/Applications/Cabbage-2.5.12.app" CACHE STRING " ")
+# set(CABBAGE_PATH "/Applications/Cabbage-2.8.0.app" CACHE STRING " ")
 
 LIST(APPEND CMAKE_PREFIX_PATH "${ROOT_DIR}/Libraries/CsoundCMake/Core")
 find_package(CsoundCMake.Core REQUIRED)
