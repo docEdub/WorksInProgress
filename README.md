@@ -8,7 +8,7 @@ This project is a hacked together proof-of-concept. It works, but it's a mess. I
 I currently only build on macOS. 
 
 ### Build Csound content
-- Install Xcode command line tools for clang, and install Node, CMake, Csound 6.16.0, and Cabbage 2.5.12. Make sure
+- Install Xcode command line tools for clang, and install Node, CMake, Csound 6.15.0, and Cabbage 2.5.12. Make sure
   `clang`, `node` and `cmake` are on the PATH.
 - In the `1-ProofOfConcept` folder, run commands:
     ```
