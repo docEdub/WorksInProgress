@@ -24,8 +24,6 @@ gSPresetUuidOrder[] = fillarray( \
 // Override core_global.h ksmps.
 kr = 1000
 
-pyinit
-
 // Turn off redundant OSC logging.
 #define DISABLE_LOGGING_TO_DAW_SERVICE
 
@@ -613,35 +611,36 @@ endin
 
 
 instr WatchOrcFile
-    iOscPort init p4
-    SOrcPath init strget(p5)
+    ; iOscPort init p4
+    ; SOrcPath init strget(p5)
 
-    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
+    ; log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
 
-    log_i_trace("  ... import os ...")
-    pylruni("import os")
-    log_i_trace("  ... import os - done")
-    SPythonCode = sprintf("float(os.path.getmtime(\"%s\"))", SOrcPath)
+    ; log_i_trace("  ... import os ...")
+    ; pylruni("import os")
+    ; log_i_trace("  ... import os - done")
+    ; SPythonCode = sprintf("float(os.path.getmtime(\"%s\"))", SOrcPath)
 
-    kPreviousTime init 0
-    kCurrentTime = time_k()
-    kPreviousModifiedTime init 0
-    kSignal init 1
-    if (kCurrentTime - kPreviousTime > 1) then
-        kPreviousTime = kCurrentTime
-        kModifiedTime = pyleval(SPythonCode)
-        if (kPreviousModifiedTime < kModifiedTime) then
-            if (kPreviousModifiedTime > 0) then
-                log_k_trace("%s changed. Port = %d", SOrcPath, iOscPort)
-                OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
-                    sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
-                kSignal += 1
-            endif
-            kPreviousModifiedTime = kModifiedTime
-        endif
-    endif
+    ; kPreviousTime init 0
+    ; kCurrentTime = time_k()
+    ; kPreviousModifiedTime init 0
+    ; kSignal init 1
+    ; if (kCurrentTime - kPreviousTime > 1) then
+    ;     kPreviousTime = kCurrentTime
+    ;     kModifiedTime = pyleval(SPythonCode)
+    ;     if (kPreviousModifiedTime < kModifiedTime) then
+    ;         if (kPreviousModifiedTime > 0) then
+    ;             log_k_trace("%s changed. Port = %d", SOrcPath, iOscPort)
+    ;             OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
+    ;                 sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
+    ;             kSignal += 1
+    ;         endif
+    ;         kPreviousModifiedTime = kModifiedTime
+    ;     endif
+    ; endif
 
-    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+    ; log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+    turnoff
 endin
 
 
