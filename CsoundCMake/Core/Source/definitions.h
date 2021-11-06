@@ -52,6 +52,7 @@
 #define DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH "/DawService/plugin/registration"
 #define DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH "/DawService/plugin/request_uuid"
 #define DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH "/DawService/plugin/watch_orc"
+#define DAW_SERVICE_OSC_PLUGIN_UPDATE_WATCHED_ORCS_PATH "/DawService/plugin/update_watched_orcs"
 
 #define TRACK_INFO_OSC_ADDRESS "127.0.0.1"
 #define TRACK_INFO_OSC_PORT_MIN 7772

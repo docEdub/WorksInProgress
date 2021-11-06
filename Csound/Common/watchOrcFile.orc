@@ -16,10 +16,13 @@ instr CompileOrc
     iResult = compileorc("${CSD_PREPROCESSED_FILES_DIR}/${InstrumentName}.orc")
     if (iResult == 0) then
         log_i_info("Compiling ${InstrumentName}.orc - succeeded")
+        gkReloaded = true
     else
         log_i_info("Compiling ${InstrumentName}.orc - failed")
+        log_i_info("Compiling ${InstrumentName}.orc - retrying ...")
+        event_i("i", "CompileOrc", 0, -1)
     endif
-    gkReloaded = true
+
 endin
 
 
@@ -33,7 +36,15 @@ instr ListenForChangedOrcFile
         log_k_debug("${InstrumentName}.orc changed. Port = %d", gi_oscPort)
         event("i", "CompileOrc", 0, -1)
     endif
-    ; printks("Listening ...\n", 1)
+
+    ; #if LOGGING
+    ;     kTime = time_k()
+    ;     kLastPrintTime init 0
+    ;     if (kTime - kLastPrintTime > 1) then
+    ;         printks("Listening ...\n", 1)
+    ;         kLastPrintTime = kTime
+    ;     endif
+    ; #endif
 
     log_i_trace("instr ListenForChangedOrcFile(port = %d) - done", gi_oscPort)
 endin
@@ -52,4 +63,4 @@ instr WatchOrcFile
     log_i_trace("instr WatchOrcFile - done")
 endin
 
-alwayson "WatchOrcFile"
+alwayson("WatchOrcFile")

@@ -18,6 +18,7 @@ add_csd_targets(
         "Synths/Triangle1Synth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
+        "DawService/ReloadOrcFiles.csd"
     PLAYBACK_SOURCES
         "DawPlayback/DawPlayback.csd"
 )

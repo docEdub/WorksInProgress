@@ -281,6 +281,14 @@ end:
 endop
 
 
+opcode updateWatchedOrcFiles, 0, 0
+    iInstrumentNumber = nstrnum("UpdateWatchedOrcFiles")
+igoto end
+    scoreline(sprintfk("i%d 0 -1", iInstrumentNumber), 1)
+end:
+endop
+
+
 opcode generateUuid, 0, S
     SPort xin
     iInstrumentNumber = nstrnum("GenerateUuid")
@@ -496,6 +504,13 @@ instr HandleOscMessages
                 endif
 
 
+                // Plugin .orc update watched files notification
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_UPDATE_WATCHED_ORCS_PATH) == true) then
+                    updateWatchedOrcFiles()
+                endif
+
+
                 // Plugin UUID generation
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
@@ -609,36 +624,73 @@ instr RegisterPlugin
 endin
 
 
+gSWatchedOrcFiles[] init 1
+giWatchedOrcFileOscPorts[] init 1
+giWatchedOrcFilesInitialized init false
+
 instr WatchOrcFile
-    ; iOscPort init p4
-    ; SOrcPath init strget(p5)
+    iOscPort init p4
+    SOrcPath init strget(p5)
 
-    ; log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) ...", iOscPort, SOrcPath)
 
-    ; log_i_trace("  ... import os ...")
-    ; pylruni("import os")
-    ; log_i_trace("  ... import os - done")
-    ; SPythonCode = sprintf("float(os.path.getmtime(\"%s\"))", SOrcPath)
+    if (giWatchedOrcFilesInitialized == false) then
+        iWatchedOrcFilesSize = 0
+        giWatchedOrcFilesInitialized = true
+    else
+        // Turn off instrument if OSC port is already added.
+        iWatchedOrcFilesSize = lenarray:i(gSWatchedOrcFiles)
+        ii = 0
+        while (ii < iWatchedOrcFilesSize) do
+            if (giWatchedOrcFileOscPorts[ii] == iOscPort) then
+                goto end
+            endif
+            ii += 1
+        od
 
-    ; kPreviousTime init 0
-    ; kCurrentTime = time_k()
-    ; kPreviousModifiedTime init 0
-    ; kSignal init 1
-    ; if (kCurrentTime - kPreviousTime > 1) then
-    ;     kPreviousTime = kCurrentTime
-    ;     kModifiedTime = pyleval(SPythonCode)
-    ;     if (kPreviousModifiedTime < kModifiedTime) then
-    ;         if (kPreviousModifiedTime > 0) then
-    ;             log_k_trace("%s changed. Port = %d", SOrcPath, iOscPort)
-    ;             OSCsend(kSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
-    ;                 sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", kSignal)
-    ;             kSignal += 1
-    ;         endif
-    ;         kPreviousModifiedTime = kModifiedTime
-    ;     endif
-    ; endif
+        // Resize the watched orc file arrays so they're one item larger than before.
+        trim_i(gSWatchedOrcFiles, iWatchedOrcFilesSize + 1)
+        trim_i(giWatchedOrcFileOscPorts, iWatchedOrcFilesSize + 1)
+    endif
 
-    ; log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+    // Add the orc file's path and plugin's OSC port to the watched orc file lists.
+    gSWatchedOrcFiles[iWatchedOrcFilesSize] = SOrcPath
+    giWatchedOrcFileOscPorts[iWatchedOrcFilesSize] = iOscPort
+
+end:
+    log_i_trace("instr WatchOrcFile(iOscPort = %d, SOrcPath = %s) - done", iOscPort, SOrcPath)
+    turnoff
+endin
+
+
+instr UpdateWatchedOrcFiles
+    log_i_trace("instr UpdateWatchedOrcFiles ...")
+
+    iWatchedOrcFilesSize = lenarray:i(giWatchedOrcFileOscPorts)
+    iInstrumentNumber = nstrnum("UpdateWatchedOrcFile")
+    ii = 0
+    while (ii < iWatchedOrcFilesSize) do
+        scoreline_i(sprintf("i%d.%06d 0 -1 %d", iInstrumentNumber, ii, giWatchedOrcFileOscPorts[ii]))
+        ii += 1
+    od
+
+    log_i_trace("instr UpdateWatchedOrcFiles - done")
+    turnoff
+endin
+
+
+gkUpdateOrcFilesSignal init 1
+
+instr UpdateWatchedOrcFile
+    iOscPort init p4
+
+    log_i_trace("instr UpdateWatchedOrcFile(iOscPort = %d) ...", iOscPort)
+
+    OSCsend(gkUpdateOrcFilesSignal, TRACK_INFO_OSC_ADDRESS, iOscPort,
+        sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_ORC_CHANGED_PATH, iOscPort), "i", gkUpdateOrcFilesSignal)
+    gkUpdateOrcFilesSignal += 1
+
+    log_i_trace("instr UpdateWatchedOrcFile(iOscPort = %d) - done", iOscPort)
     turnoff
 endin
 
