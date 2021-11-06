@@ -5,7 +5,7 @@ var spawnSync = require('child_process').spawnSync;
 if (os.type() === 'Darwin') {
     const pathsToWatch = [
         './Csound',
-        '../../Libraries/CsoundCMake'
+        './CsoundCMake'
     ]
 
     let debounce = false
