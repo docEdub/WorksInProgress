@@ -38,6 +38,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "time.orc"
 
 giTriangle1Synth_MaxAmpWhenVeryClose = 1
 giTriangle1Synth_ReferenceDistance = 0.1
@@ -100,11 +101,23 @@ instr INSTRUMENT_ID
         iEnvelopeS = 0.75
         iEnvelopeR = 0.1
 
+        iEnvelopeS_decayTime = 0.5 + 30 * (1 - iNoteNumber / 127)
+        iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
+
         #if IS_PLAYBACK
             a1 *= xadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
         #else
             a1 *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
         #endif
+
+        iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
+        iEnvelopeS_decayEndTime = iEnvelopeS_decayStartTime + iEnvelopeS_decayTime
+        aEnvelopeS_decayAmount init 1
+        kTime = time_k()
+        if (kTime >= iEnvelopeS_decayStartTime && kTime < iEnvelopeS_decayEndTime) then
+            aEnvelopeS_decayAmount = expon(1, iEnvelopeS_decayTime, iEnvelopeS_decayAmountMinimum)
+        endif
+        a1 *= aEnvelopeS_decayAmount
 
 
         #if IS_PLAYBACK
