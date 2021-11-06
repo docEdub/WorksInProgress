@@ -83,11 +83,29 @@ instr INSTRUMENT_ID
             a5 = 0 // Reverb
         #endif
 
+
+        // Oscillator
+        //--------------------------------------------------------------------------------------------------------------
         iNoteNumber = p5
         iVelocity = p6
         iCps = cpsmidinn(iNoteNumber)
         kAmp = 0.1 * (iVelocity / 127)
+
         a1 = vco2(kAmp, iCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+
+        // Volume envelope
+        //--------------------------------------------------------------------------------------------------------------
+        iEnvelopeA = 0.01
+        iEnvelopeD = 0.1
+        iEnvelopeS = 0.75
+        iEnvelopeR = 0.1
+
+        #if IS_PLAYBACK
+            a1 *= xadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+        #else
+            a1 *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+        #endif
+
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
