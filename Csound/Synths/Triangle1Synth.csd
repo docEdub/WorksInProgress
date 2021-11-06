@@ -216,15 +216,8 @@ ${group} bounds(${tab_group_rect}) {
 }
 
 ; S88 tab content
-${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(0) {
+${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(1) {
     #include "S88.ui"
-}
-
-; Settings tab content
-${group} bounds(${tab_content_group_rect}) identchannel("settings_tab_content_ui") visible(1) {
-    ${group} bounds(${tab_content_rect}) {
-        #include "Triangle1SynthSettings.ui"
-    }
 }
 
 ; Log tab content
