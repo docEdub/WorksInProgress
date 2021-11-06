@@ -1,6 +1,6 @@
-var os = require('os');
-var watch = require('node-watch');
-var spawnSync = require('child_process').spawnSync;
+var os = require('os')
+var watch = require('node-watch')
+var spawnSync = require('child_process').spawnSync
 
 if (os.type() === 'Darwin') {
     const pathsToWatch = [
