@@ -15,6 +15,7 @@ add_csd_targets(
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
+        "Synths/Triangle1Synth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
     PLAYBACK_SOURCES

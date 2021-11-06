@@ -14,9 +14,7 @@
 <CsInstruments>
 
 gSPresetUuidOrder[] = fillarray( \
-    "6c9f37ab-392f-429b-8217-eac09f295362", /* DistanceDelaySynth */ \
-    "b4f7a35c-6198-422f-be6e-fa126f31b007", /* PointSynth */ \
-    "9037b759-36e4-4600-b2cb-03383ebd65c1"  /* GroundBubbleSynth */ \
+    "859a106a62bb41f18954be2e29f98ec9" /* Triangle1Synth */ \
 )
 
 #include "core_global.h"
