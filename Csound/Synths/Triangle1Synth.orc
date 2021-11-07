@@ -70,19 +70,6 @@ instr INSTRUMENT_ID
     if (iEventType == EVENT_CC) then
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
-        #if IS_PLAYBACK
-            a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
-            a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
-            a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
-            a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
-            a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
-        #else
-            a1 = 0
-            a2 = 0
-            a3 = 0
-            a4 = 0
-            a5 = 0 // Reverb
-        #endif
 
 
         // Oscillator
@@ -125,9 +112,9 @@ instr INSTRUMENT_ID
 
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a1
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a1
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a1
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a1
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a1
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a1
@@ -144,7 +131,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a1, a1, a1, a1, a1, a1)
+            outc(a(0), a(0), a(0), a1, a1, a1)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
