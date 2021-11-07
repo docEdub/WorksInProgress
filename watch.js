@@ -18,16 +18,14 @@ if (os.type() === 'Darwin') {
             }
             debounce = setTimeout(() => {
                 debounce = false
+                console.log('')
+                console.log('')
                 console.log('-----------------------------------------------------------------------------------------')
                 spawnSync('bash', [ '-c', 'node make' ], { stdio: 'inherit' })
-                
                 console.log('')
                 console.log('Reloading .orc files ...')
                 spawnSync('bash', [ '-c', 'cd ./Csound/build/included-output && csound ReloadOrcFiles.csd' ])
                 console.log('Reloading .orc files - done')
-
-                console.log('')
-                console.log('')
             }, 100)
         }
     }
