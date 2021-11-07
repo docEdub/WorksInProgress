@@ -17,6 +17,7 @@ add_csd_targets(
     SYNTH_PLUGIN_SOURCES
         "Synths/Triangle1Synth.csd"
         "Synths/Triangle2Synth.csd"
+        "Synths/Triangle3MonoSynth.csd"
     STANDALONE_SOURCES
         "DawService/DawService.csd"
         "DawService/ReloadOrcFiles.csd"
