@@ -70,7 +70,7 @@ gkNoteNumberLfo init 0
 instr CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)
     log_i_info("%s ...", nstrstr(p1))
 
-    gkNoteNumberLfo = lfo(33, .03, 1)
+    gkNoteNumberLfo = lfo(33, .03, LFO_SHAPE_TRIANGLE)
 
     #if !IS_PLAYBACK
         if (gkReloaded == true) then
@@ -110,7 +110,7 @@ instr INSTRUMENT_ID
         kNoteNumber init iNoteNumber
 
         kNoteNumberLfo init 0
-        kNoteNumberLfo = lfo(0.333, gkNoteNumberLfo, 1)
+        kNoteNumberLfo = lfo(0.333, gkNoteNumberLfo, LFO_SHAPE_TRIANGLE)
         kCps = cpsmidinn(kNoteNumber + kNoteNumberLfo)
         a1 = vco2(kAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
 
