@@ -65,6 +65,35 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 ${CSOUND_ENDIF}
 
 
+gkNoteNumberLfo init 0
+
+instr CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)
+    log_i_info("%s ...", nstrstr(p1))
+
+    gkNoteNumberLfo = lfo(33, .03, 1)
+
+    #if !IS_PLAYBACK
+        if (gkReloaded == true) then
+            event("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)), 0, -1)
+            turnoff
+        endif
+    #endif
+
+    ; #if LOGGING
+    ;     kLastTime init 0
+    ;     kTime = time_k()
+    ;     if (kTime - kLastTime > 1) then
+    ;         kLastTime = kTime
+    ;         log_k_trace("%s running ...", nstrstr(p1))
+    ;     endif
+    ; #endif
+
+    log_i_info("%s - done", nstrstr(p1))
+endin
+
+event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)), 0, -1)
+
+
 instr INSTRUMENT_ID
     iEventType = p4
     if (iEventType == EVENT_CC) then
@@ -76,10 +105,14 @@ instr INSTRUMENT_ID
         //--------------------------------------------------------------------------------------------------------------
         iNoteNumber = p5
         iVelocity = p6
-        iCps = cpsmidinn(iNoteNumber)
         kAmp = 0.333 * (iVelocity / 127)
 
-        a1 = vco2(kAmp, iCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+        kNoteNumber init iNoteNumber
+
+        kNoteNumberLfo init 0
+        kNoteNumberLfo = lfo(0.333, gkNoteNumberLfo, 1)
+        kCps = cpsmidinn(kNoteNumber + kNoteNumberLfo)
+        a1 = vco2(kAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
 
         // Volume envelope
         //--------------------------------------------------------------------------------------------------------------
