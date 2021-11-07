@@ -119,6 +119,10 @@ instr INSTRUMENT_ID
         endif
         a1 *= aEnvelopeS_decayAmount
 
+        // Low pass filter
+        //--------------------------------------------------------------------------------------------------------------
+        a1 = tone(a1, 2500)
+
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
