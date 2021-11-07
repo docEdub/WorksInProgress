@@ -77,7 +77,7 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
         iCps = cpsmidinn(iNoteNumber)
-        kAmp = 0.1 * (iVelocity / 127)
+        kAmp = 0.333 * (iVelocity / 127)
 
         a1 = vco2(kAmp, iCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
 
@@ -85,10 +85,10 @@ instr INSTRUMENT_ID
         //--------------------------------------------------------------------------------------------------------------
         iEnvelopeA = 0.01
         iEnvelopeD = 0.1
-        iEnvelopeS = 0.75
+        iEnvelopeS = 0.667
         iEnvelopeR = 0.1
 
-        iEnvelopeS_decayTime = 0.5 + 30 * (1 - iNoteNumber / 127)
+        iEnvelopeS_decayTime = 0.333 + 33 * (1 - iNoteNumber / 127)
         iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
 
         #if IS_PLAYBACK
@@ -108,7 +108,7 @@ instr INSTRUMENT_ID
 
         // Low pass filter
         //--------------------------------------------------------------------------------------------------------------
-        a1 = tone(a1, 1000)
+        a1 = tone(a1, 999 + 333)
 
 
         #if IS_PLAYBACK
