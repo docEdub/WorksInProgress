@@ -1,3 +1,4 @@
+var fs = require('fs')
 var os = require('os')
 var watch = require('node-watch')
 var spawnSync = require('child_process').spawnSync
@@ -22,10 +23,13 @@ if (os.type() === 'Darwin') {
                 console.log('')
                 console.log('-----------------------------------------------------------------------------------------')
                 spawnSync('bash', [ '-c', 'node make' ], { stdio: 'inherit' })
-                console.log('')
-                console.log('Reloading .orc files ...')
-                spawnSync('bash', [ '-c', 'cd ./Csound/build/included-output && csound ReloadOrcFiles.csd' ])
-                console.log('Reloading .orc files - done')
+                if (fs.existsSync('./Csound/build/build-passed')) {
+                    fs.unlinkSync('./Csound/build/build-passed')
+                    console.log('')
+                    console.log('Reloading .orc files ...')
+                    spawnSync('bash', [ '-c', 'cd ./Csound/build/included-output && csound ReloadOrcFiles.csd' ])
+                    console.log('Reloading .orc files - done')
+                }
             }, 100)
         }
     }

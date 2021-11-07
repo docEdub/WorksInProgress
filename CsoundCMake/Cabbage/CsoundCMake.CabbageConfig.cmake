@@ -131,6 +131,7 @@ function(add_csd_targets)
     endif()
 
     add_custom_target("csd" ALL DEPENDS ${csd_target_dependencies} CsoundCMake.Cabbage)
+    add_custom_command(TARGET "csd" POST_BUILD COMMAND echo > ${CMAKE_BINARY_DIR}/build-passed)
 
     # Add vst3 target.
     if(NOT "${BUILD_PLAYBACK_CSD}" STREQUAL "ON")
