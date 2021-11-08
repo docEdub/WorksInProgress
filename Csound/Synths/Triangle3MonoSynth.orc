@@ -99,7 +99,7 @@ endin
 instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     log_i_trace("%s ...", nstrstr(p1))
 
-    iAmp = 0.1
+    iAmp = 0.4
     a1 = 0
 
     kNoteNumberWhenActivated init 0
