@@ -111,15 +111,21 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     iEnvelopeSlope = (1 / giTriangle3MonoSynth_VolumeEnvelopeAttackTime) / sr
     kEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
+    kActiveNoteCountPrevious init 0
+    kActiveNoteCountChanged = false
     if (changed2(kActiveNoteCount) == true) then
         log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
-        if (kActiveNoteCount > 0) then
+        if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
+            log_k_trace("Attack started")
+            kActiveNoteCountChanged = true
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
             kNoteNumberNeedsPortamento = false
             kEnvelopeModifier = iEnvelopeSlope
-        else
+        elseif (kActiveNoteCount == 0) then
+            log_k_trace("Decay started")
             kEnvelopeModifier = -iEnvelopeSlope
         endif
+        kActiveNoteCountPrevious = kActiveNoteCount
     endif
 
     kEnvelope init 0
@@ -138,8 +144,10 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kNoteNumber init 0
     kCurrentNoteNumber = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
     if (changed2(kCurrentNoteNumber) == true) then
-        log_k_debug("kNoteNumberWhenActivated = %d, kCurrentNoteNumber = %d", kNoteNumberWhenActivated, kCurrentNoteNumber)
-        if (kCurrentNoteNumber != kNoteNumberWhenActivated) then
+        ; log_k_debug("kNoteNumberWhenActivated = %d, kCurrentNoteNumber = %d", kNoteNumberWhenActivated, kCurrentNoteNumber)
+        ; if (kCurrentNoteNumber != kNoteNumberWhenActivated) then
+        if (kActiveNoteCountChanged == false) then
+            log_k_trace("Setting kNoteNumberNeedsPortamento to true")
             kNoteNumberNeedsPortamento = true
         endif
     endif
@@ -147,7 +155,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     if (kNoteNumberNeedsPortamento == false) then
         kNoteNumberPortamentoTime = 0
     else
-        kNoteNumberPortamentoTime = 0.01
+        kNoteNumberPortamentoTime = .01
     endif
     kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
 
