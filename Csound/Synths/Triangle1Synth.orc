@@ -86,7 +86,7 @@ instr INSTRUMENT_ID
 
         // Volume envelope
         //--------------------------------------------------------------------------------------------------------------
-        iEnvelopeA = 0.01
+        iEnvelopeA = 0.005
         iEnvelopeD = 0.1
         iEnvelopeS = 0.667
         iEnvelopeR = 0.1
