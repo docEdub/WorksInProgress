@@ -102,23 +102,22 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     iAmp = 0.4
     a1 = 0
 
-    kNoteNumberWhenActivated init 0
-    kNoteNumberNeedsPortamento init false
-
-    // Make kEnvelope run at sample rate.
+    // Update kEnvelope at sample rate.
     setksmps(1)
 
     iEnvelopeSlope = (1 / giTriangle3MonoSynth_VolumeEnvelopeAttackTime) / sr
     kEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
     kActiveNoteCountPrevious init 0
+    kNoteNumberWhenActivated init 0
     kActiveNoteCountChanged = false
+    kNoteNumberNeedsPortamento init false
     if (changed2(kActiveNoteCount) == true) then
         log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
         if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
             log_k_trace("Attack started")
-            kActiveNoteCountChanged = true
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
+            kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
             kEnvelopeModifier = iEnvelopeSlope
         elseif (kActiveNoteCount == 0) then
@@ -144,8 +143,6 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kNoteNumber init 0
     kCurrentNoteNumber = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
     if (changed2(kCurrentNoteNumber) == true) then
-        ; log_k_debug("kNoteNumberWhenActivated = %d, kCurrentNoteNumber = %d", kNoteNumberWhenActivated, kCurrentNoteNumber)
-        ; if (kCurrentNoteNumber != kNoteNumberWhenActivated) then
         if (kActiveNoteCountChanged == false) then
             log_k_trace("Setting kNoteNumberNeedsPortamento to true")
             kNoteNumberNeedsPortamento = true
