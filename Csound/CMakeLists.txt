@@ -15,6 +15,7 @@ add_csd_targets(
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
     SYNTH_PLUGIN_SOURCES
+        "Synths/TR_808.csd"
         "Synths/Triangle1Synth.csd"
         "Synths/Triangle2Synth.csd"
         "Synths/Triangle3MonoSynth.csd"
