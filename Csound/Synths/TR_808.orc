@@ -79,6 +79,10 @@ giTR_808_BassDrum_Level = 1
 giTR_808_BassDrum_Decay = 1
 giTR_808_BassDrum_Tune init 0
 
+giTR_808_SnareDrum_Level = 1
+giTR_808_SnareDrum_Decay = 1
+giTR_808_SnareDrum_Tune init 0
+
 giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
@@ -92,6 +96,10 @@ gicos = giTR_808_Cosine_TableNumber
 gklevel1 init giTR_808_BassDrum_Level
 gkdur1   init giTR_808_BassDrum_Decay
 gktune1  init giTR_808_BassDrum_Tune
+
+gklevel2 init giTR_808_SnareDrum_Level
+gkdur2   init giTR_808_SnareDrum_Decay
+gktune2  init giTR_808_SnareDrum_Tune
 
 gklevel init 1
 
@@ -165,6 +173,52 @@ instr INSTRUMENT_ID
 
             // Mix sustain and attack sound elements and scale using global bass drum level.
             a1 = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+
+        elseif (iNoteNumber == TR_808_SNARE_DRUM_KEY) then
+            //----------------------------------------------------------------------------------------------------------
+            // Snare
+            //----------------------------------------------------------------------------------------------------------
+            log_i_trace("Snare triggered")
+
+            // Sound is 2 sine tones an octave apart, and a noise signal.
+            //
+            // Frequency of the tones.
+            ifrq = 342
+            // Noise signal duration.
+            iNseDur = 0.3 * giTR_808_SnareDrum_Decay
+            // Sine tones duration.
+            iPchDur = 0.1 * giTR_808_SnareDrum_Decay
+
+            iNoteDuration = iNseDur
+            p3 = iNoteDuration
+            
+            // Sine tones.
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope.
+            aenv1 = expseg(1, iPchDur, 0.0001, iNoteDuration - iPchDur, 0.0001)
+            // Sine tone 1.
+            apitch1	= oscili(1, ifrq * octave(giTR_808_SnareDrum_Tune), giTR_808_Sine_TableNumber)
+            // Sine tone 2 (an otave lower).
+            apitch2	= oscili(0.25, ifrq * 0.5 * octave(giTR_808_SnareDrum_Tune), giTR_808_Sine_TableNumber)
+
+            apitch = (apitch1 + apitch2) * 0.75
+
+            // Noise
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope.
+            aenv2 = expon(1, iNoteDuration, 0.0005)
+            // Create some noise.
+            anoise = noise(0.75, 0)
+            // Bandpass filter the noise signal.
+            anoise = butbp(anoise, 10000 * octave(giTR_808_SnareDrum_Tune), 10000)
+            // Highpass filter the noise signal.
+            anoise = buthp(anoise, 1000)
+            // Cutoff frequency for a lowpass filter
+            kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
+            // Lowpass filter the noise signal
+            anoise = butlp(anoise, kcf)
+
+            a1 = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
 
         endif
 
