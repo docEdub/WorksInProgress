@@ -41,7 +41,7 @@ instr ListenForChangedOrcFile
     ;     kTime = time_k()
     ;     kLastPrintTime init 0
     ;     if (kTime - kLastPrintTime > 1) then
-    ;         printks("Listening ...\n", 1)
+    ;         log_k_trace("Listening ...")
     ;         kLastPrintTime = kTime
     ;     endif
     ; #endif
@@ -53,6 +53,8 @@ endin
 instr WatchOrcFile
     log_i_trace("instr WatchOrcFile ...")
     if (gi_oscHandle == -1) then
+        log_k_trace("Request not sent. (gi_oscHandle == -1).")
+        event("i", "InitializeOSC", 0, -1)
         event("i", p1, 1, -1)
     else
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, "is",
@@ -63,4 +65,4 @@ instr WatchOrcFile
     log_i_trace("instr WatchOrcFile - done")
 endin
 
-alwayson("WatchOrcFile")
+event_i("i", "WatchOrcFile", 1, -1)
