@@ -83,6 +83,10 @@ giTR_808_SnareDrum_Level = 1
 giTR_808_SnareDrum_Decay = 1
 giTR_808_SnareDrum_Tune init 0
 
+giTR_808_OpenHighHat_Level = 1
+giTR_808_OpenHighHat_Decay = 1
+giTR_808_OpenHighHat_Tune init 0
+
 giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
@@ -100,6 +104,10 @@ gktune1  init giTR_808_BassDrum_Tune
 gklevel2 init giTR_808_SnareDrum_Level
 gkdur2   init giTR_808_SnareDrum_Decay
 gktune2  init giTR_808_SnareDrum_Tune
+
+gklevel3 init giTR_808_OpenHighHat_Level
+gkdur3   init giTR_808_OpenHighHat_Decay
+gktune3  init giTR_808_OpenHighHat_Tune
 
 gklevel init 1
 
@@ -129,7 +137,7 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        a1 init 0
+        aOut init 0
 
         // Map velocity [0, 127] to dB [-30, 0] and adjust for 0dbfs = 1.
         iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
@@ -172,7 +180,7 @@ instr INSTRUMENT_ID
             aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
 
             // Mix sustain and attack sound elements and scale using global bass drum level.
-            a1 = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+            aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
 
         elseif (iNoteNumber == TR_808_SNARE_DRUM_KEY) then
             //----------------------------------------------------------------------------------------------------------
@@ -180,7 +188,7 @@ instr INSTRUMENT_ID
             //----------------------------------------------------------------------------------------------------------
             log_i_trace("Snare triggered")
 
-            // Sound is 2 sine tones an octave apart, and a noise signal.
+            // Sound is 2 sine tones an octave apart and a noise signal.
             //
             // Frequency of the tones.
             ifrq = 342
@@ -218,17 +226,81 @@ instr INSTRUMENT_ID
             // Lowpass filter the noise signal
             anoise = butlp(anoise, kcf)
 
-            a1 = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+            aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+
+        elseif (iNoteNumber == TR_808_OPEN_HIGH_HAT_KEY) then
+            //----------------------------------------------------------------------------------------------------------
+            // Open high hat
+            //----------------------------------------------------------------------------------------------------------
+            log_i_trace("Open high hat triggered")
+
+            // Sound is 6 pulse oscillators and a noise signal.
+
+            xtratim(0.1)
+
+            // Frequencies of the 6 oscillators.
+            kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
+            kFrq2 = 285 * octave(giTR_808_OpenHighHat_Tune)
+            kFrq3 = 365 * octave(giTR_808_OpenHighHat_Tune)
+            kFrq4 = 348 * octave(giTR_808_OpenHighHat_Tune)
+            kFrq5 = 420 * octave(giTR_808_OpenHighHat_Tune)
+            kFrq6 = 835 * octave(giTR_808_OpenHighHat_Tune)
+
+            // Duration of the note.
+            iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
+            p3 = iNoteDuration
+            
+            // Pitched element
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope for the pulse oscillators.
+            aenv = linseg(1, iNoteDuration - 0.05, 0.1, 0.05, 0)
+            // Pulse width.
+            ipw = 0.25
+            // Pulse oscillators.
+            a1 = vco2(0.5, kFrq1, 2, ipw)
+            a2 = vco2(0.5, kFrq2, 2, ipw)
+            a3 = vco2(0.5, kFrq3, 2, ipw)
+            a4 = vco2(0.5, kFrq4, 2, ipw)
+            a5 = vco2(0.5, kFrq5, 2, ipw)
+            a6 = vco2(0.5, kFrq6, 2, ipw)
+
+            // Mix the pulse oscillators.
+            amix = sum(a1, a2, a3, a4, a5, a6)
+            // Bandpass filter the pulse oscillators.
+            amix = reson(amix, 5000 * octave(giTR_808_OpenHighHat_Tune), 5000, 1)
+            // Highpass filter the pulse oscillators, twice.
+            amix = buthp(amix, 5000)
+            amix = buthp(amix, 5000)
+            // Apply the amplitude envelope.
+            amix = (amix * aenv)
+            
+            // Noise element
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope for the noise.
+            aenv = linseg(1, iNoteDuration - 0.05, 0.1, 0.05, 0)
+            // White noise.
+            anoise = noise(0.8, 0)
+            // Cutoff frequency for a lowpass filter
+            kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
+            // Lowpass filter the noise signal
+            anoise = butlp(anoise, kcf)
+            // Highpass filter the noise signal.
+            anoise = buthp(anoise, 8000)
+            // Apply the amplitude envelope.
+            anoise = anoise * aenv
+            
+            // Mix pulse oscillator and noise.
+            aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
 
         endif
 
         #if IS_PLAYBACK
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a1
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a1
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = aOut
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = aOut
+            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -242,7 +314,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a(0), a(0), a(0), a1, a1, a1)
+            outc(a(0), a(0), a(0), aOut, aOut, aOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
