@@ -28,6 +28,8 @@ _(\)
 _(\)
     "",                  "",         "",        "") // dummy line
 
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #28#
+
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
@@ -130,6 +132,15 @@ instr INSTRUMENT_ID
             #endif
             kI += 1
         od
+
+        #if !IS_PLAYBACK
+            if (gkReloaded == true) then
+                // Note that we have to restart the instrument 2 k-cycles from now, otherwise it won't restart, maybe
+                // due to some queuing order issue.
+                event("i", p1, 2 / kr, -1, p4, p5, p6)
+                turnoff
+            endif
+        #endif
     endif
 
 #if !IS_PLAYBACK

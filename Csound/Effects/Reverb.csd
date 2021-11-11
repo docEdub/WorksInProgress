@@ -19,6 +19,7 @@ ${CSOUND_DEFINE} ORC_FILENAME #"${InstrumentName}.orc"#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
+${CSOUND_INCLUDE} "watchOrcFile.orc"
 
 
 //======================================================================================================================
