@@ -75,10 +75,25 @@ giTR_808_RolloffFactor = 0.005
 giTR_808_PlaybackVolumeAdjustment = 1
 giTR_808_PlaybackReverbAdjustment = 1
 
+giTR_808_BassDrum_Level = 1
+giTR_808_BassDrum_Decay = 1
+giTR_808_BassDrum_Tune init 0
+
 giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
 giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
+
+
+
+gisine = giTR_808_Sine_TableNumber
+gicos = giTR_808_Cosine_TableNumber
+
+gklevel1 init giTR_808_BassDrum_Level
+gkdur1   init giTR_808_BassDrum_Decay
+gktune1  init giTR_808_BassDrum_Tune
+
+gklevel init 1
 
 
 #endif // #ifndef TR_808_orc__include_guard
@@ -112,6 +127,46 @@ instr INSTRUMENT_ID
         iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
 
         log_i_debug("iNoteNumber == %d", iNoteNumber)
+
+        if (iNoteNumber == TR_808_BASS_DRUM_KEY) then
+            //----------------------------------------------------------------------------------------------------------
+            // Bass drum
+            //----------------------------------------------------------------------------------------------------------
+            log_i_trace("Bass drum triggered")
+
+            iNoteDuration = 2 * giTR_808_BassDrum_Decay
+            p3 = iNoteDuration
+            xtratim(0.1)
+            kReleased = release()
+
+            // Sustain and body of the sound.
+            //----------------------------------------------------------------------------------------------------------
+            // Partial strengths multiplier used by the gbuzz opcode. Decays from a sound with overtones to a sine tone.
+            kmul = transeg:k(0.2, iNoteDuration * 0.5, -15, 0.01, iNoteDuration * 0.5, 0, 0)
+            // Slight pitch bend at the start of the note.
+            kbend = transeg:k(0.5, 1.2, -4, 0, 1, 0, 0)
+            // Tone.
+            asig = gbuzz(0.5, 50 * octave:k(giTR_808_BassDrum_Tune) * semitone:k(kbend), 20, 1, kmul, giTR_808_Cosine_TableNumber)
+            // Amplitude envelope for sustain of the sound.
+            aenv = transeg:a(1, iNoteDuration - 0.004, -6, 0)
+            // Soft attack.
+            aatt = linseg:a(0, 0.004, 1)
+
+            asig = asig * aenv * aatt
+
+            // Hard and short attack of the sound.
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope (fast decay).
+            aenv = linseg:a(1, 0.07, 0)
+            // Frequency of the attack sound. Quickly glisses from 400 Hz to sub-audio. 
+            acps = expsega(400, 0.07, 0.001, 1, 0.001)
+            // Attack sound.
+            aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
+
+            // Mix sustain and attack sound elements and scale using global bass drum level.
+            a1 = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+
+        endif
 
         #if IS_PLAYBACK
             ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
