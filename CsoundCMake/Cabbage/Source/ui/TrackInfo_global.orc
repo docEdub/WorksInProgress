@@ -211,6 +211,7 @@ instr RequestPluginUuid
 
     if (gi_oscHandle == -1) then
         log_k_trace("Request not sent. (gi_oscHandle == -1).")
+        event("i", "InitializeOSC", 0, -1)
         event("i", p1, 1, -1)
     else
         log_i_debug("Requesting plugin uuid on port %d", gi_oscPort)
