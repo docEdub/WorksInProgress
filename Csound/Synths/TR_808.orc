@@ -4,7 +4,7 @@
 // File: TR_808.orc
 //
 // Description:
-//  Single triangle wave oscillator with piano-like decay.
+//  Emulation of the Roland TR-808 drum machine.
 //
 // Based on Iain McCurdy's .csd. See http://iainmccurdy.org/csound.html.
 //----------------------------------------------------------------------------------------------------------------------
@@ -46,27 +46,27 @@ ${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 
-#define TR_808_BASS_DRUM_KEY 37 // C#3
-#define TR_808_SNARE_DRUM_KEY 39 // D#3
-#define TR_808_RIM_SHOT_KEY 40 // E3
+#define TR_808_BASS_DRUM_KEY 37 // C#1
+#define TR_808_SNARE_DRUM_KEY 39 // D#1
+#define TR_808_RIM_SHOT_KEY 40 // E1
 
-#define TR_808_LOW_TOM_KEY 42 // F#3
-#define TR_808_MID_TOM_KEY 44 // G#3
-#define TR_808_HIGH_TOM_KEY 46 // A#4
+#define TR_808_LOW_TOM_KEY 42 // F#1
+#define TR_808_MID_TOM_KEY 44 // G#1
+#define TR_808_HIGH_TOM_KEY 46 // A#2
 
-#define TR_808_CLOSED_HIGH_HAT_KEY 49 // C#4
-#define TR_808_OPEN_HIGH_HAT_KEY 51 // D#4
+#define TR_808_CLOSED_HIGH_HAT_KEY 49 // C#2
+#define TR_808_OPEN_HIGH_HAT_KEY 51 // D#2
 
-#define TR_808_CYMBAL_KEY 54 // F#4
-#define TR_808_COWBELL_KEY 56 // G#4
-#define TR_808_CLAP_KEY 58 // A#5
+#define TR_808_CYMBAL_KEY 54 // F#2
+#define TR_808_COWBELL_KEY 56 // G#2
+#define TR_808_CLAP_KEY 58 // A#3
 
-#define TR_808_CLAVES_KEY 61 // C#5
-#define TR_808_MARACA_KEY 63 // D#5
+#define TR_808_CLAVES_KEY 61 // C#3
+#define TR_808_MARACA_KEY 63 // D#3
 
-#define TR_808_LOW_CONGA_KEY 66 // F#5
-#define TR_808_MID_CONGA_KEY 68 // G#5
-#define TR_808_HIGH_CONGA_KEY 70 // A#6
+#define TR_808_LOW_CONGA_KEY 66 // F#3
+#define TR_808_MID_CONGA_KEY 68 // G#3
+#define TR_808_HIGH_CONGA_KEY 70 // A#4
 
 
 giTR_808_MaxAmpWhenVeryClose = 1
