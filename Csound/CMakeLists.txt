@@ -14,6 +14,7 @@ add_csd_targets(
         "Effects/BusHead.csd"
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
+        "Effects/Spatializer.csd"
     SYNTH_PLUGIN_SOURCES
         "Synths/TR_808.csd"
         "Synths/Triangle1Synth.csd"
