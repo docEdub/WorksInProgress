@@ -87,6 +87,10 @@ giTR_808_OpenHighHat_Level = 1
 giTR_808_OpenHighHat_Decay = 1
 giTR_808_OpenHighHat_Tune init 0
 
+giTR_808_ClosedHighHat_Level = 1
+giTR_808_ClosedHighHat_Decay = 1
+giTR_808_ClosedHighHat_Tune init 0
+
 giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
@@ -108,6 +112,10 @@ gktune2  init giTR_808_SnareDrum_Tune
 gklevel3 init giTR_808_OpenHighHat_Level
 gkdur3   init giTR_808_OpenHighHat_Decay
 gktune3  init giTR_808_OpenHighHat_Tune
+
+gklevel4 init giTR_808_ClosedHighHat_Level
+gkdur4   init giTR_808_ClosedHighHat_Decay
+gktune4  init giTR_808_ClosedHighHat_Tune
 
 gklevel init 1
 
@@ -153,7 +161,6 @@ instr INSTRUMENT_ID
             iNoteDuration = 2 * giTR_808_BassDrum_Decay
             p3 = iNoteDuration
             xtratim(0.1)
-            kReleased = release()
 
             // Sustain and body of the sound.
             //----------------------------------------------------------------------------------------------------------
@@ -234,10 +241,10 @@ instr INSTRUMENT_ID
             //----------------------------------------------------------------------------------------------------------
             log_i_trace("Open high hat triggered")
 
-            // Sound is 6 pulse oscillators and a noise signal.
-
             xtratim(0.1)
 
+            // Sound is 6 pulse oscillators and a noise signal.
+            //
             // Frequencies of the 6 oscillators.
             kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
             kFrq2 = 285 * octave(giTR_808_OpenHighHat_Tune)
@@ -280,9 +287,9 @@ instr INSTRUMENT_ID
             aenv = linseg(1, iNoteDuration - 0.05, 0.1, 0.05, 0)
             // White noise.
             anoise = noise(0.8, 0)
-            // Cutoff frequency for a lowpass filter
+            // Cutoff frequency envelope for a lowpass filter
             kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
-            // Lowpass filter the noise signal
+            // Lowpass filter the noise signal.
             anoise = butlp(anoise, kcf)
             // Highpass filter the noise signal.
             anoise = buthp(anoise, 8000)
@@ -291,6 +298,70 @@ instr INSTRUMENT_ID
             
             // Mix pulse oscillator and noise.
             aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+
+        elseif (iNoteNumber == TR_808_CLOSED_HIGH_HAT_KEY) then
+            //----------------------------------------------------------------------------------------------------------
+            // Closed high hat
+            //----------------------------------------------------------------------------------------------------------
+            log_i_trace("Closed high hat triggered")
+
+            xtratim	0.1
+
+            // Sound is 6 pulse oscillators and a noise signal.
+            //
+            // Frequencies of the 6 oscillators.
+            kFrq1 = 296 * octave(giTR_808_ClosedHighHat_Tune)
+            kFrq2 = 285 * octave(giTR_808_ClosedHighHat_Tune) 	
+            kFrq3 = 365 * octave(giTR_808_ClosedHighHat_Tune) 	
+            kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune) 	
+            kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune) 	
+            kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
+
+            // Duration of the note.
+            iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+            p3 = iNoteDuration
+
+            // Pitched element
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope for the pulse oscillators.
+            aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+            // Pulse width.
+            ipw = 0.25
+            // Pulse oscillators.
+            a1 = vco2(0.5, kFrq1, 2, ipw)
+            a2 = vco2(0.5, kFrq2, 2, ipw)
+            a3 = vco2(0.5, kFrq3, 2, ipw)
+            a4 = vco2(0.5, kFrq4, 2, ipw)
+            a5 = vco2(0.5, kFrq5, 2, ipw)
+            a6 = vco2(0.5, kFrq6, 2, ipw)
+
+            // Mix the pulse oscillators.
+            amix = sum(a1, a2, a3, a4, a5, a6)
+            // Bandpass filter the pulse oscillators.
+            amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
+            // Highpass filter the pulse oscillators, twice.
+            amix = buthp(amix, 5000)
+            amix = buthp(amix, 5000)
+            // Apply the amplitude envelope.
+            amix = (amix * aenv)
+            
+            // Noise element.
+            //----------------------------------------------------------------------------------------------------------
+            // Amplitude envelope for the noise.
+            aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+            // White noise.
+            anoise = noise(0.8, 0)
+            // Cutoff frequency envelope for a lowpass filter            
+            kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
+            // Lowpass filter the noise signal.
+            anoise = butlp(anoise, kcf)
+            // Highpass filter the noise signal.
+            anoise = buthp(anoise, 8000)
+            // Apply the amplitude envelope.
+            anoise = anoise * aenv
+            
+            // Mix pulse oscillator and noise.
+            aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
 
         endif
 
