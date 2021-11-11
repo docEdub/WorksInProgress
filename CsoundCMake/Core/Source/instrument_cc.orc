@@ -52,6 +52,8 @@ ${CSOUND_IFDEF} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count)
         reshapearray(gSCcInfo, giCcCount + 1, 4)
     endif
 ${CSOUND_ELSE}
+    // If gSCcInfo_INSTRUMENT_NAME_Count is not defined then the instrument is not reloadable and the array size check
+    // is not possible.
     giCcCount = (lenarray(gSCcInfo) / 4) - 1
     reshapearray(gSCcInfo, giCcCount + 1, 4)
 ${CSOUND_ENDIF}
