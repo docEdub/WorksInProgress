@@ -308,19 +308,7 @@ opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp
         i_ambisonicOrder)
 endop
 
-; giDistanceAttenuationTable = ftgen(0, 0, 513, GEN06, 1, 32, 1, 128, 0.5, 353, 0)
 
-;                                    f1 0  101  8    1    5  .99    20  0.55    25  0.23    40  0.01    10  0
-; giDistanceAttenuationTable = ftgen(0, 0, 101, 8,   1,   5, .99,   20, 0.55,   25, 0.23,   40, 0.01,   10, 0)
-
-;                                  f1 0  101  5  1  100  0.0001
-; giDistanceAttenuationTable = ftgen(0, 0, 101, 5, 1, 100, 0.0001)
-
-;                               f1 0, 0, 101, 25    0  1    5  1    90  0.01    95  0.005    100  0.001
-; giDistanceAttenuationTable = ftgen(0, 0, 101, 25,   0, 1,   5, 1,   90, 0.01,   95, 0.005,   100, 0.001)
-
-;                               f1 0     251  25    0  1    5  1    250  0.00001
-giDistanceAttenuationTable = ftgen(0, 0, 251, 25,   0, 1,   5, 1,   250, 0.00001)
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
 //---------------------------------------------------------------------------------------------------------------------
@@ -334,61 +322,36 @@ giDistanceAttenuationTable = ftgen(0, 0, 251, 25,   0, 1,   5, 1,   250, 0.00001
 //
 // out k  : Attenuation.
 //
-opcode AF_3D_Audio_DistanceAttenuation, k, kpp
-    kDistance, iReferenceDistance, iRolloffFactor xin
-    kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
-    ; if (changed(kAttenuation) == true) then
-    ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
-    ; endif
-    xout kAttenuation
-endop
+; opcode AF_3D_Audio_DistanceAttenuation, k, kpp
+;     kDistance, iReferenceDistance, iRolloffFactor xin
+;     kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
+;     ; if (changed(kAttenuation) == true) then
+;     ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
+;     ; endif
+;     xout kAttenuation
+; endop
 
 
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_DistanceAttenuation
 //---------------------------------------------------------------------------------------------------------------------
-// Returns the logarithmic attenuation for the given distance.
+// Returns the attenuation for the given distance using the inverse distance model.
+// See https://medium.com/@kfarr/understanding-web-audio-api-positional-audio-distance-models-for-webxr-e77998afcdff
+// See https://www.desmos.com/calculator/lzxfqvwoqq
 //
 // in  k  : Distance.
-// in  k  : Maximum distance.
+// in  P  : Reference distance. Defaults to 1.
+// in  P  : Rolloff factor. Default to 1.
 //
 // out k  : Attenuation.
 //
-opcode AF_3D_Audio_DistanceAttenuation, k, kk
-    kDistance, kMaxDistance xin
-    xout tablei(kDistance / kMaxDistance, giDistanceAttenuationTable, TABLEI_NORMALIZED_INDEX_MODE)
-    //xout kDistance / kMaxDistance
-endop
-
-
-//---------------------------------------------------------------------------------------------------------------------
-// AF_3D_Audio_DistanceAttenuation
-//---------------------------------------------------------------------------------------------------------------------
-// Returns the logarithmic attenuation for the given distance.
-//
-// in  i  : Distance.
-// in  i  : Minimum distance.
-// in  i  : Maximum distance.
-//
-// out i  : Attenuation.
-//
-opcode AF_3D_Audio_DistanceAttenuation_i, i, iii
-    // TODO: Try changing this opcode to use a predefined curve instead of a logarithmic spike when objects are close.
-    // Objects passing directly thru the camera are zippering and popping. Try a predefined curve instead of raw math.
-    i_distance, i_minDistance, i_maxDistance xin
-    i_linearFadeOutDistance = i_maxDistance - 1
-    if (i_linearFadeOutDistance < i_distance) then
-        i_fadeOutDistance = i_distance - i_linearFadeOutDistance
-        if (i_fadeOutDistance < 1) then
-            i_linearFadeFrom = 1 / i_maxDistance
-            i_gain = i_linearFadeFrom * (1 - i_fadeOutDistance)
-        else
-            i_gain = 0
-        endif
-    else
-        i_gain = 1 / (max(i_minDistance, i_distance) + 1)
+opcode AF_3D_Audio_DistanceAttenuation, k, kPP
+    kDistance, kReferenceDistance, kRolloffFactor xin
+    kAttenuation = kReferenceDistance / ((max(kDistance, kReferenceDistance) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
+    if (changed2(kAttenuation) == true) then
+        printsk("%.03f, %.03f\n", kDistance, kAttenuation)
     endif
-    xout i_gain
+    xout kAttenuation
 endop
 
 

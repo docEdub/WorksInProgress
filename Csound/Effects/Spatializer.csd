@@ -29,19 +29,16 @@ ${CSOUND_INCLUDE} "watchOrcFile.orc"
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
-
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
 
-    log_i_info("nchnls_i = %d", nchnls_i)
-    log_i_info("nchnls   = %d", nchnls)
-
     if (gk_mode == 1) then
-        kMaxChannel = 4
+        kgoto end
     else
         kMaxChannel = 6
     endif
 
-    // Create an array of signals. 1 for each of the first 4 ambisonic output channels and 2 for the reverb channels.
+    // Create an array of signals. 1 for each of the first 4 output channels. Reverb.orc will output channels 5 and
+    // 6 in mode 1.
     a_signal[] init nchnls
 
     // For each output channel that has a matching input channel, read the host DAW input channel into the signal array.
@@ -59,6 +56,7 @@ instr 1
         k_chnl += 1
     od
 
+end:
     log_i_info("instr %d - done", p1)
 endin
 
