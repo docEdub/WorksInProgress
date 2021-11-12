@@ -19,11 +19,19 @@
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "enabled",           "bool",     "true",   "synced",   _(\)
+    "enabled",   "bool",       "true",  "synced",   _(\)
 _(\)
-    "",                  "",         "",        "") // dummy line
+    "x",         "number",     "0",     "synced",   _(\)
+    "y",         "number",     "0",     "synced",   _(\)
+    "z",         "number",     "0",     "synced",   _(\)
+_(\)
+    "x_scale",   "number",     "1",     "synced",   _(\)
+    "y_scale",   "number",     "1",     "synced",   _(\)
+    "z_scale",   "number",     "1",     "synced",   _(\)
+_(\)
+    "",          "",           "",      "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #32#
 
 #include "instrument_cc.orc"
 

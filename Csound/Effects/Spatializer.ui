@@ -1,0 +1,38 @@
+
+${grid}
+
+; Enable/disable checkbox.
+${group} bounds(0, 0, ${50_square}) {
+   ${checkbox_50x50} channel("enabled") value(1)
+}
+
+; Settings.
+${group} bounds(0, 50, 1000, 200) {
+   ; X, Y, and Z
+   ${group} bounds(0, 0, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("X")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(-1, 1, 0, 0.5, 0.001) channel("x")
+   }
+   ${group} bounds(0, 25, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("Y")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(-1, 1, 0, 0.5, 0.001) channel("y")
+   }
+   ${group} bounds(0, 50, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("Z")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(-1, 1, 0, 0.5, 0.001) channel("z")
+   }
+
+   ; X, Y, and Z scales
+   ${group} bounds(200, 0, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("X scale")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(1, 10000, 1, 0.5, 1) channel("x_scale")
+   }
+   ${group} bounds(200, 25, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("Y scale")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(1, 10000, 1, 0.5, 1) channel("y_scale")
+   }
+   ${group} bounds(200, 50, 200, 25) {
+      ${label} bounds(1, 5, 90, 16) align("right") text("Z scale")
+      ${nslider_dark} bounds(101, 1, 75, 23) range(1, 10000, 1, 0.5, 1) channel("z_scale")
+   }
+}

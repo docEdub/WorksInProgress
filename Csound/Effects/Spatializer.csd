@@ -124,6 +124,9 @@ instr 2
 endin
 
 
+${CSOUND_INCLUDE} "Tab.orc"
+
+
 //======================================================================================================================
 
 </CsInstruments>
@@ -147,6 +150,17 @@ ${group} bounds(0, 0, ${form_width}, ${TrackInfo_height}) {
     #include "TrackInfo.ui"
 }
 
-${csoundoutput} bounds(${csoundoutput_group_rect})
+; Tabs
+${group} bounds(${tab_group_rect}) {
+    #include "Tab.ui"
+}
+
+; Settings tab content
+${group} bounds(${tab_content_group_rect}) identchannel("settings_tab_content_ui") visible(1) {
+    #include "Spatializer.ui"
+}
+
+; Log tab content
+${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(0)
 
 </Cabbage>
