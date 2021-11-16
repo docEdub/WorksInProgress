@@ -193,4 +193,5 @@ ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") vi
 ; Log tab content
 ${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(0)
 
+; ${CSOUND_CMAKE_POSITION_UDO_NAMES}
 </Cabbage>
