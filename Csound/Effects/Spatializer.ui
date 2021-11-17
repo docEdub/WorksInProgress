@@ -60,6 +60,8 @@ ${group} bounds(0, 50, 1000, 500) {
    ; Position opcode.
    ${group} bounds(0, 300, ${setting_width}, ${setting_height_x2}) {
       ${setting_label} text("Position opcode")
-      ${setting_combobox} bounds(0, ${setting_height}, ${setting_dimensions}) channel("positionOpcode") channel_type("string") items(${CSOUND_CMAKE_POSITION_UDO_NAMES})
+      ${setting_combobox} bounds(0, ${setting_height}, ${setting_dimensions}) channel("positionOpcodeComboBoxIndex") identchannel("positionOpcodeComboBoxIndexUi") items(${CSOUND_CMAKE_POSITION_UDO_NAMES})
+      ; ${texteditor} bounds(0, ${setting_height_x2}, ${setting_dimensions}) channel("savedPositionOpcode") identchannel("savedPositionOpcodeUi")
+      ${texteditor} ${hidden} channel("savedPositionOpcode") identchannel("savedPositionOpcodeUi")
    }
 }

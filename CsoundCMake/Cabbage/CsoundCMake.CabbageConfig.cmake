@@ -254,6 +254,8 @@ set(vslider "vslider ${_linear_slider} popuptext(0)")
 set(xypad "xypad")
 
 # Public attributes
+set(hidden "bounds(0, 0, 0, 0)")
+
 set(range_midi_1_centered "range(-64, 63, 0, 1, 1)")
 set(range_midi_1_positive "range(0, 127, 0, 1, 1)")
 set(range_midi_2_centered "range(-8192, 8191, 0, 1, 1)")

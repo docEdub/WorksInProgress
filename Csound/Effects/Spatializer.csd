@@ -26,10 +26,35 @@ ${CSOUND_INCLUDE} "watchOrcFile.orc"
 // Main processing instrument. Always on.
 //======================================================================================================================
 
+gSPositionOpcodeComboBoxValues[] fillarray ${CSOUND_CMAKE_POSITION_UDO_NAMES}
+giPositionOpcodeComboBoxInitTime = 0.5
+
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
+
+    if (time_k() < giPositionOpcodeComboBoxInitTime) then
+        SPositionOpcode = chnget:S("savedPositionOpcode")
+        if (changed2(SPositionOpcode) == true && strlenk(SPositionOpcode) > 0) then
+            // Initialize combobox index to match texteditor string.
+            ki = 0
+            while (ki < lenarray(gSPositionOpcodeComboBoxValues)) do
+                if (strcmpk(SPositionOpcode, gSPositionOpcodeComboBoxValues[ki]) == 0) then
+                    chnset(sprintfk("value(%d)", ki + 1), "positionOpcodeComboBoxIndexUi")
+                endif
+                ki += 1
+            od
+        endif
+    else
+        kPositionOpcodeComboBoxIndex = chnget:k("positionOpcodeComboBoxIndex")
+        if (changed2(kPositionOpcodeComboBoxIndex) == true) then
+            // Set texteditor string to match combobox index.
+            log_k_trace("positionOpcodeComboBoxIndex = %d", kPositionOpcodeComboBoxIndex)
+            chnsetks(sprintfk("text(\"%s\")", gSPositionOpcodeComboBoxValues[kPositionOpcodeComboBoxIndex - 1]),
+                "savedPositionOpcodeUi")
+        endif
+    endif
 
     if (gk_mode == 1) then
         kgoto end
