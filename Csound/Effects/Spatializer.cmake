@@ -9,11 +9,11 @@ set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
 get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/../Common/Common.cmake")
-include("${CsoundCMake.Cabbage_DIR}/Source/ui/Settings.cmake")
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/PositionOpcode.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 
-add_tab(reverb_tab "Settings" 64)
+add_tab(settings_tab "Settings" 64)
 add_tab(log_tab "Log" 64)
 process_tabs()
 

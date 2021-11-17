@@ -46,6 +46,7 @@ instr CreateCcIndexesInstrument
     CREATE_CC_INDEX(xScale)
     CREATE_CC_INDEX(yScale)
     CREATE_CC_INDEX(zScale)
+    CREATE_CC_INDEX(savedPositionOpcode)
 endin
 
 event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
