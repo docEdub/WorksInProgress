@@ -13,7 +13,9 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 #else
     #undef ccIndex
     #undef giCcCount
+    #undef gSCcValueDefaults
     #undef giCcValueDefaults
+    #undef gSCcValues
     #undef giCcValues
     #undef gkCcValues
     #undef gSCcInfo
@@ -28,7 +30,9 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 
 #define ccIndex CONCAT(ccIndex_, INSTRUMENT_NAME)
 #define giCcCount CONCAT(giCcCount_, INSTRUMENT_NAME)
+#define gSCcValueDefaults CONCAT(gSCcValueDefaults_, INSTRUMENT_NAME)
 #define giCcValueDefaults CONCAT(giCcValueDefaults_, INSTRUMENT_NAME)
+#define gSCcValues CONCAT(gSCcValues_, INSTRUMENT_NAME)
 #define giCcValues CONCAT(giCcValues_, INSTRUMENT_NAME)
 #define gkCcValues CONCAT(gkCcValues_, INSTRUMENT_NAME)
 #define gkCcSyncTypes CONCAT(gkCcSyncTypes_, INSTRUMENT_NAME)
@@ -37,7 +41,8 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 #define CC_INDEX(channel) CONCAT(CONCAT(giCc_, INSTRUMENT_NAME), CONCAT(_, channel))
 #define CREATE_CC_INDEX(channel) CC_INDEX(channel) init ccIndex(STRINGIZE(channel))
 
-#define CC_VALUE_default(channel) giCcValueDefaults[CC_INDEX(channel)]
+#define CC_VALUE_default_S(channel) gSCcValueDefaults[CC_INDEX(channel)]
+#define CC_VALUE_default_i(channel) giCcValueDefaults[CC_INDEX(channel)]
 #define CC_VALUE_i(channel) giCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
 #define CC_VALUE_k(channel) gkCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
 
@@ -73,7 +78,9 @@ end:
     xout iI
 endop
 
+gSCcValueDefaults[] init giCcCount
 giCcValueDefaults[] init giCcCount
+gSCcValues[][] init ORC_INSTANCE_COUNT, giCcCount
 giCcValues[][] init ORC_INSTANCE_COUNT, giCcCount
 gkCcValues[][] init ORC_INSTANCE_COUNT, giCcCount
 
@@ -91,17 +98,22 @@ instr InitializeCcValuesInstrument
         iJ = 0
         while (iJ < ORC_INSTANCE_COUNT) do
             iValue = -1
-            if (strcmp(SType, "bool") == 0) then
-                if (strcmp(SValue, "false") == 0) then
-                    iValue = 0
-                else
-                    iValue = 1
+            if (strcmp(SType, "string") == 0) then
+                gSCcValueDefaults[iI] = SValue
+                gSCcValues[iJ][iI] = SValue
+            else
+                if (strcmp(SType, "bool") == 0) then
+                    if (strcmp(SValue, "false") == 0) then
+                        iValue = 0
+                    else
+                        iValue = 1
+                    endif
+                elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
+                    iValue = strtod(SValue)
                 endif
-            elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
-                iValue = strtod(SValue)
+                giCcValueDefaults[iI] = iValue
+                giCcValues[iJ][iI] = iValue
             endif
-            giCcValueDefaults[iI] = iValue
-            giCcValues[iJ][iI] = iValue
             iJ += 1
         od
         iI += 1

@@ -29,9 +29,10 @@ _(\)
     "xScale",               "number",     "100",     "synced",   _(\)
     "yScale",               "number",     "100",     "synced",   _(\)
     "zScale",               "number",     "100",     "synced",   _(\)
+    "savedPositionOpcode",  "string",     "",        "synced",   _(\)
     "",                      "",           "",       "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #44#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
 
 #include "instrument_cc.orc"
 
@@ -80,10 +81,14 @@ instr INSTRUMENT_ID
 
     iEventType = p4
     if (iEventType == EVENT_CC) then
-        iCcType = p5
+        iCcIndex = p5
         iCcValue = p6
-        giCcValues[ORC_INSTANCE_INDEX][iCcType] = iCcValue
-        gkCcValues[ORC_INSTANCE_INDEX][iCcType] = iCcValue
+        if (strcmp(gSCcInfo[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+            gSCcValues[ORC_INSTANCE_INDEX][iCcIndex] = strget(iCcValue)
+        else
+            giCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+            gkCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+        endif
         turnoff
     elseif (iEventType == EVENT_EFFECT_ON) then
         aIn init 0
