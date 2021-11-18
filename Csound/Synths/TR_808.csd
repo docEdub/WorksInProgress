@@ -145,7 +145,7 @@ instr 3
 
         k_noteOnSent init false
         if (k_noteOnSent == false) then
-            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f 0.001 Note(%d) Velocity(%d)",
+            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f 0.001 EVENT_NOTE_ON Note(%d) Velocity(%d)",
                 STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime_k(), notnum(), veloc()))
             k_noteOnSent = true
         endif
