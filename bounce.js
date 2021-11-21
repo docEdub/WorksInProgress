@@ -11,7 +11,7 @@ if (os.type() === 'Darwin') {
     const bounceDir = buildDir + '/bounce';
     const jsonDir = bounceDir + '/json';
     const bounceMixdownDir = bounceDir + '/mixdown';
-    spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
+    spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D Build_CsoundErrorChecks=OFF -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
         stdio: 'inherit'
     });
     spawnSync('bash', [ '-c', 'cd ' + playbackDir + ' && make 2>&1' ], {
