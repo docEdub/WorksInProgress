@@ -1253,12 +1253,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         await csound.setOption('--omacro:DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY=' + distanceDelaySynthNoteCacheArrayMacro)
         await csound.setOption('--omacro:IS_GENERATING_JSON=1')
         await csound.setOption('--smacro:IS_GENERATING_JSON=1')
-        if (!csound.fs.existsSync('sandbox')) {
-            csound.fs.mkdirSync('sandbox')
-        }
-        if (!csound.fs.existsSync('sandbox/json')) {
-            csound.fs.mkdirSync('sandbox/json')
-        }
+        // if (!csound.fs.existsSync('sandbox')) {
+        //     csound.fs.mkdirSync('sandbox')
+        // }
+        // if (!csound.fs.existsSync('sandbox/json')) {
+        //     csound.fs.mkdirSync('sandbox/json')
+        // }
         console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
         if (csoundErrorCode != 0) {
