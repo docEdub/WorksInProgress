@@ -2767,40 +2767,40 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     instr GeneratePluginJson
     turnoff
-    SPluginUuid = strget(p4)
-    if (giWriteComma == 1) then
-    ; fprints("DawPlayback.json", ",")
-    else
-    giWriteComma = 1
-    endif
-    ; fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
-    iI = 0
-    iWriteComma = 0
-    while (1 == 1) do
-    SFileName = sprintf("/sandbox/%s.%d.json", SPluginUuid, iI)
-    iJ = 0
-    while (iJ != -1) do
-    ; prints("Reading %s\\n", SFileName)
-    SLine, iJ readfi SFileName
-    if (iJ > 0) then
-    prints("%s:%d = %s\\n", SFileName, iJ, SLine)
-    endif
-    ficlose(SFileName)
-    if (iJ == -1) then
-    else
-    if (iWriteComma == 1) then
-    ; fprints("DawPlayback.json", ",")
-    else
-    iWriteComma = 1
-    endif
-    if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\\n") == 0) then
-    SLine = strsub(SLine, 0, strlen(SLine) - 1)
-    endif
-    ; fprints("DawPlayback.json", SLine)
-    endif
-    od
-    iI += 1
-    od
+    ; SPluginUuid = strget(p4)
+    ; if (giWriteComma == 1) then
+    ; ; fprints("DawPlayback.json", ",")
+    ; else
+    ; giWriteComma = 1
+    ; endif
+    ; ; fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
+    ; iI = 0
+    ; iWriteComma = 0
+    ; while (1 == 1) do
+    ; SFileName = sprintf("/sandbox/%s.%d.json", SPluginUuid, iI)
+    ; iJ = 0
+    ; while (iJ != -1) do
+    ; ; prints("Reading %s\\n", SFileName)
+    ; SLine, iJ readfi SFileName
+    ; if (iJ > 0) then
+    ; prints("%s:%d = %s\\n", SFileName, iJ, SLine)
+    ; endif
+    ; ficlose(SFileName)
+    ; if (iJ == -1) then
+    ; else
+    ; if (iWriteComma == 1) then
+    ; ; fprints("DawPlayback.json", ",")
+    ; else
+    ; iWriteComma = 1
+    ; endif
+    ; if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\\n") == 0) then
+    ; SLine = strsub(SLine, 0, strlen(SLine) - 1)
+    ; endif
+    ; ; fprints("DawPlayback.json", SLine)
+    ; endif
+    ; od
+    ; iI += 1
+    ; od
     endin
     instr GenerateJson
     prints("instr GenerateJson ...\\n")
@@ -2967,16 +2967,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef IS_GENERATING_JSON
     setPluginUuid(0, 0, "6c9f37ab-392f-429b-8217-eac09f295362")
     instr DistanceDelaySynth_Json
-    SJsonFile = sprintf("%s.0.json", "6c9f37ab-392f-429b-8217-eac09f295362")
-    fprints(SJsonFile, "{")
-    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-    fprints(SJsonFile, sprintf(",\\"startDistance\\":%d", giDistanceDelaySynth_StartDistance))
-    fprints(SJsonFile, sprintf(",\\"delayDistance\\":%d", giDistanceDelaySynth_DelayDistance))
-    fprints(SJsonFile, sprintf(",\\"noteNumberToHeightScale\\":%.02f", giDistanceDelaySynth_NoteNumberToHeightScale))
-    fprints(SJsonFile, sprintf(",\\"delayTime\\":%.02f", giDistanceDelaySynth_DelayTime))
-    fprints(SJsonFile, sprintf(",\\"duration\\":%.01f", giDistanceDelaySynth_Duration))
-    fprints(SJsonFile, sprintf(",\\"delayCount\\":%d", giDistanceDelaySynth_DelayCount))
-    fprints(SJsonFile, "}")
+    ; SJsonFile = sprintf("%s.0.json", "6c9f37ab-392f-429b-8217-eac09f295362")
+    ; fprints(SJsonFile, "{")
+    ; fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    ; fprints(SJsonFile, sprintf(",\\"startDistance\\":%d", giDistanceDelaySynth_StartDistance))
+    ; fprints(SJsonFile, sprintf(",\\"delayDistance\\":%d", giDistanceDelaySynth_DelayDistance))
+    ; fprints(SJsonFile, sprintf(",\\"noteNumberToHeightScale\\":%.02f", giDistanceDelaySynth_NoteNumberToHeightScale))
+    ; fprints(SJsonFile, sprintf(",\\"delayTime\\":%.02f", giDistanceDelaySynth_DelayTime))
+    ; fprints(SJsonFile, sprintf(",\\"duration\\":%.01f", giDistanceDelaySynth_Duration))
+    ; fprints(SJsonFile, sprintf(",\\"delayCount\\":%d", giDistanceDelaySynth_DelayCount))
+    ; fprints(SJsonFile, "}")
+    SJson init ""
+    SJson = strcat(SJson, "{")
+    SJson = strcat(SJson, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    SJson = strcat(SJson, sprintf(",\\"startDistance\\":%d", giDistanceDelaySynth_StartDistance))
+    SJson = strcat(SJson, sprintf(",\\"delayDistance\\":%d", giDistanceDelaySynth_DelayDistance))
+    SJson = strcat(SJson, sprintf(",\\"noteNumberToHeightScale\\":%.02f", giDistanceDelaySynth_NoteNumberToHeightScale))
+    SJson = strcat(SJson, sprintf(",\\"delayTime\\":%.02f", giDistanceDelaySynth_DelayTime))
+    SJson = strcat(SJson, sprintf(",\\"duration\\":%.01f", giDistanceDelaySynth_Duration))
+    SJson = strcat(SJson, sprintf(",\\"delayCount\\":%d", giDistanceDelaySynth_DelayCount))
+    SJson = strcat(SJson, "}\\n")
+    prints(SJson)
     turnoff
     endin
     #end
@@ -3079,10 +3090,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     scoreline_i("i \\"DistanceDelaySynth_Json\\" 0 0")
     endif
     giDistanceDelaySynth_NoteIndex[0] = giDistanceDelaySynth_NoteIndex[0] + 1
-    SJsonFile = sprintf("%s.%d.json", "6c9f37ab-392f-429b-8217-eac09f295362", giDistanceDelaySynth_NoteIndex[0])
-    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%d,\\"velocity\\":%d}}",
+    ; SJsonFile = sprintf("%s.%d.json", "6c9f37ab-392f-429b-8217-eac09f295362", giDistanceDelaySynth_NoteIndex[0])
+    ; fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%d,\\"velocity\\":%d}}",
+    ; times(), iNoteNumber, iVelocity)
+    ; ficlose(SJsonFile)
+    prints("{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%d,\\"velocity\\":%d}}",
     times(), iNoteNumber, iVelocity)
-    ficlose(SJsonFile)
     endif
     #end
     endif
@@ -3268,16 +3281,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef IS_GENERATING_JSON
     setPluginUuid(1, 0, "b4f7a35c-6198-422f-be6e-fa126f31b007")
     instr PointSynth_Json
-    SJsonFile = sprintf("%s.0.json", "b4f7a35c-6198-422f-be6e-fa126f31b007")
-    fprints(SJsonFile, "{")
-    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-    fprints(SJsonFile, sprintf(",\\"fadeInTime\\":%.02f", giFadeInTime))
-    fprints(SJsonFile, sprintf(",\\"fadeOutTime\\":%.02f", giFadeOutTime))
-    fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPointSynth_DistanceMin)
-    fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPointSynth_DistanceMax)
-    fprints(SJsonFile, "}")
-    ficlose(SJsonFile)
-    turnoff
+    ; SJsonFile = sprintf("%s.0.json", "b4f7a35c-6198-422f-be6e-fa126f31b007")
+    ; fprints(SJsonFile, "{")
+    ; fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    ; fprints(SJsonFile, sprintf(",\\"fadeInTime\\":%.02f", giFadeInTime))
+    ; fprints(SJsonFile, sprintf(",\\"fadeOutTime\\":%.02f", giFadeOutTime))
+    ; fprints(SJsonFile, ",\\"soundDistanceMin\\":%d", giPointSynth_DistanceMin)
+    ; fprints(SJsonFile, ",\\"soundDistanceMax\\":%d", giPointSynth_DistanceMax)
+    ; fprints(SJsonFile, "}")
+    ; ficlose(SJsonFile)
+    SJson init ""
+    SJson = strcat(SJson, "{")
+    SJson = strcat(SJson, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    SJson = strcat(SJson, sprintf(",\\"fadeInTime\\":%.02f", giFadeInTime))
+    SJson = strcat(SJson, sprintf(",\\"fadeOutTime\\":%.02f", giFadeOutTime))
+    SJson = strcat(SJson, sprintf(",\\"soundDistanceMin\\":%d", giPointSynth_DistanceMin))
+    SJson = strcat(SJson, sprintf(",\\"soundDistanceMax\\":%d", giPointSynth_DistanceMax))
+    SJson = strcat(SJson, "}\\n")
+    prints(SJson)
+turnoff
     endin
     #end
     instr 5
@@ -3330,10 +3352,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     scoreline_i("i \\"PointSynth_Json\\" 0 0")
     endif
     giPointSynth_NoteIndex[0] = giPointSynth_NoteIndex[0] + 1
-    SJsonFile = sprintf("%s.%d.json", "b4f7a35c-6198-422f-be6e-fa126f31b007", giPointSynth_NoteIndex[0])
-    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"xyz\\":[%.3f,%.3f,%.3f]}}", times(),
+    ; SJsonFile = sprintf("%s.%d.json", "b4f7a35c-6198-422f-be6e-fa126f31b007", giPointSynth_NoteIndex[0])
+    ; fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"xyz\\":[%.3f,%.3f,%.3f]}}", times(),
+    ; iNoteNumber, iX, iY, iZ)
+    ; ficlose(SJsonFile)
+    prints("{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"xyz\\":[%.3f,%.3f,%.3f]}}", times(),
     iNoteNumber, iX, iY, iZ)
-    ficlose(SJsonFile)
     #end
     endif
     end:
@@ -3518,18 +3542,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef IS_GENERATING_JSON
     setPluginUuid(2, 0, "9037b759-36e4-4600-b2cb-03383ebd65c1")
     instr GroundBubbleSynth_Json
-    SJsonFile = sprintf("%s.0.json", "9037b759-36e4-4600-b2cb-03383ebd65c1")
-    fprints(SJsonFile, "{")
-    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-    fprints(SJsonFile, sprintf(",\\"duration\\":%d", giGroundBubbleSynth_Duration))
-    fprints(SJsonFile, sprintf(",\\"gridColumnCount\\":%d", giGroundBubbleSynth_GridColumnCount))
-    fprints(SJsonFile, sprintf(",\\"gridRowCount\\":%d", giGroundBubbleSynth_GridRowCount))
-    fprints(SJsonFile, sprintf(",\\"gridCellSize\\":%d", giGroundBubbleSynth_GridCellSize))
-    fprints(SJsonFile, sprintf(",\\"fullVolumeY\\":%d", giGroundBubbleSynth_FullVolumeY))
-    fprints(SJsonFile, sprintf(",\\"speedY\\":%d", giGroundBubbleSynth_SpeedY))
-    fprints(SJsonFile, sprintf(",\\"maxDistance\\":%d", giGroundBubbleSynth_MaxAudibleDistance))
-    fprints(SJsonFile, sprintf(",\\"maxHeight\\":%d", giGroundBubbleSynth_MaxAudibleHeight))
-    fprints(SJsonFile, "}")
+    ; SJsonFile = sprintf("%s.0.json", "9037b759-36e4-4600-b2cb-03383ebd65c1")
+    ; fprints(SJsonFile, "{")
+    ; fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    ; fprints(SJsonFile, sprintf(",\\"duration\\":%d", giGroundBubbleSynth_Duration))
+    ; fprints(SJsonFile, sprintf(",\\"gridColumnCount\\":%d", giGroundBubbleSynth_GridColumnCount))
+    ; fprints(SJsonFile, sprintf(",\\"gridRowCount\\":%d", giGroundBubbleSynth_GridRowCount))
+    ; fprints(SJsonFile, sprintf(",\\"gridCellSize\\":%d", giGroundBubbleSynth_GridCellSize))
+    ; fprints(SJsonFile, sprintf(",\\"fullVolumeY\\":%d", giGroundBubbleSynth_FullVolumeY))
+    ; fprints(SJsonFile, sprintf(",\\"speedY\\":%d", giGroundBubbleSynth_SpeedY))
+    ; fprints(SJsonFile, sprintf(",\\"maxDistance\\":%d", giGroundBubbleSynth_MaxAudibleDistance))
+    ; fprints(SJsonFile, sprintf(",\\"maxHeight\\":%d", giGroundBubbleSynth_MaxAudibleHeight))
+    ; fprints(SJsonFile, "}")
+    SJson init ""
+    SJson = strcat(SJson, "{")
+    SJson = strcat(SJson, sprintf("\\"instanceName\\":\\"%s\\"", ""))
+    SJson = strcat(SJson, sprintf(",\\"duration\\":%d", giGroundBubbleSynth_Duration))
+    SJson = strcat(SJson, sprintf(",\\"gridColumnCount\\":%d", giGroundBubbleSynth_GridColumnCount))
+    SJson = strcat(SJson, sprintf(",\\"gridRowCount\\":%d", giGroundBubbleSynth_GridRowCount))
+    SJson = strcat(SJson, sprintf(",\\"gridCellSize\\":%d", giGroundBubbleSynth_GridCellSize))
+    SJson = strcat(SJson, sprintf(",\\"fullVolumeY\\":%d", giGroundBubbleSynth_FullVolumeY))
+    SJson = strcat(SJson, sprintf(",\\"speedY\\":%d", giGroundBubbleSynth_SpeedY))
+    SJson = strcat(SJson, sprintf(",\\"maxDistance\\":%d", giGroundBubbleSynth_MaxAudibleDistance))
+    SJson = strcat(SJson, sprintf(",\\"maxHeight\\":%d", giGroundBubbleSynth_MaxAudibleHeight))
+    SJson = strcat(SJson, "}\\n")
+    prints(SJson)
     turnoff
     endin
     #end
@@ -3603,10 +3640,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     scoreline_i("i \\"GroundBubbleSynth_Json\\" 0 0")
     endif
     giGroundBubbleSynth_NoteIndex[0] = giGroundBubbleSynth_NoteIndex[0] + 1
-    SJsonFile = sprintf("%s.%d.json", "9037b759-36e4-4600-b2cb-03383ebd65c1", giGroundBubbleSynth_NoteIndex[0])
-    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"column\\":%d,\\"row\\":%d}}",
+    ; SJsonFile = sprintf("%s.%d.json", "9037b759-36e4-4600-b2cb-03383ebd65c1", giGroundBubbleSynth_NoteIndex[0])
+    ; fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"column\\":%d,\\"row\\":%d}}",
+    ; times(), iGridColumn, iGridRow)
+    ; ficlose(SJsonFile)
+    prints("{\\"noteOn\\":{\\"time\\":%.3f,\\"column\\":%d,\\"row\\":%d}}",
     times(), iGridColumn, iGridRow)
-    ficlose(SJsonFile)
     #end
     endif
     end:

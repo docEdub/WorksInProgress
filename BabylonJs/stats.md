@@ -9,3 +9,4 @@ csound.perform() seconds | change
  3.821 | Disabled GroundBubbleSynth audio.
  0.761 | Disabled PointSynth audio.
  0.583 | sr = 30.
+ 0.719 | Print JSON data to console without using files
