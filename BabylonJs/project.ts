@@ -1199,7 +1199,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const csoundConsoleLog = function() {
             if (arguments[0] === 'csd:started') {
                 startTime = document.audioContext.currentTime - (4 - 3 * document.latency);
-                isCsoundStarted = true
+                // isCsoundStarted = true
             }
             else if (arguments[0] === 'csd:ended') {
                 restartCsound();
@@ -1261,13 +1261,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('Latency =', document.latency);
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
-        csound.start()
+        await csound.start()
+        await csound.pause()
+        await csound.perform()
     }
 
 const csdText = `
 <CsoundSynthesizer>
 <CsOptions>
---messagelevel=134
 --midi-device=0
 --nodisplays
 --nosound
@@ -1280,8 +1281,8 @@ giPresetUuidPreallocationCount[] = fillarray( 9, /* instr 4 -- DistanceDelaySynt
 #ifndef INTERNAL_CHANNEL_COUNT
 #define INTERNAL_CHANNEL_COUNT #6#
 #end
-sr = 48000
-kr = 200
+sr = 30
+kr = 30
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 #define INSTANCE_NAME #"TestSynth playback"#
