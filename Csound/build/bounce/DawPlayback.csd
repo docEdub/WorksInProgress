@@ -7,8 +7,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-; --messagelevel=0
---messagelevel=134
+--messagelevel=0
+; --messagelevel=134
 --midi-device=0
 --nodisplays
 -+rtmidi=null
@@ -36,8 +36,14 @@ giPresetUuidPreallocationCount[] = fillarray( 9, /* instr 4 -- DistanceDelaySynt
  #define INTERNAL_CHANNEL_COUNT #6#
  #end
 
-sr = 48000
-kr = 200
+ #ifndef IS_ANIMATIONS_ONLY
+    sr = 48000
+    kr = 200
+ #else
+    sr = 30
+    kr = 30
+ #end
+
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 
@@ -2226,9 +2232,11 @@ instr 2
     a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     ga_masterSignals = a_masterSignals
 
-    event_i("i", 3, 0, -1) // clear signals
-    event_i("i", 7, 1, -1) // mix instruments into auxes
-    event_i("i", 11, 1, -1) // mix signals
+    #ifndef IS_ANIMATIONS_ONLY
+        event_i("i", 3, 0, -1) // clear signals
+        event_i("i", 7, 1, -1) // mix instruments into auxes
+        event_i("i", 11, 1, -1) // mix signals
+    #end
 
     turnoff
 endin
@@ -2619,89 +2627,99 @@ instr 4
         iVelocity = p6
         iDelayIndex = p7
 
-        iSampleCacheI = -1
-        iI = 0
-        while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
-            if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
-                iSampleCacheI = iI
-                iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers) // kick out of while loop
+        #ifndef IS_ANIMATIONS_ONLY
+            iSampleCacheI = -1
+            iI = 0
+            while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+                if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
+                    iSampleCacheI = iI
+                    iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers) // kick out of while loop
+                endif
+                iI += 1
+            od
+            if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
+
+                ; turnoff
             endif
-            iI += 1
-        od
-        if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
-
-            ; turnoff
-        endif
-        ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
+            ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
 
 
-            iIsPlayback = 1
+                iIsPlayback = 1
 
 
 
 
-        a1 init 0
-        asig init 0
+            a1 init 0
+            asig init 0
 
-        if(iIsPlayback == 0 || iEventType == 5) then
-            iAmp init 0
-            if (iIsPlayback == 0) then
-                iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
-            else
-                iAmp = 1
+            if(iIsPlayback == 0 || iEventType == 5) then
+                iAmp init 0
+                if (iIsPlayback == 0) then
+                    iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
+                else
+                    iAmp = 1
+                endif
+                iCps = cpsmidinn(iNoteNumber + 3)
+                iCpsRandomized = iCps * random:i(0.999, 1.001)
+
+                // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
+                // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
+
+                ;; 6-OP FM
+                asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
+                asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))
+                asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))
+
+                asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
+
+                ;; Filter
+                ioct = octcps(iCpsRandomized)
+                asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)
+                asig = K35_hpf(asig, iCpsRandomized, 0.5)
+
+                ;; Resonant body
+                ain = asig * ampdbfs(-60)
+
+                a1 = mode(ain, 500, 20)
+                a1 += mode(ain, 900, 10)
+                a1 += mode(ain, 1700, 6)
+
+                ;; Attack envelope and declick
+                asig *= linen:a(1, 0.025, p3, 0.001)
+
+                asig += a1
+
+                if (iEventType == 5) then
+                    ; prints("Copying asig into note's sample cache table.\n")
+                    // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
+                    kPass init 0
+                    kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
+                    kPass += 1
+                    goto end
+                endif
             endif
-            iCps = cpsmidinn(iNoteNumber + 3)
-            iCpsRandomized = iCps * random:i(0.999, 1.001)
 
-            // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
-            // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
-
-            ;; 6-OP FM
-            asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
-            asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))
-            asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))
-
-            asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
-
-            ;; Filter
-            ioct = octcps(iCpsRandomized)
-            asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)
-            asig = K35_hpf(asig, iCpsRandomized, 0.5)
-
-            ;; Resonant body
-            ain = asig * ampdbfs(-60)
-
-            a1 = mode(ain, 500, 20)
-            a1 += mode(ain, 900, 10)
-            a1 += mode(ain, 1700, 6)
-
-            ;; Attack envelope and declick
-            asig *= linen:a(1, 0.025, p3, 0.001)
-
-            asig += a1
-
-            if (iEventType == 5) then
-                ; prints("Copying asig into note's sample cache table.\n")
-                // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
-                kPass init 0
-                kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
-                kPass += 1
-                goto end
+            if (iIsPlayback == 1 && iSampleCacheI >= 0) then
+                // Read `asig` from note's sample cache.
+                ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
+                asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
             endif
-        endif
-
-        if (iIsPlayback == 1 && iSampleCacheI >= 0) then
-            // Read `asig` from note's sample cache.
-            ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
-            asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
-        endif
 
 
-            a1 = gaInstrumentSignals[0][0]
-            a2 = gaInstrumentSignals[0][1]
-            a3 = gaInstrumentSignals[0][2]
-            a4 = gaInstrumentSignals[0][3]
-            a5 = gaInstrumentSignals[0][4] // Reverb
+                a1 = gaInstrumentSignals[0][0]
+                a2 = gaInstrumentSignals[0][1]
+                a3 = gaInstrumentSignals[0][2]
+                a4 = gaInstrumentSignals[0][3]
+                a5 = gaInstrumentSignals[0][4] // Reverb
+
+
+
+
+
+
+
+        #end
+
         kY init (iNoteNumber - giDistanceDelaySynth_LowestNoteNumber) * giDistanceDelaySynth_NoteNumberToHeightScale
         iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
         kRotationIndex = 0
@@ -2710,47 +2728,52 @@ instr 4
             kX = sin(kTheta) * iRadius
             kZ = cos(kTheta) * iRadius
 
-            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
-            kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
+            #ifndef IS_ANIMATIONS_ONLY
+                kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+                kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
+                kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
 
-                kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
+                    kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
 
-            aOutDistanced = asig * kDistanceAmp
+                aOutDistanced = asig * kDistanceAmp
 
-            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            iPlaybackReverbAdjustment init 1
+                AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+                iPlaybackReverbAdjustment init 1
 
-                iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
+                    iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
 
 
-            ; aOutDistanced = compress2(
-            ; aOutDistanced,
-            ; aOutDistanced,
-            ; -90, // threshold
-            ; -50, // low knee
-            ; -25, // high knee
-            ; 1.02, // ratio
-            ; .1, // attack time in seconds
-            ; .5, // release time in seconds
-            ; .02) // look-ahead time in seconds
+                ; aOutDistanced = compress2(
+                ; aOutDistanced,
+                ; aOutDistanced,
+                ; -90, // threshold
+                ; -50, // low knee
+                ; -25, // high knee
+                ; 1.02, // ratio
+                ; .1, // attack time in seconds
+                ; .5, // release time in seconds
+                ; .02) // look-ahead time in seconds
 
-            a1 += gkAmbisonicChannelGains[0] * aOutDistanced
-            a2 += gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 += gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-            a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+                a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+                a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+                a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+            #end
 
             kRotationIndex += 1
         od
 
+        #ifndef IS_ANIMATIONS_ONLY
 
-            gaInstrumentSignals[0][0] = a1
-            gaInstrumentSignals[0][1] = a2
-            gaInstrumentSignals[0][2] = a3
-            gaInstrumentSignals[0][3] = a4
-            gaInstrumentSignals[0][4] = a5
-            gaInstrumentSignals[0][5] = a5
+                gaInstrumentSignals[0][0] = a1
+                gaInstrumentSignals[0][1] = a2
+                gaInstrumentSignals[0][2] = a3
+                gaInstrumentSignals[0][3] = a4
+                gaInstrumentSignals[0][4] = a5
+                gaInstrumentSignals[0][5] = a5
+        #end
+
         #ifdef IS_GENERATING_JSON
             if (iDelayIndex == 0) then
                 if (giDistanceDelaySynth_NoteIndex[0] == 0) then
@@ -3047,15 +3070,6 @@ instr 5
                 igoto end
                 turnoff
             endif
-            iCps = cpsmidinn(iNoteNumber)
-            iAmp = 0.05
-
-            kCps = linseg(iCps, giTotalTime, iCps + 100)
-
-            aOut = oscil(iAmp, kCps)
-            aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
-            aOut *= aEnvelope
-
             iX init giPointSynthNextXYZ[0][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[0][giPointSynthNextXYZ_i][$Z]
 
@@ -3064,40 +3078,52 @@ instr 5
             // Height range 0 to 100.
             iY init 50 + ((iNoteNumber - 80) / 25) * 300
 
-            kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-            ; if (changed(kDistance) == 1) then
-            ; printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
-            ; endif
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
+            #ifndef IS_ANIMATIONS_ONLY
+                iCps = cpsmidinn(iNoteNumber)
+                iAmp = 0.05
 
-                kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
+                kCps = linseg(iCps, giTotalTime, iCps + 100)
 
-            aOutDistanced = aOut * kDistanceAmp
+                aOut = oscil(iAmp, kCps)
+                aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
+                aOut *= aEnvelope
 
-            giPointSynthNextXYZ_i += 1
-            if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
-                giPointSynthNextXYZ_i = 0
-            endif
-            AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+                kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+                ; if (changed(kDistance) == 1) then
+                ; printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
+                ; endif
+                kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
 
-            iPlaybackReverbAdjustment init 1
+                    kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
 
-                iPlaybackReverbAdjustment = giPointSynth_PlaybackReverbAdjustment
+                aOutDistanced = aOut * kDistanceAmp
+
+                giPointSynthNextXYZ_i += 1
+                if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
+                    giPointSynthNextXYZ_i = 0
+                endif
+                AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+
+                iPlaybackReverbAdjustment init 1
+
+                    iPlaybackReverbAdjustment = giPointSynth_PlaybackReverbAdjustment
 
 
-            a1 = gkAmbisonicChannelGains[0] * aOutDistanced
-            a2 = gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 = gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-            aReverbOut = aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+                a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+                a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+                aReverbOut = aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
 
 
-                gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + a1
-                gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + a2
-                gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + a3
-                gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + a4
-                gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aReverbOut
-                gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aReverbOut
+                    gaInstrumentSignals[1][0] = gaInstrumentSignals[1][0] + a1
+                    gaInstrumentSignals[1][1] = gaInstrumentSignals[1][1] + a2
+                    gaInstrumentSignals[1][2] = gaInstrumentSignals[1][2] + a3
+                    gaInstrumentSignals[1][3] = gaInstrumentSignals[1][3] + a4
+                    gaInstrumentSignals[1][4] = gaInstrumentSignals[1][4] + aReverbOut
+                    gaInstrumentSignals[1][5] = gaInstrumentSignals[1][5] + aReverbOut
+            #end
+
             #ifdef IS_GENERATING_JSON
                 if (giPointSynth_NoteIndex[0] == 0) then
                     scoreline_i("i \"PointSynth_Json\" 0 0")
@@ -3413,73 +3439,77 @@ instr 6
         kX init iGridColumn * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterX
         kZ init iGridRow * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterZ
         ; prints("grid[%d][%d] = xyz(%.3f, %.3f, %.3f)\n", iGridColumn, iGridRow, i(kX), i(kY), i(kZ))
-        kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-        kIsReverbOnly = 0
-        if (kDistance > giGroundBubbleSynth_MaxReverbOnlyDistance) then
-            kgoto end
-        elseif (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
-            kIsReverbOnly = 1
-        fi
 
-        kCps = iCps + kY * 5
-        kAmp = iAmp
-        if (kY < giGroundBubbleSynth_FullVolumeY) then
-            kAmp *= kY / giGroundBubbleSynth_FullVolumeY
-        else
-            kAmp *= (giGroundBubbleSynth_MaxAudibleHeight - kY) / giGroundBubbleSynth_MaxAudibleHeight
-        fi
-
-        ; if (kIsReverbOnly == 0) then
-            aOut = tone(
-                oscil(kAmp + jspline(kAmp, 0.08, 0.05), kCps * 0.918) + oscil(kAmp + jspline(kAmp, 0.07, 0.49), kCps * 2.234) + oscil(kAmp + jspline(kAmp, 0.09, 0.50), kCps * 3.83) + oscil(kAmp + jspline(kAmp, 0.10, 0.45), kCps * 4.11) + oscil(kAmp + jspline(kAmp, 0.09, 0.51), kCps * 5.25) + oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 6.093) + oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 7.77) + oscil(kAmp + jspline(kAmp, 0.10, 0.40), kCps * 8.328) + oscil(kAmp + jspline(kAmp, 0.07, 0.55), kCps * 9.129) + oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
-                iCutoffFrequency)
-        ; else
-        ; aOut = tone(
-        ; oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
-        ; iCutoffFrequency)
-        ; fi
-
-
-            a1 = gaInstrumentSignals[2][0]
-            if (kIsReverbOnly == 0) then
-                a2 = gaInstrumentSignals[2][1]
-                a3 = gaInstrumentSignals[2][2]
-                a4 = gaInstrumentSignals[2][3]
+        #ifndef IS_ANIMATIONS_ONLY
+            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+            kIsReverbOnly = 0
+            if (kDistance > giGroundBubbleSynth_MaxReverbOnlyDistance) then
+                kgoto end
+            elseif (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
+                kIsReverbOnly = 1
             fi
-            a5 = gaInstrumentSignals[2][4] // Reverb
-        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
-        ; if (kIsReverbOnly == 0) then
-        ; kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
-        ; fi
-        kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
 
-            kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
-
-        aOutDistanced = aOut * kDistanceAmp
-
-        AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-        iPlaybackReverbAdjustment init 1
-
-            iPlaybackReverbAdjustment = giGroundBubbleSynth_PlaybackReverbAdjustment
-
-
-        a1 += gkAmbisonicChannelGains[0] * aOutDistanced
-        if (kIsReverbOnly == 0) then
-            a2 += gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 += gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-        fi
-        a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
-
-
-            gaInstrumentSignals[2][0] = a1
-            if (kIsReverbOnly == 0) then
-                gaInstrumentSignals[2][1] = a2
-                gaInstrumentSignals[2][2] = a3
-                gaInstrumentSignals[2][3] = a4
+            kCps = iCps + kY * 5
+            kAmp = iAmp
+            if (kY < giGroundBubbleSynth_FullVolumeY) then
+                kAmp *= kY / giGroundBubbleSynth_FullVolumeY
+            else
+                kAmp *= (giGroundBubbleSynth_MaxAudibleHeight - kY) / giGroundBubbleSynth_MaxAudibleHeight
             fi
-            gaInstrumentSignals[2][4] = a5
-            gaInstrumentSignals[2][5] = a5
+
+            ; if (kIsReverbOnly == 0) then
+                aOut = tone(
+                    oscil(kAmp + jspline(kAmp, 0.08, 0.05), kCps * 0.918) + oscil(kAmp + jspline(kAmp, 0.07, 0.49), kCps * 2.234) + oscil(kAmp + jspline(kAmp, 0.09, 0.50), kCps * 3.83) + oscil(kAmp + jspline(kAmp, 0.10, 0.45), kCps * 4.11) + oscil(kAmp + jspline(kAmp, 0.09, 0.51), kCps * 5.25) + oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 6.093) + oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 7.77) + oscil(kAmp + jspline(kAmp, 0.10, 0.40), kCps * 8.328) + oscil(kAmp + jspline(kAmp, 0.07, 0.55), kCps * 9.129) + oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
+                    iCutoffFrequency)
+            ; else
+            ; aOut = tone(
+            ; oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
+            ; iCutoffFrequency)
+            ; fi
+
+
+                a1 = gaInstrumentSignals[2][0]
+                if (kIsReverbOnly == 0) then
+                    a2 = gaInstrumentSignals[2][1]
+                    a3 = gaInstrumentSignals[2][2]
+                    a4 = gaInstrumentSignals[2][3]
+                fi
+                a5 = gaInstrumentSignals[2][4] // Reverb
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
+            ; if (kIsReverbOnly == 0) then
+            ; kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
+            ; fi
+            kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
+
+                kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
+
+            aOutDistanced = aOut * kDistanceAmp
+
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+            iPlaybackReverbAdjustment init 1
+
+                iPlaybackReverbAdjustment = giGroundBubbleSynth_PlaybackReverbAdjustment
+
+
+            a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+            if (kIsReverbOnly == 0) then
+                a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+            fi
+            a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
+
+
+                gaInstrumentSignals[2][0] = a1
+                if (kIsReverbOnly == 0) then
+                    gaInstrumentSignals[2][1] = a2
+                    gaInstrumentSignals[2][2] = a3
+                    gaInstrumentSignals[2][3] = a4
+                fi
+                gaInstrumentSignals[2][4] = a5
+                gaInstrumentSignals[2][5] = a5
+        #end
+
         #ifdef IS_GENERATING_JSON
             if (giGroundBubbleSynth_NoteIndex[0] == 0) then
                 scoreline_i("i \"GroundBubbleSynth_Json\" 0 0")
@@ -3648,6 +3678,9 @@ event_i("i", "Reverb_CreateCcIndexes", 0, -1)
 
 
 instr 9
+    #ifdef IS_ANIMATIONS_ONLY
+        turnoff
+    #end
     iOrcInstanceIndex = 0
 
     // Don't modify the signal in DAW service modes 2, 3, and 4. It will mess up the track index and CC score messages.
@@ -3744,118 +3777,120 @@ endin
 //----------------------------------------------------------------------------------------------------------------------
 
 
-// Aux mixer instrument.
-// All included instruments should have instrument numbers lower than this instrument.
-// All aux instruments should have instrument numbers higher than this instrument.
-//
-instr 7
-    // Mix instruments into auxes.
-    kAux = 0
-    while (kAux < gi_auxCount) do
-        kInstrument = 0
-        while (kInstrument < gi_instrumentCount) do
-            kChannel = giAuxChannelIndexRanges[kAux][kInstrument][0]
-            kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][1]
-            while (kChannel <= kMaxChannel) do
-                ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-                    ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+ #ifndef IS_ANIMATIONS_ONLY
+    // Aux mixer instrument.
+    // All included instruments should have instrument numbers lower than this instrument.
+    // All aux instruments should have instrument numbers higher than this instrument.
+    //
+    instr 7
+        // Mix instruments into auxes.
+        kAux = 0
+        while (kAux < gi_auxCount) do
+            kInstrument = 0
+            while (kInstrument < gi_instrumentCount) do
+                kChannel = giAuxChannelIndexRanges[kAux][kInstrument][0]
+                kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][1]
+                while (kChannel <= kMaxChannel) do
+                    ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
+                        ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+                    kChannel += 1
+                od
+                kInstrument += 1
+            od
+            kAux += 1
+        od
+    endin
+
+
+    // Controls track volumes sent to Aux tracks.
+    instr 8
+        k_aux = p4 - gi_auxIndexOffset
+        k_track = p5 - gi_instrumentIndexOffset
+        k_channel = p6
+        k_volume = p7
+        ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
+        turnoff
+    endin
+
+
+    // Controls track volumes sent to Master.
+    instr 10
+        k_track = p4 - gi_instrumentIndexOffset
+        k_channel = p5
+        k_volume = p6
+        ga_masterVolumes[k_track][k_channel] = k_volume
+        turnoff
+    endin
+
+
+    // Mixer instrument. All included instruments should have instrument numbers lower than this instrument.
+    //
+    instr 11
+        kChannel = 0
+        while (kChannel < $INTERNAL_CHANNEL_COUNT) do
+            ga_masterSignals[kChannel] = 0
+            kChannel += 1
+        od
+
+        // Mix instrument tracks into master.
+        kTrack = 0
+        while (kTrack < gi_instrumentCount) do
+            kChannel = giMasterChannelIndexRanges[kTrack][0]
+            kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
+            while (kChannel <= kChannelHigh) do
+                ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
+                    ga_masterVolumes[kTrack][kChannel]
                 kChannel += 1
             od
-            kInstrument += 1
+            kTrack += 1
         od
-        kAux += 1
-    od
-endin
 
-
-// Controls track volumes sent to Aux tracks.
-instr 8
-    k_aux = p4 - gi_auxIndexOffset
-    k_track = p5 - gi_instrumentIndexOffset
-    k_channel = p6
-    k_volume = p7
-    ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
-    turnoff
-endin
-
-
-// Controls track volumes sent to Master.
-instr 10
-    k_track = p4 - gi_instrumentIndexOffset
-    k_channel = p5
-    k_volume = p6
-    ga_masterVolumes[k_track][k_channel] = k_volume
-    turnoff
-endin
-
-
-// Mixer instrument. All included instruments should have instrument numbers lower than this instrument.
-//
-instr 11
-    kChannel = 0
-    while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-        ga_masterSignals[kChannel] = 0
-        kChannel += 1
-    od
-
-    // Mix instrument tracks into master.
-    kTrack = 0
-    while (kTrack < gi_instrumentCount) do
-        kChannel = giMasterChannelIndexRanges[kTrack][0]
-        kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
-        while (kChannel <= kChannelHigh) do
-            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
-                ga_masterVolumes[kTrack][kChannel]
-            kChannel += 1
+        // Mix aux tracks into master.
+        // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
+        kAux = 0
+        while (kAux < gi_auxCount) do
+            kChannel = giMasterChannelIndexRanges[kTrack][0]
+            kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
+            while (kChannel <= kChannelHigh) do
+                ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
+                    ga_masterVolumes[kTrack][kChannel]
+                kChannel += 1
+            od
+            kTrack += 1
+            kAux += 1
         od
-        kTrack += 1
-    od
 
-    // Mix aux tracks into master.
-    // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
-    kAux = 0
-    while (kAux < gi_auxCount) do
-        kChannel = giMasterChannelIndexRanges[kTrack][0]
-        kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
-        while (kChannel <= kChannelHigh) do
-            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
-                ga_masterVolumes[kTrack][kChannel]
-            kChannel += 1
-        od
-        kTrack += 1
-        kAux += 1
-    od
+        // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
+        aw = ga_masterSignals[0]
+        ay = ga_masterSignals[1]
+        az = ga_masterSignals[2]
+        ax = ga_masterSignals[3]
+        km0 = gk_AF_3D_ListenerRotationMatrix[0]
+        km1 = gk_AF_3D_ListenerRotationMatrix[1]
+        km2 = gk_AF_3D_ListenerRotationMatrix[2]
+        km3 = gk_AF_3D_ListenerRotationMatrix[3]
+        km4 = gk_AF_3D_ListenerRotationMatrix[4]
+        km5 = gk_AF_3D_ListenerRotationMatrix[5]
+        km6 = gk_AF_3D_ListenerRotationMatrix[6]
+        km7 = gk_AF_3D_ListenerRotationMatrix[7]
+        km8 = gk_AF_3D_ListenerRotationMatrix[8]
+        ayr = -(ay * km0 + az * km3 + ax * km6)
+        azr = ay * km1 + az * km4 + ax * km7
+        axr = -(ay * km2 + az * km5 + ax * km8)
+        aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
+        ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
+        az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
+        ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
+        aL = aw - ay + az + ax
+        aR = aw + ay + az + ax
 
-    // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
-    aw = ga_masterSignals[0]
-    ay = ga_masterSignals[1]
-    az = ga_masterSignals[2]
-    ax = ga_masterSignals[3]
-    km0 = gk_AF_3D_ListenerRotationMatrix[0]
-    km1 = gk_AF_3D_ListenerRotationMatrix[1]
-    km2 = gk_AF_3D_ListenerRotationMatrix[2]
-    km3 = gk_AF_3D_ListenerRotationMatrix[3]
-    km4 = gk_AF_3D_ListenerRotationMatrix[4]
-    km5 = gk_AF_3D_ListenerRotationMatrix[5]
-    km6 = gk_AF_3D_ListenerRotationMatrix[6]
-    km7 = gk_AF_3D_ListenerRotationMatrix[7]
-    km8 = gk_AF_3D_ListenerRotationMatrix[8]
-    ayr = -(ay * km0 + az * km3 + ax * km6)
-    azr = ay * km1 + az * km4 + ax * km7
-    axr = -(ay * km2 + az * km5 + ax * km8)
-    aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
-    ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
-    az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
-    ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
-    aL = aw - ay + az + ax
-    aR = aw + ay + az + ax
+        // Add reverb.
+        aL += ga_masterSignals[4]
+        aR += ga_masterSignals[5]
 
-    // Add reverb.
-    aL += ga_masterSignals[4]
-    aR += ga_masterSignals[5]
-
-    outs(aL, aR)
-endin
+        outs(aL, aR)
+    endin
+ #end
 
 
 instr EndOfInstrumentAllocations

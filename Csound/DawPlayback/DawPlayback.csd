@@ -3,8 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-; --messagelevel=0
---messagelevel=134
+--messagelevel=0
+; --messagelevel=134
 --midi-device=0
 --nodisplays
 -+rtmidi=null
@@ -32,8 +32,14 @@ ${CSOUND_IFNDEF} INTERNAL_CHANNEL_COUNT
 ${CSOUND_DEFINE} INTERNAL_CHANNEL_COUNT #6#
 ${CSOUND_ENDIF}
 
-sr = 48000
-kr = 200
+${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+    sr = 48000
+    kr = 200
+${CSOUND_ELSE}
+    sr = 30
+    kr = 30
+${CSOUND_ENDIF}
+
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
 
@@ -121,9 +127,11 @@ instr Init_instrnum
     a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     ga_masterSignals = a_masterSignals
 
-    event_i("i", ClearSignals_instrnum, 0, -1)      // clear signals
-    event_i("i", AuxMixInstrument, 1, -1) // mix instruments into auxes
-    event_i("i", FinalMixInstrument, 1, -1)   // mix signals
+    ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+        event_i("i", ClearSignals_instrnum, 0, -1)      // clear signals
+        event_i("i", AuxMixInstrument, 1, -1) // mix instruments into auxes
+        event_i("i", FinalMixInstrument, 1, -1)   // mix signals
+    ${CSOUND_ENDIF}
 
     turnoff
 endin
@@ -265,118 +273,120 @@ ${CSOUND_ENDIF}
 #include "_.mode3_TrackSet.orc"
 
 
-// Aux mixer instrument.
-// All included instruments should have instrument numbers lower than this instrument.
-// All aux instruments should have instrument numbers higher than this instrument.
-//
-instr AuxMixInstrument
-    // Mix instruments into auxes.
-    kAux = 0
-    while (kAux < gi_auxCount) do
-        kInstrument = 0
-        while (kInstrument < gi_instrumentCount) do
-            kChannel = giAuxChannelIndexRanges[kAux][kInstrument][LOW_CHANNEL_COUNT_INDEX]
-            kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][HIGH_CHANNEL_COUNT_INDEX]
-            while (kChannel <= kMaxChannel) do
-                ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-                    ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+    // Aux mixer instrument.
+    // All included instruments should have instrument numbers lower than this instrument.
+    // All aux instruments should have instrument numbers higher than this instrument.
+    //
+    instr AuxMixInstrument
+        // Mix instruments into auxes.
+        kAux = 0
+        while (kAux < gi_auxCount) do
+            kInstrument = 0
+            while (kInstrument < gi_instrumentCount) do
+                kChannel = giAuxChannelIndexRanges[kAux][kInstrument][LOW_CHANNEL_COUNT_INDEX]
+                kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][HIGH_CHANNEL_COUNT_INDEX]
+                while (kChannel <= kMaxChannel) do
+                    ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
+                        ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+                    kChannel += 1
+                od
+                kInstrument += 1
+            od
+            kAux += 1
+        od
+    endin
+
+
+    // Controls track volumes sent to Aux tracks.
+    instr AuxInstrument
+        k_aux = p4 - gi_auxIndexOffset
+        k_track = p5 - gi_instrumentIndexOffset
+        k_channel = p6
+        k_volume = p7
+        ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
+        turnoff
+    endin
+
+
+    // Controls track volumes sent to Master.
+    instr MasterInstrument
+        k_track = p4 - gi_instrumentIndexOffset
+        k_channel = p5
+        k_volume = p6
+        ga_masterVolumes[k_track][k_channel] = k_volume
+        turnoff
+    endin
+
+
+    // Mixer instrument. All included instruments should have instrument numbers lower than this instrument.
+    //
+    instr FinalMixInstrument
+        kChannel = 0
+        while (kChannel < $INTERNAL_CHANNEL_COUNT) do
+            ga_masterSignals[kChannel] = 0
+            kChannel += 1
+        od
+
+        // Mix instrument tracks into master.
+        kTrack = 0
+        while (kTrack < gi_instrumentCount) do
+            kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
+            kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
+            while (kChannel <= kChannelHigh) do
+                ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
+                    ga_masterVolumes[kTrack][kChannel]
                 kChannel += 1
             od
-            kInstrument += 1
+            kTrack += 1
         od
-        kAux += 1
-    od
-endin
 
-
-// Controls track volumes sent to Aux tracks.
-instr AuxInstrument
-    k_aux = p4 - gi_auxIndexOffset
-    k_track = p5 - gi_instrumentIndexOffset
-    k_channel = p6
-    k_volume = p7
-    ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
-    turnoff
-endin
-
-
-// Controls track volumes sent to Master.
-instr MasterInstrument
-    k_track = p4 - gi_instrumentIndexOffset
-    k_channel = p5
-    k_volume = p6
-    ga_masterVolumes[k_track][k_channel] = k_volume
-    turnoff
-endin
-
-
-// Mixer instrument. All included instruments should have instrument numbers lower than this instrument.
-//
-instr FinalMixInstrument
-    kChannel = 0
-    while (kChannel < $INTERNAL_CHANNEL_COUNT) do
-        ga_masterSignals[kChannel] = 0
-        kChannel += 1
-    od
-
-    // Mix instrument tracks into master.
-    kTrack = 0
-    while (kTrack < gi_instrumentCount) do
-        kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
-        kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
-        while (kChannel <= kChannelHigh) do
-            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
-                ga_masterVolumes[kTrack][kChannel]
-            kChannel += 1
+        // Mix aux tracks into master.
+        // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
+        kAux = 0
+        while (kAux < gi_auxCount) do
+            kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
+            kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
+            while (kChannel <= kChannelHigh) do
+                ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
+                    ga_masterVolumes[kTrack][kChannel]
+                kChannel += 1
+            od
+            kTrack += 1
+            kAux += 1
         od
-        kTrack += 1
-    od
 
-    // Mix aux tracks into master.
-    // NB: 'kTrack' is not reset before entering the next loop. This is intentional.
-    kAux = 0
-    while (kAux < gi_auxCount) do
-        kChannel = giMasterChannelIndexRanges[kTrack][LOW_CHANNEL_COUNT_INDEX]
-        kChannelHigh = giMasterChannelIndexRanges[kTrack][HIGH_CHANNEL_COUNT_INDEX]
-        while (kChannel <= kChannelHigh) do
-            ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + ga_auxSignals[kAux][kChannel] *
-                ga_masterVolumes[kTrack][kChannel]
-            kChannel += 1
-        od
-        kTrack += 1
-        kAux += 1
-    od
+        // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
+        aw = ga_masterSignals[0]
+        ay = ga_masterSignals[1]
+        az = ga_masterSignals[2]
+        ax = ga_masterSignals[3]
+        km0 = gk_AF_3D_ListenerRotationMatrix[0]
+        km1 = gk_AF_3D_ListenerRotationMatrix[1]
+        km2 = gk_AF_3D_ListenerRotationMatrix[2]
+        km3 = gk_AF_3D_ListenerRotationMatrix[3]
+        km4 = gk_AF_3D_ListenerRotationMatrix[4]
+        km5 = gk_AF_3D_ListenerRotationMatrix[5]
+        km6 = gk_AF_3D_ListenerRotationMatrix[6]
+        km7 = gk_AF_3D_ListenerRotationMatrix[7]
+        km8 = gk_AF_3D_ListenerRotationMatrix[8]
+        ayr = -(ay * km0 + az * km3 + ax * km6)
+        azr =   ay * km1 + az * km4 + ax * km7
+        axr = -(ay * km2 + az * km5 + ax * km8)
+        aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
+        ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
+        az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
+        ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
+        aL = aw - ay + az + ax
+        aR = aw + ay + az + ax
 
-    // Use Omnitone sh_hrir_order_1.wav data tables to convert/convolve ambisonic output into stereo.
-    aw = ga_masterSignals[0]
-    ay = ga_masterSignals[1]
-    az = ga_masterSignals[2]
-    ax = ga_masterSignals[3]
-    km0 = gk_AF_3D_ListenerRotationMatrix[0]
-    km1 = gk_AF_3D_ListenerRotationMatrix[1]
-    km2 = gk_AF_3D_ListenerRotationMatrix[2]
-    km3 = gk_AF_3D_ListenerRotationMatrix[3]
-    km4 = gk_AF_3D_ListenerRotationMatrix[4]
-    km5 = gk_AF_3D_ListenerRotationMatrix[5]
-    km6 = gk_AF_3D_ListenerRotationMatrix[6]
-    km7 = gk_AF_3D_ListenerRotationMatrix[7]
-    km8 = gk_AF_3D_ListenerRotationMatrix[8]
-    ayr = -(ay * km0 + az * km3 + ax * km6)
-    azr =   ay * km1 + az * km4 + ax * km7
-    axr = -(ay * km2 + az * km5 + ax * km8)
-    aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
-    ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
-    az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
-    ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
-    aL = aw - ay + az + ax
-    aR = aw + ay + az + ax
+        // Add reverb.
+        aL += ga_masterSignals[4]
+        aR += ga_masterSignals[5]
 
-    // Add reverb.
-    aL += ga_masterSignals[4]
-    aR += ga_masterSignals[5]
-
-    outs(aL, aR)
-endin
+        outs(aL, aR)
+    endin
+${CSOUND_ENDIF}
 
 
 instr EndOfInstrumentAllocations

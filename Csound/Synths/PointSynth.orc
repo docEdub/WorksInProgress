@@ -172,15 +172,6 @@ instr INSTRUMENT_ID
                 igoto end
                 turnoff
             endif
-            iCps = cpsmidinn(iNoteNumber)
-            iAmp = 0.05
-
-            kCps = linseg(iCps, giTotalTime, iCps + 100)
-
-            aOut = oscil(iAmp, kCps)
-            aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
-            aOut *= aEnvelope
-
             iX init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$X]
             iZ init giPointSynthNextXYZ[ORC_INSTANCE_INDEX][giPointSynthNextXYZ_i][$Z]
 
@@ -189,58 +180,69 @@ instr INSTRUMENT_ID
             // Height range 0 to 100.
             iY init 50 + ((iNoteNumber - 80) / 25) * 300
 
-            kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
-            ; if (changed(kDistance) == true) then
-            ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
-            ; endif
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
-            #if IS_PLAYBACK
-                kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
-            #endif
-            aOutDistanced = aOut * kDistanceAmp
+            ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+                iCps = cpsmidinn(iNoteNumber)
+                iAmp = 0.05
 
-            giPointSynthNextXYZ_i += 1
-            if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
-                giPointSynthNextXYZ_i = 0
-            endif
-            AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
+                kCps = linseg(iCps, giTotalTime, iCps + 100)
 
-            iPlaybackReverbAdjustment init 1
-            #if IS_PLAYBACK
-                iPlaybackReverbAdjustment = giPointSynth_PlaybackReverbAdjustment
-            #endif
+                aOut = oscil(iAmp, kCps)
+                aEnvelope = adsr_linsegr(giFadeInTime, 0, 1, giFadeOutTime)
+                aOut *= aEnvelope
 
-            a1 = gkAmbisonicChannelGains[0] * aOutDistanced
-            a2 = gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 = gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 = gkAmbisonicChannelGains[3] * aOutDistanced
-            aReverbOut = aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+                kDistance = AF_3D_Audio_SourceDistance(iX, iY, iZ)
+                ; if (changed(kDistance) == true) then
+                ;     printsk("source = [%.03f, %.03f, %.03f], distance = %.03f\n", iX, iY, iZ, kDistance)
+                ; endif
+                kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giPointSynth_ReferenceDistance, giPointSynth_RolloffFactor)
+                #if IS_PLAYBACK
+                    kDistanceAmp *= giPointSynth_PlaybackVolumeAdjustment
+                #endif
+                aOutDistanced = aOut * kDistanceAmp
 
-            #if IS_PLAYBACK
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
-            #else
-                kReloaded init false
-                kFadeTimeLeft init 0.1
-                if (gkReloaded == true) then
-                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
-                    aEnvelope = linseg(1, 0.1, 0)
-                    kReloaded = gkReloaded
+                giPointSynthNextXYZ_i += 1
+                if (giPointSynthNextXYZ_i == $POINT_SYNTH_NEXT_XYZ_COUNT) then
+                    giPointSynthNextXYZ_i = 0
                 endif
+                AF_3D_Audio_ChannelGains_XYZ(k(iX), k(iY), k(iZ))
 
-                outc(a1, a2, a3, a4, aOut, aOut)
+                iPlaybackReverbAdjustment init 1
+                #if IS_PLAYBACK
+                    iPlaybackReverbAdjustment = giPointSynth_PlaybackReverbAdjustment
+                #endif
 
-                if (kReloaded == true) then
-                    kFadeTimeLeft -= 1 / kr
-                    if (kFadeTimeLeft <= 0) then
-                        turnoff
+                a1 = gkAmbisonicChannelGains[0] * aOutDistanced
+                a2 = gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 = gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 = gkAmbisonicChannelGains[3] * aOutDistanced
+                aReverbOut = aOut * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+
+                #if IS_PLAYBACK
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
+                #else
+                    kReloaded init false
+                    kFadeTimeLeft init 0.1
+                    if (gkReloaded == true) then
+                        log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                        aEnvelope = linseg(1, 0.1, 0)
+                        kReloaded = gkReloaded
                     endif
-                endif
-            #endif
+
+                    outc(a1, a2, a3, a4, aOut, aOut)
+
+                    if (kReloaded == true) then
+                        kFadeTimeLeft -= 1 / kr
+                        if (kFadeTimeLeft <= 0) then
+                            turnoff
+                        endif
+                    endif
+                #endif
+            ${CSOUND_ENDIF}
 
             ${CSOUND_IFDEF} IS_GENERATING_JSON
                 if (giPointSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then

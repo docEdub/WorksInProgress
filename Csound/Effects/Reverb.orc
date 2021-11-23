@@ -46,6 +46,10 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 
 instr INSTRUMENT_ID
+    ${CSOUND_IFDEF} IS_ANIMATIONS_ONLY
+        turnoff
+    ${CSOUND_ENDIF}
+
     #if LOGGING
         #ifdef INSTRUMENT_ID_DEFINED
             SInstrument = sprintf("%.3f", p1)

@@ -170,96 +170,98 @@ instr INSTRUMENT_ID
         iVelocity = p6
         iDelayIndex = p7
 
-        iSampleCacheI = -1
-        iI = 0
-        while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
-            if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
-                iSampleCacheI = iI
-                iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers) // kick out of while loop
+        ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+            iSampleCacheI = -1
+            iI = 0
+            while (iI < lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) do
+                if (iNoteNumber == giDistanceDelaySynth_SampleCacheNoteNumbers[iI]) then
+                    iSampleCacheI = iI
+                    iI = lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers) // kick out of while loop
+                endif
+                iI += 1
+            od
+            if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
+                log_i_warning("Sample cache for note number %d not found", iNoteNumber)
+                ; turnoff
             endif
-            iI += 1
-        od
-        if (iSampleCacheI == -1 || iSampleCacheI == lenarray(giDistanceDelaySynth_SampleCacheNoteNumbers)) then
-            log_i_warning("Sample cache for note number %d not found", iNoteNumber)
-            ; turnoff
-        endif
-        ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
+            ; prints("iNoteNumber = %d, iSampleCacheI = %d\n", iNoteNumber, iSampleCacheI)
 
-        #if IS_PLAYBACK
-            iIsPlayback = true
-        #else
-            iIsPlayback = false
-        #endif
+            #if IS_PLAYBACK
+                iIsPlayback = true
+            #else
+                iIsPlayback = false
+            #endif
 
-        a1 init 0
-        asig init 0
+            a1 init 0
+            asig init 0
 
-        if(iIsPlayback == false || iEventType == EVENT_NOTE_CACHE) then
-            iAmp init 0
-            if (iIsPlayback == false) then
-                iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
-            else
-                iAmp = 1
+            if(iIsPlayback == false || iEventType == EVENT_NOTE_CACHE) then
+                iAmp init 0
+                if (iIsPlayback == false) then
+                    iAmp = (iVelocity / 127) * (1 - (iNoteNumber / 127))
+                else
+                    iAmp = 1
+                endif
+                iCps = cpsmidinn(iNoteNumber + 3)
+                iCpsRandomized = iCps * random:i(0.999, 1.001)
+                
+                // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
+                // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
+
+                ;; 6-OP FM
+                asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
+                asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))    
+                asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))  
+                
+                asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
+                
+                ;; Filter
+                ioct = octcps(iCpsRandomized)
+                asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)  
+                asig = K35_hpf(asig, iCpsRandomized, 0.5)    
+                
+                ;; Resonant body
+                ain = asig * ampdbfs(-60)
+                
+                a1 = mode(ain, 500, 20)
+                a1 += mode(ain, 900, 10)  
+                a1 += mode(ain, 1700, 6)    
+
+                ;; Attack envelope and declick
+                asig *= linen:a(1, 0.025, p3, 0.001)
+
+                asig += a1
+
+                if (iEventType == EVENT_NOTE_CACHE) then
+                    ; prints("Copying asig into note's sample cache table.\n")
+                    // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
+                    kPass init 0
+                    kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
+                    kPass += 1
+                    goto end
+                endif
             endif
-            iCps = cpsmidinn(iNoteNumber + 3)
-            iCpsRandomized = iCps * random:i(0.999, 1.001)
-            
-            // Based on instrument Syn2 from "Interlocking Rhythms" by Steven Yi.
-            // https://ide.csound.com/editor/8LFMLfAdH4kezFNEuii7
 
-            ;; 6-OP FM
-            asig = foscili(iAmp, iCps, 1, 1, expseg(2, 1, 0.1, 1, 0.001))
-            asig += foscili(iAmp * ampdbfs(-18) * expon(1, 1, 0.001), iCps * 4, 1, 1, expseg(2, 1, 0.01, 1, 0.01))    
-            asig += foscili(iAmp * ampdbfs(-30) * expon(1, .5, 0.001), iCps * 8, 1, 1, expseg(1, 1, 0.01, 1, 0.01))  
-            
-            asig *= expseg(0.01, 0.02, 1, .03, 0.5, p3 - .34, .4, 0.29, 0.001)
-            
-            ;; Filter
-            ioct = octcps(iCpsRandomized)
-            asig = K35_lpf(asig, cpsoct(expseg(min:i(14, ioct + 5), 1, ioct, 1, ioct)), 1, 1.5)  
-            asig = K35_hpf(asig, iCpsRandomized, 0.5)    
-            
-            ;; Resonant body
-            ain = asig * ampdbfs(-60)
-            
-            a1 = mode(ain, 500, 20)
-            a1 += mode(ain, 900, 10)  
-            a1 += mode(ain, 1700, 6)    
-
-            ;; Attack envelope and declick
-            asig *= linen:a(1, 0.025, p3, 0.001)
-
-            asig += a1
-
-            if (iEventType == EVENT_NOTE_CACHE) then
-                ; prints("Copying asig into note's sample cache table.\n")
-                // Copy `asig` into note's sample cache table at sample offset `kPass` * ksmps.
-                kPass init 0
-                kDummy = tablewa(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI], asig, kPass * ksmps)
-                kPass += 1
-                goto end
+            if (iIsPlayback == true && iSampleCacheI >= 0) then
+                // Read `asig` from note's sample cache.
+                ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
+                asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
             endif
-        endif
 
-        if (iIsPlayback == true && iSampleCacheI >= 0) then
-            // Read `asig` from note's sample cache.
-            ; prints("table length = %d\n", ftlen(giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI]))
-            asig = oscil(1, 1, giDistanceDelaySynth_SampleCacheTableNumbers[iSampleCacheI])
-        endif
-
-        #if IS_PLAYBACK
-            a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
-            a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
-            a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
-            a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
-            a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
-        #else
-            a1 = 0
-            a2 = 0
-            a3 = 0
-            a4 = 0
-            a5 = 0 // Reverb
-        #endif
+            #if IS_PLAYBACK
+                a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
+                a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
+                a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
+                a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
+                a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
+            #else
+                a1 = 0
+                a2 = 0
+                a3 = 0
+                a4 = 0
+                a5 = 0 // Reverb
+            #endif
+        ${CSOUND_ENDIF}
         
         kY init (iNoteNumber - giDistanceDelaySynth_LowestNoteNumber) * giDistanceDelaySynth_NoteNumberToHeightScale
         iRadius = giDistanceDelaySynth_StartDistance + giDistanceDelaySynth_DelayDistance * iDelayIndex
@@ -269,62 +271,66 @@ instr INSTRUMENT_ID
             kX = sin(kTheta) * iRadius
             kZ = cos(kTheta) * iRadius
 
-            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
-            kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
-            #if IS_PLAYBACK
-                kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
-            #endif
-            aOutDistanced = asig * kDistanceAmp
+            ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+                kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+                kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giDistanceDelaySynth_ReferenceDistance, giDistanceDelaySynth_RolloffFactor)
+                kDistanceAmp = min(kDistanceAmp, giDistanceDelaySynth_MaxAmpWhenVeryClose)
+                #if IS_PLAYBACK
+                    kDistanceAmp *= giDistanceDelaySynth_PlaybackVolumeAdjustment
+                #endif
+                aOutDistanced = asig * kDistanceAmp
 
-            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            iPlaybackReverbAdjustment init 1
-            #if IS_PLAYBACK
-                iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
-            #endif
+                AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+                iPlaybackReverbAdjustment init 1
+                #if IS_PLAYBACK
+                    iPlaybackReverbAdjustment = giDistanceDelaySynth_PlaybackReverbAdjustment
+                #endif
 
-            ; aOutDistanced = compress2(
-            ;     aOutDistanced,
-            ;     aOutDistanced,
-            ;     -90,    // threshold
-            ;     -50,    // low knee
-            ;     -25,    // high knee
-            ;     1.02,   // ratio
-            ;     .1,     // attack time in seconds
-            ;     .5,     // release time in seconds
-            ;     .02)    // look-ahead time in seconds
+                ; aOutDistanced = compress2(
+                ;     aOutDistanced,
+                ;     aOutDistanced,
+                ;     -90,    // threshold
+                ;     -50,    // low knee
+                ;     -25,    // high knee
+                ;     1.02,   // ratio
+                ;     .1,     // attack time in seconds
+                ;     .5,     // release time in seconds
+                ;     .02)    // look-ahead time in seconds
 
-            a1 += gkAmbisonicChannelGains[0] * aOutDistanced
-            a2 += gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 += gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-            a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+                a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+                a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+                a5 += asig * 2 * kDistanceAmp * iPlaybackReverbAdjustment
+            ${CSOUND_ENDIF}
 
             kRotationIndex += 1
         od
 
-        #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a5
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a5
-        #else
-            kReloaded init false
-            kFadeTimeLeft init 0.1
-            if (gkReloaded == true) then
-                log_k_debug("Turning off instrument %.04f due to reload.", p1)
-                kReloaded = gkReloaded
-            endif
-            if (kReloaded == true) then
-                kFadeTimeLeft -= 1 / kr
-                if (kFadeTimeLeft <= 0) then
-                    turnoff
+        ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+            #if IS_PLAYBACK
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a5
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a5
+            #else
+                kReloaded init false
+                kFadeTimeLeft init 0.1
+                if (gkReloaded == true) then
+                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                    kReloaded = gkReloaded
                 endif
-            endif
-            outc(a1, a2, a3, a4, a5, a5)
-        #endif
+                if (kReloaded == true) then
+                    kFadeTimeLeft -= 1 / kr
+                    if (kFadeTimeLeft <= 0) then
+                        turnoff
+                    endif
+                endif
+                outc(a1, a2, a3, a4, a5, a5)
+            #endif
+        ${CSOUND_ENDIF}
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (iDelayIndex == 0) then

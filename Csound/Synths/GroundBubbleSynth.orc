@@ -201,112 +201,115 @@ instr INSTRUMENT_ID
         kX init iGridColumn * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterX
         kZ init iGridRow * giGroundBubbleSynth_GridCellSize - giGroundBubbleSynth_GridCenterZ
         ; prints("grid[%d][%d] = xyz(%.3f, %.3f, %.3f)\n", iGridColumn, iGridRow, i(kX), i(kY), i(kZ))
-        kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-        kIsReverbOnly = false
-        if (kDistance > giGroundBubbleSynth_MaxReverbOnlyDistance) then
-            kgoto end
-        elseif (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
-            kIsReverbOnly = true
-        fi
 
-        kCps = iCps + kY * 5
-        kAmp = iAmp
-        if (kY < giGroundBubbleSynth_FullVolumeY) then
-            kAmp *= kY / giGroundBubbleSynth_FullVolumeY
-        else
-            kAmp *= (giGroundBubbleSynth_MaxAudibleHeight - kY) / giGroundBubbleSynth_MaxAudibleHeight
-        fi
-        
-        ; if (kIsReverbOnly == false) then
-            aOut = tone(
-                oscil(kAmp + jspline(kAmp, 0.08, 0.05), kCps * 0.918) + \
-                oscil(kAmp + jspline(kAmp, 0.07, 0.49), kCps * 2.234) + \
-                oscil(kAmp + jspline(kAmp, 0.09, 0.50), kCps * 3.83) + \
-                oscil(kAmp + jspline(kAmp, 0.10, 0.45), kCps * 4.11) + \
-                oscil(kAmp + jspline(kAmp, 0.09, 0.51), kCps * 5.25) + \
-                oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 6.093) + \
-                oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 7.77) + \
-                oscil(kAmp + jspline(kAmp, 0.10, 0.40), kCps * 8.328) + \
-                oscil(kAmp + jspline(kAmp, 0.07, 0.55), kCps * 9.129) + \
-                oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
-                iCutoffFrequency)
-        ; else
-        ;     aOut = tone(
-        ;         oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
-        ;         iCutoffFrequency)
-        ; fi
-
-        #if IS_PLAYBACK
-            a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
-            if (kIsReverbOnly == false) then
-                a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
-                a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
-                a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
+        ${CSOUND_IFNDEF} IS_ANIMATIONS_ONLY
+            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+            kIsReverbOnly = false
+            if (kDistance > giGroundBubbleSynth_MaxReverbOnlyDistance) then
+                kgoto end
+            elseif (kDistance > giGroundBubbleSynth_MaxAudibleDistance) then
+                kIsReverbOnly = true
             fi
-            a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
-        #else
-            a1 = 0
-            if (kIsReverbOnly == false) then
-                a2 = 0
-                a3 = 0
-                a4 = 0
-            fi
-            a5 = 0 // Reverb
-        #endif
 
-        
-        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
-        ; if (kIsReverbOnly == false) then
-        ;     kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
-        ; fi
-        kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
-        #if IS_PLAYBACK
-            kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
-        #endif
-        aOutDistanced = aOut * kDistanceAmp
-
-        AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-        iPlaybackReverbAdjustment init 1
-        #if IS_PLAYBACK
-            iPlaybackReverbAdjustment = giGroundBubbleSynth_PlaybackReverbAdjustment
-        #endif
-
-        a1 += gkAmbisonicChannelGains[0] * aOutDistanced
-        if (kIsReverbOnly == false) then
-            a2 += gkAmbisonicChannelGains[1] * aOutDistanced
-            a3 += gkAmbisonicChannelGains[2] * aOutDistanced
-            a4 += gkAmbisonicChannelGains[3] * aOutDistanced
-        fi
-        a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
-
-        #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            if (kIsReverbOnly == false) then
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
-                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
-            fi
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a5
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a5
-        #else
-            kReloaded init false
-            kFadeTimeLeft init 0.1
-            if (gkReloaded == true) then
-                log_k_debug("Turning off instrument %.04f due to reload.", p1)
-                kReloaded = gkReloaded
-            endif
-            if (kReloaded == true) then
-                kFadeTimeLeft -= 1 / kr
-                if (kFadeTimeLeft <= 0) then
-                    turnoff
-                endif
-            endif
-            if (kIsReverbOnly == true) then
-                outch(1, a1, 5, a5, 6, a5)
+            kCps = iCps + kY * 5
+            kAmp = iAmp
+            if (kY < giGroundBubbleSynth_FullVolumeY) then
+                kAmp *= kY / giGroundBubbleSynth_FullVolumeY
             else
-                outc(a1, a2, a3, a4, a5, a5)
+                kAmp *= (giGroundBubbleSynth_MaxAudibleHeight - kY) / giGroundBubbleSynth_MaxAudibleHeight
             fi
-        #endif
+            
+            ; if (kIsReverbOnly == false) then
+                aOut = tone(
+                    oscil(kAmp + jspline(kAmp, 0.08, 0.05), kCps * 0.918) + \
+                    oscil(kAmp + jspline(kAmp, 0.07, 0.49), kCps * 2.234) + \
+                    oscil(kAmp + jspline(kAmp, 0.09, 0.50), kCps * 3.83) + \
+                    oscil(kAmp + jspline(kAmp, 0.10, 0.45), kCps * 4.11) + \
+                    oscil(kAmp + jspline(kAmp, 0.09, 0.51), kCps * 5.25) + \
+                    oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 6.093) + \
+                    oscil(kAmp + jspline(kAmp, 0.08, 0.50), kCps * 7.77) + \
+                    oscil(kAmp + jspline(kAmp, 0.10, 0.40), kCps * 8.328) + \
+                    oscil(kAmp + jspline(kAmp, 0.07, 0.55), kCps * 9.129) + \
+                    oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
+                    iCutoffFrequency)
+            ; else
+            ;     aOut = tone(
+            ;         oscil(kAmp + jspline(kAmp, 0.08, 0.47), kCps * kCps / 100),
+            ;         iCutoffFrequency)
+            ; fi
+
+            #if IS_PLAYBACK
+                a1 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0]
+                if (kIsReverbOnly == false) then
+                    a2 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1]
+                    a3 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2]
+                    a4 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
+                fi
+                a5 = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] // Reverb
+            #else
+                a1 = 0
+                if (kIsReverbOnly == false) then
+                    a2 = 0
+                    a3 = 0
+                    a4 = 0
+                fi
+                a5 = 0 // Reverb
+            #endif
+
+            
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, giGroundBubbleSynth_ReferenceDistance, giGroundBubbleSynth_RolloffFactor)
+            ; if (kIsReverbOnly == false) then
+            ;     kDistanceAmp -= gkGroundBubbleSynth_MaxAudibleHeightVolumeOffset
+            ; fi
+            kDistanceAmp = min(kDistanceAmp, giGroundBubbleSynth_MaxAmpWhenVeryClose)
+            #if IS_PLAYBACK
+                kDistanceAmp *= giGroundBubbleSynth_PlaybackVolumeAdjustment
+            #endif
+            aOutDistanced = aOut * kDistanceAmp
+
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+            iPlaybackReverbAdjustment init 1
+            #if IS_PLAYBACK
+                iPlaybackReverbAdjustment = giGroundBubbleSynth_PlaybackReverbAdjustment
+            #endif
+
+            a1 += gkAmbisonicChannelGains[0] * aOutDistanced
+            if (kIsReverbOnly == false) then
+                a2 += gkAmbisonicChannelGains[1] * aOutDistanced
+                a3 += gkAmbisonicChannelGains[2] * aOutDistanced
+                a4 += gkAmbisonicChannelGains[3] * aOutDistanced
+            fi
+            a5 += 0.1 * aOut * min(kDistanceAmp * iPlaybackReverbAdjustment, 0.175)
+
+            #if IS_PLAYBACK
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+                if (kIsReverbOnly == false) then
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+                    gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
+                fi
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a5
+                gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a5
+            #else
+                kReloaded init false
+                kFadeTimeLeft init 0.1
+                if (gkReloaded == true) then
+                    log_k_debug("Turning off instrument %.04f due to reload.", p1)
+                    kReloaded = gkReloaded
+                endif
+                if (kReloaded == true) then
+                    kFadeTimeLeft -= 1 / kr
+                    if (kFadeTimeLeft <= 0) then
+                        turnoff
+                    endif
+                endif
+                if (kIsReverbOnly == true) then
+                    outch(1, a1, 5, a5, 6, a5)
+                else
+                    outc(a1, a2, a3, a4, a5, a5)
+                fi
+            #endif
+        ${CSOUND_ENDIF}
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (giGroundBubbleSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
