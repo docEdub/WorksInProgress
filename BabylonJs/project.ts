@@ -1,5 +1,5 @@
-import * as BABYLON from "babylonjs";
-import * as CSOUND from "./@doc.e.dub/csound-browser";
+import * as BABYLON from "babylonjs"
+import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 declare global {
     interface Document {
@@ -18,22 +18,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     // The BabylonJS playground adds the materials extension to BABYLON.
     // Uncomment this when copy/pasting to the BabylonJS playground.
     // if (!BABYLON_MATERIALS)
-    //     var BABYLON_MATERIALS = BABYLON;
+    //     var BABYLON_MATERIALS = BABYLON
 
-    const showBabylonInspector = false;
-    const logCsoundMessages = true;
-    const logDebugMessages = true;
-    const showGroundGrid = true;
+    const showBabylonInspector = false
+    const logCsoundMessages = true
+    const logDebugMessages = true
+    const showGroundGrid = true
 
-    let animateCamera = false;
+    let animateCamera = false
     const slowCameraSpeed = 0.25
     const fastCameraSpeed = 1.5
-    const csoundCameraUpdatesPerSecond = 10;
-    const csoundIoBufferSize = 128;
-    const groundSize = 9000;
-    const groundRingDiameter = 100;
+    const csoundCameraUpdatesPerSecond = 10
+    const csoundIoBufferSize = 128
+    const groundSize = 9000
+    const groundRingDiameter = 100
 
-    const halfGroundSize = groundSize / 2;
+    const halfGroundSize = groundSize / 2
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
@@ -52,45 +52,45 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     if (document.getElementById('csound-script') === null) {
-        let csoundImportScript = document.createElement('script');
+        let csoundImportScript = document.createElement('script')
         csoundImportScript.type = 'module'
         csoundImportScript.innerText = `
-            console.debug("Csound importing ...");
-            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js";
-            document.Csound = Csound;
+            console.debug("Csound importing ...")
+            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
+            document.Csound = Csound
         `
         // csoundImportScript.innerText = `
-        //     console.debug("Csound importing ...");
-        //     import { Csound } from "./csound.esm.js";
-        //     document.Csound = Csound;
+        //     console.debug("Csound importing ...")
+        //     import { Csound } from "./csound.esm.js"
+        //     document.Csound = Csound
         // `
         document.body.appendChild(csoundImportScript)
     }
 
     function browser() {
         // Get the user-agent string
-        const userAgent = navigator.userAgent;
-        console.debug('userAgent =', userAgent);
+        const userAgent = navigator.userAgent
+        console.debug('userAgent =', userAgent)
         if (userAgent.indexOf('MSIE') > -1) {
-            return 'Explorer';
+            return 'Explorer'
         }
         if (userAgent.indexOf('Firefox') > -1) {
-            return 'Firefox';
+            return 'Firefox'
         }
         if (userAgent.indexOf('Chrome') > -1) {
             if (userAgent.indexOf('OP') > -1) {
-                return 'Opera';
+                return 'Opera'
             }
             else {
-                return 'Chrome';
+                return 'Chrome'
             }
         }
         if (userAgent.indexOf('Safari') > -1) {
-            return 'Safari';
+            return 'Safari'
         }
-        return 'Unknown';
+        return 'Unknown'
     }
-    const detectedBrowser = browser();
+    const detectedBrowser = browser()
     console.log('Browser detected =', detectedBrowser)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     // This creates a basic Babylon Scene object (non-mesh)
-    var scene = new BABYLON.Scene(engine);
+    var scene = new BABYLON.Scene(engine)
     if (showBabylonInspector) {
         scene.debugLayer.show()
     }
@@ -140,13 +140,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ]
     const cameraSetting = cameraSettings[7]
 
-    let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene);
-    camera.applyGravity = true;
-    camera.checkCollisions = true;
-    camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);
-    camera.speed = slowCameraSpeed;
-    camera.attachControl(canvas, true);
-    camera.setTarget(cameraSetting.target);
+    let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene)
+    camera.applyGravity = true
+    camera.checkCollisions = true
+    camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5)
+    camera.speed = slowCameraSpeed
+    camera.attachControl(canvas, true)
+    camera.setTarget(cameraSetting.target)
 
     // For full list see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode.
     const KeyCode = {
@@ -163,89 +163,53 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     camera.keysDown.push(KeyCode.S)
     camera.keysRight.push(KeyCode.D)
 
-    const lightIntensity = 1
-    const ambientLightParent = new BABYLON.TransformNode('', scene)
-    // const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
-    // pointLight.intensity = lightIntensity
-    // pointLight.parent = ambientLightParent
-    // const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, 0, 1), scene)
-    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
-    directionalLight.intensity = lightIntensity
-    directionalLight.parent = ambientLightParent
+    const whiteColor = BABYLON.Color3.White()
+    const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
 
-    const setAmbientLightPosition = (position) => {
-        // ambientLightParent.position = position
-    }
+    const whiteMaterial = new BABYLON.StandardMaterial('', scene)
+    whiteMaterial.emissiveColor = whiteColor
+    whiteMaterial.disableLighting = true
+    whiteMaterial.freeze()
 
-    const setAmbientLightDirection = (direction) => {
-        // direction.y = 0
-        // ambientLightParent.setDirection(direction)
-    }
+    const grayMaterial = new BABYLON.StandardMaterial('', scene)
+    grayMaterial.emissiveColor = grayColor
+    grayMaterial.disableLighting = true
+    grayMaterial.freeze()
 
-    const ambientLightExcludeMesh = (mesh) => {
-        directionalLight.excludedMeshes.push(mesh)
-    }
-
-    const glowLayer = new BABYLON.GlowLayer('', scene)
-    glowLayer.isEnabled = false
-    glowLayer.blurKernelSize = 64
-    glowLayer.intensity = 0.5
-
-    const whiteColor = BABYLON.Color3.White();
-    const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-
-    const whiteMaterial = new BABYLON.StandardMaterial('', scene);
-    whiteMaterial.emissiveColor = whiteColor;
-    whiteMaterial.disableLighting = true;
-    whiteMaterial.freeze();
-
-    const grayMaterial = new BABYLON.StandardMaterial('', scene);
-    grayMaterial.emissiveColor = grayColor;
-    grayMaterial.disableLighting = true;
-    grayMaterial.freeze();
-
-    const blackMaterial = new BABYLON.StandardMaterial('', scene);
-    grayMaterial.disableLighting = true;
-    grayMaterial.freeze();
-
-    const whiteSphere = BABYLON.Mesh.CreateIcoSphere('', { radius: 1, subdivisions: 1 }, scene);
-    whiteSphere.isVisible = false;
-    whiteSphere.material = whiteMaterial;
-
-    const graySphere = whiteSphere.clone('');
-    graySphere.isVisible = false;
-    graySphere.material = grayMaterial;
+    const blackMaterial = new BABYLON.StandardMaterial('', scene)
+    grayMaterial.disableLighting = true
+    grayMaterial.freeze()
 
     { // Walls
 
         const wall = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundSize
-        });
-        wall.isVisible = false;
-        wall.position.y = halfGroundSize;
+        })
+        wall.isVisible = false
+        wall.position.y = halfGroundSize
 
-        const northWall = wall.createInstance('');
-        northWall.checkCollisions = true;
-        northWall.isVisible = false;
-        northWall.position.z = halfGroundSize + 0.1;
+        const northWall = wall.createInstance('')
+        northWall.checkCollisions = true
+        northWall.isVisible = false
+        northWall.position.z = halfGroundSize + 0.1
 
-        const eastWall = wall.createInstance('');
-        eastWall.checkCollisions = true;
-        eastWall.isVisible = false;
-        eastWall.position.x = halfGroundSize + 0.1;
-        eastWall.rotation.y = Math.PI / 2;
+        const eastWall = wall.createInstance('')
+        eastWall.checkCollisions = true
+        eastWall.isVisible = false
+        eastWall.position.x = halfGroundSize + 0.1
+        eastWall.rotation.y = Math.PI / 2
 
-        const southWall = wall.createInstance('');
-        southWall.checkCollisions = true;
-        southWall.isVisible = false;
-        southWall.position.z = -halfGroundSize - 0.1;
-        southWall.rotation.y = Math.PI;
+        const southWall = wall.createInstance('')
+        southWall.checkCollisions = true
+        southWall.isVisible = false
+        southWall.position.z = -halfGroundSize - 0.1
+        southWall.rotation.y = Math.PI
 
-        const westWall = wall.createInstance('');
-        westWall.checkCollisions = true;
-        westWall.isVisible = false;
-        westWall.position.x = -halfGroundSize - 0.1;
-        westWall.rotation.y = -Math.PI / 2;
+        const westWall = wall.createInstance('')
+        westWall.checkCollisions = true
+        westWall.isVisible = false
+        westWall.position.x = -halfGroundSize - 0.1
+        westWall.rotation.y = -Math.PI / 2
 
     }
 
@@ -267,10 +231,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         gridMaterial.ambientTexture = grid_Texture
         // gridMaterial.opacityTexture = grid_Texture
         gridMaterial.disableLighting = true
-        ground.material = gridMaterial;
+        ground.material = gridMaterial
     }
     else {
-        ground.material = blackMaterial;
+        ground.material = blackMaterial
     }
     
     // This gets updated when switching between flat-screen camera and XR camera.
@@ -278,7 +242,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const startXr = async () => {
         try {
-            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]});
+            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
             if (!!xr && !!xr.enterExitUI) {
                 xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                     if (eventData == null) {
@@ -301,9 +265,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug(e)
         }
     }
-    startXr();
+    startXr()
 
-    let startTime = 0;
+    let startTime = 0
 
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
@@ -323,9 +287,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         let cameraAngle = Math.PI
 
         const updateCamera = (time) => {
-            setAmbientLightPosition(currentCamera.position)
-            setAmbientLightDirection(currentCamera.target.subtract(currentCamera.position))
-
             if (!animateCamera) {
                 return
             }
@@ -356,32 +317,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const cameraUsesInputKey = (key) => {
             for (let i = 0; i < camera.keysDown.length; i++) {
                 if (key == camera.keysDown[i]) {
-                    return true;
+                    return true
                 }
             }
             for (let i = 0; i < camera.keysDownward.length; i++) {
                 if (key == camera.keysDown[i]) {
-                    return true;
+                    return true
                 }
             }
             for (let i = 0; i < camera.keysLeft.length; i++) {
                 if (key == camera.keysLeft[i]) {
-                    return true;
+                    return true
                 }
             }
             for (let i = 0; i < camera.keysRight.length; i++) {
                 if (key == camera.keysRight[i]) {
-                    return true;
+                    return true
                 }
             }
             for (let i = 0; i < camera.keysUp.length; i++) {
                 if (key == camera.keysUp[i]) {
-                    return true;
+                    return true
                 }
             }
             for (let i = 0; i < camera.keysUpward.length; i++) {
                 if (key == camera.keysUpward[i]) {
-                    return true;
+                    return true
                 }
             }
             return false
@@ -425,7 +386,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const onPointerDown = (e) => {
             onInputEvent(e)
             if (e.button !== 0) {
-                return;
+                return
             }
             pointerIsDown = true
         }
@@ -473,10 +434,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         scene.registerBeforeRender(() => {
             if (!isCsoundStarted) {
                 updateCamera(0)
-                return;
+                return
             }
 
-            const time = document.audioContext.currentTime - startTime;
+            const time = document.audioContext.currentTime - startTime
             updateCamera(time)
         })
 
@@ -489,7 +450,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // Send the camera matrix to Csound.
         setInterval(() => {
             if (!isCsoundStarted) {
-                return;
+                return
             }    
             currentCamera.worldMatrixFromCache.copyToArray(currentCameraMatrix)
             if (!currentCameraMatrixIsDirty) {
@@ -502,11 +463,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             if (currentCameraMatrixIsDirty) {
                 // console.debug('BabylonJs listener position = [' + currentCameraMatrix[12] + ', ' + currentCameraMatrix[13] + ', ' + currentCameraMatrix[14] + ']')
-                document.csound.tableCopyIn("1", currentCameraMatrix);
-                currentCamera.worldMatrixFromCache.copyToArray(previousCameraMatrix);
-                currentCameraMatrixIsDirty = false;
+                document.csound.tableCopyIn("1", currentCameraMatrix)
+                currentCamera.worldMatrixFromCache.copyToArray(previousCameraMatrix)
+                currentCameraMatrixIsDirty = false
             }
-        }, 1000 / csoundCameraUpdatesPerSecond);
+        }, 1000 / csoundCameraUpdatesPerSecond)
     }
 
     const csoundLoadTimer = setInterval(() => {
@@ -540,8 +501,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const restartCsound = async () => {
         console.debug('Restarting Csound ...')
-        isCsoundStarted = false;
-        await document.csound.rewindScore();
+        isCsoundStarted = false
+        await document.csound.rewindScore()
         console.debug('Restarting Csound - done')
         restartCount++
         console.debug('Restart count =', restartCount)
@@ -551,20 +512,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
         console.debug('Csound initializing ...')
-        const previousConsoleLog = console.log;
+        const previousConsoleLog = console.log
         const csoundConsoleLog = function() {
             if (arguments[0] === 'csd:started') {
-                startTime = document.audioContext.currentTime - (4 - 3 * document.latency);
+                startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
                 isCsoundStarted = true
             }
             else if (arguments[0] === 'csd:ended') {
-                restartCsound();
+                restartCsound()
             }
             if (logCsoundMessages) {
                 previousConsoleLog.apply(console, arguments)
             }
         }
-        console.log = csoundConsoleLog;
+        console.log = csoundConsoleLog
         const csound = await document.Csound({
             audioContext:
                 detectedBrowser === 'Safari'
@@ -575,12 +536,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     }),
             useSAB: false
         })
-        console.log = previousConsoleLog;
+        console.log = previousConsoleLog
         if (!csound) {
             console.error('Csound failed to initialize')
             return
         }
-        document.csound = csound;
+        document.csound = csound
         console.log('Csound version =', await csound.getVersion())
         
         const audioContext = await csound.getAudioContext()
@@ -589,14 +550,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('audioContext.baseLatency =', audioContext.baseLatency)
         console.debug('audioContext.sampleRate =', audioContext.sampleRate)
         console.debug('audioContext.state =', audioContext.state)
-        document.audioContext = audioContext;
+        document.audioContext = audioContext
 
         if (audioContext.sampleRate != 48000) {
-            console.log('Sample restricted to 48000');
-            return;
+            console.log('Sample restricted to 48000')
+            return
         }
 
-        console.debug('Csound initialized successfully');
+        console.debug('Csound initialized successfully')
         await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
         console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
@@ -604,8 +565,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.error('Csound csd compile failed')
             return
         }
-        document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate;
-        console.debug('Latency =', document.latency);
+        document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate
+        console.debug('Latency =', document.latency)
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
         csound.start()
@@ -617,13 +578,13 @@ const csdJson = `
 {}
 `
     startAudioVisuals()
-    return scene;
+    return scene
 }}
 
 
 
 export class Project {
     public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
-        return Playground.CreateScene(engine, canvas);
+        return Playground.CreateScene(engine, canvas)
     }
 }
