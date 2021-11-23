@@ -2751,49 +2751,52 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endop
     instr StartJsonArray
     turnoff
-    fprints("DawPlayback.json", "[")
+    ; fprints("DawPlayback.json", "[")
     endin
     instr EndJsonArray
     turnoff
-    fprints("DawPlayback.json", "]")
+    ; fprints("DawPlayback.json", "]")
     endin
     instr StartJsonObject
     turnoff
-    fprints("DawPlayback.json", "{")
+    ; fprints("DawPlayback.json", "{")
     endin
     instr EndJsonObject
     turnoff
-    fprints("DawPlayback.json", "}")
+    ; fprints("DawPlayback.json", "}")
     endin
     instr GeneratePluginJson
     turnoff
     SPluginUuid = strget(p4)
     if (giWriteComma == 1) then
-    fprints("DawPlayback.json", ",")
+    ; fprints("DawPlayback.json", ",")
     else
     giWriteComma = 1
     endif
-    fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
+    ; fprints("DawPlayback.json", sprintf("\\"%s\\":[", SPluginUuid))
     iI = 0
     iWriteComma = 0
     while (1 == 1) do
     SFileName = sprintf("/sandbox/%s.%d.json", SPluginUuid, iI)
     iJ = 0
     while (iJ != -1) do
-    prints("Reading %s\\n", SFileName)
+    ; prints("Reading %s\\n", SFileName)
     SLine, iJ readfi SFileName
+    if (iJ > 0) then
+    prints("%s:%d = %s\\n", SFileName, iJ, SLine)
+    endif
     ficlose(SFileName)
     if (iJ == -1) then
     else
     if (iWriteComma == 1) then
-    fprints("DawPlayback.json", ",")
+    ; fprints("DawPlayback.json", ",")
     else
     iWriteComma = 1
     endif
     if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\\n") == 0) then
     SLine = strsub(SLine, 0, strlen(SLine) - 1)
     endif
-    fprints("DawPlayback.json", SLine)
+    ; fprints("DawPlayback.json", SLine)
     endif
     od
     iI += 1
@@ -3331,7 +3334,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f,\\"note\\":%.3f,\\"xyz\\":[%.3f,%.3f,%.3f]}}", times(),
     iNoteNumber, iX, iY, iZ)
     ficlose(SJsonFile)
-    prints("Generated PointSynth.orc %s ...\\n", SJsonFile)
     #end
     endif
     end:
