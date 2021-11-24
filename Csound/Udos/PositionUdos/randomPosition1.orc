@@ -1,19 +1,29 @@
 
-/// Returns a new randomized X and Z coordinate from -100 to 100 every 1/16th of a second.
-/// Returns a constant Y of 2.
+/// Returns a new randomized X and Z coordinate from -100 to 100 on every i-pass.
+/// Returns a constant Y of 1.
 ///
-opcode AF_RandomPosition1, kkk, 0
+opcode dEd_randomPosition1, iii, 0
+    iX init random(-100, 100)
+    iY init 1
+    iZ init random(-100, 100)
+    xout iX, iY, iZ
+endop
+
+/// Returns a new randomized X and Z coordinate from -100 to 100 every 1/16th of a second.
+/// Returns a constant Y of 1.
+///
+opcode dEd_randomPosition1, kkk, 0
     kX init 0
-    kY init 2
+    kY init 1
     kZ init 0
 
     kTick init 0
     kPreviousTick init 0
-    kTick = chnget:k("TIME_IN_SECONDS") / 0.0625 // 1 tick = 1/16th of a second.
-    if (kTick - kPreviousTick > 1) then
+    kTick = gkPlaybackTimeInSeconds / 0.0625 // 1 tick = 1/16th of a second.
+    if (kTick - kPreviousTick > 1 || kTick < kPreviousTick) then
         kPreviousTick = kTick
-        kX = random(-100, 100)
-        kZ = random(-100, 100)
+        kX = random:k(-100, 100)
+        kZ = random:k(-100, 100)
     endif
 
     xout kX, kY, kZ

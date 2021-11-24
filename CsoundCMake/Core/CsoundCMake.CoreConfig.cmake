@@ -25,6 +25,7 @@ set(CsoundCMake_Core_OrcFiles
     "core_instr_1_head.orc"
     "definitions.orc"
     "instrument_cc.orc"
+    "json.orc"
     "log.orc"
     "log.orc.h"
     "math.orc"
@@ -54,19 +55,6 @@ set(Build_CsoundErrorChecks ON CACHE BOOL)
 
 if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
     set(Build_InlineIncludes ON)
-endif()
-if(Build_InlineIncludes)
-    set(CSOUND_INCLUDE "#include")
-    set(CSOUND_INCLUDE_GUARD_DEFINE "#define")
-    set(CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION "")
-    set(CSOUND_INCLUDE_GUARD_ENDIF "#endif")
-    set(CSOUND_INCLUDE_GUARD_IFNDEF "#ifndef")
-else()
-    set(CSOUND_INCLUDE "CSOUND_INCLUDE")
-    set(CSOUND_INCLUDE_GUARD_DEFINE "_(HASH)_(define)")
-    set(CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION "_(HASH)_(HASH)")
-    set(CSOUND_INCLUDE_GUARD_ENDIF "_(HASH)_(end)")
-    set(CSOUND_INCLUDE_GUARD_IFNDEF "_(HASH)_(ifndef)")
 endif()
 
 set(CsoundLog_FileNames OFF CACHE BOOL)
@@ -101,14 +89,6 @@ endif()
 if(NOT ${CsoundMessages_DeprecationWarnings})
     set(CSOUND_MESSAGE_LEVEL MATH "${CSOUND_MESSAGE_LEVEL} + 1024")
 endif()
-
-# This are not needed. They are added for consistency with ${CSOUND_INCLUDE} in .csd files.
-set(CSOUND_DEFINE "CSOUND_DEFINE")
-set(CSOUND_ELSE "CSOUND_ELSE")
-set(CSOUND_ENDIF "CSOUND_ENDIF")
-set(CSOUND_IFDEF "CSOUND_IFDEF")
-set(CSOUND_IFNDEF "CSOUND_IFNDEF")
-set(CSOUND_UNDEF "CSOUND_UNDEF")
 
 function(configure_source_file)
     set(file "${ARGV0}")

@@ -67,10 +67,14 @@ giMasterChannelIndexRanges[][] init gi_trackCount, 2 // 2nd column contains { [0
 ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
 ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
 
+gkPlaybackTimeInSeconds init 0
 
 instr 1
     AF_3D_UpdateListenerRotationMatrix(0.01)
     AF_3D_UpdateListenerPosition(0.01)
+
+    iSecondsPerKPass = 1 / kr
+    gkPlaybackTimeInSeconds += iSecondsPerKPass
 endin
 
 

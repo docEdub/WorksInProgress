@@ -348,9 +348,9 @@ endop
 opcode AF_3D_Audio_DistanceAttenuation, k, kPP
     kDistance, kReferenceDistance, kRolloffFactor xin
     kAttenuation = kReferenceDistance / ((max(kDistance, kReferenceDistance) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
-    if (changed2(kAttenuation) == true) then
-        printsk("%.03f, %.03f\n", kDistance, kAttenuation)
-    endif
+    ; if (changed2(kAttenuation) == true) then
+    ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
+    ; endif
     xout kAttenuation
 endop
 

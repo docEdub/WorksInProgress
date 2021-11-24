@@ -29,7 +29,7 @@ _(\)
     "xScale",               "number",     "100",     "synced",   _(\)
     "yScale",               "number",     "100",     "synced",   _(\)
     "zScale",               "number",     "100",     "synced",   _(\)
-    "savedPositionOpcode",  "string",     "",        "synced",   _(\)
+    "positionOpcode",  "string",     "",        "synced",   _(\)
     "",                      "",           "",       "") // dummy line
 
 ${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
@@ -47,12 +47,13 @@ instr CreateCcIndexesInstrument
     CREATE_CC_INDEX(xScale)
     CREATE_CC_INDEX(yScale)
     CREATE_CC_INDEX(zScale)
-    CREATE_CC_INDEX(savedPositionOpcode)
+    CREATE_CC_INDEX(positionOpcode)
 endin
 
 event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -110,9 +111,14 @@ instr INSTRUMENT_ID
             kMaxAmpWhenClose = portk(CC_VALUE_k(maxAmpWhenClose), iPortTime)
             kReferenceDistance = portk(CC_VALUE_k(referenceDistance), iPortTime)
             kRolloffFactor = portk(CC_VALUE_k(rolloffFactor), iPortTime)
-            kX = portk(CC_VALUE_k(x) * CC_VALUE_k(xScale), iPortTime)
-            kY = portk(CC_VALUE_k(y) * CC_VALUE_k(yScale), iPortTime)
-            kZ = portk(CC_VALUE_k(z) * CC_VALUE_k(zScale), iPortTime)
+            kPositionX, kPositionY, kPositionZ dEd_position
+            kX = portk(CC_VALUE_k(x) * CC_VALUE_k(xScale), iPortTime) + kPositionX
+            kY = portk(CC_VALUE_k(y) * CC_VALUE_k(yScale), iPortTime) + kPositionY
+            kZ = portk(CC_VALUE_k(z) * CC_VALUE_k(zScale), iPortTime) + kPositionZ
+
+            ; if (changed2(kPositionX) == true || changed2(kPositionY) == true || changed2(kPositionZ) == true) then
+            ;     log_k_debug("position = [%f, %f, %f]", kPositionX, kPositionY, kPositionZ)
+            ; endif
 
             kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kReferenceDistance, kRolloffFactor)
@@ -146,8 +152,6 @@ instr INSTRUMENT_ID
         #else
             outc(a1, a2, a3, a4, aOut, aOut)
         #endif
-
-        kPlaybackTime = chnget:k("TIME_IN_SECONDS")
 
         #if !IS_PLAYBACK
             if (gkReloaded == true) then

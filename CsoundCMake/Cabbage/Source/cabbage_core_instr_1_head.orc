@@ -6,6 +6,7 @@
 
     ${CSOUND_INCLUDE} "core_instr_1_head.orc"
 
+    gkPlaybackTimeInSeconds = chnget:k("TIME_IN_SECONDS")
     gk_playing chnget "IS_PLAYING"
 
     if (changed(gk_playing) == true) then

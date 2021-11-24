@@ -6,7 +6,7 @@
 
 ${setting_label} text("Position opcode")
 ${setting_combobox} bounds(0, ${setting_height}, ${setting_dimensions}) channel("positionOpcodeComboBoxIndex") identchannel("positionOpcodeComboBoxIndexUi") items(${CSOUND_CMAKE_POSITION_UDO_NAMES})
-; ${texteditor} bounds(0, ${setting_height_x2}, ${setting_dimensions}) channel("savedPositionOpcode") identchannel("savedPositionOpcodeUi")
-${texteditor} ${hidden} channel("savedPositionOpcode") identchannel("savedPositionOpcodeUi")
+; ${texteditor} bounds(0, ${setting_height_x2}, ${setting_dimensions}) channel("positionOpcode") identchannel("positionOpcodeUi")
+${texteditor} ${hidden} channel("positionOpcode") identchannel("positionOpcodeUi")
 
 //----------------------------------------------------------------------------------------------------------------------

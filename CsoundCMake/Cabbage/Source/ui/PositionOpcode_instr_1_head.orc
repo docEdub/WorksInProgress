@@ -8,7 +8,7 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} PositionOpcode_instr_1_head_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} PositionOpcode_instr_1_head_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 if (time_k() < giPositionOpcodeComboBoxInitTime) then
-    SPositionOpcode = chnget:S("savedPositionOpcode")
+    SPositionOpcode = chnget:S("positionOpcode")
     if (changed2(SPositionOpcode) == true && strlenk(SPositionOpcode) > 0) then
         // Initialize combobox index to match texteditor string.
         ki = 0
@@ -25,7 +25,7 @@ else
         // Set texteditor string to match combobox index.
         log_k_trace("positionOpcodeComboBoxIndex = %d", kPositionOpcodeComboBoxIndex)
         chnsetks(sprintfk("text(\"%s\")", gSPositionOpcodeComboBoxValues[kPositionOpcodeComboBoxIndex - 1]),
-            "savedPositionOpcodeUi")
+            "positionOpcodeUi")
     endif
 endif
 

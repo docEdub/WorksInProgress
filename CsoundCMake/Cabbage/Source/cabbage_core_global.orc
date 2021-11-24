@@ -12,6 +12,7 @@ ${CSOUND_INCLUDE} "time.orc"
 gS_host = "undefined"
 gS_os = "undefined"
 
+gkPlaybackTimeInSeconds init 0
 gk_dawPlayStartTime init 0
 gk_isPlugin init false
 
