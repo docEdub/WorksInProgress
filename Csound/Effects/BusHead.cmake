@@ -1,5 +1,5 @@
 
-set(form_width 960)
+set(form_width 1000)
 set(form_height 516)
 
 set(InstrumentName "BusHead")
