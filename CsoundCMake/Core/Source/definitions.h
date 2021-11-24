@@ -37,6 +37,8 @@
 #define CSOUND_INCLUDE _(HASH)_(include)
 #define CSOUND_UNDEF _(HASH)_(undef)
 
+#define CABBAGE_CHANNEL_INIT_TIME_SECONDS 0.25
+
 #define return igoto endin
 
 #define string_i(x) x

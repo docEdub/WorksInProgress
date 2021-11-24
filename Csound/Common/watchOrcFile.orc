@@ -54,8 +54,7 @@ instr WatchOrcFile
     log_i_trace("instr WatchOrcFile ...")
     if (gi_oscHandle == -1) then
         log_k_trace("Request not sent. (gi_oscHandle == -1).")
-        event("i", "InitializeOSC", 0, -1)
-        event("i", p1, 1, -1)
+        event("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1)
     else
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH, "is",
             gi_oscPort, "${CSD_PREPROCESSED_FILES_DIR}/${InstrumentName}.orc")
@@ -65,4 +64,4 @@ instr WatchOrcFile
     log_i_trace("instr WatchOrcFile - done")
 endin
 
-event_i("i", "WatchOrcFile", 1, -1)
+event_i("i", "WatchOrcFile", CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1)

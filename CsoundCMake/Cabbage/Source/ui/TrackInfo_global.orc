@@ -124,12 +124,30 @@ instr InitializeOSC
 endin
 
 
+instr InitializePlugin
+    log_i_info("InitializePlugin ...")
+
+    if (gi_oscHandle == -1) then
+        event_i("i", "InitializeOSC", 0, -1)
+        event_i("i", "InitializePlugin", 0, -1)
+    else
+        event_i("i", "GetPluginUuid", 0, -1, 1)
+        ${CSOUND_IFDEF} IS_FIRST_PLUGIN_IN_TRACK
+            setPluginIndex(0)
+            event_i("i", "GetTrackIndex", 0, -1)
+        ${CSOUND_ENDIF}
+    endif
+    turnoff
+
+    log_i_info("InitializePlugin - done")
+endin
+
+
 instr GetTrackIndex
     log_i_info("GetTrackIndex ...")
 
     if (gi_oscHandle == -1) then
-        event_i "i", "InitializeOSC", 0, -1
-        event_i "i", "GetTrackIndex", 0, -1
+        event_i("i", "GetTrackIndex", 0, -1)
         log_k_info("GetTrackIndex - turnoff")
         turnoff
     else
@@ -159,7 +177,7 @@ endin
 
 
 instr RegisterTrack
-    log_ik_info("RegisterTrack ...")
+    log_ik_info("%s ...", nstrstr(p1))
 
     if (strlen(gSPluginUuid) != 0) then
         log_k_trace("Sending track registration to DAW ...")
@@ -170,10 +188,10 @@ instr RegisterTrack
         log_k_trace("Sending track registration to DAW - done")
     else
         log_k_trace("gsPluginUuid length == 0")
+        event_i("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1)
     endif
 
-end:
-    log_ik_info("RegisterTrack - done")
+    log_ik_info("%s - done", nstrstr(p1))
     turnoff
 endin
 
@@ -182,8 +200,12 @@ instr RegisterPlugin
     log_ik_info("%s ...", nstrstr(p1))
     log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
 
-    OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
-        gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
+    if (strlen(gSPluginUuid) != 0 && gk_trackIndex != -1) then
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
+            gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
+    else
+        event_i("i", p1, 1, -1)
+    endif
 
     log_ik_info("%s - done", nstrstr(p1))
     turnoff
@@ -211,8 +233,7 @@ instr RequestPluginUuid
 
     if (gi_oscHandle == -1) then
         log_k_trace("Request not sent. (gi_oscHandle == -1).")
-        event("i", "InitializeOSC", 0, -1)
-        event("i", p1, 1, -1)
+        event("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1)
     else
         log_i_debug("Requesting plugin uuid on port %d", gi_oscPort)
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH, "i",
@@ -239,7 +260,7 @@ instr GetPluginUuid
             log_i_trace("Getting plugin UUID from channel ...")
             gSPluginUuid = chnget:S("pluginUuid")
             if (strlen(gSPluginUuid) == 0) then
-                event_i("i", p1, 1, -1, iAttempt + 1)
+                event_i("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1, iAttempt + 1)
                 goto end
 #if LOGGING
             else
@@ -255,9 +276,6 @@ end:
     log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
     turnoff
 endin
-
-
-event_i("i", nstrnum("GetPluginUuid"), 0, -1, 0)
 
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
