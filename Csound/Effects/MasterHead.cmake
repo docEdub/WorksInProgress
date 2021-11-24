@@ -1,6 +1,6 @@
 
 set(form_width 960)
-set(form_height 640)
+set(form_height 516)
 
 set(InstrumentName "MasterHead")
 
