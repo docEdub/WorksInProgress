@@ -14,7 +14,7 @@ if (time_k() < giPositionOpcodeComboBoxInitTime) then
         ki = 0
         while (ki < lenarray(gSPositionOpcodeComboBoxValues)) do
             if (strcmpk(SPositionOpcode, gSPositionOpcodeComboBoxValues[ki]) == 0) then
-                chnset(sprintfk("value(%d)", ki + 1), "positionOpcodeComboBoxIndexUi")
+                chnsetks(sprintfk("value(%d)", ki + 1), "positionOpcodeComboBoxIndexUi")
             endif
             ki += 1
         od
