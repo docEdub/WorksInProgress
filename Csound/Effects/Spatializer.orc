@@ -29,7 +29,7 @@ _(\)
     "xScale",               "number",     "100",     "synced",   _(\)
     "yScale",               "number",     "100",     "synced",   _(\)
     "zScale",               "number",     "100",     "synced",   _(\)
-    "positionOpcode",  "string",     "",        "synced",   _(\)
+    "positionOpcode",       "string",     "",        "synced",   _(\)
     "",                      "",           "",       "") // dummy line
 
 ${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
