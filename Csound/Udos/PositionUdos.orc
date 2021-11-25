@@ -14,9 +14,9 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_PositionUdos_orc ${CSOUND_INCLUDE_GUA
 
 opcode dEd_position, iii, 0
     SPositionOpcode = chnget("positionOpcode")
-    iX init 0
-    iY init 0
-    iZ init 0
+    iX = 0
+    iY = 0
+    iZ = 0
     if (strcmp(SPositionOpcode, "randomPosition1") == 0) then
         iX, iY, iZ dEd_randomPosition1
     elseif (strcmp(SPositionOpcode, "randomPosition2") == 0) then
@@ -31,9 +31,9 @@ endop
 
 opcode dEd_position, kkk, 0
     SPositionOpcode = chngetks("positionOpcode")
-    kX init 0
-    kY init 0
-    kZ init 0
+    kX = 0
+    kY = 0
+    kZ = 0
     if (strcmpk(SPositionOpcode, "randomPosition1") == 0) then
         kX, kY, kZ dEd_randomPosition1
     elseif (strcmpk(SPositionOpcode, "randomPosition2") == 0) then
