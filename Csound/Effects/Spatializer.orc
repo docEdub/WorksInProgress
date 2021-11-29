@@ -9,6 +9,7 @@
 #endif
 
 #include "instrument_orc_definitions.h"
+#include "Position_defines.h"
 
 
 #ifndef Spatializer_orc__include_guard
@@ -19,17 +20,7 @@
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "enabled",              "bool",       "true",    "synced",   _(\)
-    "maxAmpWhenClose",      "number",     "1",       "synced",   _(\)
-    "referenceDistance",    "number",     "0.1",     "synced",   _(\)
-    "rolloffFactor",        "number",     "0.01",    "synced",   _(\)
-    "x",                    "number",     "0",       "synced",   _(\)
-    "y",                    "number",     "0",       "synced",   _(\)
-    "z",                    "number",     "0",       "synced",   _(\)
-    "xScale",               "number",     "100",     "synced",   _(\)
-    "yScale",               "number",     "100",     "synced",   _(\)
-    "zScale",               "number",     "100",     "synced",   _(\)
-    "positionOpcode",       "string",     "",        "synced",   _(\)
+    POSITION_CC_INFO
     "",                      "",           "",       "") // dummy line
 
 ${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
@@ -37,17 +28,7 @@ ${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
-    CREATE_CC_INDEX(enabled)
-    CREATE_CC_INDEX(maxAmpWhenClose)
-    CREATE_CC_INDEX(referenceDistance)
-    CREATE_CC_INDEX(rolloffFactor)
-    CREATE_CC_INDEX(x)
-    CREATE_CC_INDEX(y)
-    CREATE_CC_INDEX(z)
-    CREATE_CC_INDEX(xScale)
-    CREATE_CC_INDEX(yScale)
-    CREATE_CC_INDEX(zScale)
-    CREATE_CC_INDEX(positionOpcode)
+    #include "Position_ccIndexes.orc"
 endin
 
 event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
@@ -105,24 +86,12 @@ instr INSTRUMENT_ID
             aIn = inch(4)
         #endif
 
-        if (CC_VALUE_k(enabled) == true) then
-            iPortTime = 50 / kr
-
-            kMaxAmpWhenClose = portk(CC_VALUE_k(maxAmpWhenClose), iPortTime)
-            kReferenceDistance = portk(CC_VALUE_k(referenceDistance), iPortTime)
-            kRolloffFactor = portk(CC_VALUE_k(rolloffFactor), iPortTime)
-            kPositionX, kPositionY, kPositionZ dEd_position
-            kX = portk(CC_VALUE_k(x) * CC_VALUE_k(xScale), iPortTime) + kPositionX
-            kY = portk(CC_VALUE_k(y) * CC_VALUE_k(yScale), iPortTime) + kPositionY
-            kZ = portk(CC_VALUE_k(z) * CC_VALUE_k(zScale), iPortTime) + kPositionZ
-
-            ; if (changed2(kPositionX) == true || changed2(kPositionY) == true || changed2(kPositionZ) == true) then
-            ;     log_k_debug("position = [%f, %f, %f]", kPositionX, kPositionY, kPositionZ)
-            ; endif
+        if (CC_VALUE_k(positionEnabled) == true) then
+            #include "Position_kXYZ.orc"
 
             kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kReferenceDistance, kRolloffFactor)
-            aOut = aIn * min(kDistanceAmp, kMaxAmpWhenClose)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aOut = aIn * min(kDistanceAmp, kPositionMaxAmpWhenClose)
 
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
             a1 = gkAmbisonicChannelGains[0] * aOut

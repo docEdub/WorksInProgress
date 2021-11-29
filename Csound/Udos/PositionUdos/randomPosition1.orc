@@ -1,11 +1,11 @@
 
-/// Returns a new randomized X and Z coordinate from -100 to 100 on every i-pass.
+/// Returns a new randomized X and Z coordinate from -1 to 1 on every i-pass.
 /// Returns a constant Y of 1.
 ///
 opcode dEd_randomPosition1, iii, 0
-    iX init random(-100, 100)
+    iX init random(-1, 1)
     iY init 1
-    iZ init random(-100, 100)
+    iZ init random(-1, 1)
     xout iX, iY, iZ
 endop
 
@@ -22,8 +22,8 @@ opcode dEd_randomPosition1, kkk, 0
     kTick = gkPlaybackTimeInSeconds / 0.0625 // 1 tick = 1/16th of a second.
     if (kTick - kPreviousTick > 1 || kTick < kPreviousTick) then
         kPreviousTick = kTick
-        kX = random:k(-100, 100)
-        kZ = random:k(-100, 100)
+        kX = random:k(-1, 1)
+        kZ = random:k(-1, 1)
     endif
 
     xout kX, kY, kZ

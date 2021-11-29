@@ -1,11 +1,11 @@
 #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: PositionOpcode_instr_1_head.orc
+// File: Position_instr_1_head.orc
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE_GUARD_IFNDEF} PositionOpcode_instr_1_head_orc
-${CSOUND_INCLUDE_GUARD_DEFINE} PositionOpcode_instr_1_head_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
+${CSOUND_INCLUDE_GUARD_IFNDEF} Position_instr_1_head_orc
+${CSOUND_INCLUDE_GUARD_DEFINE} Position_instr_1_head_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 if (time_k() < giPositionOpcodeComboBoxInitTime) then
     SPositionOpcode = chnget:S("positionOpcode")

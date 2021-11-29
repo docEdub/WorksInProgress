@@ -19,7 +19,7 @@ ${CSOUND_DEFINE} ORC_FILENAME #"${InstrumentName}.orc"#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_INCLUDE} "cabbage_effect_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
-${CSOUND_INCLUDE} "PositionOpcode_global.orc"
+${CSOUND_INCLUDE} "Position_global.orc"
 ${CSOUND_INCLUDE} "watchOrcFile.orc"
 
 
@@ -31,7 +31,7 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     log_i_info("instr %d ...", p1)
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
-    ${CSOUND_INCLUDE} "PositionOpcode_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "Position_instr_1_head.orc"
 
     if (gk_mode == 1) then
         kgoto end
@@ -178,9 +178,9 @@ ${group} bounds(${tab_group_rect}) {
     #include "Tab.ui"
 }
 
-; Settings tab content
-${group} bounds(${tab_content_group_rect}) identchannel("settings_tab_content_ui") visible(1) {
-    #include "Spatializer.ui"
+; Position tab content
+${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui") visible(1) {
+    #include "Position.ui"
 }
 
 ; Log tab content

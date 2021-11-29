@@ -9,8 +9,6 @@ set(CsoundCMake_Cabbage_HeaderFiles
 
 set(CsoundCMake_Cabbage_OrcFiles
     "opcodes/adsr_linsegr.udo.orc"
-    "ui/PositionOpcode_global.orc"
-    "ui/PositionOpcode_instr_1_head.orc"
     "ui/TrackInfo_global.orc"
     "ui/TrackInfo_instr_1_head.orc"
     "cabbage_core_global.orc"
