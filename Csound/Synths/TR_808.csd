@@ -19,6 +19,7 @@ ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
 ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
+${CSOUND_INCLUDE} "Position_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 ${CSOUND_INCLUDE} "watchOrcFile.orc"
@@ -31,6 +32,7 @@ ${CSOUND_INCLUDE} "watchOrcFile.orc"
 instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
+    ${CSOUND_INCLUDE} "Position_instr_1_head.orc"
 endin
 
 
@@ -61,12 +63,18 @@ instr 2
     if (gk_playing == true && gk_mode == 4 && (changed(gk_mode) == true || changed(gk_playing) == true)) then
         kI = 0
         while (kI < iCcCount) do
-            kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][0])) / 100
-            if (gkCcSyncTypes_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] == $CC_SYNC_TO_CHANNEL &&
-                    kValue != giCcValueDefaults_$INSTRUMENT_NAME[kI]) then
-                SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
-                SScoreLine = sprintfk("i  %s    0.01 1 %s %d %.02f", SInstrument, "Cc", kI, kValue)
+            SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
+            if (strcmpk(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_TYPE], "string") == 0) then
+                SValue = chngetks(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL])
+                SScoreLine = sprintfk("i  %s    0.01 1 %s %d \\\"%s\\\"", SInstrument, "Cc", kI, SValue)
                 sendScoreMessage_k(SScoreLine)
+            else
+                kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL])) / 100
+                if (gkCcSyncTypes_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] == $CC_SYNC_TO_CHANNEL &&
+                        kValue != giCcValueDefaults_$INSTRUMENT_NAME[kI]) then
+                    SScoreLine = sprintfk("i  %s    0.01 1 %s %d %.02f", SInstrument, "Cc", kI, kValue)
+                    sendScoreMessage_k(SScoreLine)
+                endif
             endif
             kI += 1
         od
@@ -76,21 +84,38 @@ instr 2
     kI = 0
     while (kI < iCcCount) do
         if (gkCcSyncTypes_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] == $CC_SYNC_TO_CHANNEL) then
-            kPreviousValue = gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
-            kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][0])) / 100
+            if (strcmpk(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_TYPE], "string") == 0) then
+                SPreviousValue = gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
+                SValue = chngetks(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL])
+                if (strcmpk(SPreviousValue, SValue) != 0) then
+                    log_k_debug("String channel '%s' changed from '%s' to '%s'", gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL], SPreviousValue, SValue)
+                    gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = sprintfk("%s", SValue)
+                    if (gk_mode == 4) then
+                        SInstrument = sprintfk("%s_%d_%d", STRINGIZE(${InstrumentName}), gk_trackIndex, gk_pluginIndex - 1)
+                        SScoreLine = sprintfk("i  %s    %.03f 1 %s %d \\\"%s\\\"", SInstrument, elapsedTime_k(), "Cc", kI, SValue)
+                        sendScoreMessage_k(SScoreLine)
+                    else
+                        SInstrument = "\"${InstrumentName}\""
+                        SScoreLine = sprintfk("i  %s    0 1 %d %d \"%s\"", SInstrument, EVENT_CC, kI, SValue)
+                        scoreline(SScoreLine, 1)
+                    endif
+                endif
+            else
+                kPreviousValue = gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
+                kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][0])) / 100
+                if (kValue != kPreviousValue) then
+                    ; log_k_debug("CC %s = %f", gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL], kValue)
+                    gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = kValue
 
-            if (kValue != kPreviousValue) then
-                ; log_k_debug("CC %s = %f", gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL], kValue)
-                gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = kValue
-
-                if (gk_mode == 4) then
-                    SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
-                    SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
-                    sendScoreMessage_k(SScoreLine)
-                else
-                    SInstrument = "\"${InstrumentName}\""
-                    SScoreLine = sprintfk("i  %s    0 1 %d %d %.02f", SInstrument, EVENT_CC, kI, kValue)
-                    scoreline(SScoreLine, 1)
+                    if (gk_mode == 4) then
+                        SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
+                        SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
+                        sendScoreMessage_k(SScoreLine)
+                    else
+                        SInstrument = "\"${InstrumentName}\""
+                        SScoreLine = sprintfk("i  %s    0 1 %d %d %.02f", SInstrument, EVENT_CC, kI, kValue)
+                        scoreline(SScoreLine, 1)
+                    endif
                 endif
             endif
         endif
@@ -188,6 +213,11 @@ ${group} bounds(${tab_group_rect}) {
 ; S88 tab content
 ${group} bounds(${tab_content_group_rect}) identchannel("s88_tab_content_ui") visible(1) {
     #include "S88.ui"
+}
+
+; Position tab content
+${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui") visible(0) {
+    #include "Position.ui"
 }
 
 ; Log tab content

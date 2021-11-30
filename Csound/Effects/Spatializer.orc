@@ -29,6 +29,7 @@ ${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
 
 instr CreateCcIndexesInstrument
     #include "Position_ccIndexes.orc"
+    turnoff
 endin
 
 event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)

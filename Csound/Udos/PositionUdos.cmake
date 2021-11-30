@@ -13,6 +13,7 @@ set(positionUdoNames
     "randomPosition2"
     "randomPosition3"
     "randomPosition4"
+    "randomXZ_1"
     )
 
 set(PositionUdos_dependencies )

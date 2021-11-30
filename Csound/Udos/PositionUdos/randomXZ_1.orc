@@ -2,7 +2,7 @@
 /// Returns a new randomized X and Z coordinate from -1 to 1 on every i-pass.
 /// Returns a constant Y of 1.
 ///
-opcode dEd_randomPosition1, iii, 0
+opcode dEd_randomXZ_1, iii, 0
     iX init random(-1, 1)
     iY init 0
     iZ init random(-1, 1)
@@ -12,7 +12,7 @@ endop
 /// Returns a new randomized X and Z coordinate from -1 to 1 every 1/16th of a second.
 /// Returns a constant Y of 1.
 ///
-opcode dEd_randomPosition1, kkk, 0
+opcode dEd_randomXZ_1, kkk, 0
     kX init 0
     kY init 0
     kZ init 0

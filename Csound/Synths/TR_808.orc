@@ -14,6 +14,7 @@
 #endif
 
 #include "instrument_orc_definitions.h"
+#include "Position_defines.h"
 
 
 #ifndef TR_808_orc__include_guard
@@ -23,17 +24,16 @@ ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "example",                                  "bool",     "false",            "synced", _(\)
+    POSITION_CC_INFO
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
 
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
-    CREATE_CC_INDEX(example)
-
+    #include "Position_ccIndexes.orc"
     turnoff
 endin
 
@@ -43,6 +43,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 
@@ -138,8 +139,17 @@ ${CSOUND_ENDIF}
 
 
 instr INSTRUMENT_ID
+    iOrcInstanceIndex = ORC_INSTANCE_INDEX
     iEventType = p4
     if (iEventType == EVENT_CC) then
+        iCcIndex = p5
+        iCcValue = p6
+        if (strcmp(gSCcInfo[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+            gSCcValues[ORC_INSTANCE_INDEX][iCcIndex] = strget(iCcValue)
+        else
+            giCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+            gkCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+        endif
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
@@ -169,7 +179,8 @@ instr INSTRUMENT_ID
             // Slight pitch bend at the start of the note.
             kbend = transeg:k(0.5, 1.2, -4, 0, 1, 0, 0)
             // Tone.
-            asig = gbuzz(0.5, 50 * octave:k(giTR_808_BassDrum_Tune) * semitone:k(kbend), 20, 1, kmul, giTR_808_Cosine_TableNumber)
+            asig = gbuzz(0.5, 50 * octave:k(giTR_808_BassDrum_Tune) * semitone:k(kbend), 20, 1, kmul,
+                giTR_808_Cosine_TableNumber)
             // Amplitude envelope for sustain of the sound.
             aenv = transeg:a(1, iNoteDuration - 0.004, -6, 0)
             // Soft attack.
@@ -365,11 +376,45 @@ instr INSTRUMENT_ID
 
         endif
 
+
+        if (CC_VALUE_i(positionEnabled) == true) then
+            ; log_i_trace("Calling position UDO ...")
+            #include "Position_iXYZ.orc"
+
+            kDistance = AF_3D_Audio_SourceDistance(k(iX), k(iY), k(iZ))
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, k(iPositionReferenceDistance),
+                k(iPositionRolloffFactor))
+            aOut *= min(kDistanceAmp, k(iPositionMaxAmpWhenClose))
+
+            AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
+            ; #if LOGGING
+            ;     kLoggedGains init false
+            ;     if (kLoggedGains == false) then
+            ;         log_k_trace("Ambisonic gains = (%.03f, %.03f, %.03f, %.03f)",
+            ;             gkAmbisonicChannelGains[0],
+            ;             gkAmbisonicChannelGains[1],
+            ;             gkAmbisonicChannelGains[2],
+            ;             gkAmbisonicChannelGains[3])
+            ;         kLoggedGains = true
+            ;     endif
+            ; #endif
+            a1 = gkAmbisonicChannelGains[0] * aOut
+            a2 = gkAmbisonicChannelGains[1] * aOut
+            a3 = gkAmbisonicChannelGains[2] * aOut
+            a4 = gkAmbisonicChannelGains[3] * aOut
+        else
+            // Disabled.
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = aOut
+        endif
+
         #if IS_PLAYBACK
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = aOut
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = aOut
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
         #else
@@ -385,7 +430,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a(0), a(0), a(0), aOut, aOut, aOut)
+            outc(a1, a2, a3, a4, aOut, aOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
