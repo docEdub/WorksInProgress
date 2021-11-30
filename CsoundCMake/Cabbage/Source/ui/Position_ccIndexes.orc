@@ -2,6 +2,7 @@
     CREATE_CC_INDEX(positionMaxAmpWhenClose)
     CREATE_CC_INDEX(positionReferenceDistance)
     CREATE_CC_INDEX(positionRolloffFactor)
+    CREATE_CC_INDEX(positionOpcodeComboBoxIndex)
     CREATE_CC_INDEX(positionOpcode)
     CREATE_CC_INDEX(positionXOffset)
     CREATE_CC_INDEX(positionYOffset)

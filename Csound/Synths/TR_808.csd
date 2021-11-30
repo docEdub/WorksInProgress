@@ -150,18 +150,18 @@ instr 3
     goto end
 
     mode_1:
-        log_i_info("instr 3, mode_1 ...")
+        log_i_trace("instr 3, mode_1 ...")
         log_i_debug("gi_noteId = %d", gi_noteId)
 
         i_instrument = nstrnum(STRINGIZE(${InstrumentName})) + gi_noteId / 1000
         log_i_debug("i_instrument = %.6f", i_instrument)
 
         event_i("i", i_instrument, 0, 0.001, EVENT_NOTE_ON, notnum(), veloc())
-        log_i_info("instr 3, mode_1 - done")
+        log_i_trace("instr 3, mode_1 - done")
         goto end
 
     mode_4:
-        log_i_info("instr 3, mode_4 ...")
+        log_i_trace("instr 3, mode_4 ...")
         xtratim 2 / kr
         log_i_debug("gi_noteId = %d", gi_noteId)
 
@@ -174,7 +174,7 @@ instr 3
                 STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime_k(), notnum(), veloc()))
             k_noteOnSent = true
         endif
-        log_i_info("instr 3, mode_4 - done")
+        log_i_trace("instr 3, mode_4 - done")
         goto end
 
     end:
@@ -223,5 +223,4 @@ ${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui
 ; Log tab content
 ${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(0)
 
-; ${CSOUND_CMAKE_POSITION_UDO_NAMES}
 </Cabbage>

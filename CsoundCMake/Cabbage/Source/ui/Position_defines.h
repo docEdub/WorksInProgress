@@ -3,6 +3,7 @@
     "positionMaxAmpWhenClose",      "number",     "1",       "synced",   \
     "positionReferenceDistance",    "number",     "0.1",     "synced",   \
     "positionRolloffFactor",        "number",     "0.01",    "synced",   \
+    "positionOpcodeComboBoxIndex",  "number",     "0",       "synced",   \
     "positionOpcode",               "string",     "",        "synced",   \
     "positionXOffset",              "number",     "0",       "synced",   \
     "positionYOffset",              "number",     "0",       "synced",   \

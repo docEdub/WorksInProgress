@@ -23,7 +23,6 @@ else
     kPositionOpcodeComboBoxIndex = chnget:k("positionOpcodeComboBoxIndex")
     if (changed2(kPositionOpcodeComboBoxIndex) == true) then
         // Set texteditor string to match combobox index.
-        log_k_trace("positionOpcodeComboBoxIndex = %d", kPositionOpcodeComboBoxIndex)
         chnsetks(sprintfk("text(\"%s\")", gSPositionOpcodeComboBoxValues[kPositionOpcodeComboBoxIndex - 1]),
             "positionOpcodeUi")
     endif

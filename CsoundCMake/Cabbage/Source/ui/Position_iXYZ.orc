@@ -1,7 +1,7 @@
 iPositionMaxAmpWhenClose = CC_VALUE_i(positionMaxAmpWhenClose)
 iPositionReferenceDistance = CC_VALUE_i(positionReferenceDistance)
 iPositionRolloffFactor = CC_VALUE_i(positionRolloffFactor)
-iX, iY, iZ dEd_position
+iX, iY, iZ dEd_position CC_VALUE_i(positionOpcodeComboBoxIndex)
 
 iX += CC_VALUE_i(positionXOffset)
 iY += CC_VALUE_i(positionYOffset)

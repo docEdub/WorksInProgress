@@ -28,7 +28,7 @@ _(\)
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #48#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #52#
 
 #include "instrument_cc.orc"
 

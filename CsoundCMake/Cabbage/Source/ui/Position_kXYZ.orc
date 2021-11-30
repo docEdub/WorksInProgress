@@ -3,7 +3,7 @@ iPositionPortTime = 50 / kr
 kPositionMaxAmpWhenClose = portk(CC_VALUE_k(positionMaxAmpWhenClose), iPositionPortTime)
 kPositionReferenceDistance = portk(CC_VALUE_k(positionReferenceDistance), iPositionPortTime)
 kPositionRolloffFactor = portk(CC_VALUE_k(positionRolloffFactor), iPositionPortTime)
-kX, kY, kZ dEd_position
+kX, kY, kZ dEd_position CC_VALUE_k(positionOpcodeComboBoxIndex)
 
 kX += portk(CC_VALUE_k(positionXOffset), iPositionPortTime)
 kY += portk(CC_VALUE_k(positionYOffset), iPositionPortTime)
