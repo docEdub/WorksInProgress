@@ -11,4 +11,11 @@ iX *= CC_VALUE_i(positionXScale)
 iY *= CC_VALUE_i(positionYScale)
 iZ *= CC_VALUE_i(positionZScale)
 
+kX init iX
+kY init iY
+kZ init iZ
+kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
+kPositionReferenceDistance init iPositionReferenceDistance
+kPositionRolloffFactor init iPositionRolloffFactor
+
 ; log_i_debug("position = [%f, %f, %f]", iX, iY, iZ)
