@@ -64,7 +64,7 @@ opcode CONCAT(_log_k_, log_level), S, S
     #if LOG_TO_DAW_SERVICE
         #ifndef DISABLE_LOGGING_TO_DAW_SERVICE
             if (k(0) < gk_i) then
-                scoreline(sprintfk("i \"LogToDAW\" 0 1 \"%s\"", S_fullMessage), k_i)
+                scoreline(sprintfk("i \"LogToDAW\" 0 1 \"%s\"", string_escape_k(S_fullMessage)), k_i)
             endif
         #endif
     #endif

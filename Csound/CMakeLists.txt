@@ -13,6 +13,7 @@ find_package(CsoundCMake.Cabbage REQUIRED)
 
 add_csd_targets(
     EFFECT_PLUGIN_SOURCES
+        "DawService/DawService.csd"
         "Effects/BusHead.csd"
         "Effects/MasterHead.csd"
         "Effects/Reverb.csd"
@@ -23,7 +24,6 @@ add_csd_targets(
         "Synths/Triangle2Synth.csd"
         "Synths/Triangle3MonoSynth.csd"
     STANDALONE_SOURCES
-        "DawService/DawService.csd"
         "DawService/ReloadOrcFiles.csd"
     PLAYBACK_SOURCES
         "DawPlayback/DawPlayback.csd"

@@ -7,12 +7,30 @@ get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CS
 
 # Set main Cabbage form width and height.
 #
-set(form_width 180)
-set(form_height 240)
+set(form_width 1000)
+set(form_height 640)
+
+include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
+
+add_tab(mode_tab "Mode" 64)
+add_tab(log_tab "Log" 64)
+process_tabs()
+
+
+set(tab_group_y MATH "${padding}")
+set(tab_group_bottom MATH "${tab_group_y} + ${tab_height}")
+set(tab_group_rect "0, ${tab_group_y}, ${form_width}, ${tab_height}")
+
+set(tab_content_group_y MATH "${tab_group_bottom} + ${padding}")
+set(tab_content_group_height MATH "${form_height} - ${tab_group_bottom}")
+set(tab_content_group_size "${form_width}, ${tab_content_group_height}")
+set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}")
+
+set(tab_content_rect "0, 0, ${tab_content_group_size}")
 
 set(button_count 4)
-set(button_width MATH "${form_width} - (2 * ${padding})")
-set(button_height MATH "(${form_height} - (${button_count} * (${padding} + 1))) / ${button_count}")
+set(button_width MATH "180 - (2 * ${padding})")
+set(button_height MATH "(${tab_content_group_height} - (${button_count} * (${padding} + 1))) / ${button_count}")
 
 set(button1_x "${padding}")
 set(button1_y "${padding}")
@@ -32,4 +50,4 @@ set(button4_xy "${button4_x}, ${button4_y}")
 set(button_size "${button_width}, ${button_height}")
 
 # Widgets
-set(mode_button "${button} colour:0(${dark_grey}) radiogroup(\"mode\")")
+set(mode_button "${button} colour:0(${dark_grey}) radiogroup(\"mode\") automatable(0)")

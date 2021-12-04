@@ -3,7 +3,7 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---env:INCDIR=${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}
+--env:INCDIR=${CSD_PREPROCESSED_FILES_DIR};${CSOUND_CMAKE_PREPROCESSED_FILES_DIR}
 --messagelevel=${CSOUND_MESSAGE_LEVEL}
 --midi-device=0
 --nodisplays
@@ -289,6 +289,9 @@ end:
 endop
 
 
+giNextAvailableInstrumentFraction init 1
+
+
 opcode generateUuid, 0, S
     SPort xin
     iInstrumentNumber = nstrnum("GenerateUuid")
@@ -362,7 +365,7 @@ endin
 //
 instr ReadMode
     log_ik_info("%s ...", nstrstr(p1))
-    gk_mode = readk("_.mode.txt", 8, 1)
+    gk_mode = readk("${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/_.mode.txt", 8, 1)
     set_mode(gk_mode)
     log_k_info("Mode = %d", gk_mode)
     log_ik_info("%s - done", nstrstr(p1))
@@ -375,7 +378,7 @@ endin
 instr WriteMode
     log_ik_info("%s ...", nstrstr(p1))
     // Note that opening the file for write with the 'fiopen' opcode clears the file.
-    i_fileHandle = fiopen( "_.mode.txt", 0)
+    i_fileHandle = fiopen( "${CSOUND_CMAKE_PLUGIN_OUTPUT_DIR}/_.mode.txt", 0)
     fouti(i_fileHandle, 0, 0, p4)
     ficlose(i_fileHandle)
     log_ik_info("%s - done", nstrstr(p1))
@@ -511,7 +514,7 @@ instr HandleOscMessages
                 endif
 
 
-                // Plugin UUID generation
+                // Plugin UUID request
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH) == true) then
                     if (k_argCount < 1) then
@@ -521,6 +524,20 @@ instr HandleOscMessages
                         // 2 = port
                         log_k_trace("Generating UUID")
                         generateUuid(S_oscMessages[k(2)])
+                    endif
+                endif
+
+
+                // Plugin UUID suggest
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_PLUGIN_SUGGEST_UUID_PATH) == true) then
+                    if (k_argCount < 2) then
+                        log_k_error("OSC path '%s' requires 2 argument but was given %d.",
+                            DAW_SERVICE_OSC_PLUGIN_SUGGEST_UUID_PATH, k_argCount)
+                    else
+                        // 2 = port
+                        // 3 = uuid
+                        scoreline(sprintfk("i \"CheckUuid\" 0 -1 %s \"%s\"", S_oscMessages[k(2)], S_oscMessages[k(3)]), 1)
                     endif
                 endif
 
@@ -695,8 +712,66 @@ instr UpdateWatchedOrcFile
 endin
 
 
+instr CheckUuid
+    iOscPort = p4
+    SUuid = strget(p5)
+
+    log_i_debug("frac(p1) == %f", frac(p1))
+
+    if (frac(p1) == 0) then
+        strset(giNextAvailableInstrumentFraction, SUuid)
+        event_i("i", p1 + giNextAvailableInstrumentFraction / 100000, 0, -1, iOscPort, giNextAvailableInstrumentFraction)
+        giNextAvailableInstrumentFraction += 1
+        goto end
+    endif
+
+    log_i_trace("instr %s(%d, '%s') ...", nstrstr(p1), iOscPort, SUuid)
+
+    kHasUuid init false
+    ki = 0
+    while (ki < TRACK_COUNT_MAX && kHasUuid == false) do
+        if (strlenk(gSTrackUuids[ki]) > 0) then
+            log_k_debug("Checking track UUID %s", gSTrackUuids[ki])
+            if (strcmpk(gSTrackUuids[ki], SUuid) == 0) then
+                log_k_debug("Found track UUID %s", gSTrackUuids[ki])
+                kHasUuid = true
+            endif
+            kj = 0
+            while (kj < PLUGIN_COUNT_MAX && kHasUuid == false) do
+                if (strlenk(gSPluginUuids[ki][kj]) > 0) then
+                    log_k_debug("Checking plugin UUID %s", gSPluginUuids[ki][kj])
+                    if (strcmpk(gSPluginUuids[ki][kj], SUuid) == 0) then
+                        log_k_debug("Found plugin UUID %s", gSPluginUuids[ki][kj])
+                        kHasUuid = true
+                    endif
+                endif
+                kj += 1
+            od
+        endif
+        ki += 1
+    od
+    if (kHasUuid == false) then
+        log_k_trace("Sending Uuid %s to port %d", SUuid, iOscPort)
+        OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
+            "s", SUuid)
+    else
+        event("i", "GenerateUuid", 0, -1, iOscPort)
+    endif
+
+end:
+    turnoff
+    log_i_trace("instr %s(%d, '%s') - done", nstrstr(p1), iOscPort, SUuid)
+endin
+
+
 instr GenerateUuid
     iOscPort init p4
+
+    if (frac(p1) == 0) then
+        event_i("i", p1 + giNextAvailableInstrumentFraction / 100000, 0, -1, iOscPort)
+        giNextAvailableInstrumentFraction += 1
+        goto end
+    endif
 
     log_i_trace("instr GenerateUuid(iOscPort = %d) ...", iOscPort)
 
@@ -709,6 +784,7 @@ instr GenerateUuid
     OSCsend(1, TRACK_INFO_OSC_ADDRESS, iOscPort, sprintfk("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, iOscPort),
         "s", SUuid)
 
+end:
     turnoff
     log_i_trace("instr GenerateUuid(iOscPort = %d) - done", iOscPort)
 endin
@@ -1191,6 +1267,9 @@ instr WriteTracksetScoFile
 endin
 
 
+${CSOUND_INCLUDE} "Tab.orc"
+
+
 </CsInstruments>
 <CsScore>
 
@@ -1204,9 +1283,21 @@ i"InitializeMode" 0 z
 <Cabbage>
 
 ${form} caption("DAW Service") size(${form_size}) pluginid("0000")
-${mode_button} bounds(${button1_xy}, ${button_size}) text("Mode 1") channel("mode-1") colour:1(${dark_green})
-${mode_button} bounds(${button2_xy}, ${button_size}) text("Mode 2") channel("mode-2") colour:1(${red})
-${mode_button} bounds(${button3_xy}, ${button_size}) text("Mode 3") channel("mode-3") colour:1(${red})
-${mode_button} bounds(${button4_xy}, ${button_size}) text("Mode 4") channel("mode-4") colour:1(${red})
+
+; Tabs
+${group} bounds(${tab_group_rect}) {
+    #include "Tab.ui"
+}
+
+; Mode tab content
+${group} bounds(${tab_content_group_rect}) identchannel("mode_tab_content_ui") visible(0) {
+    ${mode_button} bounds(${button1_xy}, ${button_size}) text("Mode 1") channel("mode-1") colour:1(${dark_green})
+    ${mode_button} bounds(${button2_xy}, ${button_size}) text("Mode 2") channel("mode-2") colour:1(${red})
+    ${mode_button} bounds(${button3_xy}, ${button_size}) text("Mode 3") channel("mode-3") colour:1(${red})
+    ${mode_button} bounds(${button4_xy}, ${button_size}) text("Mode 4") channel("mode-4") colour:1(${red})
+}
+
+; Log tab content
+${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(1)
 
 </Cabbage>

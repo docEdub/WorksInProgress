@@ -219,7 +219,7 @@ instr ListenForPluginUuid
     kReceived = OSClisten(gi_oscHandle, sprintf("%s/%d", TRACK_INFO_OSC_PLUGIN_SET_UUID_PATH, gi_oscPort), "s", SUuid)
     if (kReceived == true) then
         gSPluginUuid = sprintfk("%s", SUuid)
-        log_k_debug("gSPluginUuid = %s", gSPluginUuid)
+        log_k_debug("Heard gSPluginUuid = %s", gSPluginUuid)
         chnsetks(sprintfk("text(\"%s\")", gSPluginUuid), "pluginUuid_ui")
         turnoff
     endif
@@ -245,6 +245,27 @@ instr RequestPluginUuid
     log_i_trace("instr RequestPluginUuid - done")
 endin
 
+
+instr SuggestPluginUuid
+    SSuggestedPluginUuid = strget(p4)
+
+    log_ik_trace("%s('%s') ...", nstrstr(p1), SSuggestedPluginUuid)
+
+    if (gi_oscHandle == -1) then
+        log_k_trace("Request not sent. (gi_oscHandle == -1).")
+        event("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1)
+    else
+        log_i_debug("Requesting plugin uuid on port %d", gi_oscPort)
+        OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_SUGGEST_UUID_PATH, "is",
+            gi_oscPort, SSuggestedPluginUuid)
+        event("i", "ListenForPluginUuid", 0, -1)
+    endif
+    
+    log_ik_trace("%s('%s') - done", nstrstr(p1), SSuggestedPluginUuid)
+    turnoff
+endin
+
+
 instr GetPluginUuid
     iAttempt = p4
 
@@ -258,21 +279,18 @@ instr GetPluginUuid
             log_i_trace("Requesting plugin UUID - done")
         else
             log_i_trace("Getting plugin UUID from channel ...")
-            gSPluginUuid = chnget:S("pluginUuid")
-            if (strlen(gSPluginUuid) == 0) then
+            SPluginUuid = chnget:S("pluginUuid")
+            if (strlen(SPluginUuid) == 0) then
                 event_i("i", p1, CABBAGE_CHANNEL_INIT_TIME_SECONDS, -1, iAttempt + 1)
-                goto end
-#if LOGGING
             else
-                log_i_trace("Plugin UUID set from channel 'pluginUuid' to '%s'", gSPluginUuid)
-#endif
+                log_i_trace("Plugin UUID from channel 'pluginUuid' is '%s'", SPluginUuid)
+                scoreline(sprintfk("i \"SuggestPluginUuid\" 0 -1 \"%s\"", SPluginUuid), 1)
             endif
         endif
     else
         log_i_warning("gSPluginUuid already set to %s", gSPluginUuid)
     endif
 
-end:
     log_ik_trace("%s attempt = %d - done", nstrstr(p1), iAttempt)
     turnoff
 endin

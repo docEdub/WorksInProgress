@@ -54,8 +54,11 @@ ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 instr 2
     iCcCount = giCcCount_$INSTRUMENT_NAME
-
     log_i_debug("instr 2, CC count = %d", iCcCount)
+
+    if (gk_trackIndex == -1) then
+        kgoto end
+    endif
 
     // In mode 4 playback, initialize CCs not set to default.
     // NB: The CCs are initialized at 0.01 seconds instead of 0 so they don't get overwritten by the instrument that
@@ -85,20 +88,21 @@ instr 2
     while (kI < iCcCount) do
         if (gkCcSyncTypes_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] == $CC_SYNC_TO_CHANNEL) then
             if (strcmpk(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_TYPE], "string") == 0) then
-                SPreviousValue = gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
+                SPreviousValue = sprintfk("%s", gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI])
                 SValue = chngetks(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL])
                 if (strcmpk(SPreviousValue, SValue) != 0) then
                     log_k_debug("String channel '%s' changed from '%s' to '%s'", gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL], SPreviousValue, SValue)
                     gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = sprintfk("%s", SValue)
                     if (gk_mode == 4) then
-                        SInstrument = sprintfk("%s_%d_%d", STRINGIZE(${InstrumentName}), gk_trackIndex, gk_pluginIndex - 1)
+                        SInstrument = sprintfk("%s_%d", STRINGIZE(${InstrumentName}), gk_trackIndex)
                         SScoreLine = sprintfk("i  %s    %.03f 1 %s %d \\\"%s\\\"", SInstrument, elapsedTime_k(), "Cc", kI, SValue)
                         sendScoreMessage_k(SScoreLine)
-                    else
-                        SInstrument = "\"${InstrumentName}\""
-                        SScoreLine = sprintfk("i  %s    0 1 %d %d \"%s\"", SInstrument, EVENT_CC, kI, SValue)
-                        scoreline(SScoreLine, 1)
                     endif
+                    // Send CC message to .orc in all modes to prevent infinite loop caused by SPreviousValue not
+                    // getting updated.
+                    SInstrument = sprintfk("%s", "\"${InstrumentName}\"")
+                    SScoreLine = sprintfk("i  %s    0 1 %d %d \"%s\"", SInstrument, EVENT_CC, kI, SValue)
+                    scoreline(SScoreLine, 1)
                 endif
             else
                 kPreviousValue = gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
@@ -121,6 +125,7 @@ instr 2
         endif
         kI += 1
     od
+end:
 endin
 
 

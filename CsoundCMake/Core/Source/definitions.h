@@ -53,6 +53,7 @@
 #define DAW_SERVICE_OSC_TRACK_REFERENCING_PATH "/DawService/track/referencing"
 #define DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH "/DawService/plugin/registration"
 #define DAW_SERVICE_OSC_PLUGIN_REQUEST_UUID_PATH "/DawService/plugin/request_uuid"
+#define DAW_SERVICE_OSC_PLUGIN_SUGGEST_UUID_PATH "/DawService/plugin/suggest_uuid"
 #define DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH "/DawService/plugin/watch_orc"
 #define DAW_SERVICE_OSC_PLUGIN_UPDATE_WATCHED_ORCS_PATH "/DawService/plugin/update_watched_orcs"
 

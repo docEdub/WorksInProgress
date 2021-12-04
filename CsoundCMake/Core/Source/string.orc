@@ -56,6 +56,33 @@ opcode filename_from_full_path_k, S, S
     xout S_filename
 endop
 
+opcode string_escape_k, S, S
+    SUnescaped xin
+
+    // Escape quotes.
+    SEscaped = sprintfk("%s", "")
+    kiStart = 0
+    kiCurrent = 0
+    kMessageLength = strlenk(SUnescaped)
+    while (kiCurrent < kMessageLength) do
+        if (strchark(SUnescaped, kiCurrent) == 34) then // 34 == quote ascii character number
+            if (kiCurrent > 0) then
+                SEscaped = strcatk(SEscaped, strsubk(SUnescaped, kiStart, kiCurrent))
+                SEscaped = strcatk(SEscaped, "\\\"")
+            else
+                SEscaped = strcatk(SEscaped, "\\\"")
+            endif
+            kiStart = kiCurrent + 1
+        endif
+        kiCurrent += 1
+    od
+    if (kiStart < kiCurrent) then
+        SEscaped = strcatk(SEscaped, strsubk(SUnescaped, kiStart, kiCurrent + 1))
+    endif
+
+    xout SEscaped
+endop
+
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
 //----------------------------------------------------------------------------------------------------------------------
