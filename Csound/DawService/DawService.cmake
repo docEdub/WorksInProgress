@@ -5,32 +5,34 @@ set(CSD_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/DawService.csd")
 get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
 
-# Set main Cabbage form width and height.
-#
-set(form_width 1000)
-set(form_height 640)
+set(log_popup_size "1265, 822")
 
-include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
+set(button_width "164")
+set(button_height "50")
+set(button_group_padding MATH "4 * ${padding}")
 
-add_tab(mode_tab "Mode" 64)
-add_tab(log_tab "Log" 64)
-process_tabs()
+set(form_width MATH "(2 * ${padding}) + ${button_width}")
 
+set(reset_group_y MATH "${padding}")
+set(reset_group_height MATH "${button_height} + ${padding}")
+set(reset_group_bottom MATH "${reset_group_y} + ${reset_group_height} + ${padding}")
+set(reset_group_size "${form_width}, ${reset_group_height}")
+set(reset_group_rect "0, ${reset_group_y}, ${reset_group_size}")
 
-set(tab_group_y MATH "${padding}")
-set(tab_group_bottom MATH "${tab_group_y} + ${tab_height}")
-set(tab_group_rect "0, ${tab_group_y}, ${form_width}, ${tab_height}")
+set(mode_button_count 4)
+set(mode_group_y MATH "${reset_group_bottom} + ${button_group_padding}")
+set(mode_group_height MATH "${mode_button_count} * (${button_height} + ${padding})")
+set(mode_group_bottom MATH "${mode_group_y} + ${mode_group_height} + ${padding}")
+set(mode_group_size "${form_width}, ${mode_group_height}")
+set(mode_group_rect "0, ${mode_group_y}, ${mode_group_size}")
 
-set(tab_content_group_y MATH "${tab_group_bottom} + ${padding}")
-set(tab_content_group_height MATH "${form_height} - ${tab_group_bottom}")
-set(tab_content_group_size "${form_width}, ${tab_content_group_height}")
-set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}")
+set(show_log_group_y MATH "${mode_group_bottom} + ${button_group_padding}")
+set(show_log_group_height MATH "${button_height} + ${padding}")
+set(show_log_group_bottom MATH "${show_log_group_y} + ${show_log_group_height} + ${padding}")
+set(show_log_group_size "${form_width}, ${show_log_group_height}")
+set(show_log_group_rect "0, ${show_log_group_y}, ${show_log_group_size}")
 
-set(tab_content_rect "0, 0, ${tab_content_group_size}")
-
-set(button_count 4)
-set(button_width MATH "180 - (2 * ${padding})")
-set(button_height MATH "(${tab_content_group_height} - (${button_count} * (${padding} + 1))) / ${button_count}")
+set(form_height MATH "${show_log_group_bottom} + ${padding}")
 
 set(button1_x "${padding}")
 set(button1_y "${padding}")
@@ -50,4 +52,5 @@ set(button4_xy "${button4_x}, ${button4_y}")
 set(button_size "${button_width}, ${button_height}")
 
 # Widgets
-set(mode_button "${button} colour:0(${dark_grey}) radiogroup(\"mode\") automatable(0)")
+set(daw_service_button "${button} colour:0(${dark_grey})")
+set(mode_button "${daw_service_button} radiogroup(\"mode\")")

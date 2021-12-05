@@ -1267,7 +1267,22 @@ instr WriteTracksetScoFile
 endin
 
 
-${CSOUND_INCLUDE} "Tab.orc"
+instr HandleResetButton
+    kPressed = chnget:k("daw_reset")
+    if (kPressed == true) then
+        clearTracks()
+        clearPlugins()
+        chnset(k(false), "daw_reset")
+    endif
+endin
+
+
+instr HandleShowLogButton
+    kPressed = chnget:k("daw_show_log")
+    if (changed2(kPressed) == true) then
+        chnsetks(sprintfk("visible(%d)", kPressed), "log_popup_ui")
+    endif
+endin
 
 
 </CsInstruments>
@@ -1275,6 +1290,8 @@ ${CSOUND_INCLUDE} "Tab.orc"
 
 i1 0 z
 i"HandleModeButtons" 0 z
+i"HandleResetButton" 0 z
+i"HandleShowLogButton" 0 z
 i"HandleOscMessages" 0 z
 i"InitializeMode" 0 z
 
@@ -1284,20 +1301,27 @@ i"InitializeMode" 0 z
 
 ${form} caption("DAW Service") size(${form_size}) pluginid("0000")
 
-; Tabs
-${group} bounds(${tab_group_rect}) {
-    #include "Tab.ui"
+; Reset button
+${group} bounds(${reset_group_rect}) {
+    ${daw_service_button} bounds(${button1_xy}, ${button_size}) text("Reset") channel("daw_reset") colour:0(${dark_yellow}) colour:1(${dark_yellow}) latched(0)
 }
 
-; Mode tab content
-${group} bounds(${tab_content_group_rect}) identchannel("mode_tab_content_ui") visible(0) {
+; Mode buttons
+${group} bounds(${mode_group_rect}) {
     ${mode_button} bounds(${button1_xy}, ${button_size}) text("Mode 1") channel("mode-1") colour:1(${dark_green})
     ${mode_button} bounds(${button2_xy}, ${button_size}) text("Mode 2") channel("mode-2") colour:1(${red})
     ${mode_button} bounds(${button3_xy}, ${button_size}) text("Mode 3") channel("mode-3") colour:1(${red})
     ${mode_button} bounds(${button4_xy}, ${button_size}) text("Mode 4") channel("mode-4") colour:1(${red})
 }
 
-; Log tab content
-${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(1)
+; Show log button
+${group} bounds(${show_log_group_rect}) {
+    ${daw_service_button} bounds(${button1_xy}, ${button_size}) text("Show log") channel("daw_show_log") colour:1(${dark_grey})
+}
+
+; Log popup
+${group} bounds(0, 0, ${log_popup_size}) popup(1) visible(0) identchannel("log_popup_ui") {
+    ${csoundoutput} bounds(0, 0, ${log_popup_size})
+}
 
 </Cabbage>
