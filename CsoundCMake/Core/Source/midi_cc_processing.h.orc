@@ -1,5 +1,20 @@
 #include "definitions.h"
 
+#if !defined(IS_EFFECT) && !defined(IS_SYNTH)
+    #error Unknown plugin type
+#endif
+
+#if defined(IS_EFFECT) && defined(IS_SYNTH)
+    #error Plugin can not be an effect and a synth
+#endif
+
+#ifdef IS_EFFECT
+    #define MODE_4_INSTRUMENT sprintfk("%s_%d_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex, gk_pluginIndex)
+#endif
+#ifdef IS_SYNTH
+    #define MODE_4_INSTRUMENT sprintfk("%s_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex)
+#endif
+
 //======================================================================================================================
 // MIDI CC processing instrument. Always on.
 //
@@ -13,9 +28,11 @@ instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
     iCcCount = giCcCount_$INSTRUMENT_NAME
     log_i_debug("instr 2, CC count = %d", iCcCount)
 
-    if (gk_trackIndex == -1) then
-        kgoto end
-    endif
+    #ifdef IS_SYNTH
+        if (gk_trackIndex == -1) then
+            kgoto end
+        endif
+    #endif
 
     // In mode 4 playback, initialize CCs not set to default.
     // NB: The CCs are initialized at 0.01 seconds instead of 0 so they don't get overwritten by the instrument that
@@ -23,7 +40,7 @@ instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
     if (gk_playing == true && gk_mode == 4 && (changed(gk_mode) == true || changed(gk_playing) == true)) then
         kI = 0
         while (kI < iCcCount) do
-            SInstrument = sprintfk("%s_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex)
+            SInstrument = MODE_4_INSTRUMENT
             if (strcmpk(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_TYPE], "string") == 0) then
                 SValue = chngetks(gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL])
                 SScoreLine = sprintfk("i  %s    0.01 1 %s %d \\\"%s\\\"", SInstrument, "Cc", kI, SValue)
@@ -51,7 +68,7 @@ instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
                     log_k_debug("String channel '%s' changed from '%s' to '%s'", gSCcInfo_$INSTRUMENT_NAME[kI][$CC_INFO_CHANNEL], SPreviousValue, SValue)
                     gSCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = sprintfk("%s", SValue)
                     if (gk_mode == 4) then
-                        SInstrument = sprintfk("%s_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex)
+                        SInstrument = MODE_4_INSTRUMENT
                         SScoreLine = sprintfk("i  %s    %.03f 1 %s %d \\\"%s\\\"", SInstrument, elapsedTime_k(), "Cc", kI, SValue)
                         sendScoreMessage_k(SScoreLine)
                     endif
@@ -69,7 +86,7 @@ instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
                     gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = kValue
 
                     if (gk_mode == 4) then
-                        SInstrument = sprintfk("%s_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex)
+                        SInstrument = MODE_4_INSTRUMENT
                         SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
                         sendScoreMessage_k(SScoreLine)
                     else

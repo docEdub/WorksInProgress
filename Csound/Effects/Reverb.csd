@@ -70,60 +70,7 @@ endin
 
 ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
-
-//======================================================================================================================
-// CC processing instrument. Always on.
-//
-// NB: The instrument number used here should be lower than the instrument number being used to process notes so Csound
-// processes CC events before note events.
-//
-// NB: This instrument uses macros defined in the main instrument .orc file included above.
-//======================================================================================================================
-
-instr 2
-    iCcCount = giCcCount_$INSTRUMENT_NAME
-
-    log_i_debug("instr 2, CC count = %d", iCcCount)
-
-    // In mode 4 playback, initialize CCs not set to default.
-    // NB: The CCs are initialized at 0.01 seconds instead of 0 so they don't get overwritten by the instrument that
-    // initializes the CC values at the start.
-    if (gk_playing == true && gk_mode == 4 && (changed(gk_mode) == true || changed(gk_playing) == true)) then
-        kI = 0
-        while (kI < iCcCount) do
-            kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][0])) / 100
-            if (kValue != giCcValueDefaults_$INSTRUMENT_NAME[kI]) then
-                SInstrument = sprintfk("%s_%d_%d", STRINGIZE(${InstrumentName}), gk_trackIndex, gk_pluginIndex - 1)
-                SScoreLine = sprintfk("i  %s    0.01 1 %s %d %.02f", SInstrument, "Cc", kI, kValue)
-                sendScoreMessage_k(SScoreLine)
-            endif
-            kI += 1
-        od
-    endif
-
-    // Update CCs.
-    kI = 0
-    while (kI < iCcCount) do
-        kPreviousValue = gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI]
-        kValue = round(100 * chnget:k(gSCcInfo_$INSTRUMENT_NAME[kI][0])) / 100
-
-        if (kValue != kPreviousValue) then
-            gkCcValues_$INSTRUMENT_NAME[ORC_INSTANCE_INDEX][kI] = kValue
-
-            if (gk_mode == 4) then
-                SInstrument = sprintfk("%s_%d_%d", STRINGIZE(${InstrumentName}), gk_trackIndex, gk_pluginIndex - 1)
-                SScoreLine = sprintfk("i  %s    %.03f 1 %s %d %.02f", SInstrument, elapsedTime_k(), "Cc", kI, kValue)
-                sendScoreMessage_k(SScoreLine)
-            else
-                SInstrument = "\"${InstrumentName}\""
-                SScoreLine = sprintfk("i  %s    0 1 %d %d %.02f", SInstrument, EVENT_CC, kI, kValue)
-                scoreline(SScoreLine, 1)
-            endif
-        endif
-        kI += 1
-    od
-endin
-
+#include "midi_cc_processing.h.orc"
 
 ${CSOUND_INCLUDE} "Tab.orc"
 
@@ -134,7 +81,6 @@ ${CSOUND_INCLUDE} "Tab.orc"
 <CsScore>
 
 i1 0 z
-i2 0 z
 i"${InstrumentName}" 0 z EVENT_EFFECT_ON
 
 </CsScore>
