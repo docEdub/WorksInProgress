@@ -198,9 +198,9 @@ endin
 
 instr RegisterPlugin
     log_ik_info("%s ...", nstrstr(p1))
-    log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d", gk_trackIndex, gk_pluginIndex)
+    log_k_debug("gk_trackIndex = %d, gk_pluginIndex = %d, gSPluginUuid = '%s'", gk_trackIndex, gk_pluginIndex, gSPluginUuid)
 
-    if (strlen(gSPluginUuid) != 0 && gk_trackIndex != -1) then
+    if (gk_trackIndex != -1 && gk_pluginIndex != -1 && strlen(gSPluginUuid) != 0) then
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
             gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
     else

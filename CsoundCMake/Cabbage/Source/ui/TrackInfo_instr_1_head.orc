@@ -115,6 +115,7 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} TrackInfo_instr_1_head_orc ${CSOUND_INCLUDE_GUARD
             // Register/update the plugin index.
             kRegisteredPlugin init false
             if (kModeChanged == true || changed(k_playing) == true || changed(gk_trackIndex) == true) then
+                log_k_trace("Setting kRegisteredPlugin to false")
                 kRegisteredPlugin = false
             endif
             if (kRegisteredPlugin == false && gk_trackIndex >= 0 && gk_pluginIndex > 0 \
