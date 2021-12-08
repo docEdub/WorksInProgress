@@ -204,7 +204,7 @@ instr RegisterPlugin
         OSCsend(1, DAW_SERVICE_OSC_ADDRESS, DAW_SERVICE_OSC_PORT, DAW_SERVICE_OSC_PLUGIN_REGISTRATION_PATH, "iiss",
             gk_trackIndex, gk_pluginIndex, $ORC_FILENAME, gSPluginUuid)
     else
-        event_i("i", p1, 1, -1)
+        event("i", p1, 1, -1)
     endif
 
     log_ik_info("%s - done", nstrstr(p1))
