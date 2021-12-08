@@ -9,6 +9,7 @@
 <CsInstruments>
 
 #define OUT_CHANNEL_COUNT 6
+#define MIDI_NOTE_DURATION 0.001
 
 #include "cabbage_synth_global.h"
 
@@ -37,7 +38,7 @@ endin
 
 
 //======================================================================================================================
-// Main instrument. Triggered by instruments 2 and 3.
+// Main instrument. Triggered by MIDI CC and note processing instruments.
 //======================================================================================================================
 
 ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
@@ -52,7 +53,7 @@ ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 // NB: This instrument uses macros defined in the main instrument .orc file included above.
 //======================================================================================================================
 
-instr 2
+instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
     iCcCount = giCcCount_$INSTRUMENT_NAME
     log_i_debug("instr 2, CC count = %d", iCcCount)
 
@@ -128,13 +129,15 @@ instr 2
 end:
 endin
 
+alwayson(CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER)
+
 
 //======================================================================================================================
 // MIDI note processing instrument. Triggered by MIDI notes on all channels.
 //======================================================================================================================
 
-// Assign all MIDI channels to instr 3.
-massign 0, 3
+// Assign all MIDI channels to MIDI not processing instrument.
+massign 0, CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
 
 // Disable MIDI program change messages.
 // NB: The Apple Logic DAW sends MIDI program change messages on each MIDI track at startup. If they are not disabled,
@@ -143,12 +146,8 @@ pgmassign 0, 0
 
 gi_noteId init 0
 
-instr 3
-    gi_noteId += 1
-    if (gi_noteId == 1000) then
-        gi_noteId = 1
-    endif
-    i_noteId = gi_noteId
+instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
+    gi_noteId = wrap(gi_noteId + 1, 1, 1000)
 
     if (i(gk_mode) == 1) goto mode_1
     if (i(gk_mode) == 4) goto mode_4
@@ -161,7 +160,7 @@ instr 3
         i_instrument = nstrnum(STRINGIZE(${InstrumentName})) + gi_noteId / 1000
         log_i_debug("i_instrument = %.6f", i_instrument)
 
-        event_i("i", i_instrument, 0, 0.001, EVENT_NOTE_ON, notnum(), veloc())
+        event_i("i", i_instrument, 0, MIDI_NOTE_DURATION, EVENT_NOTE_ON, notnum(), veloc())
         log_i_trace("instr 3, mode_1 - done")
         goto end
 
@@ -175,8 +174,8 @@ instr 3
 
         k_noteOnSent init false
         if (k_noteOnSent == false) then
-            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f 0.001 EVENT_NOTE_ON Note(%d) Velocity(%d)",
-                STRINGIZE(${InstrumentName}), gk_trackIndex, i_noteId, elapsedTime_k(), notnum(), veloc()))
+            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
+                STRINGIZE(${InstrumentName}), gk_trackIndex, gi_noteId, elapsedTime_k(), MIDI_NOTE_DURATION, notnum(), veloc()))
             k_noteOnSent = true
         endif
         log_i_trace("instr 3, mode_4 - done")
@@ -194,7 +193,6 @@ ${CSOUND_INCLUDE} "Tab.orc"
 <CsScore>
 
 i1 0 z
-i2 0 z
 
 </CsScore>
 </CsoundSynthesizer>
