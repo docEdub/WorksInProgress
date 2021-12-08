@@ -14,6 +14,9 @@ set(CsoundCMake_Core_HeaderFiles
     "csound_definitions.h"
     "definitions.h"
     "instrument_orc_definitions.h"
+    "midi_cc_processing.h.orc"
+    "midi_note_processing.h.orc"
+    "midi_processing.h.orc"
 )
 
 set(CsoundCMake_Core_OrcFiles
