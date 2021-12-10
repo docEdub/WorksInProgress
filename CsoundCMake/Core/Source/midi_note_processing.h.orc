@@ -1,6 +1,10 @@
 #include "definitions.h"
 
-#ifndef MIDI_NOTE_DURATION
+#ifdef IS_ONE_SHOT_MIDI_NOTE
+    #ifndef MIDI_NOTE_DURATION
+        #error One shot MIDI notes must define a duration.
+    #endif
+#else
     #define MIDI_NOTE_DURATION -1
 #endif
 
@@ -21,6 +25,19 @@ gi_noteId init 0
 instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
     gi_noteId = wrap(gi_noteId + 1, 1, 1000)
 
+    #ifndef IS_ONE_SHOT_MIDI_NOTE
+        k_i init 0
+        k_i += 1
+
+        k_released = release()
+        k_releaseDeltaTime init 1 / kr
+        if (k_released == true) then
+            if (k_i > 1) then
+                k_releaseDeltaTime = 0
+            endif
+        endif
+    #endif
+
     if (i(gk_mode) == 1) goto mode_1
     if (i(gk_mode) == 4) goto mode_4
     goto end
@@ -33,6 +50,13 @@ instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
         log_i_debug("i_instrument = %.6f", i_instrument)
 
         event_i("i", i_instrument, 0, MIDI_NOTE_DURATION, EVENT_NOTE_ON, notnum(), veloc())
+
+        #ifndef IS_ONE_SHOT_MIDI_NOTE
+            if (k_released == true) then
+                event("i", -i_instrument, k_releaseDeltaTime, 0)
+            endif
+        #endif
+        
         log_i_trace("instr %d, mode_1 - done", p1)
         goto end
 
@@ -46,10 +70,28 @@ instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
 
         k_noteOnSent init false
         if (k_noteOnSent == false) then
-            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %.03f EVENT_NOTE_ON Note(%d) Velocity(%d)",
+            sendScoreMessage_k(sprintfk("i  CONCAT(%s_%d, .%03d) %.03f %f EVENT_NOTE_ON Note(%d) Velocity(%d)",
                 STRINGIZE($INSTRUMENT_NAME), gk_trackIndex, gi_noteId, elapsedTime_k(), MIDI_NOTE_DURATION, notnum(), veloc()))
             k_noteOnSent = true
         endif
+
+        #ifndef IS_ONE_SHOT_MIDI_NOTE
+            k_noteOffSent init false
+            #if LOG_DEBUG
+                if (changed(k_released) == true) then
+                    log_k_debug("note %d, k_released = %d, k_noteOffSent = %d", gi_noteId, k_released, k_noteOffSent)
+                endif
+            #endif
+            if (k_released == true && k_noteOffSent == false) then
+                sendScoreMessage_k(sprintfk("i CONCAT(-%s_%d, .%03d) %.03f NoteOff", STRINGIZE($INSTRUMENT_NAME),
+                    gk_trackIndex, gi_noteId, elapsedTime_k() + k_releaseDeltaTime))
+                ; turnoff
+                // N.B. The 'turnoff' opcode isn't working as expected here so a 'k_noteOffSent' flag is used to prevent
+                // duplicate scorelines.
+                k_noteOffSent = true
+            endif
+        #endif
+
         log_i_trace("instr %d, mode_4 - done", p1)
         goto end
 

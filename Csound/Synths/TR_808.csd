@@ -42,6 +42,7 @@ endin
 
 ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
+#define IS_ONE_SHOT_MIDI_NOTE
 #define MIDI_NOTE_DURATION 0.001
 #include "midi_cc_processing.h.orc"
 #include "midi_note_processing.h.orc"
