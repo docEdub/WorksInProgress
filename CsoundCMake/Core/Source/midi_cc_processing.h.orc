@@ -26,7 +26,7 @@
 
 instr CSOUND_MIDI_CC_PROCESSING_INSTRUMENT_NUMBER
     iCcCount = giCcCount_$INSTRUMENT_NAME
-    log_i_debug("instr 2, CC count = %d", iCcCount)
+    log_i_debug("instr %d, CC count = %d", p1, iCcCount)
 
     #ifdef IS_SYNTH
         if (gk_trackIndex == -1) then

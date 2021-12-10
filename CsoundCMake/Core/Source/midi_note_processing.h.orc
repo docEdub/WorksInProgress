@@ -26,18 +26,18 @@ instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
     goto end
 
     mode_1:
-        log_i_trace("instr 3, mode_1 ...")
+        log_i_trace("instr %d, mode_1 ...", p1)
         log_i_debug("gi_noteId = %d", gi_noteId)
 
         i_instrument = nstrnum(STRINGIZE($INSTRUMENT_NAME)) + gi_noteId / 1000
         log_i_debug("i_instrument = %.6f", i_instrument)
 
         event_i("i", i_instrument, 0, MIDI_NOTE_DURATION, EVENT_NOTE_ON, notnum(), veloc())
-        log_i_trace("instr 3, mode_1 - done")
+        log_i_trace("instr %d, mode_1 - done", p1)
         goto end
 
     mode_4:
-        log_i_trace("instr 3, mode_4 ...")
+        log_i_trace("instr %d, mode_4 ...", p1)
         xtratim 2 / kr
         log_i_debug("gi_noteId = %d", gi_noteId)
 
@@ -50,7 +50,7 @@ instr CSOUND_MIDI_NOTE_PROCESSING_INSTRUMENT_NUMBER
                 STRINGIZE($INSTRUMENT_NAME), gk_trackIndex, gi_noteId, elapsedTime_k(), MIDI_NOTE_DURATION, notnum(), veloc()))
             k_noteOnSent = true
         endif
-        log_i_trace("instr 3, mode_4 - done")
+        log_i_trace("instr %d, mode_4 - done", p1)
         goto end
 
     end:
