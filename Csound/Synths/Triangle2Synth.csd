@@ -48,6 +48,7 @@ ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 ${CSOUND_INCLUDE} "Tab.orc"
 
+
 //======================================================================================================================
 
 </CsInstruments>
@@ -57,9 +58,6 @@ i1 0 z
 
 </CsScore>
 </CsoundSynthesizer>
-
-//======================================================================================================================
-
 <Cabbage>
 
 ${form} caption("${InstrumentName}") size(${form_size}) pluginid("0011")
