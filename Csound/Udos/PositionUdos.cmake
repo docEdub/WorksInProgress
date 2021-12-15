@@ -9,10 +9,6 @@ set(CSOUND_CMAKE_POSITION_UDO_DIR "${CMAKE_CURRENT_LIST_DIR}/PositionUdos")
 
 set(positionUdoNames
     "<none>"
-    "randomPosition1"
-    "randomPosition2"
-    "randomPosition3"
-    "randomPosition4"
     "randomXZ_1"
     )
 
