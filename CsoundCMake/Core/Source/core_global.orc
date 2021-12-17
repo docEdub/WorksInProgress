@@ -18,6 +18,7 @@ gS_csdFileName = "undefined"
 gS_csdFilePath = $CSD_FILE_PATH
 gS_instanceName = $INSTANCE_NAME
 
+giKR init kr
 gk_i init -1
 
 ${CSOUND_INCLUDE} "log.orc"

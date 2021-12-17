@@ -1,4 +1,4 @@
-iPositionPortTime = 50 / kr
+iPositionPortTime = 50 / giKR
 
 kPositionMaxAmpWhenClose = portk(CC_VALUE_k(positionMaxAmpWhenClose), iPositionPortTime)
 kPositionReferenceDistance = portk(CC_VALUE_k(positionReferenceDistance), iPositionPortTime)

@@ -13,11 +13,11 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_orc ${CSOUND_INCLUDE_GUARD_DEFIN
 // global k cycle counter to calculate the time. Note that at i time the global cycle counter hasn't been incremented,
 // yet, so this opcode returns the time at the next global k cycle.
 opcode time_i, i, 0
-    xout (i(gk_i) + 1) / kr
+    xout (i(gk_i) + 1) / giKR
 endop
 
 opcode time_k, k, 0
-    xout gk_i / kr
+    xout gk_i / giKR
 endop
 
 opcode time_string_i, S, 0
