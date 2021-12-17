@@ -12,6 +12,7 @@
 #endif
 
 #include "instrument_orc_definitions.h"
+#include "Position_defines.h"
 
 
 #ifndef Triangle3MonoSynth_orc__include_guard
@@ -21,17 +22,16 @@ ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "example",                                  "bool",     "false",            "synced", _(\)
+    POSITION_CC_INFO
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #52#
 
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
-    CREATE_CC_INDEX(example)
-
+    #include "Position_ccIndexes.orc"
     turnoff
 endin
 
@@ -41,6 +41,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 giTriangle3MonoSynth_VolumeEnvelopeAttackTime = 0.01
@@ -73,6 +74,14 @@ ${CSOUND_ENDIF}
 instr INSTRUMENT_ID
     iEventType = p4
     if (iEventType == EVENT_CC) then
+        iCcIndex = p5
+        iCcValue = p6
+        if (strcmp(gSCcInfo[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+            gSCcValues[ORC_INSTANCE_INDEX][iCcIndex] = strget(iCcValue)
+        else
+            giCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+            gkCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+        endif
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
@@ -99,11 +108,13 @@ endin
 instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     log_i_trace("%s ...", nstrstr(p1))
 
+    iOrcInstanceIndex = ORC_INSTANCE_INDEX
     iAmp = 0.4
+    aOut = 0
     a1 = 0
-
-    // Update kEnvelope at sample rate.
-    setksmps(1)
+    a2 = 0
+    a3 = 0
+    a4 = 0
 
     iEnvelopeSlope = (1 / giTriangle3MonoSynth_VolumeEnvelopeAttackTime) / sr
     kEnvelopeModifier init 0
@@ -162,19 +173,39 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
 
     kCps = cpsmidinn(kNoteNumber)
-    a1 = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
-    a1 *= kEnvelope
+    aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+    aOut *= kEnvelope
+
+    if (CC_VALUE_k(positionEnabled) == true) then
+        #include "Position_kXYZ.orc"
+
+        kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+        kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+        aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+
+        AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+        a1 = gkAmbisonicChannelGains[0] * aOut
+        a2 = gkAmbisonicChannelGains[1] * aOut
+        a3 = gkAmbisonicChannelGains[2] * aOut
+        a4 = gkAmbisonicChannelGains[3] * aOut
+    else
+        // Disabled.
+        a1 = 0
+        a2 = 0
+        a3 = 0
+        a4 = aOut
+    endif
 
 end:
     #if IS_PLAYBACK
-        ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-        ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a1
-        ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a1
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a1
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a1
-        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a1
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
+        gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
     #else
-        outc(a(0), a(0), a(0), a1, a1, a1)
+        outc(a1, a2, a3, a4, aOut, aOut)
     #endif
 
     #if !IS_PLAYBACK
