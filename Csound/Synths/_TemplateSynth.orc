@@ -9,6 +9,7 @@
 #endif
 
 #include "instrument_orc_definitions.h"
+#include "Position_defines.h"
 
 
 #ifndef _TemplateSynth_orc__include_guard
@@ -18,17 +19,16 @@ ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "example",                                  "bool",     "false",            "synced", _(\)
+    POSITION_CC_INFO
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #52#
 
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
-    CREATE_CC_INDEX(example)
-
+    #include "Position_ccIndexes.orc"
     turnoff
 endin
 
@@ -38,6 +38,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "PositionUdos.orc"
 
 gi_TemplateSynth_MaxAmpWhenVeryClose = 1
 gi_TemplateSynth_ReferenceDistance = 0.1
