@@ -36,15 +36,15 @@ ${group} bounds(0, 50, 1000, 500) {
    ${group} bounds(0, 175, ${setting_width}, ${setting_height_x3}) {
       ${group} bounds(0, 0, ${setting_dimensions}) {
          ${setting_label} text("X offset")
-         ${setting_input} channel("positionXOffset") range(-1, 1, 0, 0.5, 0.001)
+         ${setting_input} channel("positionXOffset") range(-1000, 1000, 0, 0.5, 0.001)
       }
       ${group} bounds(0, ${setting_height}, ${setting_dimensions}) {
          ${setting_label} text("Y offset")
-         ${setting_input} channel("positionYOffset") range(-1, 1, 0, 0.5, 0.001)
+         ${setting_input} channel("positionYOffset") range(-1000, 1000, 0, 0.5, 0.001)
       }
       ${group} bounds(0, ${setting_height_x2}, ${setting_dimensions}) {
          ${setting_label} text("Z offset")
-         ${setting_input} channel("positionZOffset") range(-1, 1, 0, 0.5, 0.001)
+         ${setting_input} channel("positionZOffset") range(-1000, 1000, 0, 0.5, 0.001)
       }
    }
 
@@ -52,15 +52,15 @@ ${group} bounds(0, 50, 1000, 500) {
    ${group} bounds(0, 275, ${setting_width}, ${setting_height_x3}) {
       ${group} bounds(0, 0, ${setting_dimensions}) {
          ${setting_label} text("X scale")
-         ${setting_input} channel("positionXScale") range(1, 10000, 100, 0.5, 1)
+         ${setting_input} channel("positionXScale") range(1, 1000, 100, 0.5, 1)
       }
       ${group} bounds(0, ${setting_height}, ${setting_dimensions}) {
          ${setting_label} text("Y scale")
-         ${setting_input} channel("positionYScale") range(1, 10000, 100, 0.5, 1)
+         ${setting_input} channel("positionYScale") range(1, 1000, 100, 0.5, 1)
       }
       ${group} bounds(0, ${setting_height_x2}, ${setting_dimensions}) {
          ${setting_label} text("Z scale")
-         ${setting_input} channel("positionZScale") range(1, 10000, 100, 0.5, 1)
+         ${setting_input} channel("positionZScale") range(1, 1000, 100, 0.5, 1)
       }
    }
 }
