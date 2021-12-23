@@ -12,6 +12,7 @@
 #endif
 
 #include "instrument_orc_definitions.h"
+#include "Position_defines.h"
 
 
 #ifndef Triangle1Synth_orc__include_guard
@@ -21,17 +22,16 @@ ${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
 
 CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
 _(\)
-    "example",                                  "bool",     "false",            "synced", _(\)
+    POSITION_CC_INFO
 _(\)
     "",                                         "",         "",                 "") // dummy line
 
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #8#
+${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #52#
 
 #include "instrument_cc.orc"
 
 instr CreateCcIndexesInstrument
-    CREATE_CC_INDEX(example)
-
+    #include "Position_ccIndexes.orc"
     turnoff
 endin
 
@@ -41,11 +41,9 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
-giTriangle1Synth_MaxAmpWhenVeryClose = 1
-giTriangle1Synth_ReferenceDistance = 0.1
-giTriangle1Synth_RolloffFactor = 0.005
 giTriangle1Synth_PlaybackVolumeAdjustment = 0.9
 giTriangle1Synth_PlaybackReverbAdjustment = 1.5
 
@@ -69,11 +67,19 @@ ${CSOUND_ENDIF}
 
 
 instr INSTRUMENT_ID
+    iOrcInstanceIndex = ORC_INSTANCE_INDEX
     iEventType = p4
     if (iEventType == EVENT_CC) then
+        iCcIndex = p5
+        iCcValue = p6
+        if (strcmp(gSCcInfo[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+            gSCcValues[ORC_INSTANCE_INDEX][iCcIndex] = strget(iCcValue)
+        else
+            giCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+            gkCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+        endif
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
-
 
         // Oscillator
         //--------------------------------------------------------------------------------------------------------------
@@ -82,7 +88,7 @@ instr INSTRUMENT_ID
         iCps = cpsmidinn(iNoteNumber)
         kAmp = 0.333 * (iVelocity / 127)
 
-        a1 = vco2(kAmp, iCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+        aOut = vco2(kAmp, iCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
 
         // Volume envelope
         //--------------------------------------------------------------------------------------------------------------
@@ -95,9 +101,9 @@ instr INSTRUMENT_ID
         iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
 
         #if IS_PLAYBACK
-            a1 *= xadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+            aOut *= xadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
         #else
-            a1 *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+            aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
         #endif
 
         iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
@@ -107,20 +113,41 @@ instr INSTRUMENT_ID
         if (kTime >= iEnvelopeS_decayStartTime && kTime < iEnvelopeS_decayEndTime) then
             aEnvelopeS_decayAmount = expon(1, iEnvelopeS_decayTime, iEnvelopeS_decayAmountMinimum)
         endif
-        a1 *= aEnvelopeS_decayAmount
+        aOut *= aEnvelopeS_decayAmount
 
         // Low pass filter
         //--------------------------------------------------------------------------------------------------------------
-        a1 = tone(a1, 999 + 333)
+        aOut = tone(aOut, 999 + 333)
 
+        if (CC_VALUE_i(positionEnabled) == true) then
+            ; log_i_trace("Calling position UDO ...")
+            #include "Position_kXYZ.orc"
+
+            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
+                kPositionRolloffFactor)
+            aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+            a1 = gkAmbisonicChannelGains[0] * aOut
+            a2 = gkAmbisonicChannelGains[1] * aOut
+            a3 = gkAmbisonicChannelGains[2] * aOut
+            a4 = gkAmbisonicChannelGains[3] * aOut
+        else
+            // Disabled.
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = aOut
+        endif
 
         #if IS_PLAYBACK
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a1
-            ; gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = a1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -134,7 +161,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a(0), a(0), a(0), a1, a1, a1)
+            outc(a1, a2, a3, a4, aOut, aOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
