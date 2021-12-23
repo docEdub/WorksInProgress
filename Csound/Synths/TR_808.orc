@@ -44,7 +44,6 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "PositionUdos.orc"
-${CSOUND_INCLUDE} "time.orc"
 
 
 #define TR_808_BASS_DRUM_KEY 37 // C#1
@@ -70,9 +69,6 @@ ${CSOUND_INCLUDE} "time.orc"
 #define TR_808_HIGH_CONGA_KEY 70 // A#4
 
 
-giTR_808_MaxAmpWhenVeryClose = 1
-giTR_808_ReferenceDistance = 0.1
-giTR_808_RolloffFactor = 0.005
 giTR_808_PlaybackVolumeAdjustment = 1
 giTR_808_PlaybackReverbAdjustment = 1
 
