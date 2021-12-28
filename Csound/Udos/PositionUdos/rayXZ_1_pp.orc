@@ -1,11 +1,11 @@
 
-#include "time.orc"
+#include "time_PlaybackTime.orc"
 
 /// Returns the X and Z coordinates of a ray moving into the (+,+) quadrant of the XZ plane.
 /// Returns a constant Y of 0.
 ///
 opcode dEd_rayXZ_1_pp, iii, 0
-    iXZ init time_i()
+    iXZ init time_PlaybackTime:i()
     iY init 0
 
     xout iXZ, iY, iXZ
@@ -19,7 +19,7 @@ opcode dEd_rayXZ_1_pp, kkk, 0
     kY init 0
 
     kI init 0
-    kXZ = kI / kr
+    kXZ = time_PlaybackTime:k() / giKR
     kI += 1
 
     xout kXZ, kY, kXZ
