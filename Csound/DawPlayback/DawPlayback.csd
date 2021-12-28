@@ -266,6 +266,7 @@ ${CSOUND_ENDIF}
 
 
 #define IS_PLAYBACK 1
+${CSOUND_DEFINE} CSOUND_IS_PLAYBACK #1#
 #include "_.mode3_TrackSet.orc"
 
 
