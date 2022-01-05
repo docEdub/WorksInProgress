@@ -133,15 +133,15 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kActiveNoteCountChanged = false
     kNoteNumberNeedsPortamento init false
     if (changed2(kActiveNoteCount) == true || kActiveNoteCountPrevious == 0) then
-        log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
+        ; log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
         if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
-            log_k_trace("Attack started")
+            ; log_k_trace("Attack started")
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
             kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
             kEnvelopeModifier = iEnvelopeSlope
         elseif (kActiveNoteCount == 0) then
-            log_k_trace("Decay started")
+            ; log_k_trace("Decay started")
             kEnvelopeModifier = -iEnvelopeSlope
         endif
         kActiveNoteCountPrevious = kActiveNoteCount
@@ -186,16 +186,6 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
 
     if (CC_VALUE_k(positionEnabled) == true) then
         #include "Position_kXYZ.orc"
-
-        #if LOGGING
-            kLastTime init 0
-            kTime = time_k()
-            if (kTime - kLastTime > 0.1) then
-                kLastTime = kTime
-                ; log_k_trace("xz = (%.3f, %.3f)", kX, kZ)
-                log_k_debug("time_PlaybackTime = %.3f", time_PlaybackTime:k())
-            endif
-        #endif
 
         kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)

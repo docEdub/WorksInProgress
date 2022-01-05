@@ -4,8 +4,8 @@
 // File: time_PlaybackTime.orc
 //----------------------------------------------------------------------------------------------------------------------
 
-${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_time_playback_orc
-${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_playback_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
+${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_time_PlaybackTime_orc
+${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_PlaybackTime_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 
 ${CSOUND_IFDEF} IS_PLAYBACK
