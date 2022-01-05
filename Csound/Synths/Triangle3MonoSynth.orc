@@ -87,6 +87,10 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
+        if (active:i(nstrnum(STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)))) == 0) then
+            log_i_trace("Activating mono handler instrument")
+            event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)), 0, -1)  
+        endif
         gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX] = iNoteNumber
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
@@ -128,7 +132,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kNoteNumberWhenActivated init 0
     kActiveNoteCountChanged = false
     kNoteNumberNeedsPortamento init false
-    if (changed2(kActiveNoteCount) == true) then
+    if (changed2(kActiveNoteCount) == true || kActiveNoteCountPrevious == 0) then
         log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
         if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
             log_k_trace("Attack started")
@@ -153,6 +157,10 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
         kEnvelopeModifier = 0
     endif
     if (kEnvelope == 0) then
+        if (kActiveNoteCount == 0) then
+            log_k_trace("Deactivating mono handler instrument")
+            turnoff
+        endif
         kgoto end
     endif
 
@@ -236,7 +244,5 @@ end:
 
     log_i_trace("%s - done", nstrstr(p1))
 endin
-
-event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)), 0, -1)
 
 //----------------------------------------------------------------------------------------------------------------------
