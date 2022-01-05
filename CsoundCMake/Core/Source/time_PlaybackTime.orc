@@ -1,7 +1,7 @@
 #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: time_playback.orc
+// File: time_PlaybackTime.orc
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_time_playback_orc
@@ -9,32 +9,23 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_playback_orc ${CSOUND_INCLUDE_GU
 
 
 ${CSOUND_IFDEF} IS_PLAYBACK
-    gkTime_PlaybackStartKPass init 0
-
-    instr time_UpdatePlaybackStartKPass
-        if (changed2(gk_playing) == true && gk_playing == true) then
-            gkTime_PlaybackStartKPass = gk_i
-        endif
-    endin
-
-    alwayson "time_UpdatePlaybackStartKPass"
-
     opcode time_PlaybackTime, i, 0
-        xout (i(gk_i - gkTime_PlaybackStartKPass) + 1) / giKR
+        xout i(gk_i) / giKR
     endop
 
     opcode time_PlaybackTime, k, 0
-        xout (gk_i - gkTime_PlaybackStartKPass) / giKR
+        xout gk_i / giKR
     endop
 ${CSOUND_ELSE}
     opcode time_PlaybackTime, i, 0
-        xout i(gk_i)
+        xout time_i() - i(gk_dawPlayStartTime)
     endop
 
     opcode time_PlaybackTime, k, 0
-        xout gk_i
+        xout time_k() - gk_dawPlayStartTime
     endop
 ${CSOUND_ENDIF}
+
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 

@@ -179,6 +179,16 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     if (CC_VALUE_k(positionEnabled) == true) then
         #include "Position_kXYZ.orc"
 
+        #if LOGGING
+            kLastTime init 0
+            kTime = time_k()
+            if (kTime - kLastTime > 0.1) then
+                kLastTime = kTime
+                ; log_k_trace("xz = (%.3f, %.3f)", kX, kZ)
+                log_k_debug("time_PlaybackTime = %.3f", time_PlaybackTime:k())
+            endif
+        #endif
+
         kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
         aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)

@@ -19,7 +19,7 @@ opcode dEd_rayXZ_1_pp, kkk, 0
     kY init 0
 
     kI init 0
-    kXZ = time_PlaybackTime:k() / giKR
+    kXZ = time_PlaybackTime:k()
     kI += 1
 
     xout kXZ, kY, kXZ
