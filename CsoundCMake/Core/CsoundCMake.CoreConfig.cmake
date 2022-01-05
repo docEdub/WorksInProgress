@@ -32,6 +32,7 @@ set(CsoundCMake_Core_OrcFiles
     "log.orc.h"
     "math.orc"
     "string.orc"
+    "time_NoteTime.orc"
     "time_PlaybackTime.orc"
     "time.orc"
     "uuid.orc"
