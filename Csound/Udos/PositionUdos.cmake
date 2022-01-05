@@ -9,9 +9,9 @@ set(CSOUND_CMAKE_POSITION_UDO_DIR "${CMAKE_CURRENT_LIST_DIR}/PositionUdos")
 
 set(positionUdoNames
     "<none>"
-    "circleXZ_1"
-    "rayXZ_1_pp"
-    "randomXZ_1"
+    "circle_XZ"
+    "random_XZ"
+    "ray_XZ"
     )
 
 string(REPLACE ";" "\",\"" CSOUND_CMAKE_POSITION_UDO_NAMES "\"${positionUdoNames}\"")

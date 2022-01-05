@@ -4,7 +4,7 @@
 /// Returns the X and Z coordinates of a circle with a radius of 1 with a full rotation every 1 second.
 /// Returns a constant Y of 0.
 ///
-opcode dEd_circleXZ_1, iii, 0
+opcode dEd_circle_XZ, iii, 0
     iPeriod = 1
 
     iX init 0
@@ -21,7 +21,7 @@ endop
 /// Returns the X and Z coordinates of a circle with a radius of 1 with a full rotation every 1 second.
 /// Returns a constant Y of 0.
 ///
-opcode dEd_circleXZ_1, kkk, 0
+opcode dEd_circle_XZ, kkk, 0
     iPeriod = 1
 
     kX init 0

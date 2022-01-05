@@ -4,7 +4,7 @@
 /// Returns the X and Z coordinates of a ray moving into the (+,+) quadrant of the XZ plane.
 /// Returns a constant Y of 0.
 ///
-opcode dEd_rayXZ_1_pp, iii, 0
+opcode dEd_ray_XZ, iii, 0
     iXZ init time_NoteTime:i()
     iY init 0
 
@@ -14,7 +14,7 @@ endop
 /// Returns the X and Z coordinates of a ray moving into the (+,+) quadrant of the XZ plane.
 /// Returns a constant Y of 0.
 ///
-opcode dEd_rayXZ_1_pp, kkk, 0
+opcode dEd_ray_XZ, kkk, 0
     kXZ init 0
     kY init 0
 
