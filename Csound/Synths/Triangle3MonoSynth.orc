@@ -187,6 +187,9 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     if (CC_VALUE_k(positionEnabled) == true) then
         #include "Position_kXYZ.orc"
 
+        iScaleFactorX = random:i(-20, 20)
+        kX *= iScaleFactorX
+
         kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
         kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
         aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
