@@ -123,7 +123,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     iEnvelopeSlope = (1 / giTriangle3MonoSynth_VolumeEnvelopeAttackTime) / sr
     kEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
-    if (kActiveNoteCount > 0 && gk_playing == false) then
+    if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
         log_k_trace("Turning off %d active notes", kActiveNoteCount)
         turnoff2(nstrnum(STRINGIZE(INSTRUMENT_ID)), 0, 0)
         kActiveNoteCount = 0
