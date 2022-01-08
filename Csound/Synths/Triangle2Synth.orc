@@ -44,9 +44,6 @@ ${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
-giTriangle2Synth_MaxAmpWhenVeryClose = 1
-giTriangle2Synth_ReferenceDistance = 0.1
-giTriangle2Synth_RolloffFactor = 0.005
 giTriangle2Synth_PlaybackVolumeAdjustment = 0.9
 giTriangle2Synth_PlaybackReverbAdjustment = 1.5
 
