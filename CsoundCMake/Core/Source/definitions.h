@@ -94,6 +94,12 @@
 #define EVENT_CC             4
 #define EVENT_NOTE_CACHE     5
 
+#ifdef IS_PLAYBACK
+    #define MIDIFY_OPCODE(opcode) opcode
+#else
+    #define MIDIFY_OPCODE(opcode) CONCAT(m, opcode)
+#endif
+
 #define LOG_TRACE _(${CsoundLog_Level0Trace})
 #define LOG_DEBUG _(${CsoundLog_Level1Debug})
 #define LOG_INFO _(${CsoundLog_Level2Info})

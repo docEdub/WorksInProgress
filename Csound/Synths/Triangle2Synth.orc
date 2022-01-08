@@ -127,11 +127,7 @@ instr INSTRUMENT_ID
         iEnvelopeS_decayTime = 0.333 + 33 * (1 - iNoteNumber / 127)
         iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
 
-        #if IS_PLAYBACK
-            a1 *= xadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
-        #else
-            a1 *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
-        #endif
+        aOut *= MIDIFY_OPCODE(xadsr):a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
 
         iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
         iEnvelopeS_decayEndTime = iEnvelopeS_decayStartTime + iEnvelopeS_decayTime
