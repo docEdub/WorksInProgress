@@ -1,3 +1,8 @@
+# Note that this file is used by the CsoundCMake.Cabbage package, so it should be included before calling find_package
+# for CsoundCMake.Cabbage.
+
+include("${ROOT_DIR}/CsoundCMake/CsoundCMake.cmake")
+find_package(CsoundCMake.Core REQUIRED)
 
 include("${CsoundCMake.Core_DIR}/Source/global.cmake")
 set(PREPROCESSOR_INCLUDE_DIR ${CSOUND_CMAKE_CONFIGURED_FILES_DIR})
