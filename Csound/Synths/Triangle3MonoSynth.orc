@@ -45,9 +45,6 @@ ${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
 
 giTriangle3MonoSynth_VolumeEnvelopeAttackTime = 0.01
-giTriangle3MonoSynth_MaxAmpWhenVeryClose = 1
-giTriangle3MonoSynth_ReferenceDistance = 0.1
-giTriangle3MonoSynth_RolloffFactor = 0.005
 giTriangle3MonoSynth_PlaybackVolumeAdjustment = 0.9
 giTriangle3MonoSynth_PlaybackReverbAdjustment = 1.5
 
