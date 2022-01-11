@@ -3,6 +3,11 @@ ${CSOUND_IFNDEF} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
 ${CSOUND_DEFINE} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
 ${CSOUND_ENDIF}
 
+${CSOUND_IFNDEF} Triangle3MonoSynth_NoteNumberPortamentoTime
+${CSOUND_DEFINE} Triangle3MonoSynth_NoteNumberPortamentoTime #0.01#
+${CSOUND_ENDIF}
+
+
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
@@ -123,7 +128,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     if (kNoteNumberNeedsPortamento == false) then
         kNoteNumberPortamentoTime = 0
     else
-        kNoteNumberPortamentoTime = .01
+        kNoteNumberPortamentoTime = $Triangle3MonoSynth_NoteNumberPortamentoTime
     endif
     kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
 
