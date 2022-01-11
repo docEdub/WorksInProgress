@@ -9,12 +9,21 @@
 
 #include "synth-before-include-guard.h.orc"
 
-#ifndef Triangle3MonoSynth_orc__include_guard
-#define Triangle3MonoSynth_orc__include_guard
+#ifndef ${InstrumentName}_orc__include_guard
+#define ${InstrumentName}_orc__include_guard
 
 #include "synth-inside-include-guard.h.orc"
 
-#endif // #ifndef Triangle3MonoSynth_orc__include_guard
+giTriangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime = 0.01
+giTriangle3MonoSynth_PlaybackVolumeAdjustment = 0.9
+giTriangle3MonoSynth_PlaybackReverbAdjustment = 1.5
+
+giTriangle3MonoSynth_VolumeEnvelopeSlope = giSecondsPerSample / giTriangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
+
+giTriangle3MonoSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+gkTriangle3MonoSynth_NoteNumber[] init ORC_INSTANCE_COUNT
+
+#endif // #ifndef ${InstrumentName}_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
 

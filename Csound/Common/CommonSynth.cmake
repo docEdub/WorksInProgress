@@ -9,12 +9,6 @@ set(Project_CommonSynth_HeaderFiles
 set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
 get_generated_csd_dirs(CSD_CONFIGURED_FILES_DIR CSD_PREPROCESSED_FILES_DIR "${CSD_SOURCE_FILE_PATH}")
 
-include("${CMAKE_CURRENT_LIST_DIR}/Common.cmake")
-
-foreach(file ${Project_CommonSynth_HeaderFiles})
-    add_csd_specific_configured_file("${file}")
-endforeach()
-
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Position.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/S88.cmake")
 include("${CsoundCMake.Cabbage_DIR}/Source/ui/Tab.cmake")
@@ -35,3 +29,9 @@ set(tab_content_group_size "${form_width}, ${tab_content_group_height}")
 set(tab_content_group_rect "0, ${tab_content_group_y}, ${tab_content_group_size}")
 
 set(tab_content_rect "0, 0, ${tab_content_group_size}")
+
+include("${CMAKE_CURRENT_LIST_DIR}/Common.cmake")
+
+foreach(file ${Project_CommonSynth_HeaderFiles})
+    add_csd_specific_configured_file("${file}")
+endforeach()

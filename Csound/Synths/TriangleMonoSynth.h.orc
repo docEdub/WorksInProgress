@@ -61,7 +61,6 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     a3 = 0
     a4 = 0
 
-    iEnvelopeSlope = (1 / giTriangle3MonoSynth_VolumeEnvelopeAttackTime) / sr
     kEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
     if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
@@ -80,10 +79,10 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
             kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
-            kEnvelopeModifier = iEnvelopeSlope
+            kEnvelopeModifier = giTriangle3MonoSynth_VolumeEnvelopeSlope
         elseif (kActiveNoteCount == 0) then
             ; log_k_trace("Decay started")
-            kEnvelopeModifier = -iEnvelopeSlope
+            kEnvelopeModifier = -giTriangle3MonoSynth_VolumeEnvelopeSlope
         endif
         kActiveNoteCountPrevious = kActiveNoteCount
     endif
