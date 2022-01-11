@@ -30,4 +30,9 @@ ${CSOUND_UNDEF}  Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
 ${CSOUND_ENDIF}
 ${CSOUND_DEFINE} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
 
+${CSOUND_IFDEF}  Triangle3MonoSynth_NoteNumberPortamentoTime
+${CSOUND_UNDEF}  Triangle3MonoSynth_NoteNumberPortamentoTime
+${CSOUND_ENDIF}
+${CSOUND_DEFINE} Triangle3MonoSynth_NoteNumberPortamentoTime #0.025#
+
 #include "TriangleMonoSynth.h.orc"
