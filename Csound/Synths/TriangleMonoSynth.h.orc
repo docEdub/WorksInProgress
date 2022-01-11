@@ -72,8 +72,8 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     a3 = 0
     a4 = 0
 
-    iEnvelopeSlope = giSecondsPerSample / $Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
-    kEnvelopeModifier init 0
+    iVolumeEnvelopeSlope = giSecondsPerSample / $Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
+    kVolumeEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
     if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
         log_k_trace("Turning off %d active notes", kActiveNoteCount)
@@ -91,24 +91,24 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
             kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
-            kEnvelopeModifier = iEnvelopeSlope
+            kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
         elseif (kActiveNoteCount == 0) then
             ; log_k_trace("Decay started")
-            kEnvelopeModifier = -iEnvelopeSlope
+            kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
         endif
         kActiveNoteCountPrevious = kActiveNoteCount
     endif
 
-    kEnvelope init 0
-    kEnvelope += kEnvelopeModifier
-    if (kEnvelope < 0) then
-        kEnvelope = 0
-        kEnvelopeModifier = 0
-    elseif (kEnvelope > 1) then
-        kEnvelope = 1
-        kEnvelopeModifier = 0
+    kVolumeEnvelope init 0
+    kVolumeEnvelope += kVolumeEnvelopeModifier
+    if (kVolumeEnvelope < 0) then
+        kVolumeEnvelope = 0
+        kVolumeEnvelopeModifier = 0
+    elseif (kVolumeEnvelope > 1) then
+        kVolumeEnvelope = 1
+        kVolumeEnvelopeModifier = 0
     endif
-    if (kEnvelope == 0) then
+    if (kVolumeEnvelope == 0) then
         if (kActiveNoteCount == 0) then
             log_k_trace("Deactivating mono handler instrument")
             turnoff
@@ -134,7 +134,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
 
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
-    aOut *= kEnvelope
+    aOut *= kVolumeEnvelope
 
     if (CC_VALUE_k(positionEnabled) == true) then
         #include "Position_kXYZ.orc"
