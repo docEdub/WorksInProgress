@@ -1,4 +1,8 @@
 
+${CSOUND_IFNDEF} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
+${CSOUND_DEFINE} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+${CSOUND_ENDIF}
+
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
@@ -53,6 +57,8 @@ endin
 instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     log_i_trace("%s ...", nstrstr(p1))
 
+    setksmps(1)
+
     iOrcInstanceIndex = ORC_INSTANCE_INDEX
     iAmp = 0.4
     aOut = 0
@@ -61,6 +67,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     a3 = 0
     a4 = 0
 
+    iEnvelopeSlope = giSecondsPerSample / $Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
     kEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
     if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
@@ -79,10 +86,10 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
             kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
             kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
-            kEnvelopeModifier = giTriangle3MonoSynth_VolumeEnvelopeSlope
+            kEnvelopeModifier = iEnvelopeSlope
         elseif (kActiveNoteCount == 0) then
             ; log_k_trace("Decay started")
-            kEnvelopeModifier = -giTriangle3MonoSynth_VolumeEnvelopeSlope
+            kEnvelopeModifier = -iEnvelopeSlope
         endif
         kActiveNoteCountPrevious = kActiveNoteCount
     endif

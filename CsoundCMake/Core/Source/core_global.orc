@@ -19,6 +19,7 @@ gS_csdFilePath = $CSD_FILE_PATH
 gS_instanceName = $INSTANCE_NAME
 
 giKR init kr
+giSecondsPerKPass init 1 / kr
 giSecondsPerSample init 1 / sr
 gk_i init -1
 
