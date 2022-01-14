@@ -11,6 +11,8 @@ include("${CMAKE_SOURCE_DIR}/Udos/PositionUdos.cmake")
 include("${ROOT_DIR}/CsoundCMake/CsoundCMake.cmake")
 find_package(CsoundCMake.Cabbage REQUIRED)
 
+include("${CMAKE_SOURCE_DIR}/Udos/SynthUdos.cmake")
+
 add_csd_targets(
     EFFECT_PLUGIN_SOURCES
         "DawService/DawService.csd"
@@ -23,6 +25,7 @@ add_csd_targets(
         "Synths/Triangle1Synth.csd"
         "Synths/Triangle2Synth.csd"
         "Synths/Triangle3MonoSynth.csd"
+        "Synths/TriangleUdoTriggerSynth.csd"
     STANDALONE_SOURCES
         "DawService/ReloadOrcFiles.csd"
     PLAYBACK_SOURCES
