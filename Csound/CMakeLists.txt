@@ -25,6 +25,7 @@ add_csd_targets(
         "Synths/Triangle1Synth.csd"
         "Synths/Triangle2Synth.csd"
         "Synths/Triangle3MonoSynth.csd"
+        "Synths/Triangle4BassMonoSynth.csd"
         "Synths/TriangleUdoTriggerSynth.csd"
     STANDALONE_SOURCES
         "DawService/ReloadOrcFiles.csd"
