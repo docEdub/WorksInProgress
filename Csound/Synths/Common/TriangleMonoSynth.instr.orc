@@ -7,6 +7,10 @@ ${CSOUND_IFNDEF} TriangleMonoSynth_NoteNumberPortamentoTime
 ${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberPortamentoTime #0.01#
 ${CSOUND_ENDIF}
 
+${CSOUND_IFNDEF} TriangleMonoSynth_VcoBandwith
+${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith #0.5#
+${CSOUND_ENDIF}
+
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
@@ -133,7 +137,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
 
     kCps = cpsmidinn(kNoteNumber)
-    aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+    aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
     aOut *= kVolumeEnvelope
 
     if (CC_VALUE_k(positionEnabled) == true) then
