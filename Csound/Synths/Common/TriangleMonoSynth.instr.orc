@@ -1,17 +1,17 @@
 
-${CSOUND_IFNDEF} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
-${CSOUND_DEFINE} Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+${CSOUND_IFNDEF} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
 ${CSOUND_ENDIF}
 
-${CSOUND_IFNDEF} Triangle3MonoSynth_NoteNumberPortamentoTime
-${CSOUND_DEFINE} Triangle3MonoSynth_NoteNumberPortamentoTime #0.01#
+${CSOUND_IFNDEF} TriangleMonoSynth_NoteNumberPortamentoTime
+${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberPortamentoTime #0.01#
 ${CSOUND_ENDIF}
 
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
-    instr Triangle3MonoSynth_Json
+    instr CONCAT(INSTRUMENT_ID, _Json)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
@@ -41,16 +41,16 @@ instr INSTRUMENT_ID
             log_i_trace("Activating mono handler instrument")
             event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)), 0, -1)  
         endif
-        gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX] = iNoteNumber
+        gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX] = iNoteNumber
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giTriangle3MonoSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"Triangle3MonoSynth_Json\" 0 0")
+            if (gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i("i \"${InstrumentName}_Json\" 0 0")
             endif
-            giTriangle3MonoSynth_NoteIndex[ORC_INSTANCE_INDEX] = giTriangle3MonoSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] = gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] + 1
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
-                giTriangle3MonoSynth_NoteIndex[ORC_INSTANCE_INDEX])
+                gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX])
             fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
             ficlose(SJsonFile)
         ${CSOUND_ENDIF}
@@ -72,7 +72,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     a3 = 0
     a4 = 0
 
-    iVolumeEnvelopeSlope = giSecondsPerSample / $Triangle3MonoSynth_VolumeEnvelopeAttackAndDecayTime
+    iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
     if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
@@ -88,7 +88,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
         ; log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
         if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
             ; log_k_trace("Attack started")
-            kNoteNumberWhenActivated = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
+            kNoteNumberWhenActivated = gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX]
             kActiveNoteCountChanged = true
             kNoteNumberNeedsPortamento = false
             kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
@@ -117,7 +117,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     endif
 
     kNoteNumber init 0
-    kCurrentNoteNumber = gkTriangle3MonoSynth_NoteNumber[ORC_INSTANCE_INDEX]
+    kCurrentNoteNumber = gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX]
     if (changed2(kCurrentNoteNumber) == true) then
         if (kActiveNoteCountChanged == false) then
             log_k_trace("Setting kNoteNumberNeedsPortamento to true")
@@ -128,7 +128,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     if (kNoteNumberNeedsPortamento == false) then
         kNoteNumberPortamentoTime = 0
     else
-        kNoteNumberPortamentoTime = $Triangle3MonoSynth_NoteNumberPortamentoTime
+        kNoteNumberPortamentoTime = $TriangleMonoSynth_NoteNumberPortamentoTime
     endif
     kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
 
@@ -137,7 +137,7 @@ instr CONCAT(INSTRUMENT_ID, _MonoHandler)
     aOut *= kVolumeEnvelope
 
     if (CC_VALUE_k(positionEnabled) == true) then
-        #include "Position_kXYZ.orc"
+        #include "../Position_kXYZ.orc"
 
         iScaleFactorX = random:i(-20, 20)
         kX *= iScaleFactorX
