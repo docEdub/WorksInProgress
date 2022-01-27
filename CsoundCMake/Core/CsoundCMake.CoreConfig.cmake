@@ -57,10 +57,6 @@ endmacro()
 set(Build_InlineIncludes OFF CACHE BOOL)
 set(Build_CsoundErrorChecks ON CACHE BOOL)
 
-if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
-    set(Build_InlineIncludes ON)
-endif()
-
 set(CsoundLog_FileNames OFF CACHE BOOL)
 set(CsoundLog_Level0Trace OFF CACHE BOOL)
 set(CsoundLog_Level1Debug OFF CACHE BOOL)

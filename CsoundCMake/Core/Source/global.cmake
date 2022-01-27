@@ -1,6 +1,10 @@
 
 include_guard()
 
+if("${BUILD_PLAYBACK_CSD}" STREQUAL "ON" OR "${FOR_PLAYBACK_CSD}" STREQUAL "ON")
+    set(Build_InlineIncludes ON)
+endif()
+
 if(Build_InlineIncludes)
     set(CSOUND_INCLUDE "#include")
     set(CSOUND_INCLUDE_GUARD_DEFINE "#define")
