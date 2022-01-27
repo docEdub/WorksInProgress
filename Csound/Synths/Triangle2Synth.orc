@@ -68,14 +68,14 @@ ${CSOUND_ENDIF}
 
 gkNoteNumberLfo init 0
 
-instr CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)
+instr CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)
     log_i_trace("%s ...", nstrstr(p1))
 
     gkNoteNumberLfo = lfo(33, .03, LFO_SHAPE_TRIANGLE)
 
     #if !IS_PLAYBACK
         if (gkReloaded == true) then
-            event("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)), 0, -1)
+            event("i", STRINGIZE(CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)), 0, -1)
             turnoff
         endif
     #endif
@@ -92,7 +92,7 @@ instr CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)
     log_i_trace("%s - done", nstrstr(p1))
 endin
 
-event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _GlobalNoteNumberLfo)), 0, -1)
+event_i("i", STRINGIZE(CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)), 0, -1)
 
 
 instr INSTRUMENT_ID

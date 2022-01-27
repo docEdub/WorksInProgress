@@ -41,9 +41,9 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        if (active:i(nstrnum(STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)))) == 0) then
+        if (active:i(nstrnum(STRINGIZE(CONCAT(MonoHandler_, INSTRUMENT_ID)))) == 0) then
             log_i_trace("Activating mono handler instrument")
-            event_i("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)), 0, -1)  
+            event_i("i", STRINGIZE(CONCAT(MonoHandler_, INSTRUMENT_ID)), 0, -1)  
         endif
         gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX] = iNoteNumber
 
@@ -63,7 +63,7 @@ end:
 endin
 
 
-instr CONCAT(INSTRUMENT_ID, _MonoHandler)
+instr CONCAT(MonoHandler_, INSTRUMENT_ID)
     log_i_trace("%s ...", nstrstr(p1))
 
     setksmps(1)
@@ -177,7 +177,7 @@ end:
 
     #if !IS_PLAYBACK
         if (gkReloaded == true) then
-            event("i", STRINGIZE(CONCAT(INSTRUMENT_ID, _MonoHandler)), 0, -1)
+            event("i", STRINGIZE(CONCAT(MonoHandler_, INSTRUMENT_ID)), 0, -1)
             turnoff
         endif
     #endif
