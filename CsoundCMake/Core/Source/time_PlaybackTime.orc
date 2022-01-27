@@ -8,7 +8,7 @@ ${CSOUND_INCLUDE_GUARD_IFNDEF} CsoundCMake_time_PlaybackTime_orc
 ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_time_PlaybackTime_orc ${CSOUND_INCLUDE_GUARD_DEFINE_DEFINITION}
 
 
-${CSOUND_IFDEF} IS_PLAYBACK
+${CSOUND_IFDEF} CSOUND_IS_PLAYBACK
     opcode time_PlaybackTime, i, 0
         xout i(gk_i) / giKR
     endop
