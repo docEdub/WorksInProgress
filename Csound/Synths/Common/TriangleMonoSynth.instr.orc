@@ -79,11 +79,13 @@ instr CONCAT(MonoHandler_, INSTRUMENT_ID)
     iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = active:k(nstrnum(STRINGIZE(INSTRUMENT_ID)))
-    if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
-        log_k_trace("Turning off %d active notes", kActiveNoteCount)
-        turnoff2(nstrnum(STRINGIZE(INSTRUMENT_ID)), 0, 0)
-        kActiveNoteCount = 0
-    endif
+    #if !IS_PLAYBACK
+        if (kActiveNoteCount > 0 && changed2(gk_playing) == true && gk_playing == false) then
+            log_k_trace("Turning off %d active notes", kActiveNoteCount)
+            turnoff2(nstrnum(STRINGIZE(INSTRUMENT_ID)), 0, 0)
+            kActiveNoteCount = 0
+        endif
+    #endif
     kActiveNoteCountPrevious init 0
     kNoteNumberWhenActivated init 0
     kActiveNoteCountChanged = false
