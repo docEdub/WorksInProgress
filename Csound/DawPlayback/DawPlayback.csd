@@ -463,7 +463,6 @@ ${CSOUND_ENDIF}
 
 i 1 0 -1
 i "SendEndedMessage" 0 1 // preallocation instance
-i "PointSynth_ResetNextXYZ_i" 0 -1
 
 ${CSOUND_IFDEF} IS_MIXDOWN
     i "SetMixdownListenerPosition" 1 -1
