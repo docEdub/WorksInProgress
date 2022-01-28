@@ -98,6 +98,14 @@ event_i("i", STRINGIZE(CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)), 0, -1)
 instr INSTRUMENT_ID
     iEventType = p4
     if (iEventType == EVENT_CC) then
+        iCcIndex = p5
+        iCcValue = p6
+        if (strcmp(gSCcInfo[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+            gSCcValues[ORC_INSTANCE_INDEX][iCcIndex] = strget(iCcValue)
+        else
+            giCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+            gkCcValues[ORC_INSTANCE_INDEX][iCcIndex] = iCcValue
+        endif
         turnoff
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
