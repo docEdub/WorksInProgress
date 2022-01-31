@@ -9,7 +9,7 @@
 #endif
 
 #ifdef IS_EFFECT
-    #define MODE_4_INSTRUMENT sprintfk("%s_%d_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex, gk_pluginIndex)
+    #define MODE_4_INSTRUMENT sprintfk("%s_%d_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex, gk_pluginIndex - 1)
 #endif
 #ifdef IS_SYNTH
     #define MODE_4_INSTRUMENT sprintfk("%s_%d", STRINGIZE($INSTRUMENT_NAME), gk_trackIndex)
