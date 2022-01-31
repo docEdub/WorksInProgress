@@ -135,10 +135,10 @@ instr INSTRUMENT_ID
             a4 = gkAmbisonicChannelGains[3] * aOut
         else
             // Disabled.
-            a1 = 0
+            a1 = aOut
             a2 = 0
             a3 = 0
-            a4 = aOut
+            a4 = 0
         endif
 
         #if IS_PLAYBACK
