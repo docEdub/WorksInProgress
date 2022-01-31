@@ -86,13 +86,15 @@
 #define VOLUME_TRACKING_SIGNAL 0.000001
 #define VOLUME_TRACKING_SIGNAL_TO_VOLUME(signal) (signal * VOLUME_TRACKING_DIVISOR)
 
-#define EVENT_ALWAYS_ON      0
-#define EVENT_EFFECT_ON      1
-#define EVENT_NOTE_ON        1
-#define EVENT_NOTE_OFF       2
-#define EVENT_NOTE_GENERATED 3
-#define EVENT_CC             4
-#define EVENT_NOTE_CACHE     5
+#define EVENT_ALWAYS_ON             0
+#define EVENT_EFFECT_ON             1
+#define EVENT_NOTE_ON               1
+#define EVENT_NOTE_OFF              2
+#define EVENT_NOTE_GENERATED        3
+#define EVENT_CC                    4
+#define EVENT_NOTE_CACHE            5
+#define EVENT_NOTE_MONO_HANDLER_ON  6
+#define EVENT_NOTE_MONO_HANDLER_OFF 7
 
 #ifdef IS_PLAYBACK
     #define MIDIFY_OPCODE(opcode) opcode
