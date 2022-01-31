@@ -1,0 +1,15 @@
+#define Triangle2Synth_0 4
+#define Triangle4BassMonoSynth_1 5
+#define Triangle4BassMonoSynth_2 6
+#define TR_808_3 7
+#define TR_808_4 8
+#define TR_808_5 9
+#define TR_808_6 10
+#define TR_808_7 11
+#define TriangleUdoTriggerSynth_8 12
+#define TR_808_9 13
+#define AuxMixInstrument 14
+#define AuxInstrument 15
+#define Reverb_10_0 16
+#define MasterInstrument 17
+#define FinalMixInstrument 18
