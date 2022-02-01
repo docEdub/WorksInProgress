@@ -14,7 +14,16 @@
 <CsInstruments>
 
 gSPresetUuidOrder[] = fillarray( \
-    "859a106a62bb41f18954be2e29f98ec9" /* Triangle1Synth */ \
+    "e274e9138ef048c4ba9c4d42e836c85c", /* Kick 1 */ \
+    "8aac7747b6b44366b1080319e34a8616", /* Kick 2: Left */ \
+    "8e12ccc0dff44a4283211d553199a8cd", /* Kick 2: Right */ \
+    "6aecd056fd3f4c6d9a108de531c48ddf", /* Snare */ \
+    "e3e7d57082834a28b53e021beaeb783d", /* HiHat 1 */ \
+    "02c103e8fcef483292ebc49d3898ef96", /* HiHat 2 */ \
+    "fd575f03378047af835c19ef4f7d5991", /* Triangle2Synth */ \
+    "ab018f191c70470f98ac3becb76e6d13", /* Bass 1+2: Edited */ \
+    "b0ba6f144fac4f668ba6981c691277d6", /* Bass 1+2: Distant */ \
+    "f6341a2a81244ea79dd0e1486eb93386"  /* UDO Triggers */ \
 )
 
 #include "core_global.h"
