@@ -201,30 +201,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const skyBrightness = 0.05
     scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
 
+    const cameraHeight = 2
     const cameraSettings = [
         // 0
-        { position: new BABYLON.Vector3(0, 2, -10), target: new BABYLON.Vector3(0, 2, 0) },
+        { position: new BABYLON.Vector3(0, cameraHeight, -10), target: new BABYLON.Vector3(0, cameraHeight, 0) },
         // 1
-        { position: new BABYLON.Vector3(500, 2, 500), target: new BABYLON.Vector3(-50, 300, 0) },
+        { position: new BABYLON.Vector3(500, cameraHeight, 500), target: new BABYLON.Vector3(-50, 300, 0) },
         // 2
-        { position: new BABYLON.Vector3(halfGroundSize, 2, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+        { position: new BABYLON.Vector3(halfGroundSize, cameraHeight, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
         // 3
-        { position: new BABYLON.Vector3(-halfGroundSize, 2, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+        { position: new BABYLON.Vector3(-halfGroundSize, cameraHeight, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
         // 4
-        { position: new BABYLON.Vector3(-80, 2, 800), target: new BABYLON.Vector3(0, 200, 0) },
+        { position: new BABYLON.Vector3(-80, cameraHeight, 800), target: new BABYLON.Vector3(0, 200, 0) },
         // 5
-        { position: new BABYLON.Vector3(-40, 2, 400), target: new BABYLON.Vector3(225, 180, 0) },
+        { position: new BABYLON.Vector3(-40, cameraHeight, 400), target: new BABYLON.Vector3(225, 180, 0) },
         // 6
-        { position: new BABYLON.Vector3(0, 2, -100), target: new BABYLON.Vector3(0, 180, 0) },
+        { position: new BABYLON.Vector3(0, cameraHeight, -100), target: new BABYLON.Vector3(0, 180, 0) },
         // 7: Safari mixdown location.
-        { position: new BABYLON.Vector3(0, 2, 335), target: new BABYLON.Vector3(0, 135, 0) }
+        { position: new BABYLON.Vector3(0, cameraHeight, 335), target: new BABYLON.Vector3(0, 135, 0) }
     ]
     const cameraSetting = cameraSettings[7]
 
     let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene)
     camera.applyGravity = true
     camera.checkCollisions = true
-    camera.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5)
+    camera.ellipsoid = new BABYLON.Vector3(0.5, cameraHeight / 2, 0.5)
     camera.speed = slowCameraSpeed
     camera.attachControl(canvas, true)
     camera.setTarget(cameraSetting.target)
