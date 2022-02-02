@@ -220,7 +220,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         // 7: Safari mixdown location.
         { position: new BABYLON.Vector3(0, cameraHeight, 335), target: new BABYLON.Vector3(0, 135, 0) }
     ]
-    const cameraSetting = cameraSettings[7]
+    const cameraSetting = cameraSettings[0]
 
     let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene)
     camera.applyGravity = true
