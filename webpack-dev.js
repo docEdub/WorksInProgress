@@ -22,7 +22,7 @@ module.exports = {
                         "sourceMap": true,
                         "noImplicitAny": false,
                         "module": "esNext",
-                        "target": "es5",
+                        "target": "es2015",
                         "moduleResolution": "node",
                         "importHelpers": true,
                         "experimentalDecorators": true,
@@ -33,7 +33,7 @@ module.exports = {
                         "strictFunctionTypes": true,
                         "skipLibCheck": true,
                         "lib": [
-                            "es5",
+                            "es2015",
                             "dom",
                             "es2015.promise",
                             "es2015.collection",
