@@ -304,10 +304,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     if (showGroundGrid) {
         const grid_Texture = createSvgTexture(`
             <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
-                <rect width="100%" height="100%" style="fill: none; stroke: white; stroke-width: 4;" />
+                <line x1="0%" y1="0%" x2="100%" y2="0%"/>
+                <line x1="0%" y1="50%" x2="100%" y2="50%"/>
+                <line x1="0%" y1="100%" x2="100%" y2="100%"/>
+
+                <line x1="0%" y1="50%" x2="25%" y2="0%"/>
+                <line x1="25%" y1="0%" x2="50%" y2="50%"/>
+                <line x1="50%" y1="50%" x2="75%" y2="0%"/>
+                <line x1="75%" y1="0%" x2="100%" y2="50%"/>
+
+                <line x1="0%" y1="50%" x2="25%" y2="100%"/>
+                <line x1="25%" y1="100%" x2="50%" y2="50%"/>
+                <line x1="50%" y1="50%" x2="75%" y2="100%"/>
+                <line x1="75%" y1="100%" x2="100%" y2="50%"/>
+
+                <style>
+                    line {
+                        fill: none;
+                        stroke: white;
+                        stroke-width: 4;
+                    }
+                </style>
             </svg>
         `)
-        grid_Texture.uScale = grid_Texture.vScale = groundSize / 10
+        grid_Texture.uScale = grid_Texture.vScale = groundSize / 2
         const gridMaterial = new BABYLON.StandardMaterial('', scene)
         gridMaterial.emissiveColor.set(0.333, 0.333, 0.333)
         gridMaterial.ambientTexture = grid_Texture
