@@ -14,22 +14,119 @@ declare global {
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
+    class Csound {
+        constructor(csdText) {
+            this.#csdText = csdText
+
+            if (document.getElementById('csound-script') === null) {
+                let csoundImportScript = document.createElement('script')
+                csoundImportScript.type = 'module'
+                csoundImportScript.innerText = `
+                    console.debug("Csound importing ...")
+                    import { Csound } from "https://unpkg.com/@csound/browser@6.17.0-beta2/dist/csound.js"
+                    document.Csound = Csound
+                `
+                // csoundImportScript.innerText = `
+                //     console.debug("Csound importing ...")
+                //     import { Csound } from "./csound.js"
+                //     document.Csound = Csound
+                // `
+                document.body.appendChild(csoundImportScript)
+            }
+        }
+
+        //#region Options
+
+        #cameraMatrixUpdatesPerSecond = 10
+        get cameraMatrixUpdatesPerSecond() { return this.#cameraMatrixUpdatesPerSecond }
+        set cameraMatrixUpdatesPerSecond(value) { this.#cameraMatrixUpdatesPerSecond = value }
+        get cameraMatrixUpdatesPerMillisecond() { return 1000 / this.cameraMatrixUpdatesPerSecond }
+
+        #ioBufferSize = 128
+        get ioBufferSize() { return this.#ioBufferSize }
+        set ioBufferSize(value) { this.#ioBufferSize = value }
+
+        #logMessages = true
+        get logMessages() { return this.#logMessages }
+        set logMessages(value) { this.#logMessages = value }
+
+        //#endregion
+
+        #csdText = ''
+        get csdText() { return this.#csdText }
+
+        #csoundObj = null
+
+        #isStarted = false
+        get isStarted() { return this.#isStarted }
+
+        //#region Camera matrix
+
+        #cameraMatrix = null
+        set cameraMatrix(value) {
+            if (this.#cameraMatrix != null && !this.cameraMatrixIsDirty) {
+                for (let i = 0; i < 16; i++) {
+                    if (0.01 < Math.abs(value[i] - this.#cameraMatrix[i])) {
+                        this.#cameraMatrixIsDirty = true
+                        break
+                    }
+                }
+            }
+            if (this.cameraMatrixIsDirty) {
+                this.#cameraMatrix = Array.from(value)
+            }
+        }
+
+        #cameraMatrixIsDirty = true
+        get cameraMatrixIsDirty() { return this.#cameraMatrixIsDirty }
+
+        #cameraMatrixUpdateInterval = null
+        #startUpdatingCameraMatrix = () => {
+            this.#cameraMatrixUpdateInterval = setInterval(() => {
+                if (!this.isStarted) {
+                    return
+                }
+                if (this.cameraMatrixIsDirty) {
+                    console.debug('Setting Csound listener position to ['
+                        + this.#cameraMatrix[12] + ', '
+                        + this.#cameraMatrix[13] + ', '
+                        + this.#cameraMatrix[14] + ']')
+                    this.#csoundObj.tableCopyIn("1", this.#cameraMatrix)
+                    this.#cameraMatrixIsDirty = false
+                }
+            }, this.cameraMatrixUpdatesPerMillisecond)
+        }
+        #stopUpdatingCameraMatrix = () => {
+            clearInterval(this.#cameraMatrixUpdateInterval)
+        }
+
+        //#endregion
+
+        generateJson = async () => {
+
+        }
+
+        start = () => {
+            this.#startUpdatingCameraMatrix()
+        }
+
+        stop = () => {
+            this.#stopUpdatingCameraMatrix()
+        }
+    }
 
     // The BabylonJS playground adds the materials extension to BABYLON.
     // Uncomment this when copy/pasting to the BabylonJS playground.
-    // if (!BABYLON_MATERIALS)
-    //     var BABYLON_MATERIALS = BABYLON
+    if (!BABYLON_MATERIALS)
+        var BABYLON_MATERIALS = BABYLON
 
     const showBabylonInspector = false
-    const logCsoundMessages = true
     const logDebugMessages = true
     const showGroundGrid = true
 
     let animateCamera = false
     const slowCameraSpeed = 0.25
     const fastCameraSpeed = 1.5
-    const csoundCameraUpdatesPerSecond = 10
-    const csoundIoBufferSize = 128
     const groundSize = 9000
     const groundRingDiameter = 100
 
@@ -49,22 +146,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const originalConsoleLog = console.log
     console.log = function() {
         originalConsoleLog.apply(console, arguments)
-    }
-
-    if (document.getElementById('csound-script') === null) {
-        let csoundImportScript = document.createElement('script')
-        csoundImportScript.type = 'module'
-        csoundImportScript.innerText = `
-            console.debug("Csound importing ...")
-            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
-            document.Csound = Csound
-        `
-        // csoundImportScript.innerText = `
-        //     console.debug("Csound importing ...")
-        //     import { Csound } from "./csound.esm.js"
-        //     document.Csound = Csound
-        // `
-        document.body.appendChild(csoundImportScript)
     }
 
     function browser() {
@@ -440,35 +521,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const time = document.audioContext.currentTime - startTime
             updateCamera(time)
         })
+    }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        const previousCameraMatrix = new Float32Array(16)
-        const currentCameraMatrix = new Float32Array(16)
-        let currentCameraMatrixIsDirty = true
-        
-        // Send the camera matrix to Csound.
-        setInterval(() => {
-            if (!isCsoundStarted) {
-                return
-            }    
-            currentCamera.worldMatrixFromCache.copyToArray(currentCameraMatrix)
-            if (!currentCameraMatrixIsDirty) {
-                for (let i = 0; i < 16; i++) {
-                    if (0.01 < Math.abs(currentCameraMatrix[i] - previousCameraMatrix[i])) {
-                        currentCameraMatrixIsDirty = true
-                        break
-                    }
-                }
-            }
-            if (currentCameraMatrixIsDirty) {
-                // console.debug('BabylonJs listener position = [' + currentCameraMatrix[12] + ', ' + currentCameraMatrix[13] + ', ' + currentCameraMatrix[14] + ']')
-                document.csound.tableCopyIn("1", currentCameraMatrix)
-                currentCamera.worldMatrixFromCache.copyToArray(previousCameraMatrix)
-                currentCameraMatrixIsDirty = false
-            }
-        }, 1000 / csoundCameraUpdatesPerSecond)
-    }
 
     const csoundLoadTimer = setInterval(() => {
         if (!!document.Csound) {
@@ -521,9 +576,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             else if (arguments[0] === 'csd:ended') {
                 restartCsound()
             }
-            if (logCsoundMessages) {
-                previousConsoleLog.apply(console, arguments)
-            }
+            // if (logCsoundMessages) {
+            //     previousConsoleLog.apply(console, arguments)
+            // }
         }
         console.log = csoundConsoleLog
         const csound = await document.Csound({
@@ -558,15 +613,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         console.debug('Csound initialized successfully')
-        await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
+        // await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
         console.debug('Csound csd compiling ...')
         let csoundErrorCode = await csound.compileCsdText(csdText)
         if (csoundErrorCode != 0) {
             console.error('Csound csd compile failed')
             return
         }
-        document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate
-        console.debug('Latency =', document.latency)
+        // document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate
+        // console.debug('Latency =', document.latency)
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
         csound.start()
