@@ -11,6 +11,8 @@ if (os.type() === 'Darwin') {
     const bounceDir = buildDir + '/bounce';
     const jsonDir = bounceDir + '/json';
     const bounceMixdownDir = bounceDir + '/mixdown';
+    const babylonJsDir = path.resolve('BabylonJs')
+
     spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
         stdio: 'inherit'
     });
@@ -47,16 +49,22 @@ if (os.type() === 'Darwin') {
         data = data.replace(/\n\s*/g, '\n')
 
         // Wrap with Javascript multiline string variable named `csdText`.
-        var output = 'const csdText = `' + data + '`\n'
-
-        fs.writeFile(csoundDir + '/build/bounce/DawPlayback.csd.js', output, 'ascii', function (err) {
+        var output = 'const csdText = `' + data + '`'
+        
+        // Update BabylonJs/project.ts csdText variable.
+        fs.readFile(babylonJsDir + '/project.ts', 'ascii', (err, data) => {
             if (err) {
                 return console.log(err);
             }
-            console.log('-- Generating ../bounce/DawPlayback.csd.js done')
-        });
-        
-        
+
+            data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
+            fs.writeFile(babylonJsDir + '/project.ts', data, 'ascii', (err) => {
+                if (err) {
+                    return console.log(err)
+                }
+                console.log('-- Updating BabylonJs/project.ts csdText constant done')
+            })
+        })
     });
 
     if (process.argv.indexOf('--with-json') != -1) {
