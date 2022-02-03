@@ -7,8 +7,11 @@ declare global {
         Csound: CSOUND.Csound
         csound: CSOUND.CsoundObj
         latency: number
+        isProduction: boolean // If `falsey` then we're running in the playground.
     }
 }
+
+document.isProduction = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
@@ -117,7 +120,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     // The BabylonJS playground adds the materials extension to BABYLON.
     // Uncomment this when copy/pasting to the BabylonJS playground.
-    if (!BABYLON_MATERIALS)
+    if (!document.isProduction && !BABYLON_MATERIALS)
         var BABYLON_MATERIALS = BABYLON
 
     const showBabylonInspector = false
