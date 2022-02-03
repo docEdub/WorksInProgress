@@ -36,6 +36,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 // `
                 document.body.appendChild(csoundImportScript)
             }
+
+            const importScriptTimer = setInterval(() => {
+                if (!!document.Csound) {
+                    console.debug('Csound importing - done')
+                    clearInterval(importScriptTimer)
+                    this.#onImportScriptDone()
+                }
+            })
+        }
+
+        onAudioEngineUnlocked = () => {
+            document.audioContext.resume()
+            this.#audioEngineIsUnlocked = true
+            console.debug('Audio engine unlocked')
+            this.#start()
         }
 
         //#region Options
@@ -43,7 +58,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #cameraMatrixUpdatesPerSecond = 10
         get cameraMatrixUpdatesPerSecond() { return this.#cameraMatrixUpdatesPerSecond }
         set cameraMatrixUpdatesPerSecond(value) { this.#cameraMatrixUpdatesPerSecond = value }
-        get cameraMatrixUpdatesPerMillisecond() { return 1000 / this.cameraMatrixUpdatesPerSecond }
+        get cameraMatrixMillisecondsPerUpdate() { return 1000 / this.cameraMatrixUpdatesPerSecond }
 
         #ioBufferSize = 128
         get ioBufferSize() { return this.#ioBufferSize }
@@ -55,10 +70,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         //#endregion
 
-        #csdText = ''
+        #csdText = null
         get csdText() { return this.#csdText }
 
+        #csdJson = null
+        get csdJson() { return this.#csdJson }
+        get csdJsonIsGenerated() { return this.#csdJson != null }
+
         #csoundObj = null
+
+        #isLoaded = false
+        get isLoaded() { return this.#isLoaded }
+
+        #audioEngineIsUnlocked = false
+        get audioEngineIsUnlocked() { return this.#audioEngineIsUnlocked }
 
         #isStarted = false
         get isStarted() { return this.#isStarted }
@@ -97,7 +122,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     this.#csoundObj.tableCopyIn("1", this.#cameraMatrix)
                     this.#cameraMatrixIsDirty = false
                 }
-            }, this.cameraMatrixUpdatesPerMillisecond)
+            }, this.cameraMatrixMillisecondsPerUpdate)
         }
         #stopUpdatingCameraMatrix = () => {
             clearInterval(this.#cameraMatrixUpdateInterval)
@@ -105,18 +130,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         //#endregion
 
-        generateJson = async () => {
-
+        #onImportScriptDone = () => {
+            this.#isLoaded = true
+            this.#start()
         }
 
-        start = () => {
+        #generateJson = async () => {
+            if (this.csdJsonIsGenerated) {
+                return
+            }
+            console.debug('Generating JSON ...')
+            console.debug('Generating JSON - done')
+        }
+
+        #start = async () => {
+            if (this.isStarted) return
+            if (!this.audioEngineIsUnlocked) return
+            if (!this.isLoaded) return
+            await this.#generateJson()
             this.#startUpdatingCameraMatrix()
         }
 
-        stop = () => {
+        #stop = () => {
+            if (!this.isStarted) {
+                return
+            }
             this.#stopUpdatingCameraMatrix()
         }
     }
+    let csound = null
 
     // The BabylonJS playground adds the materials extension to BABYLON.
     // Uncomment this when copy/pasting to the BabylonJS playground.
@@ -136,7 +178,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const halfGroundSize = groundSize / 2
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
-    BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { onAudioEngineUnlocked() })
+    BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
     BABYLON.Engine.audioEngine.lock()
     
     const originalConsoleDebug = console.debug
@@ -375,7 +417,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let startTime = 0
 
     const startAudioVisuals = () => {
-        let csdData = JSON.parse(csdJson)
+        let csdData = null //JSON.parse(csdJson)
         // console.debug('csdData =', csdData)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -549,32 +591,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const csoundLoadTimer = setInterval(() => {
-        if (!!document.Csound) {
-            console.debug('Csound imported successfully')
-            clearInterval(csoundLoadTimer)
-            onCsoundLoaded()
-        }
-        else {
-            console.debug('Waiting for Csound import ...')
-        }
-    }, 1000)
-
     let isAudioEngineUnlocked = false
     let isCsoundLoaded = false
     let isCsoundStarted = false
-
-    const onAudioEngineUnlocked = () => {
-        document.audioContext.resume()
-        isAudioEngineUnlocked = true
-        console.debug('Audio engine unlocked')
-        startCsound()
-    }
-    
-    const onCsoundLoaded = () => {
-        isCsoundLoaded = true
-        startCsound()
-    }
 
     let restartCount = 0
 
@@ -588,6 +607,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     const startCsound = async () => {
+        return
         if (!isAudioEngineUnlocked) return
         if (!isCsoundLoaded) return
         console.debug('Csound initializing ...')
@@ -11443,9 +11463,7 @@ e 60
 </CsScore>
 </CsoundSynthesizer>
 `
-const csdJson = `
-{}
-`
+    csound = new Csound(csdText)
     startAudioVisuals()
     return scene
 }}
