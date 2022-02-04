@@ -99,9 +99,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         #playbackIsStarted = false
         get playbackIsStarted() { return this.#playbackIsStarted }
+        set playbackIsStarted(value) { this.#playbackIsStarted = value }
 
         #startTime = 0
         get startTime() { return this.#startTime }
+        set startTime(value) { this.#startTime = value }
 
         //#region Camera matrix
 
@@ -145,6 +147,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#isLoaded = true
             await this.#generateJsonIfRequested()
             await this.#startIfRequested()
+        }
+
+        #consoleLog = function() {
+            csound.onLogMessage(console, arguments)
         }
 
         #generateJson = async () => {
@@ -230,16 +236,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         }
 
-        #consoleLog = () => {
-            if (arguments[0] === 'csd:started') {
+        onLogMessage = (console, args) => {
+            if (args[0] === 'csd:started') {
                 this.#startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
-                this.#isStarted = true
+                this.#playbackIsStarted = true
+                console.debug('Playback start message received')
             }
-            else if (arguments[0] === 'csd:ended') {
+            else if (args[0] === 'csd:ended') {
+                console.debug('Playback end message received')
                 this.#restart()
             }
-            if (this.logMessages) {
-                this.#previousConsoleLog.apply(console, arguments)
+            else if (csound.logMessages) {
+                this.#previousConsoleLog.apply(console, args)
             }
         }
     }
@@ -275,6 +283,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const originalConsoleLog = console.log
     console.log = function() {
+        if (arguments[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
+            return
+        }
         originalConsoleLog.apply(console, arguments)
     }
 
