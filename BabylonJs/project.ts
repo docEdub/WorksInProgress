@@ -50,7 +50,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             document.audioContext.resume()
             this.#audioEngineIsUnlocked = true
             console.debug('Audio engine unlocked')
-            this.#start()
+            this.#generateJsonIfRequested()
+            this.#startIfRequested()
         }
 
         //#region Options
@@ -73,9 +74,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #csdText = null
         get csdText() { return this.#csdText }
 
-        #csdJson = null
-        get csdJson() { return this.#csdJson }
-        get csdJsonIsGenerated() { return this.#csdJson != null }
+        #json = null
+        get json() { return this.#json }
+        get jsonIsGenerated() { return this.#json != null }
+
+        #previousConsoleLog = null
 
         #csoundObj = null
 
@@ -85,8 +88,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #audioEngineIsUnlocked = false
         get audioEngineIsUnlocked() { return this.#audioEngineIsUnlocked }
 
+        #jsonGenerationWasRequested = false
+        get jsonGenerationWasRequested() { return this.#jsonGenerationWasRequested }
+
+        #startWasRequested = false
+        get startWasRequested() { return this.#startWasRequested }
+
         #isStarted = false
         get isStarted() { return this.#isStarted }
+
+        #playbackIsStarted = false
+        get playbackIsStarted() { return this.#playbackIsStarted }
+
+        #startTime = 0
+        get startTime() { return this.#startTime }
 
         //#region Camera matrix
 
@@ -108,9 +123,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #cameraMatrixIsDirty = true
         get cameraMatrixIsDirty() { return this.#cameraMatrixIsDirty }
 
-        #cameraMatrixUpdateInterval = null
         #startUpdatingCameraMatrix = () => {
-            this.#cameraMatrixUpdateInterval = setInterval(() => {
+            setInterval(() => {
                 if (!this.isStarted) {
                     return
                 }
@@ -124,38 +138,109 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 }
             }, this.cameraMatrixMillisecondsPerUpdate)
         }
-        #stopUpdatingCameraMatrix = () => {
-            clearInterval(this.#cameraMatrixUpdateInterval)
-        }
 
         //#endregion
 
-        #onImportScriptDone = () => {
+        #onImportScriptDone = async () => {
             this.#isLoaded = true
-            this.#start()
+            await this.#generateJsonIfRequested()
+            await this.#startIfRequested()
         }
 
         #generateJson = async () => {
-            if (this.csdJsonIsGenerated) {
-                return
-            }
+            if (this.jsonIsGenerated) return
             console.debug('Generating JSON ...')
+            this.#json = JSON.parse('{}')
             console.debug('Generating JSON - done')
         }
 
-        #start = async () => {
+        #generateJsonIfRequested = async() => {
+            if (this.#jsonGenerationWasRequested) {
+                await this.#generateJson()
+            }
+        }
+
+        start = async () => {
             if (this.isStarted) return
+            this.#startWasRequested = true
             if (!this.audioEngineIsUnlocked) return
             if (!this.isLoaded) return
             await this.#generateJson()
             this.#startUpdatingCameraMatrix()
-        }
 
-        #stop = () => {
-            if (!this.isStarted) {
+            this.#previousConsoleLog = console.log
+            console.log = this.#consoleLog
+            this.#csoundObj = await document.Csound({
+                audioContext:
+                    detectedBrowser === 'Safari'
+                        ? document.audioContext
+                        : new AudioContext({
+                            latencyHint: 0.08533333333333333,
+                            sampleRate: 48000
+                        }),
+                useSAB: false
+            })
+            console.log = this.#previousConsoleLog
+
+            if (!this.#csoundObj) {
+                'Csound failed to initialize'
                 return
             }
-            this.#stopUpdatingCameraMatrix()
+            
+            const csound = this.#csoundObj
+            console.log('Csound version =', await csound.getVersion())
+        
+            const audioContext = await csound.getAudioContext()
+            console.debug('audioContext =', audioContext)
+            console.debug('audioContext.audioWorklet =', audioContext.audioWorklet)
+            console.debug('audioContext.baseLatency =', audioContext.baseLatency)
+            console.debug('audioContext.sampleRate =', audioContext.sampleRate)
+            console.debug('audioContext.state =', audioContext.state)
+            document.audioContext = audioContext
+    
+            if (audioContext.sampleRate != 48000) {
+                console.log('Sample restricted to 48000')
+                return
+            }
+    
+            console.debug('Csound initialized successfully')
+            // await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
+            console.debug('Csound csd compiling ...')
+            let csoundErrorCode = await csound.compileCsdText(this.csdText)
+            if (csoundErrorCode != 0) {
+                console.error('Csound csd compile failed')
+                return
+            }
+
+            // document.latency = audioContext.baseLatency + this.ioBufferSize / audioContext.sampleRate
+            // console.debug('Latency =', document.latency)
+            console.debug('Csound csd compile succeeded')
+            console.debug('Csound starting ...')
+            csound.start()
+        }
+
+        #startIfRequested = async () => {
+            if (this.#startWasRequested) {
+                await this.start()
+            }
+        }
+
+        #restart()
+        {
+
+        }
+
+        #consoleLog = () => {
+            if (arguments[0] === 'csd:started') {
+                this.#startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
+                this.#isStarted = true
+            }
+            else if (arguments[0] === 'csd:ended') {
+                this.#restart()
+            }
+            if (this.logMessages) {
+                this.#previousConsoleLog.apply(console, arguments)
+            }
         }
     }
     let csound = null
@@ -604,71 +689,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         console.debug('Restarting Csound - done')
         restartCount++
         console.debug('Restart count =', restartCount)
-    }
-
-    const startCsound = async () => {
-        return
-        if (!isAudioEngineUnlocked) return
-        if (!isCsoundLoaded) return
-        console.debug('Csound initializing ...')
-        const previousConsoleLog = console.log
-        const csoundConsoleLog = function() {
-            if (arguments[0] === 'csd:started') {
-                startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
-                isCsoundStarted = true
-            }
-            else if (arguments[0] === 'csd:ended') {
-                restartCsound()
-            }
-            // if (logCsoundMessages) {
-            //     previousConsoleLog.apply(console, arguments)
-            // }
-        }
-        console.log = csoundConsoleLog
-        const csound = await document.Csound({
-            audioContext:
-                detectedBrowser === 'Safari'
-                    ? document.audioContext
-                    : new AudioContext({
-                        latencyHint: 0.08533333333333333,
-                        sampleRate: 48000
-                    }),
-            useSAB: false
-        })
-        console.log = previousConsoleLog
-        if (!csound) {
-            console.error('Csound failed to initialize')
-            return
-        }
-        document.csound = csound
-        console.log('Csound version =', await csound.getVersion())
-        
-        const audioContext = await csound.getAudioContext()
-        console.debug('audioContext =', audioContext)
-        console.debug('audioContext.audioWorklet =', audioContext.audioWorklet)
-        console.debug('audioContext.baseLatency =', audioContext.baseLatency)
-        console.debug('audioContext.sampleRate =', audioContext.sampleRate)
-        console.debug('audioContext.state =', audioContext.state)
-        document.audioContext = audioContext
-
-        if (audioContext.sampleRate != 48000) {
-            console.log('Sample restricted to 48000')
-            return
-        }
-
-        console.debug('Csound initialized successfully')
-        // await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
-        console.debug('Csound csd compiling ...')
-        let csoundErrorCode = await csound.compileCsdText(csdText)
-        if (csoundErrorCode != 0) {
-            console.error('Csound csd compile failed')
-            return
-        }
-        // document.latency = audioContext.baseLatency + csoundIoBufferSize / audioContext.sampleRate
-        // console.debug('Latency =', document.latency)
-        console.debug('Csound csd compile succeeded')
-        console.debug('Csound starting ...')
-        csound.start()
     }
 
 const csdText = `
@@ -11464,7 +11484,7 @@ e 60
 </CsoundSynthesizer>
 `
     csound = new Csound(csdText)
-    startAudioVisuals()
+    csound.start()
     return scene
 }}
 
