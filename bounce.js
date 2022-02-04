@@ -45,8 +45,8 @@ if (os.type() === 'Darwin') {
         // Remove blank lines.
         data = data.replace(/\s*\n/g, '\n')
 
-        // Strip leading whitespace.
-        data = data.replace(/\n\s*/g, '\n')
+        // Replace leading whitespace with tabs.
+        data = data.replace(/\n\s*/g, '\n\t')
 
         // Wrap with Javascript multiline string variable named `csdText`.
         var output = 'const csdText = `' + data + '`'
