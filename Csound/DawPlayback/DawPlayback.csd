@@ -3,8 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-; --messagelevel=0
---messagelevel=134
+--messagelevel=0
+; --messagelevel=134
 --midi-device=0
 --nodisplays
 -+rtmidi=null

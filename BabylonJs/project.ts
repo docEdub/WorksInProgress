@@ -105,6 +105,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         get startTime() { return this.#startTime }
         set startTime(value) { this.#startTime = value }
 
+        #restartCount = 0
+        get restartCount() { return this.#restartCount }
+
         //#region Camera matrix
 
         #cameraMatrix = null
@@ -231,9 +234,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
-        #restart()
-        {
-
+        #restart = async () => {
+            console.debug('Restarting Csound ...')
+            this.#playbackIsStarted = false
+            await this.#csoundObj.rewindScore()
+            console.debug('Restarting Csound - done')
+            this.#restartCount++
+            console.debug('Restart count =', this.restartCount)
         }
 
         onLogMessage = (console, args) => {
@@ -245,6 +252,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             else if (args[0] === 'csd:ended') {
                 console.debug('Playback end message received')
                 this.#restart()
+            }
+            // The latest version of Csound WASM is logging the entire csdText contents several times when starting.
+            // This filters those messages out.
+            else if (args[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
+                return
             }
             else if (csound.logMessages) {
                 this.#previousConsoleLog.apply(console, args)
@@ -283,9 +295,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const originalConsoleLog = console.log
     console.log = function() {
-        if (arguments[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
-            return
-        }
         originalConsoleLog.apply(console, arguments)
     }
 
@@ -675,7 +684,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         
         scene.registerBeforeRender(() => {
-            if (!isCsoundStarted) {
+            if (!csound.isStarted) {
                 updateCamera(0)
                 return
             }
@@ -685,27 +694,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         })
     }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    let isAudioEngineUnlocked = false
-    let isCsoundLoaded = false
-    let isCsoundStarted = false
-
-    let restartCount = 0
-
-    const restartCsound = async () => {
-        console.debug('Restarting Csound ...')
-        isCsoundStarted = false
-        await document.csound.rewindScore()
-        console.debug('Restarting Csound - done')
-        restartCount++
-        console.debug('Restart count =', restartCount)
-    }
-
 const csdText = `
 <CsoundSynthesizer>
 <CsOptions>
---messagelevel=134
+--messagelevel=0
 --midi-device=0
 --nodisplays
 --nosound
