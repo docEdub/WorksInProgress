@@ -24,15 +24,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (document.getElementById('csound-script') === null) {
                 let csoundImportScript = document.createElement('script')
                 csoundImportScript.type = 'module'
-                csoundImportScript.innerText = `
-                    console.debug("Csound importing ...")
-                    import { Csound } from "https://unpkg.com/@csound/browser@6.17.0-beta2/dist/csound.js"
-                    document.Csound = Csound
-                `
+                if (document.isProduction) {
+                    csoundImportScript.innerText = `
+                        console.debug("Csound importing ...");
+                        import { Csound } from "https://unpkg.com/@csound/browser@6.17.0-beta2/dist/csound.js";
+                        document.Csound = Csound;
+                    `
+                }
+                else {
+                    // Csound WASM 6.17.0-beta2 doesn't work in BabylonJS playground. Use old version.
+                    csoundImportScript.innerText = `
+                        console.debug("Csound importing ...");
+                        import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js";
+                        document.Csound = Csound;
+                    `
+                }
                 // csoundImportScript.innerText = `
-                //     console.debug("Csound importing ...")
-                //     import { Csound } from "./csound.js"
-                //     document.Csound = Csound
+                //     console.debug("Csound importing ...");
+                //     import { Csound } from "./csound.js";
+                //     document.Csound = Csound;
                 // `
                 document.body.appendChild(csoundImportScript)
             }
