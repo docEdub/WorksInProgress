@@ -48,6 +48,9 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 
 instr INSTRUMENT_ID
+    ${CSOUND_IFDEF} IS_GENERATING_JSON
+        goto end
+    ${CSOUND_ENDIF}
     #if LOGGING
         #ifdef INSTRUMENT_ID_DEFINED
             SInstrument = sprintf("%.3f", p1)
@@ -143,9 +146,7 @@ instr INSTRUMENT_ID
         #endif
     endif
 
-#if !IS_PLAYBACK
 end:
-#endif
     log_i_trace("%s - done", SInstrument)
 endin
 
