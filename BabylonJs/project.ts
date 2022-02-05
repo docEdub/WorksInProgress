@@ -70,6 +70,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         set cameraMatrixUpdatesPerSecond(value) { this.#cameraMatrixUpdatesPerSecond = value }
         get cameraMatrixMillisecondsPerUpdate() { return 1000 / this.cameraMatrixUpdatesPerSecond }
 
+        #jsonGenerationSampleRate = 30
+        get jsonGenerationSampleRate() { return this.#jsonGenerationSampleRate }
+
         #ioBufferSize = 128
         get ioBufferSize() { return this.#ioBufferSize }
         set ioBufferSize(value) { this.#ioBufferSize = value }
@@ -82,6 +85,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         #csdText = null
         get csdText() { return this.#csdText }
+
+        #isGeneratingJson = false
+        get isGeneratingJson() { return this.#isGeneratingJson }
 
         #json = null
         get json() { return this.#json }
@@ -168,7 +174,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #generateJson = async () => {
             if (this.jsonIsGenerated) return
             console.debug('Generating JSON ...')
-            this.#json = JSON.parse('{}')
+            this.#isGeneratingJson = true
+
+            const maxDurationInMinutes = 5
+            let offlineAudioContext = new OfflineAudioContext(2, 48000 * maxDurationInMinutes * 60, 48000)
+
+            this.#previousConsoleLog = console.log
+            console.log = this.#consoleLog
+
+            let offlineCsoundObj = await document.Csound({
+                audioContext: offlineAudioContext
+            })
+
+            console.log = this.#previousConsoleLog
+
+            // TODO: Fix JSON generation in Csound files and uncomment the following lines.
+            await offlineCsoundObj.setOption('--omacro:IS_GENERATING_JSON=1')
+            await offlineCsoundObj.setOption('--smacro:IS_GENERATING_JSON=1')
+            await offlineCsoundObj.setOption('--sample-rate=' + this.jsonGenerationSampleRate)
+            await offlineCsoundObj.setOption('--control-rate=' + this.jsonGenerationSampleRate)
+            const result = await offlineCsoundObj.compileCsdText(this.csdText)
+            if (result != 0) {
+                console.debug('Csound compile failed')
+                this.#isGeneratingJson = false
+                return
+            }
+            console.debug(`Rendering Csound score ...`)
+            offlineCsoundObj.start()
+            await offlineAudioContext.startRendering()
+
+            this.#isGeneratingJson = false
+            console.debug(`Rendering Csound score - done`)
             console.debug('Generating JSON - done')
         }
 
@@ -259,23 +295,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         onLogMessage = (console, args) => {
-            if (args[0] === 'csd:started') {
-                this.#startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
-                this.#playbackIsStarted = true
-                console.debug('Playback start message received')
-            }
-            else if (args[0] === 'csd:ended') {
-                console.debug('Playback end message received')
-                this.#restart()
-            }
+            if (this.#isGeneratingJson && args[0].startsWith("{\"csJSON\":{")) {
+				// console.debug(args[0])
+				// const object = JSON.parse(args[0])
+				// console.debug(object.csJson)
+			}
+
             // The latest version of Csound WASM is logging the entire csdText contents several times when starting.
             // This filters those messages out.
-            else if (args[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
+            if (args[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
                 return
             }
-            else if (csound.logMessages) {
-                this.#previousConsoleLog.apply(console, args)
-            }
+			if (!this.isGeneratingJson) {
+				if (args[0] === 'csd:started') {
+					this.#startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
+					this.#playbackIsStarted = true
+					console.debug('Playback start message received')
+				}
+				else if (args[0] === 'csd:ended') {
+					console.debug('Playback end message received')
+					this.#restart()
+				}
+				else if (csound.logMessages) {
+					this.#previousConsoleLog.apply(console, args)
+				}
+			}
         }
     }
     let csound = null
@@ -3405,6 +3449,98 @@ const csdText = `
 	turnoff
 	endin
 	event_i("i", "TR_808_CreateCcIndexes", 0, -1)
+	opcode jsonPrint_i, 0, S
+	SText xin
+	prints(SText)
+	endop
+	opcode jsonPrint_k, 0, S
+	SText xin
+	printsk(SText)
+	endop
+	opcode jsonStart_i, 0, S
+	SUuid xin
+	prints("{\\"csJSON\\":")
+	prints("{\\"%s\\":{", SUuid)
+	endop
+	opcode jsonStart_k, 0, S
+	SUuid xin
+	printsk("{\\"csJSON\\":")
+	printsk("{\\"%s\\":{", SUuid)
+	endop
+	opcode jsonEnd_i, 0, 0
+	prints("}}")
+	prints("}\\n")
+	endop
+	opcode jsonEnd_k, 0, 0
+	printsk("}}")
+	printsk("}\\n")
+	endop
+	opcode jsonKey_i, 0, S
+	SKey xin
+	prints("\\"%s\\":", SKey)
+	endop
+	opcode jsonKey_k, 0, S
+	SKey xin
+	printsk("\\"%s\\":", SKey)
+	endop
+	opcode jsonBool_i, 0, Si
+	SKey, iValue xin
+	jsonKey_i(SKey)
+	if (iValue == 0) then
+	prints("false")
+	else
+	prints("true")
+	endif
+	endop
+	opcode jsonBool_k, 0, Sk
+	SKey, kValue xin
+	jsonKey_k(SKey)
+	if (kValue == 0) then
+	printsk("false")
+	else
+	printsk("true")
+	endif
+	endop
+	opcode jsonInteger_i, 0, Si
+	SKey, iValue xin
+	jsonKey_i(SKey)
+	prints("%d", iValue)
+	endop
+	opcode jsonInteger_i, 0, Sk
+	SKey, kValue xin
+	jsonKey_k(SKey)
+	prints("%d", kValue)
+	endop
+	opcode jsonFloat_i, 0, Si
+	SKey, iValue xin
+	jsonKey_i(SKey)
+	prints("%.3f", iValue)
+	endop
+	opcode jsonFloat_k, 0, Sk
+	SKey, kValue xin
+	jsonKey_k(SKey)
+	printsk("%.3f", kValue)
+	endop
+	opcode jsonString_i, 0, SS
+	SKey, SValue xin
+	jsonKey_i(SKey)
+	prints("\\"%s\\"", SValue)
+	endop
+	opcode jsonString_k, 0, SS
+	SKey, SValue xin
+	jsonKey_k(SKey)
+	printsk("\\"%s\\"", SValue)
+	endop
+	opcode jsonNull_i, 0, S
+	SKey xin
+	jsonKey_i(SKey)
+	prints("null")
+	endop
+	opcode jsonNull_k, 0, S
+	SKey xin
+	jsonKey_k(SKey)
+	printsk(":null")
+	endop
 	#ifdef CSOUND_IS_PLAYBACK
 	opcode time_PlaybackTime, i, 0
 	xout i(gk_i) / giKR
@@ -3543,16 +3679,6 @@ const csdText = `
 	gkdur4 init giTR_808_ClosedHighHat_Decay
 	gktune4 init giTR_808_ClosedHighHat_Tune
 	gklevel init 1
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(0, 0, "e274e9138ef048c4ba9c4d42e836c85c")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "e274e9138ef048c4ba9c4d42e836c85c")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 4
 	iOrcInstanceIndex = 0
 	iEventType = p4
@@ -3704,28 +3830,27 @@ const csdText = `
 	gaInstrumentSignals[0][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[0] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("e274e9138ef048c4ba9c4d42e836c85c")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[0] = giTR_808_NoteIndex[0] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"e274e9138ef048c4ba9c4d42e836c85c",
-	giTR_808_NoteIndex[0])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("e274e9138ef048c4ba9c4d42e836c85c")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[0],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("e274e9138ef048c4ba9c4d42e836c85c")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[0],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
 	endin
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(1, 0, "8aac7747b6b44366b1080319e34a8616")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "8aac7747b6b44366b1080319e34a8616")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 5
 	iOrcInstanceIndex = 1
 	iEventType = p4
@@ -3877,28 +4002,27 @@ const csdText = `
 	gaInstrumentSignals[1][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[1] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("8aac7747b6b44366b1080319e34a8616")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[1] = giTR_808_NoteIndex[1] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"8aac7747b6b44366b1080319e34a8616",
-	giTR_808_NoteIndex[1])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("8aac7747b6b44366b1080319e34a8616")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[1],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("8aac7747b6b44366b1080319e34a8616")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[1],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
 	endin
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(2, 0, "8e12ccc0dff44a4283211d553199a8cd")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "8e12ccc0dff44a4283211d553199a8cd")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 6
 	iOrcInstanceIndex = 2
 	iEventType = p4
@@ -4050,28 +4174,27 @@ const csdText = `
 	gaInstrumentSignals[2][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[2] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("8e12ccc0dff44a4283211d553199a8cd")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[2] = giTR_808_NoteIndex[2] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"8e12ccc0dff44a4283211d553199a8cd",
-	giTR_808_NoteIndex[2])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("8e12ccc0dff44a4283211d553199a8cd")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[2],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("8e12ccc0dff44a4283211d553199a8cd")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[2],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
 	endin
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(3, 0, "6aecd056fd3f4c6d9a108de531c48ddf")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "6aecd056fd3f4c6d9a108de531c48ddf")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 7
 	iOrcInstanceIndex = 3
 	iEventType = p4
@@ -4223,28 +4346,27 @@ const csdText = `
 	gaInstrumentSignals[3][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[3] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("6aecd056fd3f4c6d9a108de531c48ddf")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[3] = giTR_808_NoteIndex[3] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"6aecd056fd3f4c6d9a108de531c48ddf",
-	giTR_808_NoteIndex[3])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("6aecd056fd3f4c6d9a108de531c48ddf")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[3],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("6aecd056fd3f4c6d9a108de531c48ddf")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[3],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
 	endin
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(4, 0, "e3e7d57082834a28b53e021beaeb783d")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "e3e7d57082834a28b53e021beaeb783d")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 8
 	iOrcInstanceIndex = 4
 	iEventType = p4
@@ -4396,28 +4518,27 @@ const csdText = `
 	gaInstrumentSignals[4][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[4] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("e3e7d57082834a28b53e021beaeb783d")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[4] = giTR_808_NoteIndex[4] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"e3e7d57082834a28b53e021beaeb783d",
-	giTR_808_NoteIndex[4])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("e3e7d57082834a28b53e021beaeb783d")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[4],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("e3e7d57082834a28b53e021beaeb783d")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[4],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
 	endin
-	#ifdef IS_GENERATING_JSON
-	setPluginUuid(5, 0, "02c103e8fcef483292ebc49d3898ef96")
-	instr TR_808_Json
-	SJsonFile = sprintf("json/%s.0.json", "02c103e8fcef483292ebc49d3898ef96")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
-	turnoff
-	endin
-	#end
 	instr 9
 	iOrcInstanceIndex = 5
 	iEventType = p4
@@ -4569,14 +4690,23 @@ const csdText = `
 	gaInstrumentSignals[5][5] = aOut
 	#ifdef IS_GENERATING_JSON
 	if (giTR_808_NoteIndex[5] == 0) then
-	scoreline_i("i \\"TR_808_Json\\" 0 0")
+	jsonStart_i("02c103e8fcef483292ebc49d3898ef96")
+	jsonString_i("instanceName", "")
+	jsonEnd_i()
 	endif
 	giTR_808_NoteIndex[5] = giTR_808_NoteIndex[5] + 1
-	SJsonFile = sprintf("json/%s.%d.json",
-	"02c103e8fcef483292ebc49d3898ef96",
-	giTR_808_NoteIndex[5])
-	fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
-	ficlose(SJsonFile)
+	jsonStart_i("02c103e8fcef483292ebc49d3898ef96")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"time\\":%.3f}}",
+	giTR_808_NoteIndex[5],
+	times()))
+	jsonEnd_i()
+	if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
+	jsonStart_i("02c103e8fcef483292ebc49d3898ef96")
+	jsonString_i("notes", sprintf("{\\"%d\\":{\\"xyz\\":[%.3f,%.3f,%.3f]}}",
+	giTR_808_NoteIndex[5],
+	iX, iY, iZ))
+	jsonEnd_i()
+	endif
 	#end
 	endif
 	end:
@@ -4982,12 +5112,9 @@ const csdText = `
 	#define TriangleMonoSynth_VcoBandwith #0.5#
 	#end
 	#ifdef IS_GENERATING_JSON
-	setPluginUuid(7, 0, "ab018f191c70470f98ac3becb76e6d13")
-	instr 11_Json
-	SJsonFile = sprintf("json/%s.0.json", "ab018f191c70470f98ac3becb76e6d13")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
+	instr Json_11
+	jsonStart_i("ab018f191c70470f98ac3becb76e6d13")
+	jsonString_i("instanceName", "\\"\\"")
 	turnoff
 	endin
 	#end
@@ -5170,12 +5297,9 @@ const csdText = `
 	#define TriangleMonoSynth_VcoBandwith #0.5#
 	#end
 	#ifdef IS_GENERATING_JSON
-	setPluginUuid(8, 0, "b0ba6f144fac4f668ba6981c691277d6")
-	instr 12_Json
-	SJsonFile = sprintf("json/%s.0.json", "b0ba6f144fac4f668ba6981c691277d6")
-	fprints(SJsonFile, "{")
-	fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", ""))
-	fprints(SJsonFile, "}")
+	instr Json_12
+	jsonStart_i("b0ba6f144fac4f668ba6981c691277d6")
+	jsonString_i("instanceName", "\\"\\"")
 	turnoff
 	endin
 	#end
@@ -5670,6 +5794,9 @@ const csdText = `
 	endin
 	event_i("i", "Reverb_CreateCcIndexes", 0, -1)
 	instr 16
+	#ifdef IS_GENERATING_JSON
+	goto end
+	#end
 	iOrcInstanceIndex = 0
 	iEventType = p4
 	if (iEventType == 4) then
@@ -5720,6 +5847,7 @@ const csdText = `
 	kI += 1
 	od
 	endif
+	end:
 	endin
 	instr Preallocate_16
 	ii = 0

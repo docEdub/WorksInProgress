@@ -43,6 +43,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "math.orc"
+${CSOUND_INCLUDE} "json.orc"
 ${CSOUND_INCLUDE} "PositionUdos.orc"
 
 
@@ -120,19 +121,6 @@ gklevel init 1
 #endif // #ifndef TR_808_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
-
-${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
-
-    instr TR_808_Json
-        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
-        fprints(SJsonFile, "{")
-        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, "}")
-        turnoff
-    endin
-${CSOUND_ENDIF}
-
 
 instr INSTRUMENT_ID
     iOrcInstanceIndex = ORC_INSTANCE_INDEX
@@ -431,14 +419,24 @@ instr INSTRUMENT_ID
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (giTR_808_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"TR_808_Json\" 0 0")
+                jsonStart_i(INSTRUMENT_PLUGIN_UUID)
+                jsonString_i("instanceName", INSTANCE_NAME)
+                jsonEnd_i()
             endif
             giTR_808_NoteIndex[ORC_INSTANCE_INDEX] = giTR_808_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("json/%s.%d.json",
-                INSTRUMENT_PLUGIN_UUID,
-                giTR_808_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
-            ficlose(SJsonFile)
+
+            jsonStart_i(INSTRUMENT_PLUGIN_UUID)
+            jsonString_i("notes", sprintf("{\"%d\":{\"time\":%.3f}}",
+                giTR_808_NoteIndex[ORC_INSTANCE_INDEX],
+                times()))
+            jsonEnd_i()
+            if (CC_VALUE_i(positionEnabled) == true) then
+                jsonStart_i(INSTRUMENT_PLUGIN_UUID)
+                jsonString_i("notes", sprintf("{\"%d\":{\"xyz\":[%.3f,%.3f,%.3f]}}",
+                    giTR_808_NoteIndex[ORC_INSTANCE_INDEX],
+                    iX, iY, iZ))
+                jsonEnd_i()
+            endif
         ${CSOUND_ENDIF}
     endif
 end:

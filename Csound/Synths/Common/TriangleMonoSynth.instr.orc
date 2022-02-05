@@ -11,15 +11,13 @@ ${CSOUND_IFNDEF} TriangleMonoSynth_VcoBandwith
 ${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith #0.5#
 ${CSOUND_ENDIF}
 
+${CSOUND_INCLUDE} "json.orc"
+
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
-
-    instr CONCAT(INSTRUMENT_ID, _Json)
-        SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
-        fprints(SJsonFile, "{")
-        fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, "}")
+    instr CONCAT(Json_, INSTRUMENT_ID)
+        jsonStart_i(INSTRUMENT_PLUGIN_UUID)
+        jsonString_i("instanceName", STRINGIZE(INSTANCE_NAME))
         turnoff
     endin
 ${CSOUND_ENDIF}
