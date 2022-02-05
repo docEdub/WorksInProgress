@@ -5,7 +5,6 @@ declare global {
     interface Document {
         audioContext: AudioContext
         Csound: CSOUND.Csound
-        csound: CSOUND.CsoundObj
         latency: number
         isProduction: boolean // If `falsey` then we're running in the playground.
     }
@@ -184,7 +183,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#startWasRequested = true
             if (!this.audioEngineIsUnlocked) return
             if (!this.isLoaded) return
+
             await this.#generateJson()
+			return
+            console.debug('Starting Csound playback ...')
+
             this.#startUpdatingCameraMatrix()
 
             this.#previousConsoleLog = console.log
@@ -223,7 +226,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
     
             console.debug('Csound initialized successfully')
-            // await csound.setOption('--iobufsamps=' + csoundIoBufferSize)
+            await csound.setOption('--iobufsamps=' + this.ioBufferSize)
             console.debug('Csound csd compiling ...')
             let csoundErrorCode = await csound.compileCsdText(this.csdText)
             if (csoundErrorCode != 0) {
@@ -236,6 +239,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('Csound csd compile succeeded')
             console.debug('Csound starting ...')
             csound.start()
+
+            console.debug('Starting Csound playback - done')
         }
 
         #startIfRequested = async () => {
