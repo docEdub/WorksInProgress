@@ -185,7 +185,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!this.isLoaded) return
 
             await this.#generateJson()
-			return
             console.debug('Starting Csound playback ...')
 
             this.#startUpdatingCameraMatrix()
