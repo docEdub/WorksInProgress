@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1643706213
+<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1644327683
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -20,7 +20,7 @@
   USE_REC_CFG 0
   RECMODE 1
   SMPTESYNC 0 30 100 40 1000 300 0 0 1 0 0
-  LOOP 0
+  LOOP 1
   LOOPGRAN 0 4
   RECORD_PATH "" ""
   <RECORD_CFG
@@ -54,10 +54,10 @@
     PATTERN 2863311530 2863311529
   >
   GLOBAL_AUTO -1
-  TEMPO 120 4 4
+  TEMPO 140 4 4
   PLAYRATE 1 0 0.25 4
-  SELECTION 2 194
-  SELECTION2 2 194
+  SELECTION 1.71428571428571 166.28571428571428
+  SELECTION2 1.71428571428571 166.28571428571428
   MASTERAUTOMODE 0
   MASTERTRACKHEIGHT 0 0
   MASTERPEAKCOL 16576
@@ -97,7 +97,7 @@
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.33184425362904 0 -1 -1 1
+    VOLPAN 0.20811758742005 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -142,9 +142,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 40
+      LENGTH 34.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -182,9 +182,9 @@
       >
     >
     <ITEM
-      POSITION 58
+      POSITION 49.71428571428572
       SNAPOFFS 0
-      LENGTH 48
+      LENGTH 41.14285714285715
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -222,9 +222,9 @@
       >
     >
     <ITEM
-      POSITION 119
+      POSITION 102
       SNAPOFFS 0
-      LENGTH 1
+      LENGTH 0.85714285714288
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -260,9 +260,9 @@
       >
     >
     <ITEM
-      POSITION 121
+      POSITION 103.71428571428571
       SNAPOFFS 0
-      LENGTH 1
+      LENGTH 0.85714285714286
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -300,9 +300,9 @@
       >
     >
     <ITEM
-      POSITION 122
+      POSITION 104.57142857142857
       SNAPOFFS 0
-      LENGTH 64
+      LENGTH 54.85714285714285
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -395,9 +395,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 42
+      POSITION 36
       SNAPOFFS 0
-      LENGTH 68
+      LENGTH 58.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -437,9 +437,9 @@
       >
     >
     <ITEM
-      POSITION 110
+      POSITION 94.28571428571429
       SNAPOFFS 0
-      LENGTH 76
+      LENGTH 65.14285714285712
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -477,9 +477,9 @@
       >
     >
     <ITEM
-      POSITION 186
+      POSITION 159.42857142857142
       SNAPOFFS 0
-      LENGTH 8
+      LENGTH 6.85714285714286
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -570,9 +570,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 42
+      POSITION 36
       SNAPOFFS 0
-      LENGTH 68
+      LENGTH 58.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -612,9 +612,9 @@
       >
     >
     <ITEM
-      POSITION 110
+      POSITION 94.28571428571429
       SNAPOFFS 0
-      LENGTH 76
+      LENGTH 65.14285714285712
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -652,9 +652,9 @@
       >
     >
     <ITEM
-      POSITION 186
+      POSITION 159.42857142857142
       SNAPOFFS 0
-      LENGTH 8
+      LENGTH 6.85714285714286
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -744,9 +744,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 40
+      LENGTH 34.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -788,9 +788,9 @@
       >
     >
     <ITEM
-      POSITION 58
+      POSITION 49.71428571428572
       SNAPOFFS 0
-      LENGTH 48
+      LENGTH 41.14285714285715
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -832,9 +832,9 @@
       >
     >
     <ITEM
-      POSITION 121
+      POSITION 103.71428571428571
       SNAPOFFS 0
-      LENGTH 65
+      LENGTH 55.71428571428571
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -845,7 +845,7 @@
       IID 37
       NAME "Triangle3MonoSynth untitled MIDI item-glued"
       VOLPAN 1 0 1 -1
-      SOFFS 3 6
+      SOFFS 2.57142857142857 6
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {C1B5CAFE-470C-FA48-A7FB-2102E1397044}
@@ -926,9 +926,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 40
+      LENGTH 34.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -994,9 +994,9 @@
       >
     >
     <ITEM
-      POSITION 58
+      POSITION 49.71428571428572
       SNAPOFFS 0
-      LENGTH 48
+      LENGTH 41.14285714285715
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1062,9 +1062,9 @@
       >
     >
     <ITEM
-      POSITION 122
+      POSITION 104.57142857142857
       SNAPOFFS 0
-      LENGTH 64
+      LENGTH 54.85714285714285
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1180,9 +1180,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 40
+      LENGTH 34.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1280,9 +1280,9 @@
       >
     >
     <ITEM
-      POSITION 50
+      POSITION 42.85714285714285
       SNAPOFFS 0
-      LENGTH 56
+      LENGTH 48
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1380,9 +1380,9 @@
       >
     >
     <ITEM
-      POSITION 122
+      POSITION 104.57142857142857
       SNAPOFFS 0
-      LENGTH 72
+      LENGTH 61.71428571428571
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1530,9 +1530,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 10
+      LENGTH 8.57142857142857
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1621,9 +1621,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 2
+      POSITION 1.71428571428571
       SNAPOFFS 0
-      LENGTH 192
+      LENGTH 164.57142857142856
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1710,9 +1710,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 12
+      POSITION 10.28571428571429
       SNAPOFFS 0
-      LENGTH 171
+      LENGTH 146.57142857142858
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1723,7 +1723,7 @@
       IID 61
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
       VOLPAN 1 0 1 -1
-      SOFFS 12 24
+      SOFFS 10.28571428571429 24
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {8A1A188A-291A-1146-8C6E-5C0808E845B6}
@@ -2395,9 +2395,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 6
+      POSITION 5.14285714285714
       SNAPOFFS 0
-      LENGTH 32
+      LENGTH 27.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2445,9 +2445,9 @@
       >
     >
     <ITEM
-      POSITION 46
+      POSITION 39.42857142857143
       SNAPOFFS 0
-      LENGTH 20
+      LENGTH 17.14285714285712
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2495,9 +2495,9 @@
       >
     >
     <ITEM
-      POSITION 70
+      POSITION 60
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2545,9 +2545,9 @@
       >
     >
     <ITEM
-      POSITION 86
+      POSITION 73.71428571428571
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2595,9 +2595,9 @@
       >
     >
     <ITEM
-      POSITION 116.5
+      POSITION 99.85714285714286
       SNAPOFFS 0
-      LENGTH 1.5
+      LENGTH 1.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2608,7 +2608,7 @@
       IID 108
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
       VOLPAN 1 0 1 -1
-      SOFFS 2.5 5
+      SOFFS 2.14285714285715 5
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {4D024634-F43F-E640-AD2A-29F2F2063C84}
@@ -2639,9 +2639,9 @@
       >
     >
     <ITEM
-      POSITION 118
+      POSITION 101.14285714285714
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2689,9 +2689,9 @@
       >
     >
     <ITEM
-      POSITION 134
+      POSITION 114.85714285714289
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571425
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2739,9 +2739,9 @@
       >
     >
     <ITEM
-      POSITION 150
+      POSITION 128.57142857142858
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2789,9 +2789,9 @@
       >
     >
     <ITEM
-      POSITION 158
+      POSITION 135.42857142857142
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2839,9 +2839,9 @@
       >
     >
     <ITEM
-      POSITION 166
+      POSITION 142.28571428571428
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2889,9 +2889,9 @@
       >
     >
     <ITEM
-      POSITION 174
+      POSITION 149.14285714285714
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2990,7 +2990,7 @@
     <ITEM
       POSITION 0
       SNAPOFFS 0
-      LENGTH 186.29010416666668
+      LENGTH 159.67723214285715
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3772,9 +3772,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 66
+      POSITION 56.57142857142856
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3821,9 +3821,9 @@
       >
     >
     <ITEM
-      POSITION 82
+      POSITION 70.28571428571429
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3870,9 +3870,9 @@
       >
     >
     <ITEM
-      POSITION 98
+      POSITION 84
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3919,9 +3919,9 @@
       >
     >
     <ITEM
-      POSITION 130
+      POSITION 111.42857142857143
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857146
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3968,9 +3968,9 @@
       >
     >
     <ITEM
-      POSITION 146
+      POSITION 125.14285714285714
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4017,9 +4017,9 @@
       >
     >
     <ITEM
-      POSITION 154
+      POSITION 132
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4066,9 +4066,9 @@
       >
     >
     <ITEM
-      POSITION 162
+      POSITION 138.85714285714286
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4115,9 +4115,9 @@
       >
     >
     <ITEM
-      POSITION 170
+      POSITION 145.71428571428572
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4164,9 +4164,9 @@
       >
     >
     <ITEM
-      POSITION 178
+      POSITION 152.57142857142858
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4218,7 +4218,7 @@
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.42118287246328 0 -1 -1 1
+    VOLPAN 0.10503621598097 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -4263,16 +4263,16 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 10
+      POSITION 8.57142857142857
       SNAPOFFS 0
-      LENGTH 32
+      LENGTH 27.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {AB0B9D68-2E91-854E-8015-FFD42B838941}
       IID 73
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4317,16 +4317,16 @@
       >
     >
     <ITEM
-      POSITION 42
+      POSITION 36
       SNAPOFFS 0
-      LENGTH 2
+      LENGTH 1.71428571428572
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {B2B16068-DEA5-7B45-869D-0DD8938D1E2D}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4356,16 +4356,16 @@
       >
     >
     <ITEM
-      POSITION 58
+      POSITION 49.71428571428572
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {6142974E-6605-9941-AC8D-BBC364D328EB}
       IID 189
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4410,16 +4410,16 @@
       >
     >
     <ITEM
-      POSITION 70
+      POSITION 60
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {BC12BE0B-B007-214F-B6F9-34FBF4E43506}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4463,16 +4463,16 @@
       >
     >
     <ITEM
-      POSITION 74
+      POSITION 63.42857142857143
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571428
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {1CFFE87F-2355-5E4A-BE05-D194210D7627}
       IID 113
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4517,16 +4517,16 @@
       >
     >
     <ITEM
-      POSITION 86
+      POSITION 73.71428571428571
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {44AA36CA-4342-8443-B776-2E84609CD8A1}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4570,16 +4570,16 @@
       >
     >
     <ITEM
-      POSITION 90
+      POSITION 77.14285714285714
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {6D45DD47-C915-EB4E-969D-451127152BA3}
       IID 111
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4624,16 +4624,16 @@
       >
     >
     <ITEM
-      POSITION 102
+      POSITION 87.42857142857143
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857143
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {48F84110-DC5B-6747-85E6-D40D694679B8}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4677,16 +4677,16 @@
       >
     >
     <ITEM
-      POSITION 106
+      POSITION 90.85714285714286
       SNAPOFFS 0
-      LENGTH 2
+      LENGTH 1.71428571428571
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {7500CD91-4BD4-3C47-BB4D-1561894D0116}
       IID 153
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4716,16 +4716,16 @@
       >
     >
     <ITEM
-      POSITION 122
+      POSITION 104.57142857142857
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571432
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {4CFA69E4-0F9C-6F41-869B-D08914837238}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4770,16 +4770,16 @@
       >
     >
     <ITEM
-      POSITION 134
+      POSITION 114.85714285714289
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.4285714285714
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {8697CEF2-98A6-4541-B7BB-3A322119E0D9}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4823,16 +4823,16 @@
       >
     >
     <ITEM
-      POSITION 138
+      POSITION 118.28571428571429
       SNAPOFFS 0
-      LENGTH 12
+      LENGTH 10.28571428571429
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {0844B7FD-86C2-ED4E-9CE2-716025872B4C}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4877,16 +4877,16 @@
       >
     >
     <ITEM
-      POSITION 150
+      POSITION 128.57142857142858
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {46DD311E-8FCD-8F4C-9750-16B6888620C4}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -4930,16 +4930,16 @@
       >
     >
     <ITEM
-      POSITION 154
+      POSITION 132
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {1916DDEF-44C2-A142-BFB0-D7BC971CEAF4}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -4984,16 +4984,16 @@
       >
     >
     <ITEM
-      POSITION 158
+      POSITION 135.42857142857142
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {CDB863E6-810F-1A44-9F3F-392B31BB9FD0}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -5037,16 +5037,16 @@
       >
     >
     <ITEM
-      POSITION 162
+      POSITION 138.85714285714286
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {3A06F16E-2B86-C147-BB9C-DDBF518A3170}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -5091,16 +5091,16 @@
       >
     >
     <ITEM
-      POSITION 166
+      POSITION 142.28571428571428
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {76DA2B9C-2742-F343-AE83-FF84F816E060}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -5144,16 +5144,16 @@
       >
     >
     <ITEM
-      POSITION 170
+      POSITION 145.71428571428572
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {662BE166-2E2A-6E44-BBCC-AC8ADBEF987A}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -5198,16 +5198,16 @@
       >
     >
     <ITEM
-      POSITION 174
+      POSITION 149.14285714285714
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857144
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {17A4A7DD-F2D2-A144-B283-C6E764A0C15D}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -5251,16 +5251,16 @@
       >
     >
     <ITEM
-      POSITION 178
+      POSITION 152.57142857142858
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {850A1AE5-29B0-8140-9353-AEC14EAB67A4}
       IID 75
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
@@ -5305,16 +5305,16 @@
       >
     >
     <ITEM
-      POSITION 182
+      POSITION 156
       SNAPOFFS 0
-      LENGTH 4
+      LENGTH 3.42857142857142
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 23117920 B
-      SEL 1
+      SEL 0
       IGUID {C6D0F9FF-5042-744C-92C3-E6940F6025EA}
       IID 91
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -5358,16 +5358,16 @@
       >
     >
     <ITEM
-      POSITION 186
+      POSITION 159.42857142857142
       SNAPOFFS 0
-      LENGTH 2
+      LENGTH 1.71428571428572
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
       COLOR 29384800 B
-      SEL 1
+      SEL 0
       IGUID {5FC45645-D8E2-8048-96A5-3FE4BE105863}
       IID 155
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
@@ -5402,7 +5402,7 @@
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.16168082690603 0 -1 -1 1
+    VOLPAN 0.04613842690295 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -5447,9 +5447,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 50
+      POSITION 42.85714285714285
       SNAPOFFS 0
-      LENGTH 8
+      LENGTH 6.85714285714286
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
