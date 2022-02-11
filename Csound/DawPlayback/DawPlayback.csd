@@ -252,7 +252,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         scoreline_i("i \"StartJsonObject\" 0 0")
         iI = 0
         while (iI < TRACK_COUNT_MAX) do
-            if (strlen(gSPluginUuids[iI][0]) == 36) then // 36 == UUID length
+            if (strlen(gSPluginUuids[iI][0]) == 32) then // 32 == UUID length (without dashes)
                 scoreline_i(sprintf("i \"GeneratePluginJson\" 0 0 \"%s\"", gSPluginUuids[iI][0]))
                 scoreline_i("i \"EndJsonArray\" 0 0")
             endif

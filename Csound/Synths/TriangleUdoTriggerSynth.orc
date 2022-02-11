@@ -30,7 +30,7 @@ gkTriangle3MonoSynth_NoteNumber[] init ORC_INSTANCE_COUNT
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
-    instr TR_808_Json
+    instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
@@ -123,7 +123,7 @@ instr INSTRUMENT_ID
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (giTR_808_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"TR_808_Json\" 0 0")
+                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
             endif
             giTR_808_NoteIndex[ORC_INSTANCE_INDEX] = giTR_808_NoteIndex[ORC_INSTANCE_INDEX] + 1
             SJsonFile = sprintf("json/%s.%d.json",

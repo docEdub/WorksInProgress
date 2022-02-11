@@ -15,7 +15,7 @@ ${CSOUND_ENDIF}
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
 
-    instr CONCAT(INSTRUMENT_ID, _Json)
+    instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
@@ -68,7 +68,7 @@ instr INSTRUMENT_ID
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i("i \"${InstrumentName}_Json\" 0 0")
+                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
             endif
             gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] = gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] + 1
             SJsonFile = sprintf("json/%s.%d.json",
