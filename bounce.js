@@ -21,56 +21,43 @@ if (os.type() === 'Darwin') {
     });
 
     // Save DawPlayback.csd as DawPlayback.js.csd with all backslashes converted for use as Javascript multiline string.
-    fs.readFile(csoundDir + '/build/bounce/DawPlayback.csd', 'ascii', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
+    let data = fs.readFileSync(csoundDir + '/build/bounce/DawPlayback.csd', 'ascii')
 
-        // Remove "-+rtmidi=null" option.
-        data = data.replace('-+rtmidi=null', '')
+    // Remove "-+rtmidi=null" option.
+    data = data.replace('-+rtmidi=null', '')
 
-        // Remove Cabbage xml element.
-        data = data.replace('<Cabbage>', '')
-        data = data.replace('</Cabbage>', '')
+    // Remove Cabbage xml element.
+    data = data.replace('<Cabbage>', '')
+    data = data.replace('</Cabbage>', '')
 
-        // Escape backslashes.
-        data = data.replace(/\\/g, '\\\\');
+    // Escape backslashes.
+    data = data.replace(/\\/g, '\\\\');
 
-        // Remove lines starting with "//"".
-        data = data.replace(/\s*\/\/.*\n/g, '\n')
+    // Remove lines starting with "//"".
+    data = data.replace(/\s*\/\/.*\n/g, '\n')
 
-        // Remove lines starting with ";".
-        data = data.replace(/\s*;.*\n/g, '\n')
+    // Remove lines starting with ";".
+    data = data.replace(/\s*;.*\n/g, '\n')
 
-        // Remove blank lines.
-        data = data.replace(/\s*\n/g, '\n')
+    // Remove blank lines.
+    data = data.replace(/\s*\n/g, '\n')
 
-        // Replace leading whitespace with tabs.
-        data = data.replace(/\n\s*/g, '\n\t')
+    // Replace leading whitespace with tabs.
+    data = data.replace(/\n\s*/g, '\n\t')
 
-        // Wrap with Javascript multiline string variable named `csdText`.
-        var output = 'const csdText = `' + data + '`'
-        
-        // Update BabylonJs/project.ts csdText variable.
-        fs.readFile(babylonJsDir + '/project.ts', 'ascii', (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-
-            data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
-            fs.writeFile(babylonJsDir + '/project.ts', data, 'ascii', (err) => {
-                if (err) {
-                    return console.log(err)
-                }
-                console.log('-- Updating BabylonJs/project.ts csdText constant done')
-            })
-        })
-    });
+    // Wrap with Javascript multiline string variable named `csdText`.
+    let output = 'const csdText = `' + data + '`'
+    
+    // Update BabylonJs/project.ts csdText variable.
+    data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
+    data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
+    fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
+    console.log('-- Updating BabylonJs/project.ts `csdText` done')
 
     if (process.argv.indexOf('--with-json') != -1) {
         // Wipe the json folder.
         if (fs.existsSync(jsonDir)) {
-            fs.rmdirSync(jsonDir, { recursive: true });
+            fs.rmSync(jsonDir, { recursive: true });
         }
         fs.mkdirSync(jsonDir);
 
@@ -78,6 +65,18 @@ if (os.type() === 'Darwin') {
         spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.csd --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
             stdio: 'inherit'
         });
+
+        const jsonData = fs.readFileSync(bounceDir + '/DawPlayback.json', 'ascii')
+
+        // Wrap JSON data with Javascript multiline string variable named `csdJson`.
+        output = 'const csdJson = `\n\t' + jsonData + '\n\t`'
+
+            // Update BabylonJs/project.ts csdJson variable.
+        data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
+
+        data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
+        fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
+        console.log('-- Updating BabylonJs/project.ts `csdJson` done')
     }
 
     if (process.argv.indexOf('--mixdown') != -1) {
@@ -90,7 +89,7 @@ if (os.type() === 'Darwin') {
 
         // Wipe the mixdown folder.
         if (fs.existsSync(bounceMixdownDir)) {
-            fs.rmdirSync(bounceMixdownDir, { recursive: true });
+            fs.rmSync(bounceMixdownDir, { recursive: true })
         }
         fs.mkdirSync(bounceMixdownDir);
 
@@ -101,5 +100,5 @@ if (os.type() === 'Darwin') {
     }
 }
 else {
-    throw new Error('Unsupported OS: ' + os.type());
+    throw new Error('Unsupported OS: ' + os.type())
 }
