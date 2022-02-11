@@ -436,6 +436,9 @@ instr INSTRUMENT_ID
             giTR_808_NoteIndex[ORC_INSTANCE_INDEX] = giTR_808_NoteIndex[ORC_INSTANCE_INDEX] + 1
             SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, giTR_808_NoteIndex[ORC_INSTANCE_INDEX])
             fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f", times())
+            if (CC_VALUE_i(positionEnabled) == true) then
+                fprints(SJsonFile, ",\"xyz\":[%.3f,%.3f,%.3f]", iX, iY, iZ)
+            endif
             fprints(SJsonFile, "}}")
             ficlose(SJsonFile)
         ${CSOUND_ENDIF}
