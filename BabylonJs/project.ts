@@ -48,7 +48,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             document.audioContext.resume()
             this.#audioEngineIsUnlocked = true
             console.debug('Audio engine unlocked')
-            this.#generateJsonIfRequested()
             this.#startIfRequested()
         }
 
@@ -146,25 +145,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         #onImportScriptDone = async () => {
             this.#isLoaded = true
-            await this.#generateJsonIfRequested()
             await this.#startIfRequested()
         }
 
         #consoleLog = function() {
             csound.onLogMessage(console, arguments)
-        }
-
-        #generateJson = async () => {
-            if (this.jsonIsGenerated) return
-            console.debug('Generating JSON ...')
-            this.#json = JSON.parse('{}')
-            console.debug('Generating JSON - done')
-        }
-
-        #generateJsonIfRequested = async() => {
-            if (this.#jsonGenerationWasRequested) {
-                await this.#generateJson()
-            }
         }
 
         start = async () => {
@@ -173,7 +158,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!this.audioEngineIsUnlocked) return
             if (!this.isLoaded) return
 
-            await this.#generateJson()
             console.debug('Starting Csound playback ...')
 
             this.#startUpdatingCameraMatrix()
