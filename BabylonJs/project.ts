@@ -16,7 +16,36 @@ document.isProduction = true
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
-    class Csound {
+	
+	const groundSize = 9000
+    const logDebugMessages = true
+	const showBabylonInspector = false
+    const showGroundGrid = true
+
+    const halfGroundSize = groundSize / 2
+    
+	// For full list see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode.
+    const KeyCode = {
+        W: 87,
+        A: 65,
+        S: 83,
+        D: 68,
+        CapsLock: 20,
+        Shift: 16,
+        Space: 32
+    }
+
+    // The BabylonJS playground adds the materials extension to BABYLON.
+    if (!document.isProduction && !BABYLON_MATERIALS)
+        var BABYLON_MATERIALS = BABYLON
+
+	// This creates a basic Babylon Scene object (non-mesh)
+	var scene = new BABYLON.Scene(engine)
+	if (showBabylonInspector) {
+		scene.debugLayer.show()
+	}
+	
+	class Csound {
         constructor(csdText) {
             this.#csdText = csdText
 
@@ -252,22 +281,146 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     let csound = null
 
-    // The BabylonJS playground adds the materials extension to BABYLON.
-    // Uncomment this when copy/pasting to the BabylonJS playground.
-    if (!document.isProduction && !BABYLON_MATERIALS)
-        var BABYLON_MATERIALS = BABYLON
+	class Camera {
+		constructor() {
+			let camera = new BABYLON.FreeCamera('', this.setting.position, scene)
+			camera.applyGravity = true
+			camera.checkCollisions = true
+			camera.ellipsoid = new BABYLON.Vector3(0.5, this.height / 2, 0.5)
+			camera.speed = this.slowSpeed
+			camera.attachControl(canvas, true)
+			camera.setTarget(this.setting.target)
+			camera.keysUp.push(KeyCode.W)
+			camera.keysLeft.push(KeyCode.A)
+			camera.keysDown.push(KeyCode.S)
+			camera.keysRight.push(KeyCode.D)
+			this.#flatScreenCamera = camera
+		}
 
-    const showBabylonInspector = false
-    const logDebugMessages = true
-    const showGroundGrid = true
+        //#region Options
 
-    let animateCamera = false
-    const slowCameraSpeed = 0.25
-    const fastCameraSpeed = 1.5
-    const groundSize = 9000
-    const groundRingDiameter = 100
+		#slowSpeed = 0.25
+		get slowSpeed() { return this.#slowSpeed }
 
-    const halfGroundSize = groundSize / 2
+		#fastSpeed = 1.5
+		get fastSpeed() { return this.#fastSpeed }
+
+		#height = 2
+		get height() { return this.#height }
+
+		#settingIndex = 0
+		#settings = [
+			// 0
+			{ position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
+			// 1
+			{ position: new BABYLON.Vector3(500, this.height, 500), target: new BABYLON.Vector3(-50, 300, 0) },
+			// 2
+			{ position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+			// 3
+			{ position: new BABYLON.Vector3(-halfGroundSize, this.height, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+			// 4
+			{ position: new BABYLON.Vector3(-80, this.height, 800), target: new BABYLON.Vector3(0, 200, 0) },
+			// 5
+			{ position: new BABYLON.Vector3(-40, this.height, 400), target: new BABYLON.Vector3(225, 180, 0) },
+			// 6
+			{ position: new BABYLON.Vector3(0, this.height, -100), target: new BABYLON.Vector3(0, 180, 0) },
+			// 7: Safari mixdown location.
+			{ position: new BABYLON.Vector3(0, this.height, 335), target: new BABYLON.Vector3(0, 135, 0) }
+		]
+
+		get setting() { return this.#settings[this.#settingIndex] }
+		
+		//#endregion
+
+		#flatScreenCamera = null
+
+		#xrCamera = null
+		set xrCamera(value) { this.#xrCamera = value }
+
+		#camera = null
+		get camera() { return this.#camera }
+
+		switchToFlatScreen = () => {
+			this.#camera = this.#flatScreenCamera
+		}
+
+		switchToXR = () => {
+			this.#camera = this.#xrCamera
+		}
+
+		#speed = this.slowSpeed
+
+		onInputChanged = (input) => {
+            if (input.heldKeys[KeyCode.CapsLock] || input.heldKeys[KeyCode.Shift] || input.heldKeys[KeyCode.Space]) {
+                this.#flatScreenCamera.speed = this.fastSpeed
+            }
+            else {
+				this.#flatScreenCamera.speed = this.slowSpeed
+            }
+		}
+
+		#usesInputKey = (key) => {
+            for (let i = 0; i < this.#flatScreenCamera.keysDown.length; i++) {
+                if (key == this.#flatScreenCamera.keysDown[i]) {
+                    return true
+                }
+            }
+            for (let i = 0; i < this.#flatScreenCamera.keysDownward.length; i++) {
+                if (key == this.#flatScreenCamera.keysDown[i]) {
+                    return true
+                }
+            }
+            for (let i = 0; i < this.#flatScreenCamera.keysLeft.length; i++) {
+                if (key == this.#flatScreenCamera.keysLeft[i]) {
+                    return true
+                }
+            }
+            for (let i = 0; i < this.#flatScreenCamera.keysRight.length; i++) {
+                if (key == this.#flatScreenCamera.keysRight[i]) {
+                    return true
+                }
+            }
+            for (let i = 0; i < this.#flatScreenCamera.keysUp.length; i++) {
+                if (key == this.#flatScreenCamera.keysUp[i]) {
+                    return true
+                }
+            }
+            for (let i = 0; i < this.#flatScreenCamera.keysUpward.length; i++) {
+                if (key == this.#flatScreenCamera.keysUpward[i]) {
+                    return true
+                }
+            }
+            return false
+		}
+	}
+	let camera = new Camera
+
+	class Input {
+		constructor() {
+			document.addEventListener("keydown", this.#onKeyDown, false)
+			document.addEventListener("keyup", this.#onKeyUp, false)
+		}
+
+		#heldKeys = {}
+		get heldKeys() { return this.#heldKeys }
+
+		#onInputEvent = (e) => {
+            this.#heldKeys[KeyCode.CapsLock] = e.getModifierState("CapsLock")
+            this.#heldKeys[KeyCode.Shift] = e.getModifierState("Shift")
+			camera.onInputChanged(this)
+        }
+
+        #onKeyDown = (e) => {
+            this.#heldKeys[e.keyCode] = true
+            this.#onInputEvent(e)
+        }
+
+        #onKeyUp = (e) => {
+            this.#heldKeys[e.keyCode] = false
+            this.#onInputEvent(e)
+        }
+	}
+	let input = new Input
 
     document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
@@ -329,60 +482,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         return texture
     }
 
-    // This creates a basic Babylon Scene object (non-mesh)
-    var scene = new BABYLON.Scene(engine)
-    if (showBabylonInspector) {
-        scene.debugLayer.show()
-    }
-
     const skyBrightness = 0.05
     scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
 
-    const cameraHeight = 2
-    const cameraSettings = [
-        // 0
-        { position: new BABYLON.Vector3(0, cameraHeight, -10), target: new BABYLON.Vector3(0, cameraHeight, 0) },
-        // 1
-        { position: new BABYLON.Vector3(500, cameraHeight, 500), target: new BABYLON.Vector3(-50, 300, 0) },
-        // 2
-        { position: new BABYLON.Vector3(halfGroundSize, cameraHeight, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
-        // 3
-        { position: new BABYLON.Vector3(-halfGroundSize, cameraHeight, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
-        // 4
-        { position: new BABYLON.Vector3(-80, cameraHeight, 800), target: new BABYLON.Vector3(0, 200, 0) },
-        // 5
-        { position: new BABYLON.Vector3(-40, cameraHeight, 400), target: new BABYLON.Vector3(225, 180, 0) },
-        // 6
-        { position: new BABYLON.Vector3(0, cameraHeight, -100), target: new BABYLON.Vector3(0, 180, 0) },
-        // 7: Safari mixdown location.
-        { position: new BABYLON.Vector3(0, cameraHeight, 335), target: new BABYLON.Vector3(0, 135, 0) }
-    ]
-    const cameraSetting = cameraSettings[0]
-
-    let camera = new BABYLON.FreeCamera('', cameraSetting.position, scene)
-    camera.applyGravity = true
-    camera.checkCollisions = true
-    camera.ellipsoid = new BABYLON.Vector3(0.5, cameraHeight / 2, 0.5)
-    camera.speed = slowCameraSpeed
-    camera.attachControl(canvas, true)
-    camera.setTarget(cameraSetting.target)
-
-    // For full list see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode.
-    const KeyCode = {
-        W: 87,
-        A: 65,
-        S: 83,
-        D: 68,
-        CapsLock: 20,
-        Shift: 16,
-        Space: 32
-    }
-    camera.keysUp.push(KeyCode.W)
-    camera.keysLeft.push(KeyCode.A)
-    camera.keysDown.push(KeyCode.S)
-    camera.keysRight.push(KeyCode.D)
-
-    const whiteColor = BABYLON.Color3.White()
+	const whiteColor = BABYLON.Color3.White()
     const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
 
     const whiteMaterial = new BABYLON.StandardMaterial('', scene)
@@ -476,25 +579,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ground.material = blackMaterial
     }
     
-    // This gets updated when switching between flat-screen camera and XR camera.
-    let currentCamera = camera
-
     const startXr = async () => {
         try {
             const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
             if (!!xr && !!xr.enterExitUI) {
                 xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                     if (eventData == null) {
-                        if (currentCamera != camera) {
-                            console.debug('Switched to flat-screen camera')
-                            currentCamera = camera
-                        }
+                        camera.switchToFlatScreen()
                     }
                     else {
-                        if (currentCamera != xr.baseExperience.camera) {
-                            console.debug('Switched to XR camera')
-                            currentCamera = xr.baseExperience.camera
-                        }
+                        camera.xrCamera = xr.baseExperience.camera
+						camera.switchToXR()
                     }
                     BABYLON.Engine.audioEngine.unlock()
                 })
@@ -509,177 +604,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let startTime = 0
 
     const startAudioVisuals = () => {
-        let csdData = null //JSON.parse(csdJson)
-        // console.debug('csdData =', csdData)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Camera animation.
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        const cameraRadiusMax = 400
-        let cameraSpeed = 4000
-        let cameraTargetY = 100
-        let cameraTarget = new BABYLON.Vector3(0, cameraTargetY, -50)
-        let cameraTargetIsUserDefined = false
-        let cameraRadius = 65
-        let cameraRadiusX = -1
-        let cameraAngle = Math.PI
-
-        const updateCamera = (time) => {
-            if (!animateCamera) {
-                return
-            }
-
-            // NB: The camera radius only comes inside 50 when the music is ending for the first time.
-            if (cameraRadius < 50) {
-                cameraSpeed *= 1.0025
-                // console.debug('cameraSpeed =', cameraSpeed)
-                if (cameraSpeed > 50000) {
-                    animateCamera = false
-                    console.log('Camera animation lock released: restart count > 0')
-                }
-            }
-            else if (cameraRadius > cameraRadiusMax) {
-                cameraRadiusX *= -1
-            }
-            cameraRadius -= time / (cameraSpeed / 2) * cameraRadiusX
-            cameraAngle += Math.PI * time / (360 * cameraSpeed)
-            cameraAngle %= 2 * Math.PI
-
-            camera.position.set(cameraRadius * Math.sin(cameraAngle), 2, cameraRadius * Math.cos(cameraAngle))
-
-            if (!cameraTargetIsUserDefined) {
-                camera.setTarget(cameraTarget)
-            }
-        }
-
-        const cameraUsesInputKey = (key) => {
-            for (let i = 0; i < camera.keysDown.length; i++) {
-                if (key == camera.keysDown[i]) {
-                    return true
-                }
-            }
-            for (let i = 0; i < camera.keysDownward.length; i++) {
-                if (key == camera.keysDown[i]) {
-                    return true
-                }
-            }
-            for (let i = 0; i < camera.keysLeft.length; i++) {
-                if (key == camera.keysLeft[i]) {
-                    return true
-                }
-            }
-            for (let i = 0; i < camera.keysRight.length; i++) {
-                if (key == camera.keysRight[i]) {
-                    return true
-                }
-            }
-            for (let i = 0; i < camera.keysUp.length; i++) {
-                if (key == camera.keysUp[i]) {
-                    return true
-                }
-            }
-            for (let i = 0; i < camera.keysUpward.length; i++) {
-                if (key == camera.keysUpward[i]) {
-                    return true
-                }
-            }
-            return false
-        }
-
-        let keyIsDown = {}
-
-        const updateCameraSpeed = () => {
-            if (keyIsDown[KeyCode.CapsLock] || keyIsDown[KeyCode.Shift] || keyIsDown[KeyCode.Space]) {
-                camera.speed = fastCameraSpeed
-            }
-            else {
-                camera.speed = slowCameraSpeed
-            }
-        }
-
-        const onInputEvent = (e) => {
-            keyIsDown[KeyCode.CapsLock] = e.getModifierState("CapsLock")
-            keyIsDown[KeyCode.Shift] = e.getModifierState("Shift")
-        }
-
-        const onKeyDown = (e) => {
-            // console.log('key', e.keyCode, 'down')
-            if (animateCamera && cameraUsesInputKey(e.keyCode)) {
-                unlockCameraPosition()
-            }
-            keyIsDown[e.keyCode] = true
-            onInputEvent(e)
-            updateCameraSpeed()
-        }
-
-        const onKeyUp = (e) => {
-            // console.log('key', e.keyCode, 'up')
-            keyIsDown[e.keyCode] = false
-            onInputEvent(e)
-            updateCameraSpeed()
-        }
-
-        let pointerIsDown = false
-
-        const onPointerDown = (e) => {
-            onInputEvent(e)
-            if (e.button !== 0) {
-                return
-            }
-            pointerIsDown = true
-        }
-    
-        const onPointerUp = (e) => {
-            onInputEvent(e)
-            pointerIsDown = false
-        }
-    
-        const onPointerMove = (e) => {
-            onInputEvent(e)
-            if (animateCamera && !cameraTargetIsUserDefined && pointerIsDown) {
-                unlockCameraTarget()
-            }
-        }
-
-
-        document.addEventListener("keydown", onKeyDown, false)
-        document.addEventListener("keyup", onKeyUp, false)
-    
-        if (animateCamera) {
-            canvas.addEventListener("pointerdown", onPointerDown, false)
-            canvas.addEventListener("pointerup", onPointerUp, false)
-            document.addEventListener("pointermove", onPointerMove, false)
-        }
-
-        const unlockCameraPosition = () => {
-            animateCamera = false
-            canvas.removeEventListener("pointerdown", onPointerDown)
-            canvas.removeEventListener("pointerup", onPointerUp)
-            console.log('Camera animation lock released: key press detected')
-        }
-    
-        const unlockCameraTarget = () => {
-            cameraTargetIsUserDefined = true
-            document.removeEventListener("pointermove", onPointerMove)
-            console.log('Camera target lock released: mouse drag detected')
-        }
-    
-        scene.onDispose = () => {
-            unlockCameraTarget()
-            unlockCameraPosition()
-        }
-        
-        scene.registerBeforeRender(() => {
-            if (!csound.isStarted) {
-                updateCamera(0)
-                return
-            }
-
-            const time = document.audioContext.currentTime - startTime
-            updateCamera(time)
-        })
-    }
+        let csdData = JSON.parse(csdJson)
+        console.debug('csdData =', csdData)
+	}
 
 const csdText = `
 	<CsoundSynthesizer>
