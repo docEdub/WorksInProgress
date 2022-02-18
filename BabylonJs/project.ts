@@ -3,9 +3,7 @@ import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 declare global {
     interface Document {
-        audioContext: AudioContext
         Csound: CSOUND.Csound
-        latency: number
         isProduction: boolean // If `falsey` then we're running in the playground.
     }
 }
@@ -74,7 +72,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         onAudioEngineUnlocked = () => {
-            document.audioContext.resume()
+			this.#audioContext.resume()
             this.#audioEngineIsUnlocked = true
             console.debug('Audio engine unlocked')
             this.#startIfRequested()
@@ -107,6 +105,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #previousConsoleLog = null
 
         #csoundObj = null
+		#audioContext = BABYLON.Engine.audioEngine.audioContext
+		get audioContext() { return this.#audioContext }
 
         #isLoaded = false
         get isLoaded() { return this.#isLoaded }
@@ -127,9 +127,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         get playbackIsStarted() { return this.#playbackIsStarted }
         set playbackIsStarted(value) { this.#playbackIsStarted = value }
 
+		get #latency() {
+			return this.#audioContext.baseLatency + this.#ioBufferSize / this.#audioContext.sampleRate
+		}
+
         #startTime = 0
         get startTime() { return this.#startTime }
-        set startTime(value) { this.#startTime = value }
 
         #restartCount = 0
         get restartCount() { return this.#restartCount }
@@ -196,7 +199,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#csoundObj = await document.Csound({
                 audioContext:
                     detectedBrowser === 'Safari'
-                        ? document.audioContext
+                        ? BABYLON.Engine.audioEngine.audioContext
                         : new AudioContext({
                             latencyHint: 0.08533333333333333,
                             sampleRate: 48000
@@ -219,7 +222,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('audioContext.baseLatency =', audioContext.baseLatency)
             console.debug('audioContext.sampleRate =', audioContext.sampleRate)
             console.debug('audioContext.state =', audioContext.state)
-            document.audioContext = audioContext
+            this.#audioContext = audioContext
     
             if (audioContext.sampleRate != 48000) {
                 console.log('Sample restricted to 48000')
@@ -261,7 +264,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         onLogMessage = (console, args) => {
             if (args[0] === 'csd:started') {
-                this.#startTime = document.audioContext.currentTime - (4 - 3 * document.latency)
+                this.#startTime = this.#audioContext.currentTime - (4 - 3 * this.#latency)
                 this.#playbackIsStarted = true
                 console.debug('Playback start message received')
             }
@@ -313,7 +316,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			// 0
 			{ position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 1
-			{ position: new BABYLON.Vector3(500, this.height, 500), target: new BABYLON.Vector3(-50, 300, 0) },
+			{ position: new BABYLON.Vector3(0, this.height, 250), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 2
 			{ position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
 			// 3
@@ -422,7 +425,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 	let input = new Input
 
-    document.audioContext = BABYLON.Engine.audioEngine.audioContext
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
     BABYLON.Engine.audioEngine.lock()
     
@@ -601,11 +603,164 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     startXr()
 
-    let startTime = 0
+	let soundObjects = []
+
+	const findSoundObject = (uuid) => {
+		for (let i = 0; i < soundObjects.length; i++) {
+			if (soundObjects[i].uuid == uuid) {
+				return soundObjects[i]
+			}
+		}
+		return null
+	}
+
+	const makeTriangleMesh = () => {
+		const positions = [
+			0, .433, 0,
+			.866, -.5, 0,
+			-.433, -.5, .75,
+			-.433, -.5, -.75
+		]
+		const indices = [
+			0, 1, 2,
+			0, 2, 3,
+			0, 3, 1,
+			3, 2, 1
+		]
+		let normals = []
+		BABYLON.VertexData.ComputeNormals(positions, indices, normals)
+		let vertexData = new BABYLON.VertexData()
+		vertexData.positions = positions
+		vertexData.indices = indices
+		vertexData.normals = normals
+		let mesh = new BABYLON.Mesh('', scene)
+		vertexData.applyToMesh(mesh)
+		mesh.position.set(0, 1, 0)
+		mesh.isVisible = false
+		return mesh
+	}
+	let triangleMesh = makeTriangleMesh()
+
+
+	class HiHat_1 {
+		uuid = 'e3e7d57082834a28b53e021beaeb783d'
+	
+		constructor() {
+			let material = new BABYLON.StandardMaterial('', scene)
+			material.emissiveColor.set(1, 1, 1)
+			this.mesh.material = this.material = material
+		}
+
+		material = null
+		mesh = triangleMesh.clone('')
+
+		json = null
+		header = null
+		noteStartIndex = 0
+		noteCount = 0
+
+		nextNoteOnIndex = 0
+		nextNoteOffIndex = 0
+
+		noteOn = (i) => {
+			const note = this.json[i].noteOn
+			note.isOn = true
+			this.mesh.position.set(note.xyz[0], note.xyz[1], note.xyz[2])
+			this.mesh.isVisible = true
+		}
+
+		noteOff = (i) => {
+            const note = this.json[i].noteOn
+            if (note.isOn) {
+                this.mesh.isVisible = false;
+                note.isOn = false
+            }
+		}
+
+		setJson = (json) => {
+			console.debug('HiHat_1 json ...')
+			console.debug(json)
+
+			this.json = json
+			this.header = json[0]
+
+			for (let i = 1; i < json.length; i++) {
+				let noteOn = json[i].noteOn
+				noteOn.isOn = false
+
+				// Skip preallocation notes.
+				if (noteOn.time == 0.005) {
+					continue
+				}
+				else if (this.noteStartIndex == 0) {
+					this.noteStartIndex = i
+				}
+
+				noteOn.offTime = noteOn.time + 0.1
+				noteOn.xyz[0] /= 10
+				noteOn.xyz[2] /= 10
+				this.noteCount++
+			}
+		}
+		
+		isReset = false
+
+		reset = () => {
+			if (this.isReset) {
+				return
+			}
+			this.isReset = true
+			this.nextNoteOnIndex = this.noteStartIndex;
+			this.nextNoteOffIndex = this.noteStartIndex;
+		}
+
+		render = (time) => {
+			this.isReset = false
+            while (this.nextNoteOnIndex < this.json.length
+					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
+				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+					this.noteOn(this.nextNoteOnIndex);
+				}
+				this.nextNoteOnIndex++;
+			}
+
+			while (this.nextNoteOffIndex < this.json.length
+					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
+				this.noteOff(this.nextNoteOffIndex);
+				this.nextNoteOffIndex++;
+			}
+		}
+	}
+	soundObjects.push(new HiHat_1)
 
     const startAudioVisuals = () => {
         let csdData = JSON.parse(csdJson)
         console.debug('csdData =', csdData)
+
+		Object.keys(csdData).forEach((uuid) => {
+			let soundObject = findSoundObject(uuid)
+			if (soundObject != null) {
+				soundObject.setJson(csdData[uuid])
+			}
+		})
+
+        scene.registerBeforeRender(() => {
+			if (!csound.playbackIsStarted) {
+				// Reset sound objects.
+				soundObjects.forEach((soundObject) => {
+					soundObject.reset()
+				})
+				return;
+			}
+
+			const time = csound.audioContext.currentTime - csound.startTime;
+			const deltaTime = engine.getDeltaTime() / 1000
+
+			// Render sound objects.
+			soundObjects.forEach((soundObject) => {
+				soundObject.render(time, deltaTime)
+			})
+		})
 	}
 
 const csdText = `
@@ -11421,6 +11576,7 @@ const csdJson = `
 	`
     csound = new Csound(csdText)
     csound.start()
+	startAudioVisuals()
     return scene
 }}
 
