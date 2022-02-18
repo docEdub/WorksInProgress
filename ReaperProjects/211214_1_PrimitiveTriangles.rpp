@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1644327683
+<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1645138467
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -54,10 +54,10 @@
     PATTERN 2863311530 2863311529
   >
   GLOBAL_AUTO -1
-  TEMPO 140 4 4
+  TEMPO 120 4 4
   PLAYRATE 1 0 0.25 4
-  SELECTION 1.71428571428571 166.28571428571428
-  SELECTION2 1.71428571428571 166.28571428571428
+  SELECTION 2 194
+  SELECTION2 2 194
   MASTERAUTOMODE 0
   MASTERTRACKHEIGHT 0 0
   MASTERPEAKCOL 16576
@@ -142,9 +142,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 34.28571428571428
+      LENGTH 40
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -182,9 +182,9 @@
       >
     >
     <ITEM
-      POSITION 49.71428571428572
+      POSITION 58
       SNAPOFFS 0
-      LENGTH 41.14285714285715
+      LENGTH 48
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -222,9 +222,9 @@
       >
     >
     <ITEM
-      POSITION 102
+      POSITION 119
       SNAPOFFS 0
-      LENGTH 0.85714285714288
+      LENGTH 1
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -260,9 +260,9 @@
       >
     >
     <ITEM
-      POSITION 103.71428571428571
+      POSITION 121
       SNAPOFFS 0
-      LENGTH 0.85714285714286
+      LENGTH 1
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -300,9 +300,9 @@
       >
     >
     <ITEM
-      POSITION 104.57142857142857
+      POSITION 122
       SNAPOFFS 0
-      LENGTH 54.85714285714285
+      LENGTH 64
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -395,9 +395,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 36
+      POSITION 42
       SNAPOFFS 0
-      LENGTH 58.28571428571429
+      LENGTH 68
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -437,9 +437,9 @@
       >
     >
     <ITEM
-      POSITION 94.28571428571429
+      POSITION 110
       SNAPOFFS 0
-      LENGTH 65.14285714285712
+      LENGTH 76
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -477,9 +477,9 @@
       >
     >
     <ITEM
-      POSITION 159.42857142857142
+      POSITION 186
       SNAPOFFS 0
-      LENGTH 6.85714285714286
+      LENGTH 8
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -570,9 +570,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 36
+      POSITION 42
       SNAPOFFS 0
-      LENGTH 58.28571428571429
+      LENGTH 68
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -612,9 +612,9 @@
       >
     >
     <ITEM
-      POSITION 94.28571428571429
+      POSITION 110
       SNAPOFFS 0
-      LENGTH 65.14285714285712
+      LENGTH 76
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -652,9 +652,9 @@
       >
     >
     <ITEM
-      POSITION 159.42857142857142
+      POSITION 186
       SNAPOFFS 0
-      LENGTH 6.85714285714286
+      LENGTH 8
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -744,9 +744,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 34.28571428571428
+      LENGTH 40
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -788,9 +788,9 @@
       >
     >
     <ITEM
-      POSITION 49.71428571428572
+      POSITION 58
       SNAPOFFS 0
-      LENGTH 41.14285714285715
+      LENGTH 48
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -832,9 +832,9 @@
       >
     >
     <ITEM
-      POSITION 103.71428571428571
+      POSITION 121
       SNAPOFFS 0
-      LENGTH 55.71428571428571
+      LENGTH 65
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -845,7 +845,7 @@
       IID 37
       NAME "Triangle3MonoSynth untitled MIDI item-glued"
       VOLPAN 1 0 1 -1
-      SOFFS 2.57142857142857 6
+      SOFFS 3 6
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {C1B5CAFE-470C-FA48-A7FB-2102E1397044}
@@ -926,9 +926,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 34.28571428571428
+      LENGTH 40
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -994,9 +994,9 @@
       >
     >
     <ITEM
-      POSITION 49.71428571428572
+      POSITION 58
       SNAPOFFS 0
-      LENGTH 41.14285714285715
+      LENGTH 48
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1062,9 +1062,9 @@
       >
     >
     <ITEM
-      POSITION 104.57142857142857
+      POSITION 122
       SNAPOFFS 0
-      LENGTH 54.85714285714285
+      LENGTH 64
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1180,9 +1180,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 34.28571428571428
+      LENGTH 40
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1280,9 +1280,9 @@
       >
     >
     <ITEM
-      POSITION 42.85714285714285
+      POSITION 50
       SNAPOFFS 0
-      LENGTH 48
+      LENGTH 56
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1380,9 +1380,9 @@
       >
     >
     <ITEM
-      POSITION 104.57142857142857
+      POSITION 122
       SNAPOFFS 0
-      LENGTH 61.71428571428571
+      LENGTH 72
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1530,9 +1530,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 8.57142857142857
+      LENGTH 10
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1621,9 +1621,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 1.71428571428571
+      POSITION 2
       SNAPOFFS 0
-      LENGTH 164.57142857142856
+      LENGTH 192
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1710,9 +1710,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 10.28571428571429
+      POSITION 12
       SNAPOFFS 0
-      LENGTH 146.57142857142858
+      LENGTH 171
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -1723,7 +1723,7 @@
       IID 61
       NAME "09-Triangle3MonoSynth-Recorded MIDI"
       VOLPAN 1 0 1 -1
-      SOFFS 10.28571428571429 24
+      SOFFS 12 24
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {8A1A188A-291A-1146-8C6E-5C0808E845B6}
@@ -2395,9 +2395,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 5.14285714285714
+      POSITION 6
       SNAPOFFS 0
-      LENGTH 27.42857142857143
+      LENGTH 32
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2445,9 +2445,9 @@
       >
     >
     <ITEM
-      POSITION 39.42857142857143
+      POSITION 46
       SNAPOFFS 0
-      LENGTH 17.14285714285712
+      LENGTH 20
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2495,9 +2495,9 @@
       >
     >
     <ITEM
-      POSITION 60
+      POSITION 70
       SNAPOFFS 0
-      LENGTH 10.28571428571429
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2545,9 +2545,9 @@
       >
     >
     <ITEM
-      POSITION 73.71428571428571
+      POSITION 86
       SNAPOFFS 0
-      LENGTH 10.28571428571429
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2595,9 +2595,9 @@
       >
     >
     <ITEM
-      POSITION 99.85714285714286
+      POSITION 116.5
       SNAPOFFS 0
-      LENGTH 1.28571428571428
+      LENGTH 1.5
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2608,7 +2608,7 @@
       IID 108
       NAME "10-Triangle3MonoSynth-Recorded MIDI-glued"
       VOLPAN 1 0 1 -1
-      SOFFS 2.14285714285715 5
+      SOFFS 2.5 5
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {4D024634-F43F-E640-AD2A-29F2F2063C84}
@@ -2639,9 +2639,9 @@
       >
     >
     <ITEM
-      POSITION 101.14285714285714
+      POSITION 118
       SNAPOFFS 0
-      LENGTH 10.28571428571429
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2689,9 +2689,9 @@
       >
     >
     <ITEM
-      POSITION 114.85714285714289
+      POSITION 134
       SNAPOFFS 0
-      LENGTH 10.28571428571425
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2739,9 +2739,9 @@
       >
     >
     <ITEM
-      POSITION 128.57142857142858
+      POSITION 150
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2789,9 +2789,9 @@
       >
     >
     <ITEM
-      POSITION 135.42857142857142
+      POSITION 158
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2839,9 +2839,9 @@
       >
     >
     <ITEM
-      POSITION 142.28571428571428
+      POSITION 166
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2889,9 +2889,9 @@
       >
     >
     <ITEM
-      POSITION 149.14285714285714
+      POSITION 174
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -2990,7 +2990,7 @@
     <ITEM
       POSITION 0
       SNAPOFFS 0
-      LENGTH 159.67723214285715
+      LENGTH 186.29010416666668
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3772,9 +3772,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 56.57142857142856
+      POSITION 66
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3821,9 +3821,9 @@
       >
     >
     <ITEM
-      POSITION 70.28571428571429
+      POSITION 82
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3870,9 +3870,9 @@
       >
     >
     <ITEM
-      POSITION 84
+      POSITION 98
       SNAPOFFS 0
-      LENGTH 3.42857142857143
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3919,9 +3919,9 @@
       >
     >
     <ITEM
-      POSITION 111.42857142857143
+      POSITION 130
       SNAPOFFS 0
-      LENGTH 3.42857142857146
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -3968,9 +3968,9 @@
       >
     >
     <ITEM
-      POSITION 125.14285714285714
+      POSITION 146
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4017,9 +4017,9 @@
       >
     >
     <ITEM
-      POSITION 132
+      POSITION 154
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4066,9 +4066,9 @@
       >
     >
     <ITEM
-      POSITION 138.85714285714286
+      POSITION 162
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4115,9 +4115,9 @@
       >
     >
     <ITEM
-      POSITION 145.71428571428572
+      POSITION 170
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4164,9 +4164,9 @@
       >
     >
     <ITEM
-      POSITION 152.57142857142858
+      POSITION 178
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4263,9 +4263,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 8.57142857142857
+      POSITION 10
       SNAPOFFS 0
-      LENGTH 27.42857142857143
+      LENGTH 32
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4317,9 +4317,9 @@
       >
     >
     <ITEM
-      POSITION 36
+      POSITION 42
       SNAPOFFS 0
-      LENGTH 1.71428571428572
+      LENGTH 2
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4356,9 +4356,9 @@
       >
     >
     <ITEM
-      POSITION 49.71428571428572
+      POSITION 58
       SNAPOFFS 0
-      LENGTH 10.28571428571428
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4410,9 +4410,9 @@
       >
     >
     <ITEM
-      POSITION 60
+      POSITION 70
       SNAPOFFS 0
-      LENGTH 3.42857142857143
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4463,9 +4463,9 @@
       >
     >
     <ITEM
-      POSITION 63.42857142857143
+      POSITION 74
       SNAPOFFS 0
-      LENGTH 10.28571428571428
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4517,9 +4517,9 @@
       >
     >
     <ITEM
-      POSITION 73.71428571428571
+      POSITION 86
       SNAPOFFS 0
-      LENGTH 3.42857142857143
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4570,9 +4570,9 @@
       >
     >
     <ITEM
-      POSITION 77.14285714285714
+      POSITION 90
       SNAPOFFS 0
-      LENGTH 10.28571428571429
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4624,9 +4624,9 @@
       >
     >
     <ITEM
-      POSITION 87.42857142857143
+      POSITION 102
       SNAPOFFS 0
-      LENGTH 3.42857142857143
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4677,9 +4677,9 @@
       >
     >
     <ITEM
-      POSITION 90.85714285714286
+      POSITION 106
       SNAPOFFS 0
-      LENGTH 1.71428571428571
+      LENGTH 2
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4716,9 +4716,9 @@
       >
     >
     <ITEM
-      POSITION 104.57142857142857
+      POSITION 122
       SNAPOFFS 0
-      LENGTH 10.28571428571432
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4770,9 +4770,9 @@
       >
     >
     <ITEM
-      POSITION 114.85714285714289
+      POSITION 134
       SNAPOFFS 0
-      LENGTH 3.4285714285714
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4823,9 +4823,9 @@
       >
     >
     <ITEM
-      POSITION 118.28571428571429
+      POSITION 138
       SNAPOFFS 0
-      LENGTH 10.28571428571429
+      LENGTH 12
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4877,9 +4877,9 @@
       >
     >
     <ITEM
-      POSITION 128.57142857142858
+      POSITION 150
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4930,9 +4930,9 @@
       >
     >
     <ITEM
-      POSITION 132
+      POSITION 154
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -4984,9 +4984,9 @@
       >
     >
     <ITEM
-      POSITION 135.42857142857142
+      POSITION 158
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5037,9 +5037,9 @@
       >
     >
     <ITEM
-      POSITION 138.85714285714286
+      POSITION 162
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5091,9 +5091,9 @@
       >
     >
     <ITEM
-      POSITION 142.28571428571428
+      POSITION 166
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5144,9 +5144,9 @@
       >
     >
     <ITEM
-      POSITION 145.71428571428572
+      POSITION 170
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5198,9 +5198,9 @@
       >
     >
     <ITEM
-      POSITION 149.14285714285714
+      POSITION 174
       SNAPOFFS 0
-      LENGTH 3.42857142857144
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5251,9 +5251,9 @@
       >
     >
     <ITEM
-      POSITION 152.57142857142858
+      POSITION 178
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5305,9 +5305,9 @@
       >
     >
     <ITEM
-      POSITION 156
+      POSITION 182
       SNAPOFFS 0
-      LENGTH 3.42857142857142
+      LENGTH 4
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5358,9 +5358,9 @@
       >
     >
     <ITEM
-      POSITION 159.42857142857142
+      POSITION 186
       SNAPOFFS 0
-      LENGTH 1.71428571428572
+      LENGTH 2
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -5447,9 +5447,9 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 42.85714285714285
+      POSITION 50
       SNAPOFFS 0
-      LENGTH 6.85714285714286
+      LENGTH 8
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
