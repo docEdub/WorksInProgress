@@ -197,13 +197,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#previousConsoleLog = console.log
             console.log = this.#consoleLog
             this.#csoundObj = await document.Csound({
-                audioContext:
-                    detectedBrowser === 'Safari'
-                        ? BABYLON.Engine.audioEngine.audioContext
-                        : new AudioContext({
-                            latencyHint: 0.08533333333333333,
-                            sampleRate: 48000
-                        }),
+                audioContext: BABYLON.Engine.audioEngine.audioContext,
                 useSAB: false
             })
             console.log = this.#previousConsoleLog
