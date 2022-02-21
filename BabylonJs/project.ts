@@ -80,9 +80,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         //#region Options
 
-        #cameraMatrixUpdatesPerSecond = 10
-        get cameraMatrixUpdatesPerSecond() { return this.#cameraMatrixUpdatesPerSecond }
-        set cameraMatrixUpdatesPerSecond(value) { this.#cameraMatrixUpdatesPerSecond = value }
+        _cameraMatrixUpdatesPerSecond = 10
+        get cameraMatrixUpdatesPerSecond() { return this._cameraMatrixUpdatesPerSecond }
+        set cameraMatrixUpdatesPerSecond(value) { this._cameraMatrixUpdatesPerSecond = value }
         get cameraMatrixMillisecondsPerUpdate() { return 1000 / this.cameraMatrixUpdatesPerSecond }
 
         #ioBufferSize = 128
@@ -139,23 +139,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         //#region Camera matrix
 
-        #cameraMatrix = null
+        _cameraMatrix = null
         set cameraMatrix(value) {
-            if (this.#cameraMatrix != null && !this.cameraMatrixIsDirty) {
+            if (this._cameraMatrix != null && !this.cameraMatrixIsDirty) {
                 for (let i = 0; i < 16; i++) {
-                    if (0.01 < Math.abs(value[i] - this.#cameraMatrix[i])) {
-                        this.#cameraMatrixIsDirty = true
+                    if (0.01 < Math.abs(value[i] - this._cameraMatrix[i])) {
+                        this._cameraMatrixIsDirty = true
                         break
                     }
                 }
             }
             if (this.cameraMatrixIsDirty) {
-                this.#cameraMatrix = Array.from(value)
+                this._cameraMatrix = Array.from(value)
             }
         }
 
-        #cameraMatrixIsDirty = true
-        get cameraMatrixIsDirty() { return this.#cameraMatrixIsDirty }
+        _cameraMatrixIsDirty = true
+        get cameraMatrixIsDirty() { return this._cameraMatrixIsDirty }
 
         #startUpdatingCameraMatrix = () => {
             setInterval(() => {
@@ -164,11 +164,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 }
                 if (this.cameraMatrixIsDirty) {
                     console.debug('Setting Csound listener position to ['
-                        + this.#cameraMatrix[12] + ', '
-                        + this.#cameraMatrix[13] + ', '
-                        + this.#cameraMatrix[14] + ']')
-                    this.#csoundObj.tableCopyIn("1", this.#cameraMatrix)
-                    this.#cameraMatrixIsDirty = false
+                        + this._cameraMatrix[12] + ', '
+                        + this._cameraMatrix[13] + ', '
+                        + this._cameraMatrix[14] + ']')
+                    this.#csoundObj.tableCopyIn("1", this._cameraMatrix)
+                    this._cameraMatrixIsDirty = false
                 }
             }, this.cameraMatrixMillisecondsPerUpdate)
         }
@@ -237,6 +237,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('Csound csd compile succeeded')
             console.debug('Csound starting ...')
             csound.start()
+			this.#isStarted = true
 
             console.debug('Starting Csound playback - done')
         }
@@ -292,6 +293,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			camera.keysDown.push(KeyCode.S)
 			camera.keysRight.push(KeyCode.D)
 			this.#flatScreenCamera = camera
+			this.switchToFlatScreen()
+
+			scene.registerBeforeRender(() => {
+				if (!!csound && !!this.#camera) {
+					csound.cameraMatrix = this.#camera.worldMatrixFromCache.m
+				}
+			})
 		}
 
         //#region Options
@@ -305,12 +313,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		#height = 2
 		get height() { return this.#height }
 
-		#settingIndex = 0
+		#settingIndex = 1
 		#settings = [
 			// 0
 			{ position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 1
-			{ position: new BABYLON.Vector3(0, this.height, 250), target: new BABYLON.Vector3(0, this.height, 0) },
+			{ position: new BABYLON.Vector3(0, this.height, 200), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 2
 			{ position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
 			// 3
@@ -691,8 +699,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				}
 
 				noteOn.offTime = noteOn.time + 0.1
-				noteOn.xyz[0] /= 10
-				noteOn.xyz[2] /= 10
 				this.noteCount++
 			}
 		}
