@@ -22,6 +22,34 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, "}")
         turnoff
     endin
+
+    instr CONCAT(JsonAppend_, INSTRUMENT_ID)
+        gS${InstrumentName}_Json[ORC_INSTANCE_INDEX] = strcat(gS${InstrumentName}_Json[ORC_INSTANCE_INDEX], strget(p4))
+        ; prints("%s\n", gS${InstrumentName}_Json[ORC_INSTANCE_INDEX])
+        turnoff
+    endin
+
+    instr CONCAT(JsonWrite_, INSTRUMENT_ID)
+        SJsonFile = sprintf("json/%s.%d.json",
+            INSTRUMENT_PLUGIN_UUID,
+            gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX])
+
+        // Print to file in 100 character blocks so Csound doesn't crash.
+        iStringLength = strlen(gS${InstrumentName}_Json[ORC_INSTANCE_INDEX])
+        ii = 0
+        while (ii < iStringLength / 100) do
+            fprints(SJsonFile, strsub(gS${InstrumentName}_Json[ORC_INSTANCE_INDEX], 100 * ii, 100 * ii + 100))
+            ii += 1
+        od
+        if (100 * ii < iStringLength) then
+            fprints(SJsonFile, strsub(gS${InstrumentName}_Json[ORC_INSTANCE_INDEX], 100 * ii, iStringLength))
+        endif
+
+        fprints(SJsonFile, "]}}")
+        ficlose(SJsonFile)
+        gS${InstrumentName}_Json[ORC_INSTANCE_INDEX] = ""
+        turnoff
+    endin
 ${CSOUND_ENDIF}
 
 
@@ -65,20 +93,13 @@ instr INSTRUMENT_ID
             event_i("i", int(p1) + .9999 , 0, -1, EVENT_NOTE_MONO_HANDLER_ON, 0, 0)
         endif
         gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX] = iNoteNumber
-
-        ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
-            endif
-            gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] = gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("json/%s.%d.json",
-                INSTRUMENT_PLUGIN_UUID,
-                gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
-            ficlose(SJsonFile)
-        ${CSOUND_ENDIF}
     elseif (iEventType == EVENT_NOTE_MONO_HANDLER_OFF) then
         gi${InstrumentName}_MonoHandlerIsActive[ORC_INSTANCE_INDEX] = false
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            event_i("i", STRINGIZE(CONCAT(JsonWrite_, INSTRUMENT_ID)), 0, -1)
+        ${CSOUND_ENDIF}
+
         turnoff
     elseif (iEventType == EVENT_NOTE_MONO_HANDLER_ON) then
         gi${InstrumentName}_MonoHandlerIsActive[ORC_INSTANCE_INDEX] = true
@@ -89,6 +110,18 @@ instr INSTRUMENT_ID
         a2 = 0
         a3 = 0
         a4 = 0
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
+            endif
+            gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] = gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            iStartTime = times()
+            kTime = (times:k() - 1 / kr) - iStartTime
+            SiJson = sprintf("{\"noteOn\":{\"time\":%.3f", iStartTime)
+            SiJson = strcat(SiJson, ",\"k\":[")
+            scoreline_i(sprintf("i \"%s\" 0 -1 \"%s\"", STRINGIZE(CONCAT(JsonAppend_, INSTRUMENT_ID)), string_escape_i(SiJson)))
+        ${CSOUND_ENDIF}
 
         iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
         kVolumeEnvelopeModifier init 0
@@ -143,6 +176,10 @@ instr INSTRUMENT_ID
             if (kActiveNoteCount == 0) then
                 log_k_trace("Deactivating mono handler instrument")
                 event("i", int(p1), 0, 1, EVENT_NOTE_MONO_HANDLER_OFF, 0, 0)
+                ${CSOUND_IFDEF} IS_GENERATING_JSON
+                    SkJson = sprintfk(",{\"time\":%.3f,\"volume\":0}", kTime)
+                    scoreline(sprintfk("i \"%s\" 0 -1 \"%s\"", STRINGIZE(CONCAT(JsonAppend_, INSTRUMENT_ID)), string_escape_k(SkJson)), k(1))
+                ${CSOUND_ENDIF}
                 turnoff
             endif
             kgoto end__mono_handler
@@ -190,6 +227,92 @@ instr INSTRUMENT_ID
             a3 = 0
             a4 = 0
         endif
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            kJsonChanged_Any init true
+            kJsonChanged_NoteNumber init true
+            kJsonChanged_Volume init true
+            kJsonChanged_X init true
+            kJsonChanged_Y init true
+            kJsonChanged_Z init true
+            kJsonPrevious_NoteNumber init 0
+            kJsonPrevious_Volume init 0
+            kJsonPrevious_X init 0
+            kJsonPrevious_Y init 0
+            kJsonPrevious_Z init 0
+
+            kNoteNumber_Rounded = round:k(kNoteNumber * 1000) / 1000
+            kVolume_Rounded = round:k(kVolumeEnvelope * 1000) / 1000
+            kX_Rounded = round:k(kX * 1000) / 1000
+            kY_Rounded = round:k(kY * 1000) / 1000
+            kZ_Rounded = round:k(kZ * 1000) / 1000
+
+            kJsonFirstPass init true
+            if (kJsonFirstPass == false) then
+                kJsonChanged_Any = false
+                kJsonChanged_NoteNumber = false
+                kJsonChanged_Volume = false
+                kJsonChanged_X = false
+                kJsonChanged_Y = false
+                kJsonChanged_Z = false
+                if (kJsonPrevious_NoteNumber != kNoteNumber_Rounded) then
+                    kJsonPrevious_NoteNumber = kNoteNumber_Rounded
+                    kJsonChanged_Any = true
+                    kJsonChanged_NoteNumber = true
+                endif
+                if (kJsonPrevious_Volume != kVolume_Rounded) then
+                    kJsonPrevious_Volume = kVolume_Rounded
+                    kJsonChanged_Any = true
+                    kJsonChanged_Volume = true
+                endif
+                if (kJsonPrevious_X != kX_Rounded) then
+                    kJsonPrevious_X = kX_Rounded
+                    kJsonChanged_Any = true
+                    kJsonChanged_X = true
+                endif
+                if (kJsonPrevious_Y != kY_Rounded) then
+                    kJsonPrevious_Y = kY_Rounded
+                    kJsonChanged_Any = true
+                    kJsonChanged_Y = true
+                endif
+                if (kJsonPrevious_Z != kZ_Rounded) then
+                    kJsonPrevious_Z = kZ_Rounded
+                    kJsonChanged_Any = true
+                    kJsonChanged_Z = true
+                endif
+            endif
+
+            if (kJsonChanged_Any == true) then
+                SkJson = sprintfk("%s", "")
+                if (kJsonFirstPass == false) then
+                    SkJson = strcatk(SkJson, ",")
+                endif
+                SkJson = strcatk(SkJson, "{")
+                SkJson = strcatk(SkJson, sprintfk("\"time\":%.3f", kTime))
+                if (kJsonChanged_NoteNumber == true) then
+                    SkJson = strcatk(SkJson, sprintfk(",\"pitch\":%.3f", kNoteNumber_Rounded))
+                endif
+                if (kJsonChanged_Volume == true) then
+                    SkJson = strcatk(SkJson, sprintfk(",\"volume\":%.3f", kVolume_Rounded))
+                endif
+                if (CC_VALUE_k(positionEnabled) == true) then
+                    if (kJsonChanged_X == true) then
+                        SkJson = strcatk(SkJson, sprintfk(",\"x\":%.3f", kX_Rounded))
+                    endif
+                    if (kJsonChanged_Y == true) then
+                        SkJson = strcatk(SkJson, sprintfk(",\"y\":%.3f", kY_Rounded))
+                    endif
+                    if (kJsonChanged_Z == true) then
+                        SkJson = strcatk(SkJson, sprintfk(",\"z\":%.3f", kZ_Rounded))
+                    endif
+                endif
+                SkJson = strcatk(SkJson, "}")
+                ; printsk("%s\n", SkJson)
+                scoreline(sprintfk("i \"%s\" 0 -1 \"%s\"", STRINGIZE(CONCAT(JsonAppend_, INSTRUMENT_ID)), string_escape_k(SkJson)), k(1))
+            endif
+
+            kJsonFirstPass = false
+        ${CSOUND_ENDIF}
 
     end__mono_handler:
         #if IS_PLAYBACK

@@ -83,6 +83,33 @@ opcode string_escape_k, S, S
     xout SEscaped
 endop
 
+opcode string_escape_i, S, S
+    SUnescaped xin
+
+    // Escape quotes.
+    SEscaped = sprintf("%s", "")
+    iiStart = 0
+    iiCurrent = 0
+    iMessageLength = strlen(SUnescaped)
+    while (iiCurrent < iMessageLength) do
+        if (strchar(SUnescaped, iiCurrent) == 34) then // 34 == quote ascii character number
+            if (iiCurrent > 0) then
+                SEscaped = strcat(SEscaped, strsub(SUnescaped, iiStart, iiCurrent))
+                SEscaped = strcat(SEscaped, "\\\"")
+            else
+                SEscaped = strcatk(SEscaped, "\\\"")
+            endif
+            iiStart = iiCurrent + 1
+        endif
+        iiCurrent += 1
+    od
+    if (iiStart < iiCurrent) then
+        SEscaped = strcat(SEscaped, strsub(SUnescaped, iiStart, iiCurrent + 1))
+    endif
+
+    xout SEscaped
+endop
+
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
 //----------------------------------------------------------------------------------------------------------------------
