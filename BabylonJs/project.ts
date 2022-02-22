@@ -318,7 +318,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			// 0
 			{ position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 1
-			{ position: new BABYLON.Vector3(0, this.height, 200), target: new BABYLON.Vector3(0, this.height, 0) },
+			{ position: new BABYLON.Vector3(0, this.height, -300), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 2
 			{ position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
 			// 3
@@ -605,6 +605,45 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     startXr()
 
+    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
+    directionalLight.intensity = 1
+
+	const meshString_MainTriangles = `
+	{"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
+	"autoClear":true,"clearColor":[0.0509,0.0509,0.0509],"gravity":[0,-9.81,0],
+	"meshes":[{"name":"MainTriangles","id":"MainTriangles","billboardMode":0,"position":[0,0,0],"rotation":[0,0,0],"scaling":[1,1,1],"isVisible":true,"isEnabled":true,"pickable":false
+	,"positions":[0,235.0001,9,0,250,0,7.7942,235.0001,-4.5,0,235.0001,9,7.7942,235.0001,-4.5,-7.7942,235.0001,-4.5,7.7942,235.0001,-4.5,0,250,0,-7.7942,235.0001,-4.5,-7.7942,235.0001,-4.5,0,250,0,0,235.0001,9,0,0,160,0,250,0,8.6603,0,145,8.6603,0,145,0,250,0
+	,-8.6603,0,145,-8.6603,0,145,0,250,0,0,0,160,138.5641,0,-80,0,250,0,121.2436,0,-80,121.2436,0,-80,0,250,0,129.9038,0,-65,129.9038,0,-65,0,250,0,138.5641,0,-80,-138.5641,0,-80,0,250,0,-129.9038,0,-65,-129.9038,0,-65
+	,0,250,0,-121.2436,0,-80,-121.2436,0,-80,0,250,0,-138.5641,0,-80]
+	,"normals":[0.83,0.287,0.479,0.83,0.287,0.479,0.83,0.287,0.479,0,-1,0,0,-1,0,0,-1,0,0,0.287,-0.958,0,0.287,-0.958,0,0.287,-0.958,-0.83,0.287,0.479,-0.83,0.287,0.479,-0.83,0.287,0.479,0.825,0.305,0.476,0.825,0.305,0.476,0.825,0.305,0.476,0,-0.502,-0.865,0,-0.502,-0.865
+	,0,-0.502,-0.865,-0.825,0.305,0.476,-0.825,0.305,0.476,-0.825,0.305,0.476,0,0.305,-0.952,0,0.305,-0.952,0,0.305,-0.952,-0.749,-0.502,0.433,-0.749,-0.502,0.433,-0.749,-0.502,0.433,0.825,0.305,0.476,0.825,0.305,0.476,0.825,0.305,0.476,-0.825,0.305,0.476,-0.825,0.305,0.476,-0.825,0.305,0.476,0.749,-0.502,0.433
+	,0.749,-0.502,0.433,0.749,-0.502,0.433,0,0.305,-0.952,0,0.305,-0.952,0,0.305,-0.952]
+	,"uvs":[0.25,0.49,0.25,0.25,0.458,0.13,0.75,0.49,0.958,0.13,0.542,0.13,0.458,0.13,0.25,0.25,0.042,0.13,0.042,0.13,0.25,0.25,0.25,0.49,0.25,0.49,0.25,0.25,0.458,0.13,0.458,0.13,0.25,0.25,0.042,0.13,0.042,0.13,0.25,0.25,0.25,0.49,0.25,0.49,0.25,0.25,0.458,0.13,0.458,0.13
+	,0.25,0.25,0.042,0.13,0.042,0.13,0.25,0.25,0.25,0.49,0.25,0.49,0.25,0.25,0.458,0.13,0.458,0.13,0.25,0.25,0.042,0.13,0.042,0.13,0.25,0.25,0.25,0.49]
+	,"indices":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38]
+	,"subMeshes":[{"materialIndex":0,"verticesStart":0,"verticesCount":39,"indexStart":0,"indexCount":39}]
+	,"instances":[]}
+	]
+	}
+	`
+	BABYLON.SceneLoader.Append(
+		'',
+		'data: ' + meshString_MainTriangles,
+		scene,
+		(scene) => {
+			const material = new BABYLON.StandardMaterial('', scene)
+			material.ambientColor.set(1, 1, 1)
+			material.diffuseColor.set(1, 1, 1)
+			material.emissiveColor.set(0.1, 0.1, 0.1)
+			material.specularColor.set(0.25, 0.25, 0.25)
+			material.specularPower = 2	
+			scene.getMeshByName("MainTriangles").material = material
+		},
+		() => {},
+		() => {},
+		'.babylon'
+	)
+
 	let soundObjects = []
 
 	const findSoundObject = (uuid) => {
@@ -667,7 +706,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		noteOn = (i) => {
 			const note = this.json[i].noteOn
 			note.isOn = true
-			this.mesh.position.set(note.xyz[0], note.xyz[1], note.xyz[2])
+			this.mesh.position.set(note.xyz[0], 10, note.xyz[2])
 			this.mesh.isVisible = true
 		}
 
