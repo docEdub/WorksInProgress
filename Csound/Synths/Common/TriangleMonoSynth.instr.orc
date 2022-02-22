@@ -285,7 +285,9 @@ instr INSTRUMENT_ID
             if (kJsonChanged_Any == true) then
                 SkJson = sprintfk("%s", "")
                 if (kJsonFirstPass == false) then
-                    SkJson = strcatk(SkJson, ",")
+                    // Add a new line for each k-pass item so Csound's 8192 character line limit doesn't cause issues in
+                    // the DawPlayback.csd's GeneratePluginJson instrument.
+                    SkJson = strcatk(SkJson, "\n,")
                 endif
                 SkJson = strcatk(SkJson, "{")
                 SkJson = strcatk(SkJson, sprintfk("\"time\":%.3f", kTime))

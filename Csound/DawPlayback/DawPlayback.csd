@@ -216,12 +216,12 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         while (true == true) do
             SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
 
-            iJ = 0
-            while (iJ != -1) do
+            iLineNumber = 0
+            while (iLineNumber != -1) do
                 // Csound will delete this instrument if the given file doesn't exist.
-                SLine, iJ readfi SFileName
+                SLine, iLineNumber readfi SFileName
 
-                if (iJ == -1) then
+                if (iLineNumber == -1) then
                     log_i_debug("%s - done", SFileName)
                 else
 
@@ -237,8 +237,14 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
                     if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\n") == 0) then
                         SLine = strsub(SLine, 0, strlen(SLine) - 1)
                     endif
+
+                    // Workaround Csound readfi opcode bug duplicating first character of each line after first line.
+                    if (iLineNumber > 1) then
+                        SLine = strsub(SLine, 1, strlen(SLine))
+                    endif
+
                     fprints("DawPlayback.json", SLine)
-                    log_i_debug("%s(%d): %s", SFileName, iJ, SLine)
+                    log_i_debug("%s(%d): %s", SFileName, iLineNumber, SLine)
                 endif
             od
 
