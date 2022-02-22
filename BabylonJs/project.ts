@@ -623,7 +623,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			material.emissiveColor.set(0.1, 0.1, 0.1)
 			material.specularColor.set(0.25, 0.25, 0.25)
 			material.specularPower = 2	
-			scene.getMeshByName("MainTriangles").material = material
+			const mesh = scene.getMeshByName("MainTriangles")
+			mesh.material = material
+			const outerMesh = new BABYLON.InstancedMesh('', mesh as BABYLON.Mesh)
+			outerMesh.scaling.setAll(20)
 		},
 		() => {},
 		() => {},
