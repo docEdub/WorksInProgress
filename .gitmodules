@@ -1,0 +1,3 @@
+[submodule "Blender"]
+	path = Blender
+	url = https://github.com/docEdub/WorksInProgress.2-PrimitiveTriangles.blend.git
