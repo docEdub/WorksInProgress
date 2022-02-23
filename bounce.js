@@ -62,7 +62,7 @@ if (os.type() === 'Darwin') {
         fs.mkdirSync(jsonDir);
 
         // Generate DawPlayback.json
-        spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.csd --control-rate=30 --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
+        spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.csd --control-rate=120 --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
             stdio: 'inherit'
         });
 
