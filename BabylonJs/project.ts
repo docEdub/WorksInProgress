@@ -504,6 +504,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
     directionalLight.intensity = 1
 
+	const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 75, 0), scene)
+	pointLight.intensity = 1
+	pointLight.range = 200
+
 	const whiteColor = BABYLON.Color3.White()
     const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
 
