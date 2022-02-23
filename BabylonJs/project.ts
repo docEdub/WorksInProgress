@@ -787,8 +787,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		setJson = (json) => {
-			console.debug('HiHat_1 json ...')
-			console.debug(json)
+			// console.debug('HiHat_1 json ...')
+			// console.debug(json)
 
 			this.json = json
 			this.header = json[0]
