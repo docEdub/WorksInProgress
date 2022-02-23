@@ -1,6 +1,8 @@
 import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
+//#region Non-playground setup
+
 declare global {
     interface Document {
         Csound: CSOUND.Csound
@@ -13,12 +15,20 @@ document.isProduction = true
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
 
+//#endregion
+
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 	
+	//#region Options
+
 	const groundSize = 9000
     const logDebugMessages = true
 	const showBabylonInspector = false
     const showGroundGrid = true
+
+	//#endregion
+
+	//#region Constants
 
     const halfGroundSize = groundSize / 2
     
@@ -33,6 +43,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         Space: 32
     }
 
+	//#endregion
+
+	//#region Babylon scene setup
+
     // The BabylonJS playground adds the materials extension to BABYLON.
     if (!document.isProduction && !BABYLON_MATERIALS)
         var BABYLON_MATERIALS = BABYLON
@@ -42,8 +56,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	if (showBabylonInspector) {
 		scene.debugLayer.show()
 	}
+
+	//#endregion
 	
-	//#region Csound
+	//#region class Csound
 
 	class Csound {
         constructor(csdText) {
@@ -283,7 +299,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region Camera
+	//#region class Camera
 
 	class Camera {
 		constructor() {
@@ -408,7 +424,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region Input
+	//#region class Input
 
 	class Input {
 		constructor() {
@@ -439,9 +455,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region Babylon audio engine setup
+
     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
     BABYLON.Engine.audioEngine.lock()
+
+	//#endregion
     
+	//#region Console overrides
+
     const originalConsoleDebug = console.debug
     console.debug = function() {
         if (logDebugMessages) {
@@ -454,9 +476,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         originalConsoleLog.apply(console, arguments)
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Utility functions.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//#endregion
+
+	//#region Utility functions
 
     let svgTextureCount = 0
 
@@ -472,8 +494,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         return texture
     }
 
+	//#endregion
+
+	//#region Scene environment setup
+
     const skyBrightness = 0.05
     scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
+
+    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
+    directionalLight.intensity = 1
 
 	const whiteColor = BABYLON.Color3.White()
     const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
@@ -568,6 +597,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     else {
         ground.material = blackMaterial
     }
+
+	//#endregion
+
+	//#region XR experiance handler
     
     const startXr = async () => {
         try {
@@ -591,8 +624,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     startXr()
 
-    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
-    directionalLight.intensity = 1
+	//#endregion
+
+	//#region MainTriangles mesh
 
 	const meshString_MainTriangles = `
 	{"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
@@ -633,16 +667,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		'.babylon'
 	)
 
-	let soundObjects = []
+	//#endregion
 
-	const findSoundObject = (uuid) => {
-		for (let i = 0; i < soundObjects.length; i++) {
-			if (soundObjects[i].uuid == uuid) {
-				return soundObjects[i]
-			}
-		}
-		return null
-	}
+	//#region Project-specific utility functions
 
 	const makeTriangleMesh = () => {
 		const positions = [
@@ -671,6 +698,54 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 	let triangleMesh = makeTriangleMesh()
 
+	//#endregion
+
+	//#region Sound object utilities
+
+	let soundObjects = []
+
+	const findSoundObject = (uuid) => {
+		for (let i = 0; i < soundObjects.length; i++) {
+			if (soundObjects[i].uuid == uuid) {
+				return soundObjects[i]
+			}
+		}
+		return null
+	}
+
+    const startAudioVisuals = () => {
+        let csdData = JSON.parse(csdJson)
+        // console.debug('csdData =', csdData)
+
+		Object.keys(csdData).forEach((uuid) => {
+			let soundObject = findSoundObject(uuid)
+			if (soundObject != null) {
+				soundObject.setJson(csdData[uuid])
+			}
+		})
+
+        scene.registerBeforeRender(() => {
+			if (!csound.playbackIsStarted) {
+				// Reset sound objects.
+				soundObjects.forEach((soundObject) => {
+					soundObject.reset()
+				})
+				return;
+			}
+
+			const time = csound.audioContext.currentTime - csound.startTime;
+			const deltaTime = engine.getDeltaTime() / 1000
+
+			// Render sound objects.
+			soundObjects.forEach((soundObject) => {
+				soundObject.render(time, deltaTime)
+			})
+		})
+	}
+
+	//#endregion
+
+	//#region class HiHat_1
 
 	class HiHat_1 {
 		uuid = 'e3e7d57082834a28b53e021beaeb783d'
@@ -761,37 +836,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 	soundObjects.push(new HiHat_1)
 
-    const startAudioVisuals = () => {
-        let csdData = JSON.parse(csdJson)
-        console.debug('csdData =', csdData)
+	//#endregion
 
-		Object.keys(csdData).forEach((uuid) => {
-			let soundObject = findSoundObject(uuid)
-			if (soundObject != null) {
-				soundObject.setJson(csdData[uuid])
-			}
-		})
 
-        scene.registerBeforeRender(() => {
-			if (!csound.playbackIsStarted) {
-				// Reset sound objects.
-				soundObjects.forEach((soundObject) => {
-					soundObject.reset()
-				})
-				return;
 			}
 
-			const time = csound.audioContext.currentTime - csound.startTime;
-			const deltaTime = engine.getDeltaTime() / 1000
 
-			// Render sound objects.
-			soundObjects.forEach((soundObject) => {
-				soundObject.render(time, deltaTime)
-			})
-		})
 	}
 
-	//#region Bounce output
+	//#endregion
+
+	//#region Csound output (.csd and .json)
 const csdText = `
 	<CsoundSynthesizer>
 	<CsOptions>
@@ -11850,16 +11905,23 @@ const csdJson = `
 	`
 	//#endregion
 
+	//#region Start
+
     csound = new Csound(csdText)
     csound.start()
 	startAudioVisuals()
+
+	//#endregion
+
     return scene
 }}
 
-
+//#region class Project
 
 export class Project {
     public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
         return Playground.CreateScene(engine, canvas)
     }
 }
+
+ //#endregion
