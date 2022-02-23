@@ -842,11 +842,125 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region class Bass
 
+	class Bass {
+		uuid = 'ab018f191c70470f98ac3becb76e6d13'
+	
+		constructor() {
+			const mesh = triangleMesh.clone('')
+			mesh.scaling.set(135, 1, 135)
+			this.mesh = mesh
+
+
+			let material = new BABYLON.StandardMaterial('', scene)
+			material.emissiveColor.set(1, 1, 1)
+			this.mesh.material = this.material = material
+		}
+
+		material = null
+		mesh = null
+
+		json = null
+		header = null
+		noteStartIndex = 0
+		noteCount = 0
+
+		nextNoteOnIndex = 0
+		nextNoteOffIndex = 0
+
+		note = null
+		nextNoteKArrayIndex = 0
+
+		yFromPitch = (pitch) => {
+			return (pitch - 32) * 10
+		}
+
+		noteOn = (i) => {
+			const note = this.json[i].noteOn
+			this.note = note
+			this.nextNoteKArrayIndex = 1
+
+			this.mesh.position.set(0, this.yFromPitch(note.k[0].pitch), 0)
+			this.mesh.isVisible = true
+		}
+
+		noteOff = () => {
+            const note = this.note
+            if (!!note) {
+                this.mesh.isVisible = false;
+            }
+			this.note = null
+		}
+
+		setJson = (json) => {
+			// console.debug('Bass json ...')
+			// console.debug(json)
+
+			this.json = json
+			this.header = json[0]
+
+			for (let i = 1; i < json.length; i++) {
+				let noteOn = json[i].noteOn
+
+				// Skip preallocation notes.
+				if (noteOn.time == 0.005) {
+					continue
+				}
+				else if (this.noteStartIndex == 0) {
+					this.noteStartIndex = i
+				}
+
+				// Note off time = note on time + delta of last k-pass event, which should be {"volume":0}.
+				noteOn.offTime = noteOn.time + noteOn.k[noteOn.k.length - 1].time
+				this.noteCount++
 			}
+		}
+		
+		isReset = false
 
+		reset = () => {
+			if (this.isReset) {
+				return
+			}
+			this.isReset = true
+			this.nextNoteOnIndex = this.noteStartIndex;
+			this.nextNoteOffIndex = this.noteStartIndex;
+			this.nextNoteKArrayIndex = 0
+		}
 
+		render = (time) => {
+			this.isReset = false
+            while (this.nextNoteOnIndex < this.json.length
+					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
+				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+					this.noteOn(this.nextNoteOnIndex);
+				}
+				this.nextNoteOnIndex++;
+			}
+			while (this.nextNoteOffIndex < this.json.length
+					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
+				this.noteOff();
+				this.nextNoteOffIndex++;
+			}
+			if (!!this.note) {
+				const note = this.note
+				const kTime = time - note.time
+				if (note.k[this.nextNoteKArrayIndex].time <= kTime) {
+					while (this.nextNoteKArrayIndex < note.k.length
+							&& note.k[this.nextNoteKArrayIndex].time <= kTime) {
+						this.nextNoteKArrayIndex++
+					}
+					const kItem = note.k[this.nextNoteKArrayIndex - 1]
+					if (!!kItem.pitch) {
+						this.mesh.position.y = this.yFromPitch(kItem.pitch)
+						// console.log(`Bass mesh y = ${this.mesh.position.y}`)
+					}
+				}
+			}
+		}
 	}
+	soundObjects.push(new Bass)
 
 	//#endregion
 
