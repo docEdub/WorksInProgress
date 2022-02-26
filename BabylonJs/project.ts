@@ -896,7 +896,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			const maxHeight = 220.46
 
 			// Triangle plane mesh scale at y = 0 (spreads points to center of main triangle mesh legs).
-			const maxScaleXZ = 197.624 //212.618
+			const maxScaleXZ = 197.624
 
 			return Math.max(0, maxScaleXZ * ((maxHeight - y) / maxHeight))
 		}
