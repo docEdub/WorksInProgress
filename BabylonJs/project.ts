@@ -335,14 +335,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		#height = 2
 		get height() { return this.#height }
 
-		#settingIndex = 1
+		#settingIndex = 2
 		#settings = [
 			// 0
 			{ position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
 			// 1
 			{ position: new BABYLON.Vector3(0, this.height, -400), target: new BABYLON.Vector3(0, 100, 0) },
 			// 2
-			{ position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+			{ position: new BABYLON.Vector3(-137, this.height, -298), target: new BABYLON.Vector3(0, 100, 0) },
 			// 3
 			{ position: new BABYLON.Vector3(-halfGroundSize, this.height, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
 			// 4
@@ -864,9 +864,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	
 		constructor() {
 			const mesh = trianglePlaneMesh.clone('')
-			mesh.scaling.set(135, 1, 135)
 			this.mesh = mesh
-
 
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
@@ -893,12 +891,28 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			return (pitch - 32) * 10
 		}
 
+		scaleXZFromY = (y) => {
+			// Main triangle mesh height.
+			const maxHeight = 220.46
+
+			// Triangle plane mesh scale at y = 0 (spreads points to center of main triangle mesh legs).
+			const maxScaleXZ = 197.624 //212.618
+
+			return Math.max(0, maxScaleXZ * ((maxHeight - y) / maxHeight))
+		}
+
+		setPitch = (pitch) => {
+			this.mesh.position.y = this.yFromPitch(pitch)
+			const scaleXZ = this.scaleXZFromY(this.mesh.position.y)
+			this.mesh.scaling.set(scaleXZ, 1, scaleXZ)
+		}
+
 		noteOn = (i) => {
 			const note = this.json[i].noteOn
 			this.note = note
 			this.nextNoteKArrayIndex = 1
 
-			this.mesh.position.set(0, this.yFromPitch(note.k[0].pitch), 0)
+			this.setPitch(note.k[0].pitch)
 			this.mesh.isVisible = true
 		}
 
@@ -970,8 +984,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					}
 					const kItem = note.k[this.nextNoteKArrayIndex - 1]
 					if (!!kItem.pitch) {
-						this.mesh.position.y = this.yFromPitch(kItem.pitch)
-						// console.log(`Bass mesh y = ${this.mesh.position.y}`)
+						this.setPitch(kItem.pitch)
 					}
 				}
 			}
