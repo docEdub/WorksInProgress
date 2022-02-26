@@ -480,6 +480,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region Utility functions
 
+	const makeMesh = (positions, indices) => {
+		let normals = []
+		BABYLON.VertexData.ComputeNormals(positions, indices, normals)
+		let vertexData = new BABYLON.VertexData()
+		vertexData.positions = positions
+		vertexData.indices = indices
+		vertexData.normals = normals
+		let mesh = new BABYLON.Mesh('', scene)
+		vertexData.applyToMesh(mesh)
+		mesh.position.set(0, 1, 0)
+		mesh.isVisible = false
+		return mesh
+	}
+
     let svgTextureCount = 0
 
     const createSvgTexture = (svg) => {
@@ -676,32 +690,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region Project-specific utility functions
 
-	const makeTriangleMesh = () => {
-		const positions = [
-			0, 1.225, 0,
-			0, 0, 0.867,
-			0.75, 0, -0.433,
-			-0.75, 0, -0.433
-		]
-		const indices = [
-			0, 1, 2,
-			0, 2, 3,
-			0, 3, 1,
-			3, 2, 1
-		]
-		let normals = []
-		BABYLON.VertexData.ComputeNormals(positions, indices, normals)
-		let vertexData = new BABYLON.VertexData()
-		vertexData.positions = positions
-		vertexData.indices = indices
-		vertexData.normals = normals
-		let mesh = new BABYLON.Mesh('', scene)
-		vertexData.applyToMesh(mesh)
-		mesh.position.set(0, 1, 0)
-		mesh.isVisible = false
-		return mesh
+	const makeTrianglePlaneMesh = () => {
+		return makeMesh(
+			[ 0, 0, 0.867,
+			  0.75, 0, -0.433,
+			  -0.75, 0, -0.433
+			],
+			[ 0, 1, 2 ]
+		)
 	}
-	let triangleMesh = makeTriangleMesh()
+	const trianglePlaneMesh = makeTrianglePlaneMesh()
+
+	const makeTrianglePolygonMesh = () => {
+		return makeMesh(
+			[ 0, 1.225, 0,
+			  0, 0, 0.867,
+			  0.75, 0, -0.433,
+			  -0.75, 0, -0.433
+			],
+			[ 0, 1, 2,
+			  0, 2, 3,
+			  0, 3, 1,
+			  3, 2, 1
+			]
+		)
+	}
+	const trianglePolygonMesh = makeTrianglePolygonMesh()
 
 	//#endregion
 
@@ -762,7 +776,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		material = null
-		mesh = triangleMesh.clone('')
+		mesh = trianglePolygonMesh.clone('')
 
 		json = null
 		header = null
@@ -849,13 +863,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		uuid = 'ab018f191c70470f98ac3becb76e6d13'
 	
 		constructor() {
-			const mesh = triangleMesh.clone('')
+			const mesh = trianglePlaneMesh.clone('')
 			mesh.scaling.set(135, 1, 135)
 			this.mesh = mesh
 
 
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
+			material.backFaceCulling = false
+			material.alpha = 0.25
 			this.mesh.material = this.material = material
 		}
 
