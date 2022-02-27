@@ -764,10 +764,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region class HiHat_1
+	//#region class HiHat
 
-	class HiHat_1 {
-		uuid = 'e3e7d57082834a28b53e021beaeb783d'
+	class HiHat {
+		uuid = null
+		y = null
+
+		set color(value) {
+			this.material.emissiveColor.set(value[0], value[1], value[2])
+			this.laserMeshMaterial.emissiveColor.set(value[0], value[1], value[2])
+		}
 	
 		constructor() {
 			let material = new BABYLON.StandardMaterial('', scene)
@@ -778,7 +784,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			let laserMeshMaterial = new BABYLON.StandardMaterial('', scene)
 			laserMeshMaterial.emissiveColor.set(1, 1, 1)
 			laserMeshMaterial.backFaceCulling = false
-			laserMeshMaterial.alpha = 0.25
+			laserMeshMaterial.alpha = 0.5
 			this.laserMesh.material = this.laserMeshMaterial = laserMeshMaterial
 
 			this.updateLaserMeshNormals()
@@ -863,7 +869,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		noteOn = (i) => {
 			const note = this.json[i].noteOn
 			note.isOn = true
-			this.setPosition(note.xyz[0], 10, note.xyz[2])
+			this.setPosition(note.xyz[0], this.y, note.xyz[2])
 			this.isVisible = true
 		}
 
@@ -876,9 +882,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		setJson = (json) => {
-			// console.debug('HiHat_1 json ...')
-			// console.debug(json)
-
 			this.json = json
 			this.header = json[0]
 
@@ -897,6 +900,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				noteOn.offTime = noteOn.time + 0.034
 				this.noteCount++
 			}
+
+			// console.debug(`HiHat ${this.uuid} json ...`)
+			// console.debug(json)
 		}
 		
 		isReset = false
@@ -906,8 +912,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				return
 			}
 			this.isReset = true
-			this.nextNoteOnIndex = this.noteStartIndex;
-			this.nextNoteOffIndex = this.noteStartIndex;
+			this.nextNoteOnIndex = this.noteStartIndex
+			this.nextNoteOffIndex = this.noteStartIndex
 		}
 
 		render = (time) => {
@@ -927,7 +933,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 		}
 	}
-	soundObjects.push(new HiHat_1)
+
+	const hihat1 = new HiHat
+	hihat1.uuid = 'e3e7d57082834a28b53e021beaeb783d'
+	hihat1.y = 20
+	hihat1.color = [ 1, 0.1, 0.1 ]
+	soundObjects.push(hihat1)
+
+	const hihat2 = new HiHat
+	hihat2.uuid = '02c103e8fcef483292ebc49d3898ef96'
+	hihat2.color = [ 0.1, 0.1, 1 ]
+	hihat2.y = 10
+	soundObjects.push(hihat2)
 
 	//#endregion
 
