@@ -9,6 +9,7 @@
     "help": "webpack serve --help=verbose"
   },
   "devDependencies": {
+    "@types/core-js": "^2.5.5",
     "html-webpack-plugin": "^5.3.1",
     "node-watch": "^0.7.1",
     "terser-webpack-plugin": "^5.2.4",
