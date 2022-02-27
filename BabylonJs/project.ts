@@ -894,7 +894,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					this.noteStartIndex = i
 				}
 
-				noteOn.offTime = noteOn.time + 0.1
+				noteOn.offTime = noteOn.time + 0.034
 				this.noteCount++
 			}
 		}
