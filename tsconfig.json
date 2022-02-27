@@ -1,6 +1,9 @@
 {
-    "compilerOptions": {
-      "target": "es2015"
-    },
-    "exclude": ["node_modules", "**/node_modules/*"]
-  }
+  "compilerOptions": {
+    "target": "es2015"
+  },
+  "include": [
+    "BabylonJs/@doc.e.dub",
+    "node_modules"
+  ]
+}
