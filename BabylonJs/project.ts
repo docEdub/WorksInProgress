@@ -773,11 +773,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
 			this.mesh.material = this.material = material
+			this.isVisible = false
+
+			let laserMeshMaterial = new BABYLON.StandardMaterial('', scene)
+			laserMeshMaterial.emissiveColor.set(1, 1, 1)
+			laserMeshMaterial.backFaceCulling = false
+			laserMeshMaterial.alpha = 0.25
+			this.laserMesh.material = this.laserMeshMaterial = laserMeshMaterial
+
+			this.updateLaserMeshNormals()
+			let laserMeshVertexData = new BABYLON.VertexData()
+			laserMeshVertexData.positions = this.laserMeshPositions
+			laserMeshVertexData.indices = this.laserMeshIndices
+			laserMeshVertexData.normals = this.laserMeshNormals
+			laserMeshVertexData.applyToMesh(this.laserMesh, true)
 		}
 
 		material = null
 		mesh = trianglePolygonMesh.clone('')
 
+		laserMeshMaterial = null
+		laserMeshPositions = [
+			0, 0, 171.34,
+			-148.385, 0, -85.67,
+			148.385, 0, -86.67,
+			0, 0, 0,
+			0, 0.5, 0,
+			0, 202.46, 0,
+			0, 0, 0.171,
+			-0.148, 0, -0.086,
+			0.148, 0, -0.086
+		]
+		laserMeshIndices = [
+			0, 3, 4,
+			1, 3, 4,
+			2, 3, 4,
+			4, 5, 6,
+			4, 5, 7,
+			4, 5, 8
+		]
+		laserMeshNormals = []
+		laserMesh = new BABYLON.Mesh('', scene)
+		
 		json = null
 		header = null
 		noteStartIndex = 0
@@ -786,17 +823,54 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		nextNoteOnIndex = 0
 		nextNoteOffIndex = 0
 
+		set isVisible(value) {
+			this.mesh.isVisible = value
+			this.laserMesh.isVisible = value
+		}
+
+		updateLaserMeshNormals = () => {
+			BABYLON.VertexData.ComputeNormals(this.laserMeshPositions, this.laserMeshIndices, this.laserMeshNormals)
+		}
+
+		setPosition = (x, y, z) => {
+			this.mesh.position.set(x, y, z)
+			this.laserMeshPositions[9] = x
+			this.laserMeshPositions[10] = y
+			this.laserMeshPositions[11] = z
+
+			this.laserMeshPositions[12] = x
+			this.laserMeshPositions[13] = y + 0.5
+			this.laserMeshPositions[14] = z
+
+			this.laserMeshPositions[18] = x
+			this.laserMeshPositions[19] = y
+			this.laserMeshPositions[20] = z + 0.171
+
+			this.laserMeshPositions[21] = x - 0.148
+			this.laserMeshPositions[22] = y
+			this.laserMeshPositions[23] = z - 0.086
+
+			this.laserMeshPositions[24] = x + 0.148
+			this.laserMeshPositions[25] = y
+			this.laserMeshPositions[26] = z - 0.086
+
+			this.updateLaserMeshNormals()
+
+			this.laserMesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this.laserMeshPositions)
+			this.laserMesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this.laserMeshNormals)
+		}
+
 		noteOn = (i) => {
 			const note = this.json[i].noteOn
 			note.isOn = true
-			this.mesh.position.set(note.xyz[0], 10, note.xyz[2])
-			this.mesh.isVisible = true
+			this.setPosition(note.xyz[0], 10, note.xyz[2])
+			this.isVisible = true
 		}
 
 		noteOff = (i) => {
             const note = this.json[i].noteOn
             if (note.isOn) {
-                this.mesh.isVisible = false;
+                this.isVisible = false;
                 note.isOn = false
             }
 		}
