@@ -764,6 +764,188 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region class Drum
+
+	class Drum {
+		uuid = null
+		maxDuration = 0.1
+		minScaling = 10
+		maxScaling = 100
+
+		set position(value) {
+			this.mesh.position.set(value[0], value[1], value[2])
+		}
+
+		set rotation(value) {
+			this.mesh.rotation.set(value[0], value[1], value[2])
+		}
+
+		set color(value) {
+			this.material.emissiveColor.set(value[0], value[1], value[2])
+		}
+
+		constructor() {
+			let material = new BABYLON.StandardMaterial('', scene)
+			material.alpha = 0.999
+			material.emissiveColor.set(1, 1, 1)
+
+			let mesh = makeTrianglePolygonMesh()
+			mesh.name = 'Kick_1'
+			mesh.material = this.material = material
+			mesh.position.setAll(0)
+			mesh.scaling.set(this.minScaling, 1, this.minScaling)
+			mesh.bakeCurrentTransformIntoVertices()
+			this.mesh = mesh
+
+			this.isVisible = false
+		}
+
+		material = null
+		mesh = null
+
+		json = null
+		header = null
+		noteStartIndex = 0
+		noteCount = 0
+
+		currentNoteOnIndex = null
+		nextNoteOnIndex = 0
+		nextNoteOffIndex = 0
+		
+		_currentNoteDuration = 0
+		get currentNoteDuration() { return this._currentNoteDuration }
+		set currentNoteDuration(value) {
+			this._currentNoteDuration = value
+			this.alpha = 0.999 * (1 - value / this.maxDuration)
+			const scaling = this.minScaling + (this.maxScaling - this.minScaling) * (value / this.maxDuration)
+			// console.debug(`Drum: duration = ${value}, alpha = ${this.material.alpha}, scaling = ${scaling}`)
+			this.scaling = scaling
+		}
+		
+		set isVisible(value) {
+			this.mesh.isVisible = value
+		}
+
+		set alpha(value) {
+			this.material.alpha = value
+		}
+
+		set scaling(value) {
+			this.mesh.scaling.set(value, 1, value)
+		}
+
+		noteOn = (i) => {
+			if (!!this.currentNoteOnIndex) {
+				if (this.json[this.currentNoteOnIndex].noteOn.isOn) {
+					this.noteOff(this.currentNoteOnIndex)
+				}
+			}
+			this.currentNoteOnIndex = i
+			this.currentNoteDuration = 0
+			const note = this.json[i].noteOn
+			note.isOn = true
+			this.position = note.xyz
+			this.isVisible = true
+		}
+
+		noteOff = (i) => {
+            const note = this.json[i].noteOn
+            if (note.isOn) {
+                this.isVisible = false;
+                note.isOn = false
+            }
+		}
+
+		setJson = (json) => {
+			this.json = json
+			this.header = json[0]
+
+			for (let i = 1; i < json.length; i++) {
+				let noteOn = json[i].noteOn
+				noteOn.isOn = false
+
+				// Skip preallocation notes.
+				if (noteOn.time == 0.005) {
+					continue
+				}
+				else if (this.noteStartIndex == 0) {
+					this.noteStartIndex = i
+				}
+
+				noteOn.offTime = noteOn.time + this.maxDuration
+				this.noteCount++
+			}
+
+			// console.debug(`Drum ${this.uuid} json ...`)
+			// console.debug(json)
+		}
+
+		isReset = false
+
+		reset = () => {
+			if (this.isReset) {
+				return
+			}
+			this.isReset = true
+			this.nextNoteOnIndex = this.noteStartIndex
+			this.nextNoteOffIndex = this.noteStartIndex
+			this.currentNoteOnIndex = null
+			this.currentNoteDuration = 0
+		}
+
+		render = (time, delta) => {
+			this.isReset = false
+			this.currentNoteDuration += delta
+            while (this.nextNoteOnIndex < this.json.length
+					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
+				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+					this.noteOn(this.nextNoteOnIndex);
+				}
+				this.nextNoteOnIndex++;
+			}
+
+			while (this.nextNoteOffIndex < this.json.length
+					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
+				this.noteOff(this.nextNoteOffIndex);
+				this.nextNoteOffIndex++;
+			}
+		}
+	}
+
+	const kick1 = new Drum
+	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
+	kick1.maxDuration = 0.24
+	kick1.minScaling = 1
+	kick1.maxScaling = 20
+	kick1.color = [ 1, 0.5, 0.1 ]
+	soundObjects.push(kick1)
+
+	const kick2Left = new Drum
+	kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
+	kick2Left.maxDuration = 0.24
+	kick2Left.minScaling = 1
+	kick2Left.maxScaling = 20
+	kick2Left.color = [ 0.1, 1, 0.5 ]
+	soundObjects.push(kick2Left)
+
+	const kick2Right = new Drum
+	kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
+	kick2Right.maxDuration = 0.24
+	kick2Right.minScaling = 1
+	kick2Right.maxScaling = 20
+	kick2Right.color = [ 0.5, 0.1, 1 ]
+	soundObjects.push(kick2Right)
+
+	const snare = new Drum
+	snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
+	snare.maxDuration = 0.49
+	snare.minScaling = 0.24
+	snare.maxScaling = 30
+	snare.color = [ 1, 0.1, 1 ]
+	soundObjects.push(snare)
+
+	//#endregion
+
 	//#region class HiHat
 
 	class HiHat {
