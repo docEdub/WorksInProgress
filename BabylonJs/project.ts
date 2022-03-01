@@ -774,34 +774,57 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		set position(value) {
 			this.mesh.position.set(value[0], value[1], value[2])
+			this.strikeMesh.position.set(value[0], value[1], value[2])
 		}
 
 		set rotation(value) {
 			this.mesh.rotation.set(value[0], value[1], value[2])
+			this.strikeMesh.rotation.set(value[0], value[1], value[2])
 		}
 
+		_color = null
+		get color() { return this._color }
 		set color(value) {
+			this._color = value
 			this.material.emissiveColor.set(value[0], value[1], value[2])
+			this.strikeMaterial.emissiveColor.set(value[0], value[1], value[2])
 		}
 
 		constructor() {
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.alpha = 0.999
-			material.emissiveColor.set(1, 1, 1)
+			material.emissiveColor.set(0.5, 0.5, 0.5)
+			this.material = material
 
 			let mesh = makeTrianglePolygonMesh()
-			mesh.name = 'Kick_1'
-			mesh.material = this.material = material
+			mesh.material = this.material
 			mesh.position.setAll(0)
 			mesh.scaling.set(this.minScaling, 1, this.minScaling)
 			mesh.bakeCurrentTransformIntoVertices()
 			this.mesh = mesh
+
+			let strikeMaterial = new BABYLON.StandardMaterial('', scene)
+			strikeMaterial.alpha = 0.999
+			strikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+			this.strikeMaterial = strikeMaterial
+
+			let strikeMesh = makeTrianglePolygonMesh()
+			strikeMesh.material = this.strikeMaterial
+			strikeMesh.scaling.setAll(15)
+			strikeMesh.position.set(0, 5, 0)
+			// strikeMesh.rotation.x = Math.PI
+			strikeMesh.bakeCurrentTransformIntoVertices()
+			strikeMesh.isVisible = true
+			this.strikeMesh = strikeMesh
 
 			this.isVisible = false
 		}
 
 		material = null
 		mesh = null
+
+		strikeMaterial = null
+		strikeMesh = null
 
 		json = null
 		header = null
@@ -816,14 +839,38 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		get currentNoteDuration() { return this._currentNoteDuration }
 		set currentNoteDuration(value) {
 			this._currentNoteDuration = value
-			this.alpha = 0.999 * (1 - value / this.maxDuration)
+			this.fade = 0.999 * (1 - value / this.maxDuration)
 			const scaling = this.minScaling + (this.maxScaling - this.minScaling) * (value / this.maxDuration)
 			// console.debug(`Drum: duration = ${value}, alpha = ${this.material.alpha}, scaling = ${scaling}`)
 			this.scaling = scaling
 		}
 		
+		get isVisible() { return this.mesh.isVisible }
 		set isVisible(value) {
 			this.mesh.isVisible = value
+		}
+
+		set fade(value) {
+			value = Math.max(0, value)
+			
+			this.alpha = value
+
+			if (this.isVisible) {
+				const redRange = 1 - this._color[0]
+				const greenRange = 1 - this._color[1]
+				const blueRange = 1 - this._color[2]
+				const redDelta = redRange * value
+				const greenDelta = greenRange * value
+				const blueDelta = blueRange * value
+				const r = this._color[0] + redDelta
+				const g = this._color[1] + greenDelta
+				const b = this._color[2] + blueDelta
+				this.strikeMaterial.emissiveColor.set(r, g, b)
+				// console.debug(`value = ${value}, red: original = ${this._color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
+
+				this.strikeMesh.position.y = value * -5
+				this.strikeMesh.scaling.y = 1 - value / 1.111
+			}
 		}
 
 		set alpha(value) {
@@ -870,6 +917,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				}
 				else if (this.noteStartIndex == 0) {
 					this.noteStartIndex = i
+					this.position = noteOn.xyz
 				}
 
 				noteOn.offTime = noteOn.time + this.maxDuration
@@ -916,7 +964,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
 	kick1.maxDuration = 0.24
 	kick1.minScaling = 1
-	kick1.maxScaling = 20
+	kick1.maxScaling = 40
 	kick1.color = [ 1, 0.5, 0.1 ]
 	soundObjects.push(kick1)
 
@@ -924,7 +972,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
 	kick2Left.maxDuration = 0.24
 	kick2Left.minScaling = 1
-	kick2Left.maxScaling = 20
+	kick2Left.maxScaling = 40
 	kick2Left.color = [ 0.1, 1, 0.5 ]
 	soundObjects.push(kick2Left)
 
@@ -932,7 +980,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
 	kick2Right.maxDuration = 0.24
 	kick2Right.minScaling = 1
-	kick2Right.maxScaling = 20
+	kick2Right.maxScaling = 40
 	kick2Right.color = [ 0.5, 0.1, 1 ]
 	soundObjects.push(kick2Right)
 
@@ -940,7 +988,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
 	snare.maxDuration = 0.49
 	snare.minScaling = 0.24
-	snare.maxScaling = 30
+	snare.maxScaling = 60
 	snare.color = [ 1, 0.1, 1 ]
 	soundObjects.push(snare)
 
@@ -1118,14 +1166,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const hihat1 = new HiHat
 	hihat1.uuid = 'e3e7d57082834a28b53e021beaeb783d'
-	hihat1.y = 20
+	hihat1.y = 40
 	hihat1.color = [ 1, 0.1, 0.1 ]
 	soundObjects.push(hihat1)
 
 	const hihat2 = new HiHat
 	hihat2.uuid = '02c103e8fcef483292ebc49d3898ef96'
 	hihat2.color = [ 0.1, 0.1, 1 ]
-	hihat2.y = 10
+	hihat2.y = 80
 	soundObjects.push(hihat2)
 
 	//#endregion
