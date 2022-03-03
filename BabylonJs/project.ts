@@ -1190,7 +1190,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
 			material.backFaceCulling = false
-			material.alpha = 0.25
+			material.alpha = 0.75
 			this.mesh.material = this.material = material
 		}
 
@@ -1208,6 +1208,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		note = null
 		nextNoteKArrayIndex = 0
 
+		setColorFromPitch = (pitch) => {
+			BABYLON.Color3.HSVtoRGBToRef(63 * ((pitch - 32) / 18), 1, 1, this.material.emissiveColor)
+		}
+
 		yFromPitch = (pitch) => {
 			return (pitch - 32) * 10
 		}
@@ -1223,6 +1227,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		setPitch = (pitch) => {
+			this.setColorFromPitch(pitch)
 			this.mesh.position.y = this.yFromPitch(pitch)
 			const scaleXZ = this.scaleXZFromY(this.mesh.position.y)
 			this.mesh.scaling.set(scaleXZ, 1, scaleXZ)
