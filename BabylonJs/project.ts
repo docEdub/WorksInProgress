@@ -237,7 +237,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#audioContext = audioContext
     
             if (audioContext.sampleRate != 48000) {
-                console.log('Sample restricted to 48000')
+                console.log('Sample rate must be 48000')
                 return
             }
     
@@ -618,7 +618,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region XR experiance handler
+	//#region XR experience handler
     
     const startXr = async () => {
         try {
