@@ -344,7 +344,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			// 2
 			{ position: new BABYLON.Vector3(-137, this.height, -298), target: new BABYLON.Vector3(0, 100, 0) },
 			// 3
-			{ position: new BABYLON.Vector3(-halfGroundSize, this.height, -halfGroundSize), target: new BABYLON.Vector3(-50, 300, 0) },
+			{ position: new BABYLON.Vector3(-1370, this.height, -2980), target: new BABYLON.Vector3(0, 100, 0) },
 			// 4
 			{ position: new BABYLON.Vector3(-80, this.height, 800), target: new BABYLON.Vector3(0, 200, 0) },
 			// 5
@@ -646,6 +646,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region MainTriangles mesh
 
+	const mainTrianglesOuterMeshScale = 20
+	const mainTrianglesOuterMeshRotationY = BABYLON.Angle.FromDegrees(60).radians()
+	const mainTrianglesDefaultColor = [ 0.05, 0.05, 0.05 ]
+
+	let mainTriangleMeshHeight = 1
+
 	const meshString_MainTriangles = `
 	{"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
 	"autoClear":true,"clearColor":[0.0509,0.0509,0.0509],"gravity":[0,-9.81,0],
@@ -672,14 +678,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			const material = new BABYLON.StandardMaterial('', scene)
 			material.ambientColor.set(1, 1, 1)
 			material.diffuseColor.set(1, 1, 1)
-			material.emissiveColor.set(0.1, 0.1, 0.1)
+			material.emissiveColor.set(
+				mainTrianglesDefaultColor[0],
+				mainTrianglesDefaultColor[1],
+				mainTrianglesDefaultColor[2])
 			material.specularColor.set(0.25, 0.25, 0.25)
 			material.specularPower = 2	
-			const mesh = scene.getMeshByName("MainTriangles")
+			const mesh = scene.getMeshByName('MainTriangles')
 			mesh.material = material
-			const outerMesh = new BABYLON.InstancedMesh('', mesh as BABYLON.Mesh)
-			outerMesh.scaling.setAll(20)
-			outerMesh.rotation.y = BABYLON.Angle.FromDegrees(60).radians()
+			mainTriangleMeshHeight = mesh.getBoundingInfo().boundingBox.maximumWorld.y
+			const outerMesh = mesh.clone('OuterMainTriangles', mesh.parent)
+			outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
+			outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
+			outerMesh.material = material.clone('')
 		},
 		() => {},
 		() => {},
@@ -1181,10 +1192,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	//#region class Bass
 
 	class Bass {
-		uuid = 'ab018f191c70470f98ac3becb76e6d13'
+		uuid = null
+		baseScale = 1
+
+		get rotation() { return this.mesh.rotation.y }
+		set rotation(value) {
+			this.mesh.rotation.y = value
+		}
+
+		meshToColor = null
 	
 		constructor() {
-			const mesh = trianglePlaneMesh.clone('')
+			const mesh = trianglePlaneMesh.clone('Bass')
 			this.mesh = mesh
 
 			let material = new BABYLON.StandardMaterial('', scene)
@@ -1209,19 +1228,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		nextNoteKArrayIndex = 0
 
 		setColorFromPitch = (pitch) => {
-			BABYLON.Color3.HSVtoRGBToRef(63 * ((pitch - 32) / 18), 1, 1, this.material.emissiveColor)
+			const hue = 63 * ((pitch - 32) / 18)
+			BABYLON.Color3.HSVtoRGBToRef(hue, 1, 1, this.material.emissiveColor)
+			BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshToColor.material.emissiveColor)
 		}
 
 		yFromPitch = (pitch) => {
-			return (pitch - 32) * 10
+			return ((pitch - 32) / 18) * (mainTriangleMeshHeight * this.baseScale)
 		}
 
 		scaleXZFromY = (y) => {
 			// Main triangle mesh height.
-			const maxHeight = 220.46
+			const maxHeight = 220.46 * this.baseScale
 
 			// Triangle plane mesh scale at y = 0 (spreads points to inside edge of main triangle mesh legs).
-			const maxScaleXZ = 197.624
+			const maxScaleXZ = 197.624 * this.baseScale
 
 			return Math.max(0, maxScaleXZ * ((maxHeight - y) / maxHeight))
 		}
@@ -1229,6 +1250,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		setPitch = (pitch) => {
 			this.setColorFromPitch(pitch)
 			this.mesh.position.y = this.yFromPitch(pitch)
+			// console.debug(`Bass y = ${this.mesh.position.y}`)
 			const scaleXZ = this.scaleXZFromY(this.mesh.position.y)
 			this.mesh.scaling.set(scaleXZ, 1, scaleXZ)
 		}
@@ -1248,6 +1270,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 this.mesh.isVisible = false;
             }
 			this.note = null
+			this.meshToColor.material.emissiveColor.set(
+				mainTrianglesDefaultColor[0],
+				mainTrianglesDefaultColor[1],
+				mainTrianglesDefaultColor[2])
 		}
 
 		setJson = (json) => {
@@ -1316,7 +1342,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 		}
 	}
-	soundObjects.push(new Bass)
+	const bass = new Bass
+	bass.uuid = 'ab018f191c70470f98ac3becb76e6d13'
+	bass.meshToColor = scene.getMeshByName('MainTriangles')
+	soundObjects.push(bass)
+
+	const bassDistant = new Bass
+	bassDistant.uuid = 'b0ba6f144fac4f668ba6981c691277d6'
+	bassDistant.baseScale = mainTrianglesOuterMeshScale
+	bassDistant.rotation = mainTrianglesOuterMeshRotationY
+	bassDistant.meshToColor = scene.getMeshByName('OuterMainTriangles')
+	soundObjects.push(bassDistant)
 
 	//#endregion
 
