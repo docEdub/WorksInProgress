@@ -1010,57 +1010,83 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	class HiHat {
 		uuid = null
 		y = null
+		get normalizedLaserWidth() { return 0.25 }
 
 		set color(value) {
 			this.material.emissiveColor.set(value[0], value[1], value[2])
-			this.laserMeshMaterial.emissiveColor.set(value[0], value[1], value[2])
 		}
 	
 		constructor() {
 			let material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
+			// material.specularColor.set(1, 1, 1)
+			// material.alpha = 0.75
 			this.mesh.material = this.material = material
 			this.isVisible = false
 
-			let laserMeshMaterial = new BABYLON.StandardMaterial('', scene)
-			laserMeshMaterial.emissiveColor.set(1, 1, 1)
-			laserMeshMaterial.backFaceCulling = false
-			laserMeshMaterial.alpha = 0.5
-			this.laserMesh.material = this.laserMeshMaterial = laserMeshMaterial
-
-			this.updateLaserMeshNormals()
-			let laserMeshVertexData = new BABYLON.VertexData()
-			laserMeshVertexData.positions = this.laserMeshPositions
-			laserMeshVertexData.indices = this.laserMeshIndices
-			laserMeshVertexData.normals = this.laserMeshNormals
-			laserMeshVertexData.applyToMesh(this.laserMesh, true)
+			this.updateMeshNormals()
+			let meshVertexData = new BABYLON.VertexData()
+			meshVertexData.positions = this.meshPositions
+			meshVertexData.indices = this.meshIndices
+			meshVertexData.normals = this.meshNormals
+			meshVertexData.applyToMesh(this.mesh, true)
 		}
 
 		material = null
-		mesh = trianglePolygonMesh.clone('')
 
-		laserMeshMaterial = null
-		laserMeshPositions = [
+		originalMeshPositions = [
+			// Legs match the inside faces of the MainTriangle mesh's legs at y = 0.
+
+			// [0] Leg point 1
 			0, 0, 171.34,
+
+			// [1] Leg point 2
 			-148.385, 0, -85.67,
+
+			// [2] Leg point 3
 			148.385, 0, -86.67,
+
+			// Center triangle's peak points down from origin.
+
+			// [3] Center triangle point 1
+			0, this.normalizedLaserWidth, -0.707 * this.normalizedLaserWidth,
+
+			// [4] Center triangle point 2
+			0.612 * this.normalizedLaserWidth, this.normalizedLaserWidth, 0.354 * this.normalizedLaserWidth,
+
+			// [5] Center triangle point 3
+			-0.612 * this.normalizedLaserWidth, this.normalizedLaserWidth, 0.354 * this.normalizedLaserWidth,
+
+			// [6] Center triangle bottom point
 			0, 0, 0,
-			0, 0.5, 0,
-			0, 202.46, 0,
-			0, 0, 0.171,
-			-0.148, 0, -0.086,
-			0.148, 0, -0.086
+
+			// [7] Ceiling point matches the inside face of the MainTriangle mesh's top triangle y at the origin.
+			0, 202.46, 0
 		]
-		laserMeshIndices = [
-			0, 3, 4,
-			1, 3, 4,
-			2, 3, 4,
-			4, 5, 6,
-			4, 5, 7,
-			4, 5, 8
+		meshPositions = [ ...this.originalMeshPositions ]
+		meshIndices = [
+			// Leg 1 laser
+			0, 4, 6,
+			0, 6, 5,
+			0, 5, 4,
+
+			// Leg 2 laser
+			1, 5, 6,
+			1, 6, 3,
+			1, 3, 5,
+
+			// Leg 3 laser
+			2, 3, 6,
+			2, 6, 4,
+			2, 4, 3,
+
+			// Ceiling laser
+			7, 3, 4,
+			7, 4, 5,
+			7, 5, 3
 		]
-		laserMeshNormals = []
-		laserMesh = new BABYLON.Mesh('', scene)
+		meshNormals = []
+		mesh = new BABYLON.Mesh('', scene)
 		
 		json = null
 		header = null
@@ -1072,39 +1098,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		set isVisible(value) {
 			this.mesh.isVisible = value
-			this.laserMesh.isVisible = value
 		}
 
-		updateLaserMeshNormals = () => {
-			BABYLON.VertexData.ComputeNormals(this.laserMeshPositions, this.laserMeshIndices, this.laserMeshNormals)
+		updateMeshNormals = () => {
+			BABYLON.VertexData.ComputeNormals(this.meshPositions, this.meshIndices, this.meshNormals)
 		}
 
 		setPosition = (x, y, z) => {
-			this.mesh.position.set(x, y, z)
-			this.laserMeshPositions[9] = x
-			this.laserMeshPositions[10] = y
-			this.laserMeshPositions[11] = z
-
-			this.laserMeshPositions[12] = x
-			this.laserMeshPositions[13] = y + 0.5
-			this.laserMeshPositions[14] = z
-
-			this.laserMeshPositions[18] = x
-			this.laserMeshPositions[19] = y
-			this.laserMeshPositions[20] = z + 0.171
-
-			this.laserMeshPositions[21] = x - 0.148
-			this.laserMeshPositions[22] = y
-			this.laserMeshPositions[23] = z - 0.086
-
-			this.laserMeshPositions[24] = x + 0.148
-			this.laserMeshPositions[25] = y
-			this.laserMeshPositions[26] = z - 0.086
-
-			this.updateLaserMeshNormals()
-
-			this.laserMesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this.laserMeshPositions)
-			this.laserMesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this.laserMeshNormals)
+			// Update center triangle vertex positions only. Don't update leg or ceiling vertex positions.
+			for (let i = 0; i < 4; i++) {
+				const j = 9 + 3 * i
+				this.meshPositions[j] = x + this.originalMeshPositions[j]
+				this.meshPositions[j + 1] = y + this.originalMeshPositions[j + 1] + this.y
+				this.meshPositions[j + 2] = z + this.originalMeshPositions[j + 2]
+			}
+			this.updateMeshNormals()
+			this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this.meshPositions)
+			this.mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this.meshNormals)
 		}
 
 		noteOn = (i) => {
@@ -1177,14 +1187,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const hihat1 = new HiHat
 	hihat1.uuid = 'e3e7d57082834a28b53e021beaeb783d'
-	hihat1.y = 40
+	hihat1.y = 20
 	hihat1.color = [ 1, 0.1, 0.1 ]
 	soundObjects.push(hihat1)
 
 	const hihat2 = new HiHat
 	hihat2.uuid = '02c103e8fcef483292ebc49d3898ef96'
 	hihat2.color = [ 0.1, 0.1, 1 ]
-	hihat2.y = 80
+	hihat2.y = 60
 	soundObjects.push(hihat2)
 
 	//#endregion
