@@ -1013,12 +1013,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				this.noteOff(this.nextNoteOffIndex);
 				this.nextNoteOffIndex++;
 			}
+
+			if (this.isVisible) {
+				centerLight.intensity += 0.25
+			}
 		}
 	}
 
 	const kick1 = new Drum
 	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
-	kick1.maxDuration = 0.24
+	kick1.maxDuration = 0.1
 	kick1.minScaling = 1
 	kick1.maxScaling = 40
 	kick1.color = [ 1, 0.5, 0.1 ]
@@ -1026,7 +1030,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const kick2Left = new Drum
 	kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
-	kick2Left.maxDuration = 0.24
+	kick2Left.maxDuration = 0.1
 	kick2Left.minScaling = 1
 	kick2Left.maxScaling = 40
 	kick2Left.color = [ 0.1, 1, 0.5 ]
@@ -1034,7 +1038,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const kick2Right = new Drum
 	kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
-	kick2Right.maxDuration = 0.24
+	kick2Right.maxDuration = 0.1
 	kick2Right.minScaling = 1
 	kick2Right.maxScaling = 40
 	kick2Right.color = [ 0.5, 0.1, 1 ]
@@ -1042,7 +1046,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const snare = new Drum
 	snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
-	snare.maxDuration = 0.49
+	snare.maxDuration = 0.25
 	snare.minScaling = 0.24
 	snare.maxScaling = 60
 	snare.color = [ 1, 0.1, 1 ]
@@ -1141,6 +1145,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		nextNoteOnIndex = 0
 		nextNoteOffIndex = 0
 
+		get isVisible() { return this.mesh.isVisible }
 		set isVisible(value) {
 			this.mesh.isVisible = value
 		}
@@ -1227,6 +1232,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				this.noteOff(this.nextNoteOffIndex);
 				this.nextNoteOffIndex++;
 			}
+
+			if (this.isVisible) {
+				centerLight.intensity += 0.1
+			}
 		}
 	}
 
@@ -1255,7 +1264,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.mesh.rotation.y = value
 		}
 
-		meshToColor = null
+		meshesToColor = []
 	
 		constructor() {
 			const mesh = trianglePlaneMesh.clone('Bass')
@@ -1284,8 +1293,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		setColorFromPitch = (pitch) => {
 			const hue = 256 * ((pitch - 32) / 15)
-			BABYLON.Color3.HSVtoRGBToRef(hue, 1, 1, this.material.emissiveColor)
-			BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshToColor.material.emissiveColor)
+			BABYLON.Color3.HSVtoRGBToRef(hue, 1, 0.667, this.material.emissiveColor)
+			for (let i = 0; i < this.meshesToColor.length; i++) {
+				BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshesToColor[i].material.emissiveColor)
+			}
 		}
 
 		yFromPitch = (pitch) => {
@@ -1325,10 +1336,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 this.mesh.isVisible = false;
             }
 			this.note = null
-			this.meshToColor.material.emissiveColor.set(
-				mainTrianglesDefaultColor[0],
-				mainTrianglesDefaultColor[1],
-				mainTrianglesDefaultColor[2])
+
+			for (let i = 0; i < this.meshesToColor.length; i++) {
+				this.meshesToColor[i].material.emissiveColor.set(
+					mainTrianglesDefaultColor[0],
+					mainTrianglesDefaultColor[1],
+					mainTrianglesDefaultColor[2])
+			}
 		}
 
 		setJson = (json) => {
@@ -1399,14 +1413,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 	const bass = new Bass
 	bass.uuid = 'ab018f191c70470f98ac3becb76e6d13'
-	bass.meshToColor = scene.getMeshByName('MainTriangles')
+	bass.meshesToColor.push(scene.getMeshByName('MainTriangles'))
 	soundObjects.push(bass)
 
 	const bassDistant = new Bass
 	bassDistant.uuid = 'b0ba6f144fac4f668ba6981c691277d6'
 	bassDistant.baseScale = mainTrianglesOuterMeshScale
 	bassDistant.rotation = mainTrianglesOuterMeshRotationY
-	bassDistant.meshToColor = scene.getMeshByName('OuterMainTriangles')
+	bassDistant.meshesToColor.push(scene.getMeshByName('OuterMainTriangles'))
+	bassDistant.meshesToColor.push(scene.getMeshByName('MainTriangles'))
 	soundObjects.push(bassDistant)
 
 	//#endregion
