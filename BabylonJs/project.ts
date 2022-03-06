@@ -1188,12 +1188,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	const hihat1 = new HiHat
 	hihat1.uuid = 'e3e7d57082834a28b53e021beaeb783d'
 	hihat1.y = 20
-	hihat1.color = [ 1, 0.1, 0.1 ]
+	hihat1.color = [ 1, 0.333, 0.333 ]
 	soundObjects.push(hihat1)
 
 	const hihat2 = new HiHat
 	hihat2.uuid = '02c103e8fcef483292ebc49d3898ef96'
-	hihat2.color = [ 0.1, 0.1, 1 ]
+	hihat2.color = [ 0.333, 0.333, 1 ]
 	hihat2.y = 60
 	soundObjects.push(hihat2)
 
@@ -1238,7 +1238,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		nextNoteKArrayIndex = 0
 
 		setColorFromPitch = (pitch) => {
-			const hue = 63 * ((pitch - 32) / 18)
+			const hue = 256 * ((pitch - 32) / 15)
 			BABYLON.Color3.HSVtoRGBToRef(hue, 1, 1, this.material.emissiveColor)
 			BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshToColor.material.emissiveColor)
 		}
