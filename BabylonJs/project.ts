@@ -1234,7 +1234,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 
 			if (this.isVisible) {
-				centerLight.intensity += 0.1
+				centerLight.intensity += 0.25
 			}
 		}
 	}
