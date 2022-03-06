@@ -515,13 +515,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const skyBrightness = 0.05
     scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
 
-    const directionalLight = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
-    directionalLight.intensity = 1
-
-	const pointLight = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
-	pointLight.intensity = 0.5
-	pointLight.range = 200
-
 	const whiteColor = BABYLON.Color3.White()
     const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
 
@@ -767,11 +760,63 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			const deltaTime = engine.getDeltaTime() / 1000
 
 			// Render sound objects.
-			soundObjects.forEach((soundObject) => {
-				soundObject.render(time, deltaTime)
-			})
+			for (let i = 0; i < soundObjects.length; i++) {
+				soundObjects[i].render(time, deltaTime)
+			}
 		})
 	}
+
+	//#endregion
+
+	//#region class SunLight
+	
+	class SunLight {
+		get color() { return this._light.diffuse.asArray() }
+		set color(value) {
+			this._light.specular.r = this._light.diffuse.r = value[0]
+			this._light.specular.g = this._light.diffuse.g = value[1]
+			this._light.specular.b = this._light.diffuse.b = value[2]
+		}
+
+		_light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
+
+		reset = () => {
+			this.color = [ 1, 1, 1 ]
+			this._light.intensity = 1
+		}
+
+		render = () => {
+			this.reset()
+		}
+	}
+	const sunLight = new SunLight
+	soundObjects.push(sunLight)
+
+	//#endregion
+	
+	//#region class CenterLight
+
+	class CenterLight {
+		get intensity() { return this._light.intensity }
+		set intensity(value) {
+			if (this.intensity < value) {
+				this._light.intensity = value
+			}
+		}
+
+		_light = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
+		
+		reset = () => {
+			this._light.intensity = 0.25
+			this._light.range = 200	
+		}
+
+		render = () => {
+			this.reset()
+		}
+	}
+	const centerLight = new CenterLight
+	soundObjects.push(centerLight)
 
 	//#endregion
 
