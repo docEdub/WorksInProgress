@@ -176,19 +176,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         get cameraMatrixIsDirty() { return this._cameraMatrixIsDirty }
 
         #startUpdatingCameraMatrix = () => {
-            setInterval(() => {
-                if (!this.isStarted) {
-                    return
-                }
-                if (this.cameraMatrixIsDirty) {
-                    console.debug('Setting Csound listener position to ['
-                        + this._cameraMatrix[12] + ', '
-                        + this._cameraMatrix[13] + ', '
-                        + this._cameraMatrix[14] + ']')
-                    this.#csoundObj.tableCopyIn("1", this._cameraMatrix)
-                    this._cameraMatrixIsDirty = false
-                }
-            }, this.cameraMatrixMillisecondsPerUpdate)
+            // setInterval(() => {
+            //     if (!this.isStarted) {
+            //         return
+            //     }
+            //     if (this.cameraMatrixIsDirty) {
+            //         console.debug('Setting Csound listener position to ['
+            //             + this._cameraMatrix[12] + ', '
+            //             + this._cameraMatrix[13] + ', '
+            //             + this._cameraMatrix[14] + ']')
+            //         this.#csoundObj.tableCopyIn("1", this._cameraMatrix)
+            //         this._cameraMatrixIsDirty = false
+            //     }
+            // }, this.cameraMatrixMillisecondsPerUpdate)
         }
 
         //#endregion
