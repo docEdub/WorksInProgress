@@ -868,7 +868,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			strikeMesh.material = this.strikeMaterial
 			strikeMesh.scaling.setAll(15)
 			strikeMesh.position.set(0, 5, 0)
-			// strikeMesh.rotation.x = Math.PI
 			strikeMesh.bakeCurrentTransformIntoVertices()
 			strikeMesh.isVisible = true
 			this.strikeMesh = strikeMesh
@@ -947,7 +946,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.currentNoteDuration = 0
 			const note = this.json[i].noteOn
 			note.isOn = true
-			this.position = note.xyz
 			this.isVisible = true
 		}
 
