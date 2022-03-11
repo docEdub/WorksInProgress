@@ -643,6 +643,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	const mainTrianglesOuterMeshRotationY = BABYLON.Angle.FromDegrees(60).radians()
 	const mainTrianglesDefaultColor = [ 0.05, 0.05, 0.05 ]
 
+	let mainTriangleMesh = null
 	let mainTriangleMeshHeight = 1
 
 	const meshString_MainTriangles = `
@@ -677,10 +678,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				mainTrianglesDefaultColor[2])
 			material.specularColor.set(0.25, 0.25, 0.25)
 			material.specularPower = 2	
-			const mesh = scene.getMeshByName('MainTriangles')
-			mesh.material = material
-			mainTriangleMeshHeight = mesh.getBoundingInfo().boundingBox.maximumWorld.y
-			const outerMesh = mesh.clone('OuterMainTriangles', mesh.parent)
+			mainTriangleMesh = scene.getMeshByName('MainTriangles')
+			mainTriangleMesh.material = material
+			mainTriangleMeshHeight = mainTriangleMesh.getBoundingInfo().boundingBox.maximumWorld.y
+			const outerMesh = mainTriangleMesh.clone('OuterMainTriangles', mainTriangleMesh.parent)
 			outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
 			outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
 			outerMesh.material = material.clone('')
@@ -830,12 +831,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		set position(value) {
 			this.mesh.position.set(value[0], value[1], value[2])
-			this.strikeMesh.position.set(value[0], value[1], value[2])
+			this.strikeMesh.position.set(value[0], this.strikeMeshPositionY, value[2])
 		}
 
 		set rotation(value) {
 			this.mesh.rotation.set(value[0], value[1], value[2])
 			this.strikeMesh.rotation.set(value[0], value[1], value[2])
+		}
+
+		_strikeMeshPositionY = 0
+		get strikeMeshPositionY() { return this._strikeMeshPositionY }
+		set strikeMeshPositionY(value) {
+			this._strikeMeshPositionY = value
+			this.strikeMesh.position.y = value
 		}
 
 		_strikeMeshScale = [ 1, 1, 1 ]
@@ -867,17 +875,28 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.mesh = mesh
 
 			let strikeMaterial = new BABYLON.StandardMaterial('', scene)
-			strikeMaterial.alpha = 0.999
+			// strikeMaterial.alpha = 0.999
 			strikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
 			this.strikeMaterial = strikeMaterial
 
-			let strikeMesh = makeTrianglePolygonMesh()
+			let strikeMesh = mainTriangleMesh.clone(`Drum strike mesh`, mainTriangleMesh.parent)
+			strikeMesh.makeGeometryUnique()
 			strikeMesh.material = this.strikeMaterial
-			strikeMesh.scaling.setAll(15)
-			strikeMesh.position.set(0, 5, 0)
-			strikeMesh.bakeCurrentTransformIntoVertices()
 			strikeMesh.isVisible = true
 			this.strikeMesh = strikeMesh
+
+			let innerStrikeMaterial = new BABYLON.StandardMaterial('', scene)
+			innerStrikeMaterial.alpha = 0.5
+			innerStrikeMaterial.backFaceCulling = false
+			innerStrikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+			this.innerStrikeMaterial = innerStrikeMaterial
+
+			let innerStrikeMesh = makeTrianglePolygonMesh()
+			innerStrikeMesh.isVisible = true
+			innerStrikeMesh.material = this.innerStrikeMaterial
+			innerStrikeMesh.scaling.set(210, 180, 210)
+			innerStrikeMesh.parent = this.strikeMesh
+			this.innerStrikeMesh = innerStrikeMesh
 
 			this.isVisible = false
 		}
@@ -887,6 +906,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		strikeMaterial = null
 		strikeMesh = null
+
+		innerStrikeMaterial = null
+		innerStrikeMesh = null
 
 		json = null
 		header = null
@@ -930,8 +952,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				this.strikeMaterial.emissiveColor.set(r, g, b)
 				// console.debug(`value = ${value}, red: original = ${this._color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
 
-				this.strikeMesh.position.y = value * -5
-				this.strikeMesh.scaling.y = this.strikeMeshScale[1] - value / (this.strikeMeshScale[1] * 1.111)
+				const white = 0.5 + 0.5 * value
+				this.innerStrikeMaterial.emissiveColor.set(white, white, white)
+
+				this.strikeMesh.position.y = this.strikeMeshPositionY + (value * -this.strikeMeshPositionY)
+				// this.strikeMesh.scaling.y = this.strikeMeshScale[1] - value / (this.strikeMeshScale[1] * 1.111)
 			}
 		}
 
@@ -1025,11 +1050,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 	}
 
-	const kickStrikeMeshScale = [ 2, 2, 2 ]
-	const snareStrikeMeshScale = [ 1, 1, 1 ]
+	const kickStrikeMeshPositionY = 2
+	const snareStrikeMeshPositionY = 1
+
+	const kickStrikeMeshScale = new Array(3).fill(20 / mainTriangleMeshHeight)
+	const snareStrikeMeshScale = new Array(3).fill(10 / mainTriangleMeshHeight)
 
 	const kick1 = new Drum
 	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
+	kick1.strikeMeshPositionY = kickStrikeMeshPositionY
 	kick1.strikeMeshScale = kickStrikeMeshScale
 	kick1.maxDuration = 0.1
 	kick1.minScaling = 1
@@ -1040,6 +1069,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	const kick2Left = new Drum
 	kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
 	kick2Left.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
+	kick2Left.strikeMeshPositionY = kickStrikeMeshPositionY
 	kick2Left.strikeMeshScale = kickStrikeMeshScale
 	kick2Left.maxDuration = 0.1
 	kick2Left.minScaling = 1
@@ -1050,6 +1080,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	const kick2Right = new Drum
 	kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
 	kick2Right.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
+	kick2Right.strikeMeshPositionY = kickStrikeMeshPositionY
 	kick2Right.strikeMeshScale = kickStrikeMeshScale
 	kick2Right.maxDuration = 0.1
 	kick2Right.minScaling = 1
@@ -1059,11 +1090,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const snare = new Drum
 	snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
+	snare.strikeMeshPositionY = snareStrikeMeshPositionY
 	snare.strikeMeshScale = snareStrikeMeshScale
 	snare.maxDuration = 0.25
 	snare.minScaling = 0.24
 	snare.maxScaling = 60
-	snare.color = [ 1, 0.1, 1 ]
+	snare.color = [ 0.1, 0.1, 1 ]
 	soundObjects.push(snare)
 
 	//#endregion
