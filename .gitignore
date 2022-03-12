@@ -1,3 +1,4 @@
+/.build/**
 /.build.prod/**
 /node_modules/**
 /resources/**
