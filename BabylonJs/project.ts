@@ -302,6 +302,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	//#region class Camera
 
 	class Camera {
+		set position(value) {
+			this.#flatScreenCamera.position.x = value[0]
+			this.#flatScreenCamera.position.y = value[1]
+			this.#flatScreenCamera.position.z = value[2]
+		}
+
+		_target = new BABYLON.Vector3()
+		set target(value) {
+			this._target.x = value[0]
+			this._target.y = value[1]
+			this._target.z = value[2]
+			this.#flatScreenCamera.setTarget(this._target)
+		}
+
 		constructor() {
 			let camera = new BABYLON.FreeCamera('', this.setting.position, scene)
 			camera.applyGravity = true
@@ -1533,6 +1547,34 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	bassDistant.meshesToColor.push(scene.getMeshByName('OuterMainTriangles'))
 	bassDistant.meshesToColor.push(scene.getMeshByName('MainTriangles'))
 	soundObjects.push(bassDistant)
+
+	//#endregion
+
+	//#region class CameraAnimator
+
+	class CameraAnimator {
+		radius = 350
+		spinAngleDegrees = 145
+		spinAngleDegreesPerSecond = 1.5
+
+		reset() {
+			camera.target = [ 0, 120, 0 ]
+		}
+
+		render(deltaTime) {
+			this.spinAngleDegrees += deltaTime * this.spinAngleDegreesPerSecond
+			const radians = BABYLON.Angle.FromDegrees(this.spinAngleDegrees).radians()
+			const x = Math.sin(radians) * this.radius
+			const z = Math.cos(radians) * this.radius
+			camera.position = [ x, camera.height, z ]
+			this.reset()
+		}
+	}
+
+	const cameraAnimator = new CameraAnimator
+	scene.registerBeforeRender(() => {
+		cameraAnimator.render(engine.getDeltaTime() / 1000)
+	})
 
 	//#endregion
 
