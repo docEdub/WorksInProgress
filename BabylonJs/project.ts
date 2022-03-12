@@ -1053,8 +1053,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	const kickStrikeMeshPositionY = 2
 	const snareStrikeMeshPositionY = 1
 
-	const kickStrikeMeshScale = new Array(3).fill(20 / mainTriangleMeshHeight)
-	const snareStrikeMeshScale = new Array(3).fill(10 / mainTriangleMeshHeight)
+	const kickStrikeMeshScale = new Array(3).fill(30 / mainTriangleMeshHeight)
+	const snareStrikeMeshScale = new Array(3).fill(20 / mainTriangleMeshHeight)
 
 	const kick1 = new Drum
 	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
