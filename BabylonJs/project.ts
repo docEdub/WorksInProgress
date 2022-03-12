@@ -346,7 +346,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			// 3
 			{ position: new BABYLON.Vector3(-1370, this.height, -2980), target: new BABYLON.Vector3(0, 100, 0) },
 			// 4
-			{ position: new BABYLON.Vector3(-80, this.height, 800), target: new BABYLON.Vector3(0, 200, 0) },
+			{ position: new BABYLON.Vector3(0, this.height, 160), target: new BABYLON.Vector3(0, 0, 170) },
 			// 5
 			{ position: new BABYLON.Vector3(-40, this.height, 400), target: new BABYLON.Vector3(225, 180, 0) },
 			// 6
@@ -1308,23 +1308,86 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		get rotation() { return this.mesh.rotation.y }
 		set rotation(value) {
 			this.mesh.rotation.y = value
+			this.frameMesh.rotation.y = value
 		}
 
 		meshesToColor = []
 	
 		constructor() {
-			const mesh = trianglePlaneMesh.clone('Bass')
-			this.mesh = mesh
-
-			let material = new BABYLON.StandardMaterial('', scene)
+			const material = new BABYLON.StandardMaterial('', scene)
 			material.emissiveColor.set(1, 1, 1)
 			material.backFaceCulling = false
 			material.alpha = 0.75
-			this.mesh.material = this.material = material
+			this.material = material
+
+			const mesh = trianglePlaneMesh.clone('Bass')
+			mesh.material = this.material
+			this.mesh = mesh
+
+			const frameMaterial = new BABYLON.StandardMaterial('', scene)
+			frameMaterial.emissiveColor.set(1, 0, 0)
+			this.frameMaterial = frameMaterial
+
+			this.frameMesh.material = this.frameMaterial
+			this.frameMesh.isVisible = false
+
+			BABYLON.VertexData.ComputeNormals(this.frameMeshPositions, this.frameMeshIndices, this.frameMeshNormals)
+			const frameMeshVertexData = new BABYLON.VertexData()
+			frameMeshVertexData.positions = this.frameMeshPositions
+			frameMeshVertexData.indices = this.frameMeshIndices
+			frameMeshVertexData.normals = this.frameMeshNormals
+			frameMeshVertexData.applyToMesh(this.frameMesh, true)
+
+			this.meshesToColor.push(this.frameMesh)
 		}
 
 		material = null
 		mesh = null
+
+		frameMaterial = null
+		frameMeshPositions = [
+			// [0] Leg point 1
+			0, 0, 171.34,
+
+			// [1] Leg point 2
+			-148.385, 0, -85.67,
+
+			// [2] Leg point 3
+			148.385, 0, -86.67,
+			
+			// [3 and 4] Frame left 
+			-77.05, -1, 44.485,
+			-77.05, 1, 44.485,
+
+			// [5 and 6] Frame bottom
+			0, -1, -88.97,
+			0, 1, -88.97,
+			
+			// [7 and 8] Frame right
+			77.05, -1, 44.485,
+			77.05, 1, 44.485,
+		]
+		frameMeshIndices = [
+			// Frame left
+			0, 3, 4,
+			4, 3, 1,
+			1, 0, 4,
+			0, 1, 3,
+
+			// Frame bottom
+			1, 5, 6,
+			6, 5, 2,
+			2, 1, 6,
+			1, 2, 5,
+
+			// Frame right
+			2, 7, 8,
+			8, 7, 0,
+			0, 2, 8,
+			2, 0, 7
+		]
+		frameMeshNormals = []
+		frameMesh = new BABYLON.Mesh('BassFrameMesh', scene)
 
 		json = null
 		header = null
@@ -1361,10 +1424,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		setPitch = (pitch) => {
 			this.setColorFromPitch(pitch)
-			this.mesh.position.y = this.yFromPitch(pitch)
+			this.mesh.position.y = this.frameMesh.position.y = this.yFromPitch(pitch)
 			// console.debug(`Bass y = ${this.mesh.position.y}`)
 			const scaleXZ = this.scaleXZFromY(this.mesh.position.y)
 			this.mesh.scaling.set(scaleXZ, 1, scaleXZ)
+			this.frameMesh.scaling.set(scaleXZ / 197.624, 1, scaleXZ / 197.624)
 		}
 
 		noteOn = (i) => {
@@ -1373,13 +1437,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.nextNoteKArrayIndex = 1
 
 			this.setPitch(note.k[0].pitch)
-			this.mesh.isVisible = true
+			this.mesh.isVisible = this.frameMesh.isVisible = true
 		}
 
 		noteOff = () => {
             const note = this.note
             if (!!note) {
-                this.mesh.isVisible = false;
+                this.mesh.isVisible = this.frameMesh.isVisible = false;
             }
 			this.note = null
 
