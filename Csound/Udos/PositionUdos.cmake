@@ -13,7 +13,7 @@ include("${CsoundCMake.Core_DIR}/Source/functions/get_dependencies.cmake")
 set(CSOUND_CMAKE_POSITION_UDO_DIR "${CMAKE_CURRENT_LIST_DIR}/PositionUdos")
 
 set(positionUdoNames
-    "<none>"
+    "_none_"
     "circle_XZ"
     "random_XZ"
     "ray_XZ"
@@ -27,7 +27,7 @@ foreach(positionUdo ${positionUdoNames})
 endforeach()
 string(REPLACE ";" "\n" CSOUND_CMAKE_POSITION_UDO_INCLUDES "${PositionUdos_includes}")
 
-set(PositionUdos_iPassSwitch "if (iPositionOpcode == 1) then\n        // <none>\n")
+set(PositionUdos_iPassSwitch "if (iPositionOpcode == 1) then\n        // _none_\n")
 list(LENGTH positionUdoNames positionUdoNamesLength)
 math(EXPR positionUdoNamesLastIndex "${positionUdoNamesLength} - 1")
 foreach(positionUdoIndex RANGE 1 ${positionUdoNamesLastIndex})
@@ -40,7 +40,7 @@ foreach(positionUdoIndex RANGE 1 ${positionUdoNamesLastIndex})
 endforeach()
 set(CSOUND_CMAKE_POSITION_UDO_IPASS_SWITCH "${PositionUdos_iPassSwitch}    endif")
 
-set(PositionUdos_kPassSwitch "if (kPositionOpcode == 1) then\n        // <none>\n")
+set(PositionUdos_kPassSwitch "if (kPositionOpcode == 1) then\n        // _none_\n")
 list(LENGTH positionUdoNames positionUdoNamesLength)
 math(EXPR positionUdoNamesLastIndex "${positionUdoNamesLength} - 1")
 foreach(positionUdoIndex RANGE 1 ${positionUdoNamesLastIndex})
