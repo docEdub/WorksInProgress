@@ -100,6 +100,10 @@ instr 1
         od
     endif
 
+    ki init 0
+    ki += 1
+    OSCsend(ki, TRACK_INFO_OSC_ADDRESS, 9129, "/foo/bar", "sis", "FOO", 42, "bar")
+
     log_i_info("instr %d - done", p1)
 endin
 

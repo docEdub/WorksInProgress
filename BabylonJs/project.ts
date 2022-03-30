@@ -8,6 +8,24 @@ declare global {
         Csound: CSOUND.Csound
         isProduction: boolean // If `falsey` then we're running in the playground.
     }
+
+	class OSC {	
+		constructor()
+		constructor(args)	
+		on: any
+		open: any
+		send: any
+	}
+
+	namespace OSC {
+		class Message {
+			constructor(address, arg1)
+			constructor(address, arg1, arg2)
+		}
+		class WebsocketClientPlugin {
+			constructor(args)
+		}
+	}
 }
 
 document.isProduction = true
@@ -19,6 +37,14 @@ document.isProduction = true
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 	
+	const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
+	const osc = new OSC({ plugin: plugin })
+	osc.on("*", message => {
+		console.log(message.args)
+	})
+	osc.open()
+	
+
 	//#region Options
 
 	const groundSize = 9000
