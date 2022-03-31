@@ -6,8 +6,8 @@ import * as CSOUND from "./@doc.e.dub/csound-browser"
 declare global {
     interface Document {
         Csound: CSOUND.Csound
-        isProduction: boolean // If `falsey` then we're running in the playground.
-		useDawTiming: boolean // If `falsey` then use Csound; otherwise use OSC messages from DAW to drive animations.
+        isProduction: boolean // If falsey then we're running in the playground.
+		useDawTiming: boolean // If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
     }
 
 	class OSC {	
