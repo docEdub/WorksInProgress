@@ -7,6 +7,7 @@ declare global {
     interface Document {
         Csound: CSOUND.Csound
         isProduction: boolean // If `falsey` then we're running in the playground.
+		useDawTiming: boolean // If `falsey` then use Csound; otherwise use OSC messages from DAW to drive animations.
     }
 
 	class OSC {	
@@ -29,6 +30,7 @@ declare global {
 }
 
 document.isProduction = true
+document.useDawTiming = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
@@ -36,16 +38,6 @@ document.isProduction = true
 //#endregion
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
-	
-	const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
-	const osc = new OSC({ plugin: plugin })
-	osc.on('/daw/is_playing', message => {
-		console.log(`osc: /daw/is_playing = ${message.args[0]}`)
-	})
-	osc.on('/daw/time_in_seconds', message => {
-		console.log(`osc: /daw/time_in_seconds = ${message.args[0]}`)
-	})
-	osc.open()
 	
 	//#region Options
 
@@ -791,15 +783,39 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		})
 
         scene.registerBeforeRender(() => {
-			if (!csound.playbackIsStarted) {
-				// Reset sound objects.
-				soundObjects.forEach((soundObject) => {
-					soundObject.reset()
-				})
-				return;
+			if (document.useDawTiming) {
+				if (!dawOscIsPlaying) {
+					// Reset sound objects.
+					soundObjects.forEach((soundObject) => {
+						soundObject.reset()
+					})
+					return;
+				}
+			}
+			else {
+				if (!csound.playbackIsStarted) {
+					// Reset sound objects.
+					soundObjects.forEach((soundObject) => {
+						soundObject.reset()
+					})
+					return;
+				}
 			}
 
-			const time = csound.audioContext.currentTime - csound.startTime;
+			let time = -1
+			if (document.useDawTiming) {
+				if (dawOscTimeInSeconds < dawOscLastTimeInSeconds) {
+					console.log(`Resetting sound objects`)
+					soundObjects.forEach((soundObject) => {
+						soundObject.reset()
+					})
+				}
+				dawOscLastTimeInSeconds = dawOscTimeInSeconds
+				time = dawOscTimeInSeconds
+			}
+			else {
+				time = csound.audioContext.currentTime - csound.startTime;
+			}
 			const deltaTime = engine.getDeltaTime() / 1000
 
 			// Render sound objects.
@@ -12795,8 +12811,25 @@ const csdJson = `
 
 	//#region Start
 
-    csound = new Csound(csdText)
-    csound.start()
+	let dawOscIsPlaying = false
+	let dawOscTimeInSeconds = -1
+	let dawOscLastTimeInSeconds = -1
+
+	if (document.useDawTiming) {
+		const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
+		const osc = new OSC({ plugin: plugin })
+		osc.on('/daw/is_playing', message => {
+			dawOscIsPlaying = message.args[0]
+		})
+		osc.on('/daw/time_in_seconds', message => {
+			dawOscTimeInSeconds = message.args[0] + 5 // + 5 for score start delay
+		})
+		osc.open()	
+	}
+	else {
+		csound = new Csound(csdText)
+		csound.start()
+	}
 	startAudioVisuals()
 
 	//#endregion
