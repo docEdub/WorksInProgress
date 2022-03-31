@@ -8,7 +8,9 @@ osc.open()
 
 // Reloading the web-page causes a websocket exception. Catch it and do nothing.
 process.on('uncaughtException', err => {
-    console.error(err)
+    if (!err.toString().startsWith('Error: WebSocket is not open: ')) {
+        console.error(err)
+    }
 })
 
 console.log('OSC UDP to WebSocket bridge started.')
