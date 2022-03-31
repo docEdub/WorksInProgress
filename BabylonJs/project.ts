@@ -39,12 +39,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	
 	const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
 	const osc = new OSC({ plugin: plugin })
-	osc.on("*", message => {
-		console.log(message.args)
+	osc.on('/daw/is_playing', message => {
+		console.log(`osc: /daw/is_playing = ${message.args[0]}`)
+	})
+	osc.on('/daw/time_in_seconds', message => {
+		console.log(`osc: /daw/time_in_seconds = ${message.args[0]}`)
 	})
 	osc.open()
 	
-
 	//#region Options
 
 	const groundSize = 9000

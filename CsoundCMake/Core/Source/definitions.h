@@ -60,6 +60,8 @@
 #define DAW_SERVICE_OSC_PLUGIN_WATCH_ORC_PATH "/DawService/plugin/watch_orc"
 #define DAW_SERVICE_OSC_PLUGIN_UPDATE_WATCHED_ORCS_PATH "/DawService/plugin/update_watched_orcs"
 
+#define BROWSER_OSC_ADDRESS "127.0.0.1" // Should match host in osc-bridge.js
+#define BROWSER_OSC_PORT 9129           // Should match port used in osc-bridge.js
 #define TRACK_INFO_OSC_ADDRESS "127.0.0.1"
 #define TRACK_INFO_OSC_PORT_MIN 7772
 #define TRACK_INFO_OSC_TRACK_SET_INDEX_PATH "/TrackInfo/track/set_index"
