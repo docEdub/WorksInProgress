@@ -491,8 +491,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region Babylon audio engine setup
 
-    BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
-    BABYLON.Engine.audioEngine.lock()
+	if (!document.useDawTiming) {
+    	BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
+    	BABYLON.Engine.audioEngine.lock()
+	}
 
 	//#endregion
     
