@@ -100,6 +100,15 @@ instr 1
         od
     endif
 
+    ki init 0
+    ki += 1
+
+    kDawIsPlaying = chnget:k("IS_PLAYING")
+    OSCsend(ki, BROWSER_OSC_ADDRESS, BROWSER_OSC_PORT, "/daw/is_playing", "i", kDawIsPlaying)
+
+    kDawTimeInSeconds = chnget:k("TIME_IN_SECONDS")
+    OSCsend(ki, BROWSER_OSC_ADDRESS, BROWSER_OSC_PORT, "/daw/time_in_seconds", "f", kDawTimeInSeconds)
+
     log_i_info("instr %d - done", p1)
 endin
 
