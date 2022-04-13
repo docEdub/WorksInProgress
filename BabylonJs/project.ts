@@ -1554,7 +1554,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		render = (time) => {
-			this.isReset = false
+			if (this.isReset) {
+				this.noteOff()
+				this.isReset = false
+			}
             while (this.nextNoteOnIndex < this.json.length
 					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
 				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
