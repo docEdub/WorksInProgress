@@ -978,6 +978,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		currentNoteOnIndex = null
 		nextNoteOnIndex = 0
 		nextNoteOffIndex = 0
+
+		note = null
 		
 		_currentNoteDuration = 0
 		get currentNoteDuration() { return this._currentNoteDuration }
@@ -1029,23 +1031,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		noteOn = (i) => {
-			if (!!this.currentNoteOnIndex) {
-				if (this.json[this.currentNoteOnIndex].noteOn.isOn) {
-					this.noteOff(this.currentNoteOnIndex)
-				}
+			if (!!this.note && this.note.isOn) {
+				this.noteOff()
 			}
 			this.currentNoteOnIndex = i
 			this.currentNoteDuration = 0
 			const note = this.json[i].noteOn
-			note.isOn = true
-			this.isVisible = true
+			note.isOn = this.isVisible = true
 		}
 
-		noteOff = (i) => {
-            const note = this.json[i].noteOn
-            if (note.isOn) {
-                this.isVisible = false;
-                note.isOn = false
+		noteOff = () => {
+            const note = this.note
+            if (!!note) {
+                note.isOn = this.isVisible = false
             }
 		}
 
@@ -1092,18 +1090,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.currentNoteDuration += delta
             while (this.nextNoteOnIndex < this.json.length
 					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
 					this.noteOn(this.nextNoteOnIndex);
 				}
 				this.nextNoteOnIndex++;
 			}
-
 			while (this.nextNoteOffIndex < this.json.length
 					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-				this.noteOff(this.nextNoteOffIndex);
+				if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
+					this.noteOff();
+				}
 				this.nextNoteOffIndex++;
 			}
-
 			if (this.isVisible) {
 				centerLight.intensity += 0.25
 			}
@@ -1279,8 +1277,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			const note = this.json[i].noteOn
 			this.note = note
 			this.setPosition(note.xyz[0], this.y, note.xyz[2])
-			this.isVisible = true
-			note.isOn = true
+			note.isOn = this.isVisible = true
 		}
 
 		noteOff = () => {
