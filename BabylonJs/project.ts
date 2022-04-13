@@ -1471,7 +1471,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		yFromPitch = (pitch) => {
-			return ((pitch - 32) / 18) * (mainTriangleMeshHeight * this.baseScale)
+			return ((pitch - 28) / 23) * (mainTriangleMeshHeight * this.baseScale)
 		}
 
 		scaleXZFromY = (y) => {
