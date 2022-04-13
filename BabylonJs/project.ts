@@ -1251,6 +1251,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		nextNoteOnIndex = 0
 		nextNoteOffIndex = 0
 
+		note = null
+
 		get isVisible() { return this.mesh.isVisible }
 		set isVisible(value) {
 			this.mesh.isVisible = value
@@ -1275,16 +1277,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		noteOn = (i) => {
 			const note = this.json[i].noteOn
-			note.isOn = true
+			this.note = note
 			this.setPosition(note.xyz[0], this.y, note.xyz[2])
 			this.isVisible = true
+			note.isOn = true
 		}
 
-		noteOff = (i) => {
-            const note = this.json[i].noteOn
-            if (note.isOn) {
-                this.isVisible = false;
-                note.isOn = false
+		noteOff = () => {
+            const note = this.note
+            if (!!note) {
+                note.isOn = this.isVisible = false
             }
 		}
 
@@ -1324,21 +1326,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		render = (time) => {
-			this.isReset = false
+			if (this.isReset) {
+				this.noteOff()
+				this.isReset = false
+			}
             while (this.nextNoteOnIndex < this.json.length
 					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
 					this.noteOn(this.nextNoteOnIndex);
 				}
 				this.nextNoteOnIndex++;
 			}
-
 			while (this.nextNoteOffIndex < this.json.length
 					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-				this.noteOff(this.nextNoteOffIndex);
+				if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
+					this.noteOff();
+				}
 				this.nextNoteOffIndex++;
 			}
-
 			if (this.isVisible) {
 				centerLight.intensity += 0.25
 			}
