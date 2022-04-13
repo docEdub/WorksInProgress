@@ -1498,12 +1498,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 			this.setPitch(note.k[0].pitch)
 			this.mesh.isVisible = this.frameMesh.isVisible = true
+			note.isOn = true
 		}
 
 		noteOff = () => {
             const note = this.note
             if (!!note) {
-                this.mesh.isVisible = this.frameMesh.isVisible = false;
+                note.isOn = this.mesh.isVisible = this.frameMesh.isVisible = false;
             }
 			this.note = null
 
@@ -1524,6 +1525,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 			for (let i = 1; i < json.length; i++) {
 				let noteOn = json[i].noteOn
+				noteOn.isOn = false
 
 				// Skip preallocation notes.
 				if (noteOn.time == 0.005) {
@@ -1555,14 +1557,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.isReset = false
             while (this.nextNoteOnIndex < this.json.length
 					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-				if (time < this.json[this.nextNoteOffIndex].noteOn.offTime) {
+				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
 					this.noteOn(this.nextNoteOnIndex);
 				}
 				this.nextNoteOnIndex++;
 			}
 			while (this.nextNoteOffIndex < this.json.length
 					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-				this.noteOff();
+				if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
+					this.noteOff();
+				}
 				this.nextNoteOffIndex++;
 			}
 			if (!!this.note) {
