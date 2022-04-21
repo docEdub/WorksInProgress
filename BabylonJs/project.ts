@@ -785,16 +785,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		})
 
         scene.registerBeforeRender(() => {
-			if (document.useDawTiming) {
-				if (!dawOscIsPlaying) {
-					// Reset sound objects.
-					soundObjects.forEach((soundObject) => {
-						soundObject.reset()
-					})
-					return;
-				}
-			}
-			else {
+			if (!document.useDawTiming) {
 				if (!csound.playbackIsStarted) {
 					// Reset sound objects.
 					soundObjects.forEach((soundObject) => {
@@ -805,20 +796,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 
 			let time = -1
+			let deltaTime = 0
 			if (document.useDawTiming) {
-				if (dawOscTimeInSeconds < dawOscLastTimeInSeconds) {
-					console.log(`Resetting sound objects`)
+				if (dawOscTimeInSeconds < dawOscLastRenderedTimeInSeconds) {
+					// console.log(`Resetting sound objects`)
 					soundObjects.forEach((soundObject) => {
 						soundObject.reset()
 					})
 				}
-				dawOscLastTimeInSeconds = dawOscTimeInSeconds
+				else {
+					deltaTime = Math.min(0, dawOscTimeInSeconds - dawOscLastRenderedTimeInSeconds)
+				}
 				time = dawOscTimeInSeconds
+				dawOscLastRenderedTimeInSeconds = dawOscTimeInSeconds
 			}
 			else {
 				time = csound.audioContext.currentTime - csound.startTime;
+				deltaTime = engine.getDeltaTime() / 1000
 			}
-			const deltaTime = engine.getDeltaTime() / 1000
 
 			// Render sound objects.
 			for (let i = 0; i < soundObjects.length; i++) {
@@ -842,12 +837,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		_light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
 
 		reset = () => {
-			this.color = [ 1, 1, 1 ]
-			this._light.intensity = 1
 		}
 
 		render = () => {
-			this.reset()
+			this.color = [ 1, 1, 1 ]
+			this._light.intensity = 1
 		}
 	}
 	const sunLight = new SunLight
@@ -868,12 +862,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		_light = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
 		
 		reset = () => {
-			this._light.intensity = 0.25
-			this._light.range = 200	
 		}
 
 		render = () => {
-			this.reset()
+			this._light.intensity = 0.25
+			this._light.range = 200	
 		}
 	}
 	const centerLight = new CenterLight
@@ -1070,6 +1063,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 			// console.debug(`Drum ${this.uuid} json ...`)
 			// console.debug(json)
+
+			this.reset()
 		}
 
 		isReset = false
@@ -1309,6 +1304,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 			// console.debug(`HiHat ${this.uuid} json ...`)
 			// console.debug(json)
+
+			this.reset()
 		}
 		
 		isReset = false
@@ -1541,6 +1538,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				noteOn.offTime = noteOn.time + noteOn.k[noteOn.k.length - 1].time
 				this.noteCount++
 			}
+
+			this.reset()
 		}
 		
 		isReset = false
@@ -12824,7 +12823,8 @@ const csdJson = `
 
 	let dawOscIsPlaying = false
 	let dawOscTimeInSeconds = -1
-	let dawOscLastTimeInSeconds = -1
+	let dawOscLastRenderedTimeInSeconds = -1
+	let dawOscLastSentTimeInSeconds = -1
 
 	if (document.useDawTiming) {
 		const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
@@ -12834,6 +12834,10 @@ const csdJson = `
 		})
 		osc.on('/daw/time_in_seconds', message => {
 			dawOscTimeInSeconds = message.args[0] + 5 // + 5 for score start delay
+			if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
+				dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
+				// console.debug(`dawOscTimeInSeconds = ${dawOscTimeInSeconds}`)
+			}
 		})
 		osc.open()	
 	}
