@@ -796,7 +796,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					soundObjects.forEach((soundObject) => {
 						soundObject.reset()
 					})
-					return;
+					return
 				}
 			}
 
