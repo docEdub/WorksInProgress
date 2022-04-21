@@ -1499,6 +1499,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		noteOn = (i) => {
+			if (!!this.note) {
+				this.noteOff()
+			}
 			const note = this.json[i].noteOn
 			this.note = note
 			this.nextNoteKArrayIndex = 1
