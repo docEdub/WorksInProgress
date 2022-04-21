@@ -801,7 +801,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 
 			let time = -1
-			let deltaTime = 0
 			if (document.useDawTiming) {
 				if (dawOscTimeInSeconds < dawOscLastRenderedTimeInSeconds) {
 					// console.log(`Resetting sound objects`)
@@ -809,21 +808,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 						soundObject.reset()
 					})
 				}
-				else {
-					deltaTime = dawOscTimeInSeconds - dawOscLastRenderedTimeInSeconds
-				}
 				time = dawOscTimeInSeconds
 				dawOscLastRenderedTimeInSeconds = dawOscTimeInSeconds
 				dawNeedsRender = false
 			}
 			else {
 				time = csound.audioContext.currentTime - csound.startTime;
-				deltaTime = engine.getDeltaTime() / 1000
 			}
 
 			// Render sound objects.
 			for (let i = 0; i < soundObjects.length; i++) {
-				soundObjects[i].render(time, deltaTime)
+				soundObjects[i].render(time)
 			}
 		})
 	}
