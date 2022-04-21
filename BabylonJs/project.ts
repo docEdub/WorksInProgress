@@ -785,7 +785,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		})
 
         scene.registerBeforeRender(() => {
-			if (!document.useDawTiming) {
+			if (document.useDawTiming) {
+				if (!dawNeedsRender) {
+					return
+				}
+			}
+			else {
 				if (!csound.playbackIsStarted) {
 					// Reset sound objects.
 					soundObjects.forEach((soundObject) => {
@@ -805,10 +810,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					})
 				}
 				else {
-					deltaTime = Math.min(0, dawOscTimeInSeconds - dawOscLastRenderedTimeInSeconds)
+					deltaTime = dawOscTimeInSeconds - dawOscLastRenderedTimeInSeconds
 				}
 				time = dawOscTimeInSeconds
 				dawOscLastRenderedTimeInSeconds = dawOscTimeInSeconds
+				dawNeedsRender = false
 			}
 			else {
 				time = csound.audioContext.currentTime - csound.startTime;
@@ -1031,6 +1037,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.currentNoteDuration = 0
 			const note = this.json[i].noteOn
 			note.isOn = this.isVisible = true
+			this.note = note
 		}
 
 		noteOff = () => {
@@ -1038,6 +1045,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!!note) {
                 note.isOn = this.isVisible = false
             }
+			this.note = null
 		}
 
 		setJson = (json) => {
@@ -1077,12 +1085,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.nextNoteOnIndex = this.noteStartIndex
 			this.nextNoteOffIndex = this.noteStartIndex
 			this.currentNoteOnIndex = null
-			this.currentNoteDuration = 0
+			this.currentNoteDuration = this.maxDuration
 		}
 
-		render = (time, delta) => {
-			this.isReset = false
-			this.currentNoteDuration += delta
+		render = (time) => {
+			if (this.isReset) {
+				this.noteOff()
+				this.isReset = false
+			}
             while (this.nextNoteOnIndex < this.json.length
 					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
 				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
@@ -1096,6 +1106,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					this.noteOff();
 				}
 				this.nextNoteOffIndex++;
+			}
+			if (!!this.note && this.note.isOn) {
+				this.currentNoteDuration = time - this.note.time
 			}
 			if (this.isVisible) {
 				centerLight.intensity += 0.25
@@ -12825,6 +12838,7 @@ const csdJson = `
 	let dawOscTimeInSeconds = -1
 	let dawOscLastRenderedTimeInSeconds = -1
 	let dawOscLastSentTimeInSeconds = -1
+	let dawNeedsRender = true
 
 	if (document.useDawTiming) {
 		const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
@@ -12837,6 +12851,7 @@ const csdJson = `
 			if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
 				dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
 				// console.debug(`dawOscTimeInSeconds = ${dawOscTimeInSeconds}`)
+				dawNeedsRender = true
 			}
 		})
 		osc.open()	
