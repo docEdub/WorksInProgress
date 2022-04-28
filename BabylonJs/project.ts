@@ -26,6 +26,9 @@ declare global {
 		class WebsocketClientPlugin {
 			constructor(args)
 		}
+		class WebsocketServerPlugin {
+			constructor(args)
+		}
 	}
 }
 
@@ -12839,12 +12842,12 @@ const csdJson = `
 	let dawNeedsRender = true
 
 	if (document.useDawTiming) {
-		const plugin = new OSC.WebsocketClientPlugin({ port: 8080 })
-		const osc = new OSC({ plugin: plugin })
-		osc.on('/daw/is_playing', message => {
+		const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
+		const clientOsc = new OSC({ plugin: clientPlugin })
+		clientOsc.on('/daw/is_playing', message => {
 			dawOscIsPlaying = message.args[0]
 		})
-		osc.on('/daw/time_in_seconds', message => {
+		clientOsc.on('/daw/time_in_seconds', message => {
 			dawOscTimeInSeconds = message.args[0] + 5 // + 5 for score start delay
 			if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
 				dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
@@ -12852,7 +12855,18 @@ const csdJson = `
 				dawNeedsRender = true
 			}
 		})
-		osc.open()	
+		clientOsc.open()
+
+		// const serverPlugin = new OSC.WebsocketServerPlugin({ port: 8081 })
+		const serverOsc = new OSC()
+		serverOsc.open()
+
+		setInterval(() => {
+			const message = new OSC.Message('/test/random', Math.random())
+			serverOsc.send(message)
+			console.debug(`Sent OSC message:`)
+			console.debug(message)
+		}, 1000)
 	}
 	else {
 		csound = new Csound(csdText)

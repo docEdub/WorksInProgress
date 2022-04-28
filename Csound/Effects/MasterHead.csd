@@ -109,6 +109,33 @@ instr 1
     kDawTimeInSeconds = chnget:k("TIME_IN_SECONDS")
     OSCsend(ki, BROWSER_OSC_ADDRESS, BROWSER_OSC_PORT, "/daw/time_in_seconds", "f", kDawTimeInSeconds)
 
+    S_oscMessages[] init 10
+    k_oscDataCount = -1
+    S_oscPath init ""
+    S_oscTypes init ""
+    k_j init 0
+    while (k_oscDataCount != 0) do
+        S_oscMessages, k_oscDataCount OSCraw 9130
+        if (k(2) <= k_oscDataCount) then
+            S_oscPath = S_oscMessages[k(0)]
+            k_argCount = k_oscDataCount - 2
+
+            printf("OSC message received on path %s\n", ki + k_j, S_oscPath)
+
+            // /test/random
+            //
+            if (string_begins_with(S_oscPath, "/test/random") == true) then
+                if (k_argCount < 2) then
+                    log_k_error("OSC path '%s' requires 2 arguments but was given %d.", "/test/random", k_argCount)
+                else
+                    // 2 = random number
+                    printf("random number = %s\n", ki + k_j, S_oscMessages[k(2)])
+                endif
+            endif
+        endif
+        k_j += 1
+    od
+
     log_i_info("instr %d - done", p1)
 endin
 
