@@ -451,7 +451,7 @@ instr HandleOscMessages
                 // Track registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
-                    if (k_argCount < 6) then
+                    if (k_argCount < 7) then
                         log_k_error("OSC path '%s' requires 7 arguments but was given %d.",
                             DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH, k_argCount)
                     else
