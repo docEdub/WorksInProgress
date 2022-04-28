@@ -7,20 +7,12 @@ process.on('uncaughtException', err => {
     }
 })
 
-// UDP server host and port must match definitions.h BROWSER_OSC_ADDRESS and BROWSER_OSC_PORT.
-// const dawToBrowserConfig = { udpServer: { host: '127.0.0.1', port: 9129 } }
-const browserToDawConfig = { udpServer: { host: '127.0.0.1', port: 9129 }, udpClient: { host: '127.0.0.1', port: 9130 } }
+// UDP server host and port must match definitions.h BROWSER_OSC_ADDRESS, BROWSER_OSC_CLIENT_PORT, and
+// BROWSER_OSC_SERVER_PORT.
+const config = { udpServer: { host: '127.0.0.1', port: 9129 }, udpClient: { host: '127.0.0.1', port: 9130 } }
+const osc = new OSC({ plugin: new OSC.BridgePlugin(config) })
+osc.open()
 
-// const dawToBrowserOsc = new OSC({ plugin: new OSC.BridgePlugin(dawToBrowserConfig) })
-// dawToBrowserOsc.open()
-
-// console.log('')
-// console.log('OSC UDP to WebSocket bridge started.')
-// console.log('OSC messages sent from Csound to 127.0.0.1:9129 will be routed to a osc-js websocket client on port 8080.')
-
-const browserToDawOsc = new OSC({ plugin: new OSC.BridgePlugin(browserToDawConfig) })
-browserToDawOsc.open()
-
-console.log('')
-console.log('OSC WebSocket to UDP bridge started.')
-console.log('OSC messages sent from an osc-js websocket server on port 8080 will be routed to Csound using host/port 127.0.0.1:9130.')
+console.log('OSC UDP/WebSocket bridge started.')
+console.log('OSC messages sent from UDP 127.0.0.1:9129 will be routed to websocket localhost:8080')
+console.log('OSC messages sent from websocket localhost:8080 will be routed to UDP 127.0.0.1:9130')
