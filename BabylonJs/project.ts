@@ -16,6 +16,7 @@ declare global {
 		on: any
 		open: any
 		send: any
+		status: any
 	}
 
 	namespace OSC {
@@ -12842,6 +12843,14 @@ const csdJson = `
 	let dawNeedsRender = true
 
 	if (document.useDawTiming) {
+		const OSC_STATUS = {
+			IS_NOT_INITIALIZED: -1,
+			IS_CONNECTING: 0,
+			IS_OPEN: 1,
+			IS_CLOSING: 2,
+			IS_CLOSED: 3
+		}
+
 		const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
 		const clientOsc = new OSC({ plugin: clientPlugin })
 		clientOsc.on('/daw/is_playing', message => {
@@ -12855,17 +12864,28 @@ const csdJson = `
 				dawNeedsRender = true
 			}
 		})
+		console.debug("Opening OSC client")
 		clientOsc.open()
 
-		// const serverPlugin = new OSC.WebsocketServerPlugin({ port: 8081 })
 		const serverOsc = new OSC()
+		console.debug("Opening OSC server")
 		serverOsc.open()
 
 		setInterval(() => {
-			const message = new OSC.Message('/test/random', Math.random())
-			serverOsc.send(message)
-			console.debug(`Sent OSC message:`)
-			console.debug(message)
+			if (clientOsc.status() == OSC_STATUS.IS_CLOSED) {
+				console.debug("Re-openinig OSC client")
+				serverOsc.open()
+			}
+			if (serverOsc.status() == OSC_STATUS.IS_CLOSED) {
+				console.debug("Re-openinig OSC server")
+				serverOsc.open()
+			}
+			if (serverOsc.status() == OSC_STATUS.IS_OPEN) {
+				const message = new OSC.Message('/test/random', Math.random())
+				serverOsc.send(message)
+				console.debug(`Sent OSC message:`)
+				console.debug(message)
+			}
 		}, 1000)
 	}
 	else {
