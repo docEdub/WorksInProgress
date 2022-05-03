@@ -21,8 +21,9 @@ declare global {
 
 	namespace OSC {
 		class Message {
-			constructor(address, arg1)
-			constructor(address, arg1, arg2)
+			constructor(address)
+			constructor(address, ...args)
+			add(any)
 		}
 		class WebsocketClientPlugin {
 			constructor(args)
@@ -122,11 +123,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         //#region Options
 
-        _cameraMatrixUpdatesPerSecond = 10
-        get cameraMatrixUpdatesPerSecond() { return this._cameraMatrixUpdatesPerSecond }
-        set cameraMatrixUpdatesPerSecond(value) { this._cameraMatrixUpdatesPerSecond = value }
-        get cameraMatrixMillisecondsPerUpdate() { return 1000 / this.cameraMatrixUpdatesPerSecond }
-
         #ioBufferSize = 128
         get ioBufferSize() { return this.#ioBufferSize }
         set ioBufferSize(value) { this.#ioBufferSize = value }
@@ -179,43 +175,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #restartCount = 0
         get restartCount() { return this.#restartCount }
 
-        //#region Camera matrix
-
-        _cameraMatrix = null
-        set cameraMatrix(value) {
-            if (this._cameraMatrix != null && !this.cameraMatrixIsDirty) {
-                for (let i = 0; i < 16; i++) {
-                    if (0.01 < Math.abs(value[i] - this._cameraMatrix[i])) {
-                        this._cameraMatrixIsDirty = true
-                        break
-                    }
-                }
-            }
-            if (this.cameraMatrixIsDirty) {
-                this._cameraMatrix = Array.from(value)
-            }
-        }
-
-        _cameraMatrixIsDirty = true
-        get cameraMatrixIsDirty() { return this._cameraMatrixIsDirty }
-
         #startUpdatingCameraMatrix = () => {
-            // setInterval(() => {
-            //     if (!this.isStarted) {
-            //         return
-            //     }
-            //     if (this.cameraMatrixIsDirty) {
-            //         console.debug('Setting Csound listener position to ['
-            //             + this._cameraMatrix[12] + ', '
-            //             + this._cameraMatrix[13] + ', '
-            //             + this._cameraMatrix[14] + ']')
-            //         this.#csoundObj.tableCopyIn("1", this._cameraMatrix)
-            //         this._cameraMatrixIsDirty = false
-            //     }
-            // }, this.cameraMatrixMillisecondsPerUpdate)
+            setInterval(() => {
+                if (!this.isStarted) {
+                    return
+                }
+                if (camera.matrixIsDirty) {
+                    console.debug('Setting Csound listener position to ['
+                        + camera.matrix[12] + ', '
+                        + camera.matrix[13] + ', '
+                        + camera.matrix[14] + ']')
+                    this.#csoundObj.tableCopyIn("1", camera.matrix)
+                    camera.matrixIsDirty = false
+                }
+            }, camera.matrixMillisecondsPerUpdate)
         }
-
-        //#endregion
 
         #onImportScriptDone = async () => {
             this.#isLoaded = true
@@ -356,13 +330,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this.switchToFlatScreen()
 
 			scene.registerBeforeRender(() => {
-				if (!!csound && !!this.#camera) {
-					csound.cameraMatrix = this.#camera.worldMatrixFromCache.m
-				}
+				this.matrix = this.#camera.worldMatrixFromCache.m
 			})
 		}
 
         //#region Options
+
+        _matrixUpdatesPerSecond = 10
+        get matrixUpdatesPerSecond() { return this._matrixUpdatesPerSecond }
+        set matrixUpdatesPerSecond(value) { this._matrixUpdatesPerSecond = value }
+        get matrixMillisecondsPerUpdate() { return 1000 / this.matrixUpdatesPerSecond }
 
 		#slowSpeed = 0.25
 		get slowSpeed() { return this.#slowSpeed }
@@ -457,6 +434,26 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             return false
 		}
+
+        _matrix = null
+		_matrixIsDirty = true
+        get matrixIsDirty() { return this._matrixIsDirty }
+		set matrixIsDirty(value) { this._matrixIsDirty = value }
+
+		get matrix() { return this._matrix }
+        set matrix(value) {
+            if (this._matrix != null && !this.matrixIsDirty) {
+                for (let i = 0; i < 16; i++) {
+                    if (0.01 < Math.abs(value[i] - this._matrix[i])) {
+                        this._matrixIsDirty = true
+                        break
+                    }
+                }
+            }
+            if (this.matrixIsDirty) {
+                this._matrix = Array.from(value)
+            }
+        }
 	}
 	let camera = new Camera
 
@@ -1640,10 +1637,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 	}
 
-	const cameraAnimator = new CameraAnimator
-	scene.registerBeforeRender(() => {
-		cameraAnimator.render(engine.getDeltaTime() / 1000)
-	})
+	// const cameraAnimator = new CameraAnimator
+	// scene.registerBeforeRender(() => {
+	// 	cameraAnimator.render(engine.getDeltaTime() / 1000)
+	// })
 
 	//#endregion
 
@@ -12880,13 +12877,31 @@ const csdJson = `
 				console.debug("Re-openinig OSC server")
 				serverOsc.open()
 			}
-			if (serverOsc.status() == OSC_STATUS.IS_OPEN) {
-				const message = new OSC.Message('/test/random', Math.random())
-				serverOsc.send(message)
-				console.debug(`Sent OSC message:`)
-				console.debug(message)
-			}
+			// if (serverOsc.status() == OSC_STATUS.IS_OPEN) {
+			// 	const message = new OSC.Message('/test/random', Math.random())
+			// 	serverOsc.send(message)
+			// 	console.debug(`Sent OSC message:`)
+			// 	console.debug(message)
+			// }
 		}, 1000)
+
+		setInterval(() => {
+			if (serverOsc.status() !== OSC_STATUS.IS_OPEN) {
+				return
+			}
+			if (camera.matrixIsDirty) {
+				const message = new OSC.Message('/daw/camera_matrix')
+				for (let i = 0; i < 16; i++) {
+					message.add(camera.matrix[i])
+				}
+				serverOsc.send(message)
+				console.debug('Setting DAW listener position to ['
+					+ camera.matrix[12] + ', '
+					+ camera.matrix[13] + ', '
+					+ camera.matrix[14] + ']')
+				camera.matrixIsDirty = false
+			}
+		}, camera.matrixMillisecondsPerUpdate)
 	}
 	else {
 		csound = new Csound(csdText)
