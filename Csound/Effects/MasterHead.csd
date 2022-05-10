@@ -109,59 +109,10 @@ instr 1
     kDawTimeInSeconds = chnget:k("TIME_IN_SECONDS")
     OSCsend(ki, BROWSER_OSC_ADDRESS, BROWSER_OSC_PORT, "/daw/time_in_seconds", "f", kDawTimeInSeconds)
 
-    S_oscMessages[] init 20
-    k_oscDataCount = -1
-    S_oscPath init ""
-    S_oscTypes init ""
-    ; k_j init 0
-
-    while (k_oscDataCount != 0) do
-        S_oscMessages, k_oscDataCount OSCraw 9130
-
-        if (k(2) <= k_oscDataCount) then
-            S_oscPath = S_oscMessages[k(0)]
-            k_argCount = k_oscDataCount - 2
-
-            ; printf("OSC message received on path %s\n", ki + k_j, S_oscPath)
-
-            // /daw/camera_matrix
-            //
-            if (string_begins_with(S_oscPath, "/daw/camera_matrix") == true) then
-                if (k_argCount < 16) then
-                    log_k_error("OSC path '%s' requires 16 arguments but was given %d.", "/daw/camera_matrix", k_argCount)
-                else
-                    // 2-17 = camera matrix
-                    kk = 0
-                    while (kk < 16) do
-                        ; printf("[%d] = %s\n", ki + k_j + kk, kk, S_oscMessages[kk + 2])
-                        Ss = sprintfk("%s", S_oscMessages[kk + 2])
-                        kgoto skip_k
-                        Ss = "0.0"
-                        skip_k:
-                        if (strlenk(Ss) > 0) then
-                            tabw(strtodk(Ss), kk, gi_AF_3D_ListenerMatrixTableNumber)
-                        endif
-                        kk += 1
-                    od
-                endif
-            endif
-
-            // /test/random
-            //
-            ; if (string_begins_with(S_oscPath, "/test/random") == true) then
-            ;     if (k_argCount < 1) then
-            ;         log_k_error("OSC path '%s' requires 1 argument but was given %d.", "/test/random", k_argCount)
-            ;     else
-            ;         // 2 = random number
-            ;         printf("random number = %s\n", ki + k_j, S_oscMessages[k(2)])
-            ;     endif
-            ; endif
-        endif
-        ; k_j += 1
-    od
-
     log_i_info("instr %d - done", p1)
 endin
+
+#include "osc_camera_matrix.h.orc"
 
 //======================================================================================================================
 

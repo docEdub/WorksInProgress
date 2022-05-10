@@ -7,12 +7,12 @@ process.on('uncaughtException', err => {
     }
 })
 
-// UDP server host and port must match definitions.h BROWSER_OSC_ADDRESS, BROWSER_OSC_CLIENT_PORT, and
-// BROWSER_OSC_SERVER_PORT.
-const config = { udpServer: { host: '127.0.0.1', port: 9129 }, udpClient: { host: '127.0.0.1', port: 9130 } }
+// UDP server host and port must match definitions.h BROWSER_OSC_ADDRESS, BROWSER_OSC_PORT, and
+// DAW_SERVICE_OSC_PORT.
+const config = { udpServer: { host: '127.0.0.1', port: 9129 }, udpClient: { host: '127.0.0.1', port: 7770 } }
 const osc = new OSC({ plugin: new OSC.BridgePlugin(config) })
 osc.open()
 
 console.log('OSC UDP/WebSocket bridge started.')
 console.log('OSC messages sent from UDP 127.0.0.1:9129 will be routed to websocket localhost:8080')
-console.log('OSC messages sent from websocket localhost:8080 will be routed to UDP 127.0.0.1:9130')
+console.log('OSC messages sent from websocket localhost:8080 will be routed to UDP 127.0.0.1:7770')

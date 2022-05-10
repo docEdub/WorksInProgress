@@ -205,6 +205,41 @@ end:
 endop
 
 
+opcode updateCameraMatrixes, 0, k[]
+    kOscMessages[] xin
+    kTrackIndex = 0
+    kTrackPort = -1
+    iInstrumentNumber = nstrnum("UpdateCameraMatrix")
+    while (kTrackIndex < TRACK_COUNT_MAX && kTrackPort != 0) do
+        kTrackPort = gi_trackPorts[kTrackIndex]
+        if (kTrackPort != 0) then
+            scoreline(sprintfk("i%d 0 1 %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+                iInstrumentNumber,
+                kTrackPort,
+                kOscMessages[0],
+                kOscMessages[1],
+                kOscMessages[2],
+                kOscMessages[3],
+                kOscMessages[4],
+                kOscMessages[5],
+                kOscMessages[6],
+                kOscMessages[7],
+                kOscMessages[8],
+                kOscMessages[9],
+                kOscMessages[10],
+                kOscMessages[11],
+                kOscMessages[12],
+                kOscMessages[13],
+                kOscMessages[14],
+                kOscMessages[15]),
+                1)
+        endif
+        kTrackIndex += 1
+    od
+end:
+endop
+
+
 opcode addTrackReference, 0, SS
     S_trackIndex, S_trackRefIndex xin
     i_instrumentNumber =  nstrnum("ReferenceTrack")
@@ -436,7 +471,7 @@ instr HandleOscMessages
         turnoff
     else
         log_i_info("%s ...", nstrstr(p1))
-        S_oscMessages[] init 10
+        S_oscMessages[] init 18
         k_oscDataCount = -1
         S_oscPath init ""
         S_oscTypes init ""
@@ -446,6 +481,29 @@ instr HandleOscMessages
             if (k(2) <= k_oscDataCount) then
                 S_oscPath = S_oscMessages[k(0)]
                 k_argCount = k_oscDataCount - 2
+
+
+                // Camera matrix changes
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_CAMERA_MATRIX_PATH) == true) then
+                    if (k_argCount != 16) then
+                        log_k_error("OSC path '%s' requires 16 arguments but was given %d.",
+                            DAW_SERVICE_OSC_CAMERA_MATRIX_PATH, k_argCount)
+                    else
+                        // 2-17 = camera matrix
+                        kCameraMatrix[] init 16
+                        kk = 0
+                        while (kk < 16) do
+                            Ss = sprintfk("%s", S_oscMessages[2 + kk])
+                            kgoto camera_matrix_skip_strtodk_i_pass
+                            Ss = "0.0"
+                            camera_matrix_skip_strtodk_i_pass:
+                            kCameraMatrix[kk] = strtodk(Ss)
+                            kk += 1
+                        od
+                        updateCameraMatrixes(kCameraMatrix)
+                    endif
+                endif
 
 
                 // Track registration
@@ -646,6 +704,31 @@ instr RegisterPlugin
 
     log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) - done",
         i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
+    turnoff
+endin
+
+
+instr UpdateCameraMatrix
+    iOscPort init p4
+    kM1 init p5
+    kM2 init p6
+    kM3 init p7
+    kM4 init p8
+    kM5 init p9
+    kM6 init p10
+    kM7 init p11
+    kM8 init p12
+    kM9 init p13
+    kM10 init p14
+    kM11 init p15
+    kM12 init p16
+    kM13 init p17
+    kM14 init p18
+    kM15 init p19
+    kM16 init p20
+    log_ik_info("instr UpdateCameraMatrix(iOscPort = %d, [%f, %f, %f, %f, ...])", iOscPort, kM1, kM2, kM3, kM4)
+    OSCsend(1, TRACK_OSC_ADDRESS, iOscPort, TRACK_OSC_CAMERA_MATRIX_PATH, "ffffffffffffffff",
+        kM1, kM2, kM3, kM4, kM5, kM6, kM7, kM8, kM9, kM10, kM11, kM12, kM13, kM14, kM15, kM16)
     turnoff
 endin
 

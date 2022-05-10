@@ -12890,7 +12890,7 @@ const csdJson = `
 				return
 			}
 			if (camera.matrixIsDirty) {
-				const message = new OSC.Message('/daw/camera_matrix')
+				const message = new OSC.Message('/DawService/camera_matrix')
 				for (let i = 0; i < 16; i++) {
 					message.add(camera.matrix[i])
 				}
