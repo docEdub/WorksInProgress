@@ -18,6 +18,7 @@ ${CSOUND_DEFINE} ORC_FILENAME #"${InstrumentName}.orc"#
 ${CSOUND_DEFINE} CSD_FILE_PATH #__FILE__#
 ${CSOUND_DEFINE} IS_FIRST_PLUGIN_IN_TRACK #1#
 ${CSOUND_DEFINE} PLUGIN_TRACK_TYPE #TRACK_TYPE_INSTRUMENT#
+${CSOUND_INCLUDE} "af_global.orc"
 ${CSOUND_INCLUDE} "cabbage_synth_global.orc"
 ${CSOUND_INCLUDE} "Position_global.orc"
 ${CSOUND_INCLUDE} "TrackInfo_global.orc"
@@ -33,6 +34,8 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
     ${CSOUND_INCLUDE} "Position_instr_1_head.orc"
+    AF_3D_UpdateListenerRotationMatrix(0.01)
+    AF_3D_UpdateListenerPosition(0.01)
 endin
 
 
@@ -47,6 +50,7 @@ ${CSOUND_INCLUDE} STRINGIZE(${InstrumentName}.orc)
 
 #include "midi_cc_processing.h.orc"
 #include "midi_note_processing.h.orc"
+#include "osc_camera_matrix.h.orc"
 
 ${CSOUND_INCLUDE} "Tab.orc"
 
