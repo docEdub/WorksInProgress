@@ -337,7 +337,7 @@ endop
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the attenuation for the given distance using the inverse distance model.
 // See https://medium.com/@kfarr/understanding-web-audio-api-positional-audio-distance-models-for-webxr-e77998afcdff
-// See https://www.desmos.com/calculator/lzxfqvwoqq
+// See https://www.desmos.com/calculator/blu4geqjci
 //
 // in  k  : Distance.
 // in  P  : Reference distance. Defaults to 1.
