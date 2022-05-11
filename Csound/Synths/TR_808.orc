@@ -372,6 +372,7 @@ instr INSTRUMENT_ID
 
         endif
 
+        aAuxOut = 0.5 * aOut
 
         if (CC_VALUE_i(positionEnabled) == true) then
             ; log_i_trace("Calling position UDO ...")
@@ -380,7 +381,7 @@ instr INSTRUMENT_ID
             kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
                 kPositionRolloffFactor)
-            aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+            aDistancedOut = aOut * min(kDistanceAmp, kPositionMaxAmpWhenClose)
 
             AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
             ; #if LOGGING
@@ -394,13 +395,13 @@ instr INSTRUMENT_ID
             ;         kLoggedGains = true
             ;     endif
             ; #endif
-            a1 = gkAmbisonicChannelGains[0] * aOut
-            a2 = gkAmbisonicChannelGains[1] * aOut
-            a3 = gkAmbisonicChannelGains[2] * aOut
-            a4 = gkAmbisonicChannelGains[3] * aOut
+            a1 = gkAmbisonicChannelGains[0] * aDistancedOut
+            a2 = gkAmbisonicChannelGains[1] * aDistancedOut
+            a3 = gkAmbisonicChannelGains[2] * aDistancedOut
+            a4 = gkAmbisonicChannelGains[3] * aDistancedOut
         else
             // Disabled.
-            a1 = aOut
+            a1 = aDistancedOut
             a2 = 0
             a3 = 0
             a4 = 0
@@ -411,8 +412,8 @@ instr INSTRUMENT_ID
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aAuxOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aAuxOut
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -426,7 +427,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a1, a2, a3, a4, aOut, aOut)
+            outc(a1, a2, a3, a4, aAuxOut, aAuxOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
