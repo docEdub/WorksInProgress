@@ -17,7 +17,7 @@ ${group} bounds(0, 50, 1000, 500) {
       }
       ${group} bounds(0, ${setting_height}, ${setting_dimensions}) {
          ${setting_label} text("Reference distance")
-         ${setting_input} channel("positionReferenceDistance") range(0, 10, 0.1, 0.5, 0.0001)
+         ${setting_input} channel("positionReferenceDistance") range(0, 100, 0.1, 0.5, 0.0001)
       }
       ${group} bounds(0, ${setting_height_x2}, ${setting_dimensions}) {
          ${setting_label} text("Rolloff factor")
