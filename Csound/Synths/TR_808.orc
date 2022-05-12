@@ -372,8 +372,6 @@ instr INSTRUMENT_ID
 
         endif
 
-        aAuxOut = 0.5 * aOut
-
         if (CC_VALUE_i(positionEnabled) == true) then
             ; log_i_trace("Calling position UDO ...")
             #include "Position_iXYZ.orc"
@@ -381,7 +379,9 @@ instr INSTRUMENT_ID
             kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
             kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
                 kPositionRolloffFactor)
-            aDistancedOut = aOut * min(kDistanceAmp, kPositionMaxAmpWhenClose)
+            kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
+            aDistancedOut = aOut * kDistanceAmp
+            aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
 
             AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
             ; #if LOGGING
