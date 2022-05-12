@@ -84,8 +84,8 @@ instr 1
         az dconv azr, 256, i_hrir_2
         ax dconv axr, 256, i_hrir_3
 
-        outch(1, aw - ay + az + ax)
-        outch(2, aw + ay + az + ax)
+        outch(1, aw + ay + az + ax)
+        outch(2, aw - ay + az + ax)
 
         // Output reverb channels 5 and 6.
         outch(5, a_signal[4])

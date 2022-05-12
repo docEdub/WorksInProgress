@@ -43,7 +43,7 @@ gk_AF_3D_ListenerPosition[] init 3
 //
  opcode AF_3D_Audio_AzimuthLookupTableRow, k, k
     k_azimuth xin
-    k_azimuth = round(k_azimuth % 360)
+    k_azimuth = -(round(k_azimuth % 360) + 180)
     if (k_azimuth < 0) then
         k_azimuth += 360
     elseif (360 <= k_azimuth) then
@@ -100,17 +100,7 @@ gk_AF_3D_ListenerPosition[] init 3
 // out k[]: Ambisonic channel gains. 1st order = 4 channels. 2nd order = 9 channels. 3rd order = 16 channels.
 //
 opcode AF_3D_Audio_ChannelGains, 0, kkkp
-    kSourceAzimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
-
-    kListenerAzimuth = (cosinv(gk_AF_3D_ListenerRotationMatrix[2])) * $AF_MATH__RADIANS_TO_DEGREES
-    if (gk_AF_3D_ListenerRotationMatrix[0] < 0) then
-        kListenerAzimuth = 360 - kListenerAzimuth
-    endif
-
-    k_azimuth = (kSourceAzimuth + 180) % 360
-    if (k_azimuth < 0) then
-        k_azimuth += 360
-    endif
+    k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
     
     k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
     k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
@@ -124,7 +114,7 @@ opcode AF_3D_Audio_ChannelGains, 0, kkkp
         while (k_j <= k_i) do
             k_channel = (k_i * k_i) + k_i + k_j
             k_elevationColumn = k_i * (k_i + 1) / 2 + abs(k_j) - 1
-            k_gain = gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[k_elevationRow][k_elevationColumn]
+            k_gain = 1//gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[k_elevationRow][k_elevationColumn]
             if (k_j != 0) then
                 if (k_j < 0) then
                     k_azimuthColumn = $AF_3D_AUDIO__AMBISONIC_ORDER_MAX + k_j
@@ -233,12 +223,19 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     ; if (changed(k_direction[$X]) == true || changed(k_direction[$Z]) == true) then
     ;     printsk("k_direction = [%.03f, %.03f, %.03f], ", k_direction[$X], 0, k_direction[$Z])
     ; endif
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
 
     // Elevation is disabled for now since it complicates the calculations used to smooth out crossing over zero on the
     // x and y axes.
     k_elevation = taninv2(k_direction[$Y],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
+
+    if (gk_i % 10 == 0) then
+        log_k_debug("L=[%.03f, %.03f, %.03f], D=[%.03f, %.03f, %.03f], A=%f",
+            gk_AF_3D_ListenerPosition[$X], gk_AF_3D_ListenerPosition[$Y], gk_AF_3D_ListenerPosition[$Z],
+            k_direction[$X], k_direction[$Y], k_direction[$Z],
+            k_azimuth)
+    endif
 
     ; if (changed(k_elevation) == true) then
     ;     printsk("k_elevation = %.03f\n", k_elevation)
