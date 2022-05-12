@@ -101,11 +101,9 @@ gk_AF_3D_ListenerPosition[] init 3
 //
 opcode AF_3D_Audio_ChannelGains, 0, kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
-    
     k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
     k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
-
     gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 1
     while (k_i <= i_ambisonicOrder) do
@@ -114,7 +112,7 @@ opcode AF_3D_Audio_ChannelGains, 0, kkkp
         while (k_j <= k_i) do
             k_channel = (k_i * k_i) + k_i + k_j
             k_elevationColumn = k_i * (k_i + 1) / 2 + abs(k_j) - 1
-            k_gain = 1//gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[k_elevationRow][k_elevationColumn]
+            k_gain = gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[k_elevationRow][k_elevationColumn]
             if (k_j != 0) then
                 if (k_j < 0) then
                     k_azimuthColumn = $AF_3D_AUDIO__AMBISONIC_ORDER_MAX + k_j
@@ -134,15 +132,6 @@ opcode AF_3D_Audio_ChannelGains, 0, kkkp
         od
         k_i += 1
     od
-
-    ; if (changed(kListenerAzimuth) == true || changed(k_azimuth) == true || changed(k_elevation) == true) then
-    ;     printsk("azimuth = %.03f, gains = [%.03f, %.03f, %.03f, %.03f], m012 = [%.03f, %.03f, %.03f], m345 = [%.03f, %.03f, %.03f], m678 = [%.03f, %.03f, %.03f]\n",
-    ;         k_azimuth,
-    ;         gkAmbisonicChannelGains[0], gkAmbisonicChannelGains[1], gkAmbisonicChannelGains[2], gkAmbisonicChannelGains[3],
-    ;         gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2],
-    ;         gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5],
-    ;         gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
-    ; endif
 endop
 
 
@@ -160,14 +149,12 @@ endop
 //
 opcode AF_3D_Audio_ChannelGains, 0, i[]kp
     i_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
-    
     k_direction[] = fillarray(i_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
         i_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
         i_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
-
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
@@ -186,14 +173,12 @@ endop
 //
 opcode AF_3D_Audio_ChannelGains, 0, k[]kp
     k_sourcePosition[], k_sourceWidth, i_ambisonicOrder xin
-    
     k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
         k_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],
         k_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
-    k_azimuth = taninv2(k_direction[$X], -k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
+    k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
-
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
@@ -214,60 +199,20 @@ endop
 //
 opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth, i_ambisonicOrder xin
-
     k_direction[] init 3
     k_direction[$X] = k_sourcePositionX - gk_AF_3D_ListenerPosition[$X]
     k_direction[$Y] = k_sourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     k_direction[$Z] = k_sourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-
-    ; if (changed(k_direction[$X]) == true || changed(k_direction[$Z]) == true) then
-    ;     printsk("k_direction = [%.03f, %.03f, %.03f], ", k_direction[$X], 0, k_direction[$Z])
-    ; endif
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
-
-    // Elevation is disabled for now since it complicates the calculations used to smooth out crossing over zero on the
-    // x and y axes.
     k_elevation = taninv2(k_direction[$Y],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
-
     if (gk_i % 10 == 0) then
         log_k_debug("L=[%.03f, %.03f, %.03f], D=[%.03f, %.03f, %.03f], A=%f",
             gk_AF_3D_ListenerPosition[$X], gk_AF_3D_ListenerPosition[$Y], gk_AF_3D_ListenerPosition[$Z],
             k_direction[$X], k_direction[$Y], k_direction[$Z],
             k_azimuth)
     endif
-
-    ; if (changed(k_elevation) == true) then
-    ;     printsk("k_elevation = %.03f\n", k_elevation)
-    ; fi
-
-    ; #if LOGGING
-    ;     if (changed(k_azimuth) == true || changed(k_elevation) == true) then
-    ;         log_k_debug("xyz = (%f, %f, %f), azimuth = %f, elevation = %f",
-    ;             k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ,
-    ;             k_azimuth, k_elevation)
-    ;     endif
-    ; #endif
-
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
-
-    // Smooth out crossing over zero on the x and y axes.
-    ; i_minW = 0.79021
-    ; i_maxW = 1.25
-    ; i_diffW = i_maxW - i_minW
-    ; k_distance = sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Y] * k_direction[$Y])
-    ; if (k_distance <= 1) then
-    ;     gkAmbisonicChannelGains[0] = i_maxW
-    ;     gkAmbisonicChannelGains[1] = 0
-    ;     gkAmbisonicChannelGains[2] = 0
-    ;     gkAmbisonicChannelGains[3] = 0
-    ; elseif (k_distance <= 2) then
-    ;     k_distance -= 1
-    ;     gkAmbisonicChannelGains[0] = i_minW + (i_diffW * (1 - k_distance))
-    ;     gkAmbisonicChannelGains[1] = gkAmbisonicChannelGains[1] * k_distance
-    ;     gkAmbisonicChannelGains[2] = gkAmbisonicChannelGains[2] * k_distance
-    ;     gkAmbisonicChannelGains[3] = gkAmbisonicChannelGains[3] * k_distance
-    ; endif
 endop
 
 
@@ -293,14 +238,6 @@ opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp
     k_sourcePositionY = k_sourcePositionR * sin(k_sourcePositionT)
     k_elevation = taninv2(k_sourcePositionZ, k_sourcePositionR) * $AF_MATH__RADIANS_TO_DEGREES
 
-    #if LOGGING
-        if (changed(k_sourcePositionX) == true || changed(k_sourcePositionY) == true) then
-            log_k_trace("rtz = (%f, %f, %f), xyz = (%f, %f, %f)",
-                k_sourcePositionR, k_sourcePositionT, k_sourcePositionZ,
-                k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ)
-        endif
-    #endif
-
     AF_3D_Audio_ChannelGains_XYZ(k_sourcePositionX, k_sourcePositionY, k_sourcePositionZ, k_sourceWidth,
         i_ambisonicOrder)
 endop
@@ -322,9 +259,6 @@ endop
 ; opcode AF_3D_Audio_DistanceAttenuation, k, kpp
 ;     kDistance, iReferenceDistance, iRolloffFactor xin
 ;     kAttenuation = k(iReferenceDistance) / ((max(kDistance, iReferenceDistance) - iReferenceDistance) * iRolloffFactor + iReferenceDistance)
-;     ; if (changed(kAttenuation) == true) then
-;     ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
-;     ; endif
 ;     xout kAttenuation
 ; endop
 
@@ -345,9 +279,6 @@ endop
 opcode AF_3D_Audio_DistanceAttenuation, k, kPP
     kDistance, kReferenceDistance, kRolloffFactor xin
     kAttenuation = kReferenceDistance / ((max(kDistance, kReferenceDistance) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
-    ; if (changed2(kAttenuation) == true) then
-    ;     printsk("%.03f, %.03f\n", kDistance, kAttenuation)
-    ; endif
     xout kAttenuation
 endop
 
@@ -369,7 +300,6 @@ opcode AF_3D_Audio_SourceDistance, k, iii
     kVector[$X] = iSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = iSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = iSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
@@ -391,7 +321,6 @@ opcode AF_3D_Audio_SourceDistance, k, kkk
     kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
@@ -411,7 +340,6 @@ opcode AF_3D_Audio_SourceDistance, k, i[]
     kVector[$X] = iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
-
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
@@ -427,12 +355,10 @@ endop
 //
 opcode AF_3D_Audio_SourceDistance, k, k[]
     kSourcePosition[] xin
-
     kVector[] init 3
     kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
-
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
@@ -477,7 +403,6 @@ endop
 //
 opcode AF_3D_Audio_DopplerShift, k, kkk
     k_previousDistance, k_currentDistance, k_deltaTime xin
-
     k_dopplerShift init 1
 
     // Calculate doppler shift.
