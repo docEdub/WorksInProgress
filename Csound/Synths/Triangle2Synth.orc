@@ -46,6 +46,7 @@ ${CSOUND_INCLUDE} "time.orc"
 
 giTriangle2Synth_PlaybackVolumeAdjustment = 0.9
 giTriangle2Synth_PlaybackReverbAdjustment = 1.5
+giTriangle2Synth_NoteNumberLfoAmp = 0.333
 
 giTriangle2Synth_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -60,6 +61,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"noteNumberLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
         fprints(SJsonFile, "}")
         turnoff
     endin
@@ -111,6 +113,7 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
+        iNoteNumberLfoTime = i(gkNoteNumberLfo)
         iOrcInstanceIndex = ORC_INSTANCE_INDEX
         aOut = 0
         a1 = 0
@@ -121,13 +124,8 @@ instr INSTRUMENT_ID
         // Oscillator
         //--------------------------------------------------------------------------------------------------------------
         kAmp init 0.333 * (iVelocity / 127)
-
-        kNoteNumber init iNoteNumber
-
-        kNoteNumberLfo init 0
-        kNoteNumberLfo = lfo(0.333, gkNoteNumberLfo, LFO_SHAPE_TRIANGLE)
-        kCps = cpsmidinn(kNoteNumber + kNoteNumberLfo)
-        aOut = vco2(kAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+        kNoteNumber = iNoteNumber + lfo(giTriangle2Synth_NoteNumberLfoAmp, iNoteNumberLfoTime, LFO_SHAPE_TRIANGLE)
+        aOut = vco2(kAmp, cpsmidinn(kNoteNumber), VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
 
         // Volume envelope
         //--------------------------------------------------------------------------------------------------------------
@@ -205,7 +203,8 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
+            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f}}",
+                times(), iNoteNumber, iNoteNumberLfoTime)
             ficlose(SJsonFile)
         ${CSOUND_ENDIF}
     endif
