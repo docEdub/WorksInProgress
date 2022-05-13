@@ -854,6 +854,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	//#region class CenterLight
 
 	class CenterLight {
+		get baseIntensity() { return this._baseIntensity }
+		set baseIntensity(value) { this._baseIntensity = value }
+
 		get intensity() { return this._light.intensity }
 		set intensity(value) {
 			if (this.intensity < value) {
@@ -861,14 +864,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 		}
 
+		constructor() {
+			this._light.intensity = this.baseIntensity
+			this._light.range = 200	
+		}
+
+		_baseIntensity = 0.25
 		_light = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
 		
 		reset = () => {
 		}
 
 		render = () => {
-			this._light.intensity = 0.25
-			this._light.range = 200	
+			this._light.intensity = this.baseIntensity
 		}
 	}
 	const centerLight = new CenterLight
