@@ -379,8 +379,8 @@ instr FinalMixInstrument
     ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
     az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
     ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
-    aL = aw - ay + az + ax
-    aR = aw + ay + az + ax
+    aL = aw + ay + az + ax
+    aR = aw - ay + az + ax
 
     // Add reverb.
     aL += ga_masterSignals[4]
