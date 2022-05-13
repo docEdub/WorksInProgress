@@ -20,7 +20,7 @@ gSPresetUuidOrder[] = fillarray( \
     "6aecd056fd3f4c6d9a108de531c48ddf", /* Snare */ \
     "e3e7d57082834a28b53e021beaeb783d", /* HiHat 1 */ \
     "02c103e8fcef483292ebc49d3898ef96", /* HiHat 2 */ \
-    "fd575f03378047af835c19ef4f7d5991", /* Triangle2Synth */ \
+    "fd575f03378047af835c19ef4f7d5991", /* Beacon */ \
     "ab018f191c70470f98ac3becb76e6d13", /* Bass 1+2: Edited */ \
     "b0ba6f144fac4f668ba6981c691277d6", /* Bass 1+2: Distant */ \
     "f6341a2a81244ea79dd0e1486eb93386"  /* UDO Triggers */ \
