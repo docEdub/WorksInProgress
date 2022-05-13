@@ -35,7 +35,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
