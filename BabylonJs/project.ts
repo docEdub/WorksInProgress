@@ -826,6 +826,157 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region ECS classes
+
+	class Entity {
+		#id = null
+		get id() { return this.#id }
+		set id(value) { this.#id = value }
+
+		#components = []
+		get components() { return this.#components }
+
+		addComponent = (component) => {
+			if (!component) {
+				return
+			}
+			if (!Component.isPrototypeOf(component.constructor)) {
+				return
+			}
+			if (this.#components.includes(component)) {
+				return
+			}
+			this.#components.push(component)
+		}
+
+		/// Finds and returns the components matching the class types listed in the componentTypes array argument.
+		/// Returns null if any of the componentTypes array argument's class types are not found.
+		///
+		findComponents = (ComponentTypes) => {
+			let components = []
+			ComponentTypes.forEach((ComponentType) => {
+				let found = false
+				this.#components.forEach((component) => {
+					if (ComponentType === component.constructor || ComponentType.isPrototypeOf(component.constructor)) {
+						found = true
+						components.push(component)
+					}
+				})
+				if (!found) {
+					return null
+				}
+			})
+			return components
+		}
+	}
+
+	class Component {
+	}
+
+	class System {
+		static requiredComponentTypes = () => { return [] }
+		constructor(components) {}
+		run = (time) => {}
+	}
+
+	class World {
+		#entities = []
+		get entities() { return this.#entities }
+
+		#SystemTypes = []
+		get SystemTypes() { return this.#SystemTypes }
+
+		#systems = []
+		get systems() { return this.#systems }
+
+		#addEntity = (entity) => {
+			this.#entities.push(entity)
+		}
+
+		#addSystemType = (SystemType) => {
+			if (this.#SystemTypes.includes(SystemType)) {
+				return
+			}
+			this.#SystemTypes.push(SystemType)
+		}
+
+		add = (ecsObjectOrType) => {
+			if (!ecsObjectOrType) {
+				return
+			}
+			if (Entity.isPrototypeOf(ecsObjectOrType.constructor)) {
+				this.#addEntity(ecsObjectOrType)
+				return
+			}
+			if (System.isPrototypeOf(ecsObjectOrType)) {
+				this.#addSystemType(ecsObjectOrType)
+				return
+			}
+		}
+
+		build = () => {
+			this.#SystemTypes.forEach((SystemType) => {
+				this.#entities.forEach((entity) => {
+					let components = entity.findComponents(SystemType.requiredComponentTypes())
+					if (components) {
+						this.#systems.push(new SystemType(components))
+					}
+				})
+			})
+		}
+
+		run = (time) => {
+			this.#systems.forEach((system) => {
+				system.run(time)
+			})
+		}
+	}
+
+	//#endregion
+
+	//#region ECS testing
+
+	class NoteSequenceComponent extends Component {
+		noteIndex = 0
+	}
+
+	class NoteSequenceSystem extends System {
+		static requiredComponentTypes = () => { return [
+			NoteSequenceComponent
+		]}
+
+		noteSequenceComponent = null
+
+		constructor(components) {
+			super(components)
+			this.noteSequenceComponent = components[0]
+		}
+
+		run = (time) => {
+			this.noteSequenceComponent.noteIndex++
+			if (this.noteSequenceComponent.noteIndex % 10 === 0) {
+				console.debug(this.noteSequenceComponent.noteIndex)
+			}
+		}
+	}
+
+	class NoteEntity extends Entity {
+		constructor() {
+			super()
+			this.addComponent(new NoteSequenceComponent)
+		}
+	}
+
+	const world = new World
+	world.add(new NoteEntity)
+	world.add(NoteSequenceSystem)
+	world.build()
+	scene.registerBeforeRender(() => {
+		world.run(0)
+	})
+
+	//#endregion
+
 	//#region class SunLight
 	
 	class SunLight {
