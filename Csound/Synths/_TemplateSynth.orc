@@ -79,7 +79,7 @@ instr INSTRUMENT_ID
             endif
             gi_TemplateSynth_NoteIndex[ORC_INSTANCE_INDEX] = gi_TemplateSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
             SJsonFile = sprintf("json/%s.%d.json", INSTRUMENT_PLUGIN_UUID, gi_TemplateSynth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
+            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f}}", times())
             ficlose(SJsonFile)
         ${CSOUND_ENDIF}
     endif
