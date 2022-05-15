@@ -1773,6 +1773,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		track.header = json[0]
 		for (let i = 1; i < json.length; i++) {
 			const note = json[i].note
+			
+			// Skip preallocation notes.
+			if (note.onTime <= 0.005) {
+				continue
+			}
+
 			if (options.duration) {
 				note.offTime = note.onTime + options.duration
 			}
