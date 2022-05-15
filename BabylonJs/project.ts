@@ -8,6 +8,7 @@ declare global {
         Csound: CSOUND.Csound
         isProduction: boolean // If falsey then we're running in the playground.
 		useDawTiming: boolean // If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
+		debugAsserts: boolean // If truthy then call `debugger` to break in `assert` function.
     }
 
 	class OSC {	
@@ -36,6 +37,7 @@ declare global {
 
 document.isProduction = true
 document.useDawTiming = true
+document.debugAsserts = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
@@ -517,6 +519,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region Utility functions
 
+	const assert = (value, message) => {
+		if (value) {
+			return
+		}
+		console.error(`Assertion failed: ${message}`)
+		console.trace()
+		if (document.debugAsserts) {
+			debugger
+		}
+	}
+
 	const makeMesh = (positions, indices) => {
 		let normals = []
 		BABYLON.VertexData.ComputeNormals(positions, indices, normals)
@@ -795,18 +808,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		///
 		findComponents = (ComponentTypes) => {
 			let components = []
-			ComponentTypes.forEach((ComponentType) => {
+			for (let i = 0; i < ComponentTypes.length; i++) {
+				const ComponentType = ComponentTypes[i]
 				let found = false
-				this.#components.forEach((component) => {
+				for (let j = 0; j < this.#components.length; j++) {
+					const component = this.#components[j]
 					if (component.isA(ComponentType)) {
 						found = true
 						components.push(component)
 					}
-				})
+				}
 				if (!found) {
 					return null
 				}
-			})
+			}
 			return components
 		}
 	}
@@ -1224,209 +1239,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	snare.minScaling = 0.24
 	snare.maxScaling = 60
 	snare.color = [ 0.1, 0.1, 1 ]
-
-	//#endregion
-
-	//#region class HiHat
-
-	class HiHat {
-		uuid = null
-		y = null
-		get normalizedLaserWidth() { return 0.25 }
-
-		set color(value) {
-			this.material.emissiveColor.set(value[0], value[1], value[2])
-		}
-	
-		constructor() {
-			let material = new BABYLON.StandardMaterial('', scene)
-			material.emissiveColor.set(1, 1, 1)
-			// material.specularColor.set(1, 1, 1)
-			// material.alpha = 0.75
-			this.mesh.material = this.material = material
-			this.isVisible = false
-
-			this.updateMeshNormals()
-			let meshVertexData = new BABYLON.VertexData()
-			meshVertexData.positions = this.meshPositions
-			meshVertexData.indices = this.meshIndices
-			meshVertexData.normals = this.meshNormals
-			meshVertexData.applyToMesh(this.mesh, true)
-		}
-
-		material = null
-
-		originalMeshPositions = [
-			// Legs match the inside faces of the MainTriangle mesh's legs at y = 0.
-
-			// [0] Leg point 1
-			0, 0, 171.34,
-
-			// [1] Leg point 2
-			-148.385, 0, -85.67,
-
-			// [2] Leg point 3
-			148.385, 0, -86.67,
-
-			// Center triangle's peak points down from origin.
-
-			// [3] Center triangle point 1
-			0, this.normalizedLaserWidth, -0.707 * this.normalizedLaserWidth,
-
-			// [4] Center triangle point 2
-			0.612 * this.normalizedLaserWidth, this.normalizedLaserWidth, 0.354 * this.normalizedLaserWidth,
-
-			// [5] Center triangle point 3
-			-0.612 * this.normalizedLaserWidth, this.normalizedLaserWidth, 0.354 * this.normalizedLaserWidth,
-
-			// [6] Center triangle bottom point
-			0, 0, 0,
-
-			// [7] Ceiling point matches the inside face of the MainTriangle mesh's top triangle y at the origin.
-			0, 202.46, 0
-		]
-		meshPositions = [ ...this.originalMeshPositions ]
-		meshIndices = [
-			// Leg 1 laser
-			0, 4, 6,
-			0, 6, 5,
-			0, 5, 4,
-
-			// Leg 2 laser
-			1, 5, 6,
-			1, 6, 3,
-			1, 3, 5,
-
-			// Leg 3 laser
-			2, 3, 6,
-			2, 6, 4,
-			2, 4, 3,
-
-			// Ceiling laser
-			7, 3, 4,
-			7, 4, 5,
-			7, 5, 3
-		]
-		meshNormals = []
-		mesh = new BABYLON.Mesh('', scene)
-		
-		json = null
-		header = null
-		noteStartIndex = 0
-		noteCount = 0
-
-		nextNoteOnIndex = 0
-		nextNoteOffIndex = 0
-
-		note = null
-
-		get isVisible() { return this.mesh.isVisible }
-		set isVisible(value) {
-			this.mesh.isVisible = value
-		}
-
-		updateMeshNormals = () => {
-			BABYLON.VertexData.ComputeNormals(this.meshPositions, this.meshIndices, this.meshNormals)
-		}
-
-		setPosition = (x, y, z) => {
-			// Update center triangle vertex positions only. Don't update leg or ceiling vertex positions.
-			for (let i = 0; i < 4; i++) {
-				const j = 9 + 3 * i
-				this.meshPositions[j] = x + this.originalMeshPositions[j]
-				this.meshPositions[j + 1] = y + this.originalMeshPositions[j + 1] + this.y
-				this.meshPositions[j + 2] = z + this.originalMeshPositions[j + 2]
-			}
-			this.updateMeshNormals()
-			this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this.meshPositions)
-			this.mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this.meshNormals)
-		}
-
-		noteOn = (i) => {
-			const note = this.json[i].noteOn
-			this.note = note
-			this.setPosition(note.xyz[0], this.y, note.xyz[2])
-			note.isOn = this.isVisible = true
-		}
-
-		noteOff = () => {
-            const note = this.note
-            if (!!note) {
-                note.isOn = this.isVisible = false
-            }
-		}
-
-		setJson = (json) => {
-			this.json = json
-			this.header = json[0]
-
-			for (let i = 1; i < json.length; i++) {
-				let noteOn = json[i].noteOn
-				noteOn.isOn = false
-
-				// Skip preallocation notes.
-				if (noteOn.time == 0.005) {
-					continue
-				}
-				else if (this.noteStartIndex == 0) {
-					this.noteStartIndex = i
-				}
-
-				noteOn.offTime = noteOn.time + 0.034
-				this.noteCount++
-			}
-
-			// console.debug(`HiHat ${this.uuid} json ...`)
-			// console.debug(json)
-
-			this.reset()
-		}
-		
-		isReset = false
-
-		reset = () => {
-			if (this.isReset) {
-				return
-			}
-			this.isReset = true
-			this.nextNoteOnIndex = this.noteStartIndex
-			this.nextNoteOffIndex = this.noteStartIndex
-		}
-
-		render = (time) => {
-			if (this.isReset) {
-				this.noteOff()
-				this.isReset = false
-			}
-            while (this.nextNoteOnIndex < this.json.length
-					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
-					this.noteOn(this.nextNoteOnIndex);
-				}
-				this.nextNoteOnIndex++;
-			}
-			while (this.nextNoteOffIndex < this.json.length
-					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-				if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
-					this.noteOff();
-				}
-				this.nextNoteOffIndex++;
-			}
-			if (this.isVisible) {
-				centerLight.intensity += 0.25
-			}
-		}
-	}
-
-	const hihat1 = new HiHat
-	hihat1.uuid = 'e3e7d57082834a28b53e021beaeb783d'
-	hihat1.y = 20
-	hihat1.color = [ 1, 0.333, 0.333 ]
-
-	const hihat2 = new HiHat
-	hihat2.uuid = '02c103e8fcef483292ebc49d3898ef96'
-	hihat2.color = [ 0.333, 0.333, 1 ]
-	hihat2.y = 60
 
 	//#endregion
 
@@ -12068,7 +11880,12 @@ const csdJson = `
 
 		constructor(components) {
 			super(components)
-			this.track = components[0]
+			components.forEach((component) => {
+				if (component.isA(TrackComponent)) {
+					this.track = component
+				}
+			})
+			assert(this.track, 'TrackComponent missing.')
 		}
 
 		run = (time, deltaTime) => {
@@ -12088,16 +11905,6 @@ const csdJson = `
 			this.noteOffIndex = 0
 		}
 
-		#activate = (note) => {
-			this.track.activeNotes.push(note)
-			this.track.activeNotesChanged = true
-		}
-
-		#deactivate = (note) => {
-			this.track.splice(this.track.indexOf(note), 1)
-			this.track.activeNotesChanged = true
-		}
-
 		#updateActiveNotes = (time) => {
 			while (this.noteOnIndex < this.track.notes.length) {
 				const note = this.track.notes[this.noteOnIndex]
@@ -12108,23 +11915,188 @@ const csdJson = `
 					this.#activate(note)
 				}
 				this.noteOnIndex++
-				console.debug(`${this.entity.id}: ${this.track.name} noteOnIndex = ${this.noteOnIndex}.`)
+				// console.debug(`${this.entity.id}: ${this.track.name} noteOnIndex = ${this.noteOnIndex}.`)
 			}
 			while (this.noteOffIndex < this.track.notes.length) {
 				const note = this.track.notes[this.noteOffIndex]
 				if (time < note.offTime) {
 					break
 				}
-				if (time < note.offTime) {
+				if (note.offTime <= time) {
 					this.#deactivate(note)
 				}
 				this.noteOffIndex++
 				// console.debug(`${this.entity.id}: ${this.track.name} noteOffIndex = ${this.noteOffIndex}.`)
 			}
 		}
+
+		#activate = (note) => {
+			this.track.activeNotes.push(note)
+			this.track.activeNotesChanged = true
+		}
+
+		#deactivate = (note) => {
+			const noteIndex = this.track.activeNotes.indexOf(note)
+			if (noteIndex < 0) {
+				return
+			}
+			this.track.activeNotes.splice(noteIndex, 1)
+			this.track.activeNotesChanged = true
+		}
 	}
 
 	world.add(TrackNoteActivationSystem)
+
+	//#endregion
+
+	//#region class HiHatAnimationComponent
+
+	class HiHatAnimationComponent extends Component {
+		laserWidth = 0.25
+		y = 1
+
+		get color() { return this._material.emissiveColor.asArray() }
+		set color(value) { this._material.emissiveColor.fromArray(value) }
+
+		get isVisible() { return this._mesh.isVisible }
+		set isVisible(value) { this._mesh.isVisible = value }
+
+		set position(values) {
+			const x = values[0]
+			const y = this.y
+			const z = values[2]
+
+			for (let i = 0; i < 4; i++) {
+				const j = 9 + 3 * i
+				this._meshPositions[j] = x + this._meshStartPositions[j]
+				this._meshPositions[j + 1] = y + this._meshStartPositions[j + 1] + y
+				this._meshPositions[j + 2] = z + this._meshStartPositions[j + 2]
+			}
+			this._updateMeshNormals()
+			this._updateMeshVertices()
+		}
+
+		_material = new BABYLON.StandardMaterial('', scene)
+		_mesh = new BABYLON.Mesh('', scene)
+		_meshStartPositions = [
+			// Legs match the inside faces of the MainTriangle mesh's legs at y = 0.
+
+			// [0] Leg point 1
+			0, 0, 171.34,
+
+			// [1] Leg point 2
+			-148.385, 0, -85.67,
+
+			// [2] Leg point 3
+			148.385, 0, -86.67,
+
+			// Center triangle's peak points down from origin.
+
+			// [3] Center triangle point 1
+			0, this.laserWidth, -0.707 * this.laserWidth,
+
+			// [4] Center triangle point 2
+			0.612 * this.laserWidth, this.laserWidth, 0.354 * this.laserWidth,
+
+			// [5] Center triangle point 3
+			-0.612 * this.laserWidth, this.laserWidth, 0.354 * this.laserWidth,
+
+			// [6] Center triangle bottom point
+			0, 0, 0,
+
+			// [7] Ceiling point matches the inside face of the MainTriangle mesh's top triangle y at the origin.
+			0, 202.46, 0
+		]
+		_meshPositions = [ ...this._meshStartPositions ]
+		_meshIndices = [
+			// Leg 1 laser
+			0, 4, 6,
+			0, 6, 5,
+			0, 5, 4,
+
+			// Leg 2 laser
+			1, 5, 6,
+			1, 6, 3,
+			1, 3, 5,
+
+			// Leg 3 laser
+			2, 3, 6,
+			2, 6, 4,
+			2, 4, 3,
+
+			// Ceiling laser
+			7, 3, 4,
+			7, 4, 5,
+			7, 5, 3
+		]
+		_meshNormals = []
+
+		_updateMeshNormals = () => {
+			BABYLON.VertexData.ComputeNormals(this._meshPositions, this._meshIndices, this._meshNormals)
+		}
+
+		_updateMeshVertices = () => {
+			this._mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this._meshPositions)
+			this._mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this._meshNormals)
+		}
+
+		constructor() {
+			super()
+			this.color = [1, 1, 1]
+			this.isVisible = false
+			this._mesh.material = this._material
+
+			this._updateMeshNormals()
+			let vertexData = new BABYLON.VertexData()
+			vertexData.positions = this._meshPositions
+			vertexData.indices = this._meshIndices
+			vertexData.normals = this._meshNormals
+			vertexData.applyToMesh(this._mesh, true)
+		}
+	}
+
+	//#endregion
+
+	//#region class HiHatAnimationSystem
+
+	class HiHatAnimationSystem extends System {
+		static requiredComponentTypes = () => { return [
+			HiHatAnimationComponent,
+			TrackComponent
+		]}
+
+		hiHatAnimation = null
+		track = null
+
+		constructor(components) {
+			super(components)
+			components.forEach((component) => {
+				if (component.isA(HiHatAnimationComponent)) {
+					this.hiHatAnimation = component
+				}
+				else if (component.isA(TrackComponent)) {
+					this.track = component
+				}
+			})
+			assert(this.hiHatAnimation, 'HiHatAnimationComponent missing.')
+			assert(this.track, 'TrackComponent missing.')
+		}
+
+		run = (time, deltaTime) => {
+			if (!this.track.activeNotesChanged) {
+				return
+			}
+			if (0 < this.track.activeNotes.length) {
+				this.hiHatAnimation.isVisible = true
+				this.hiHatAnimation.position = this.track.activeNotes[0].xyz
+			}
+			else {
+				this.hiHatAnimation.isVisible = false
+			}
+		}
+	}
+
+	world.add(HiHatAnimationSystem)
 
 	//#endregion
 
@@ -12143,6 +12115,19 @@ const csdJson = `
 				note.offTime = note.onTime + options.duration
 			}
 			track.notes.push(note)
+		}
+		return entity
+	}
+
+	const createHiHatAnimation = (id, json, options) => {
+		const entity = createTrack(id, json, options)
+		const hiHatAnimation = new HiHatAnimationComponent
+		entity.addComponent(hiHatAnimation)
+		if (options.color !== undefined) {
+			hiHatAnimation.color = options.color
+		}
+		if (options.y !== undefined) {
+			hiHatAnimation.y = options.y
 		}
 		return entity
 	}
@@ -12177,17 +12162,21 @@ const csdJson = `
 			}
 		},
 		'e3e7d57082834a28b53e021beaeb783d': {
-			function: createTrack,
+			function: createHiHatAnimation,
 			options: {
 				name: '04: HiHat 1',
-				duration: 0.034
+				duration: 0.034,
+				color: [ 1, 0.333, 0.333 ],
+				y: 20
 			}
 		},
 		'02c103e8fcef483292ebc49d3898ef96': {
-			function: createTrack,
+			function: createHiHatAnimation,
 			options: {
 				name: '05: HiHat 2',
-				duration: 0.034
+				duration: 0.034,
+				color: [ 0.333, 0.333, 1 ],
+				y: 60
 			}
 		}
 	}
