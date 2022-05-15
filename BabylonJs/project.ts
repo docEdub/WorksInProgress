@@ -12211,6 +12211,9 @@ const csdJson = `
 		if (document.useDawTiming && !dawNeedsRender) {
 			return
 		}
+		if (!csound.playbackIsStarted) {
+			return
+		}
 
 		if (document.useDawTiming) {
 			previousTime = time
