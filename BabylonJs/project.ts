@@ -12181,6 +12181,10 @@ const csdJson = `
 		}
 	}
 
+	//#endregion
+
+	//#region World initialization
+
 	const csdData = JSON.parse(csdJson)
 	Object.keys(csdData).forEach((id) => {
 		if (createTrackMap[id]) {
