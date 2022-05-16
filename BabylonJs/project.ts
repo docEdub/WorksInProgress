@@ -36,8 +36,8 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
-document.debugAsserts = false
+document.useDawTiming = true
+document.debugAsserts = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
@@ -1536,9 +1536,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			TrackComponent
 		]}
 
-		track = null
-		noteOnIndex = 0
 		noteOffIndex = 0
+		noteOnIndex = 0
+		track = null
 
 		constructor(components) {
 			super(components)
@@ -1547,7 +1547,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					this.track = component
 				}
 			})
-			assert(this.track, 'TrackComponent missing.')
+			assert(this.track, `${TrackComponent.name} missing.`)
 		}
 
 		run = (time, deltaTime) => {
@@ -1593,11 +1593,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		#activate = (note) => {
+			note.isActive = true
 			this.track.activeNotes.push(note)
 			this.track.activeNotesChanged = true
 		}
 
 		#deactivate = (note) => {
+			note.isActive = false
 			const noteIndex = this.track.activeNotes.indexOf(note)
 			if (noteIndex < 0) {
 				return
@@ -1611,14 +1613,198 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region class TrackNoteDurationComponent
+
+	class TrackNoteDurationComponent extends Component {
+		normalize = true
+	}
+
+	//#endregion
+
+	//#region class TrackNoteDurationSystem
+
+	class TrackNoteDurationSystem extends System {
+		static requiredComponentTypes = () => { return [
+			TrackComponent,
+			TrackNoteDurationComponent
+		]}
+
+		activeNotes = []
+		duration = null
+		track = null
+
+		constructor(components) {
+			super(components)
+			components.forEach((component) => {
+				if (component.isA(TrackComponent)) {
+					this.track = component
+				}
+				else if (component.isA(TrackNoteDurationComponent)) {
+					this.duration = component
+				}
+			})
+			assert(this.track, `${TrackComponent.name} missing.`)
+			assert(this.duration, `${TrackNoteDurationComponent.name} missing.`)
+			this.#initializeTotalDurations()
+		}
+
+		run = (time, deltaTime) => {
+			// Set final durations for previously active notes that got deactivated.
+			for (let i = 0; i < this.activeNotes.length; i++) {
+				const note = this.activeNotes[i]
+				if (!note.isActive) {
+					assert(time < note.onTime || note.offTime < time, `Note should be active.`)
+					if (this.duration.normalize) {
+						note.duration = time < note.onTime ? 0 : 1
+					}
+					else {
+						note.duration = time < note.onTime ? 0 : note.totalDuration
+					}
+					console.debug(`Duration = ${note.duration}.`)
+				}
+			}
+
+			// Update durations for current active notes.
+			this.activeNotes = [...this.track.activeNotes]
+			for (let i = 0; i < this.activeNotes.length; i++) {
+				const note = this.activeNotes[i]
+				if (this.duration.normalize) {
+					if (note.offTime <= time) {
+						note.duration = 1
+					}
+					else {
+						note.duration = (time - note.onTime) / note.totalDuration
+					}
+				}
+				else {
+					if (note.offTime <= time) {
+						note.duration = note.totalDuration
+					}
+					else {
+						note.duration = time - note.onTime
+					}
+				}
+				console.debug(`Duration = ${note.duration}.`)
+			}
+		}
+
+		#initializeTotalDurations = () => {
+			for (let i = 0; i < this.track.notes.length; i++) {
+				const note = this.track.notes[i]
+				note.totalDuration = note.offTime - note.onTime
+			}
+		}
+	}
+
+	world.add(TrackNoteDurationSystem)
+
+	//#endregion
+
+	//#region class DrumAnimationComponent
+
+	class DrumAnimationComponent extends Component {
+		flashScalingMin = 10
+		flashScalingMax = 100
+
+		get alpha() { return this._flashMeshMaterial.alpha }
+		set alpha(value) { this._flashMeshMaterial.alpha = value }
+
+		get color() { return this._flashMeshMaterial.emissiveColor.asArray() }
+		set color(value) {
+			this._flashMeshMaterial.emissiveColor.fromArray(value)
+			this._strikerLegsMeshMaterial.emissiveColor.fromArray(value)
+		}
+
+		get fade() { return this.alpha }
+		set fade(value) {
+			this.alpha = value = Math.max(0, value)
+
+			if (!this.isVisible) {
+				return
+			}
+
+			const color = this.color
+			const redRange = 1 - color[0]
+			const greenRange = 1 - color[1]
+			const blueRange = 1 - color[2]
+			const redDelta = redRange * value
+			const greenDelta = greenRange * value
+			const blueDelta = blueRange * value
+			const r = color[0] + redDelta
+			const g = color[1] + greenDelta
+			const b = color[2] + blueDelta
+			this._strikerLegsMeshMaterial.emissiveColor.set(r, g, b)
+			// console.debug(`value = ${value}, red: original = ${this.color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
+
+			const white = 0.5 + 0.5 * value
+			this._strikerGlassMeshMaterial.emissiveColor.setAll(white)
+
+			this._strikerLegsMesh.position.y = this.strikerMeshPositionY + (value * -this.strikerMeshPositionY)
+	}
+
+		get isVisible() { return this._flashMesh.isVisible }
+		set isVisible(value) { this._flashMesh.isVisible = value }
+
+		set scaling(value) { this._flashMesh.scaling.set(value, 1, value) }
+
+		get strikerMeshPositionY() { return this._strikerLegsMesh.position.y }
+		set strikerMeshPositionY(value) { this._strikerLegsMesh.position.y = value }
+
+		_flashMesh = null
+		_flashMeshMaterial = null
+
+		_strikerLegsMesh = null
+		_strikerLegsMeshMaterial = null
+
+		_strikerGlassMesh = null
+		_strikerGlassMeshMaterial = null
+
+		constructor() {
+			super()
+
+			this._flashMesh = makeTrianglePolygonMesh()
+			this._flashMesh.position.setAll(0)
+			this._flashMesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMax)
+			this._flashMesh.bakeCurrentTransformIntoVertices()
+			
+			this._flashMeshMaterial = new BABYLON.StandardMaterial('', scene)
+			this._flashMeshMaterial.alpha = 0.999
+			this._flashMeshMaterial.emissiveColor.setAll(0.5)
+			this._flashMesh.material = this._flashMeshMaterial
+
+			this._strikerLegsMesh = mainTriangleMesh.clone(`Drum striker legs mesh`, mainTriangleMesh.parent)
+			this._strikerLegsMesh.makeGeometryUnique()
+			this._strikerLegsMesh.isVisible = true
+
+			this._strikerLegsMeshMaterial = new BABYLON.StandardMaterial('', scene)
+			this._strikerLegsMeshMaterial.emissiveColor.setAll(0.5)
+			this._strikerLegsMesh.material = this._strikerLegsMeshMaterial
+
+			this._strikerGlassMesh = makeTrianglePolygonMesh()
+			this._strikerGlassMesh.isVisible = true
+			this._strikerGlassMesh.scaling.set(210, 180, 210)
+			this._strikerGlassMesh.parent = this._strikerLegsMesh
+			
+			this._strikerGlassMeshMaterial = new BABYLON.StandardMaterial('', scene)
+			this._strikerGlassMeshMaterial.alpha = 0.5
+			this._strikerGlassMeshMaterial.backFaceCulling = false
+			this._strikerGlassMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+			this._strikerGlassMesh.material = this._strikerGlassMeshMaterial
+
+			this.isVisible = false
+		}
+	}
+
+	//#endregion
+
 	//#region class HiHatAnimationComponent
 
 	class HiHatAnimationComponent extends Component {
 		laserWidth = 0.25
 		y = 1
 
-		get color() { return this._material.emissiveColor.asArray() }
-		set color(value) { this._material.emissiveColor.fromArray(value) }
+		get color() { return this._meshMaterial.emissiveColor.asArray() }
+		set color(value) { this._meshMaterial.emissiveColor.fromArray(value) }
 
 		get isVisible() { return this._mesh.isVisible }
 		set isVisible(value) { this._mesh.isVisible = value }
@@ -1638,7 +1824,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this._updateMeshVertices()
 		}
 
-		_material = new BABYLON.StandardMaterial('', scene)
 		_mesh = new BABYLON.Mesh('', scene)
 		_meshStartPositions = [
 			// Legs match the inside faces of the MainTriangle mesh's legs at y = 0.
@@ -1692,6 +1877,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			7, 5, 3
 		]
 		_meshNormals = []
+		_meshMaterial = new BABYLON.StandardMaterial('', scene)
 
 		_updateMeshNormals = () => {
 			BABYLON.VertexData.ComputeNormals(this._meshPositions, this._meshIndices, this._meshNormals)
@@ -1706,7 +1892,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			super()
 			this.color = [1, 1, 1]
 			this.isVisible = false
-			this._mesh.material = this._material
+			this._mesh.material = this._meshMaterial
 
 			this._updateMeshNormals()
 			let vertexData = new BABYLON.VertexData()
@@ -1740,8 +1926,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					this.track = component
 				}
 			})
-			assert(this.hiHatAnimation, 'HiHatAnimationComponent missing.')
-			assert(this.track, 'TrackComponent missing.')
+			assert(this.hiHatAnimation, `${HiHatAnimationComponent.name} missing.`)
+			assert(this.track, `${TrackComponent.name} missing.`)
 		}
 
 		run = (time, deltaTime) => {
@@ -1779,10 +1965,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				continue
 			}
 
-			if (options.duration) {
-				note.offTime = note.onTime + options.duration
+			if (options.totalDuration) {
+				note.offTime = note.onTime + options.totalDuration
 			}
 			track.notes.push(note)
+		}
+		return entity
+	}
+
+	const createDrumAnimation = (id, json, options) => {
+		const entity = createTrack(id, json, options)
+		const duration = new TrackNoteDurationComponent
+		entity.addComponent(duration)
+		if (options.normalizeDuration) {
+			duration.normalize = options.normalizeDuration
 		}
 		return entity
 	}
@@ -1802,38 +1998,38 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	const createTrackMap = {
 		'e274e9138ef048c4ba9c4d42e836c85c': {
-			function: createTrack,
+			function: createDrumAnimation,
 			options: {
 				name: '00: Kick 1',
-				duration: 0.1
+				totalDuration: 0.1
 			}
 		},
 		'8aac7747b6b44366b1080319e34a8616': {
 			function: createTrack,
 			options: {
 				name: '01: Kick 2: Left',
-				duration: 0.1
+				totalDuration: 0.1
 			}
 		},
 		'8e12ccc0dff44a4283211d553199a8cd': {
 			function: createTrack,
 			options: {
 				name: '02: Kick 2: Right', 
-				duration: 0.1
+				totalDuration: 0.1
 			}
 		},
 		'6aecd056fd3f4c6d9a108de531c48ddf': {
 			function: createTrack,
 			options: {
 				name: '03: Snare',
-				duration: 0.25
+				totalDuration: 0.25
 			}
 		},
 		'e3e7d57082834a28b53e021beaeb783d': {
 			function: createHiHatAnimation,
 			options: {
 				name: '04: HiHat 1',
-				duration: 0.034,
+				totalDuration: 0.034,
 				color: [ 1, 0.333, 0.333 ],
 				y: 20
 			}
@@ -1842,7 +2038,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			function: createHiHatAnimation,
 			options: {
 				name: '05: HiHat 2',
-				duration: 0.034,
+				totalDuration: 0.034,
 				color: [ 0.333, 0.333, 1 ],
 				y: 60
 			}
@@ -12208,10 +12404,12 @@ const csdJson = `
 	let time = -1
 
 	scene.registerBeforeRender(() => {
-		if (document.useDawTiming && !dawNeedsRender) {
-			return
+		if (document.useDawTiming) {
+			if (!dawNeedsRender) {
+				return
+			}
 		}
-		if (!csound.playbackIsStarted) {
+		else if (!csound.playbackIsStarted) {
 			return
 		}
 
