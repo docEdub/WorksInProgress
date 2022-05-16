@@ -1387,8 +1387,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				}
 			}
 
+			// Refresh this system's active notes list if the track's active notes list changed.
+			if (this.track.activeNotesChanged) {
+				this.activeNotes.length = this.track.activeNotes.length
+				for (let i = 0; i < this.activeNotes.length; i++) {
+					this.activeNotes[i] = this.track.activeNotes[i]
+				}
+			}
+
 			// Update durations for current active notes.
-			this.activeNotes = [...this.track.activeNotes]
 			for (let i = 0; i < this.activeNotes.length; i++) {
 				const note = this.activeNotes[i]
 				if (this.duration.normalize) {
