@@ -964,283 +964,283 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region class Drum
 
-	class Drum {
-		uuid = null
-		maxDuration = 0.1
-		minScaling = 10
-		maxScaling = 100
+	// class Drum {
+	// 	uuid = null
+	// 	maxDuration = 0.1
+	// 	minScaling = 10
+	// 	maxScaling = 100
 
-		set position(value) {
-			this.mesh.position.set(value[0], value[1], value[2])
-			this.strikeMesh.position.set(value[0], this.strikeMeshPositionY, value[2])
-		}
+	// 	set position(value) {
+	// 		this.mesh.position.set(value[0], value[1], value[2])
+	// 		this.strikeMesh.position.set(value[0], this.strikeMeshPositionY, value[2])
+	// 	}
 
-		set rotation(value) {
-			this.mesh.rotation.set(value[0], value[1], value[2])
-			this.strikeMesh.rotation.set(value[0], value[1], value[2])
-		}
+	// 	set rotation(value) {
+	// 		this.mesh.rotation.set(value[0], value[1], value[2])
+	// 		this.strikeMesh.rotation.set(value[0], value[1], value[2])
+	// 	}
 
-		_strikeMeshPositionY = 0
-		get strikeMeshPositionY() { return this._strikeMeshPositionY }
-		set strikeMeshPositionY(value) {
-			this._strikeMeshPositionY = value
-			this.strikeMesh.position.y = value
-		}
+	// 	_strikeMeshPositionY = 0
+	// 	get strikeMeshPositionY() { return this._strikeMeshPositionY }
+	// 	set strikeMeshPositionY(value) {
+	// 		this._strikeMeshPositionY = value
+	// 		this.strikeMesh.position.y = value
+	// 	}
 
-		_strikeMeshScale = [ 1, 1, 1 ]
-		get strikeMeshScale() { return this._strikeMeshScale }
-		set strikeMeshScale(value) {
-			this._strikeMeshScale = value
-			this.strikeMesh.scaling.set(value[0], value[1], value[2])
-		}
+	// 	_strikeMeshScale = [ 1, 1, 1 ]
+	// 	get strikeMeshScale() { return this._strikeMeshScale }
+	// 	set strikeMeshScale(value) {
+	// 		this._strikeMeshScale = value
+	// 		this.strikeMesh.scaling.set(value[0], value[1], value[2])
+	// 	}
 
-		_color = null
-		get color() { return this._color }
-		set color(value) {
-			this._color = value
-			this.material.emissiveColor.set(value[0], value[1], value[2])
-			this.strikeMaterial.emissiveColor.set(value[0], value[1], value[2])
-		}
+	// 	_color = null
+	// 	get color() { return this._color }
+	// 	set color(value) {
+	// 		this._color = value
+	// 		this.material.emissiveColor.set(value[0], value[1], value[2])
+	// 		this.strikeMaterial.emissiveColor.set(value[0], value[1], value[2])
+	// 	}
 
-		constructor() {
-			let material = new BABYLON.StandardMaterial('', scene)
-			material.alpha = 0.999
-			material.emissiveColor.set(0.5, 0.5, 0.5)
-			this.material = material
+	// 	constructor() {
+	// 		let material = new BABYLON.StandardMaterial('', scene)
+	// 		material.alpha = 0.999
+	// 		material.emissiveColor.set(0.5, 0.5, 0.5)
+	// 		this.material = material
 
-			let mesh = makeTrianglePolygonMesh()
-			mesh.material = this.material
-			mesh.position.setAll(0)
-			mesh.scaling.set(this.minScaling, 1, this.minScaling)
-			mesh.bakeCurrentTransformIntoVertices()
-			this.mesh = mesh
+	// 		let mesh = makeTrianglePolygonMesh()
+	// 		mesh.material = this.material
+	// 		mesh.position.setAll(0)
+	// 		mesh.scaling.set(this.minScaling, 1, this.minScaling)
+	// 		mesh.bakeCurrentTransformIntoVertices()
+	// 		this.mesh = mesh
 
-			let strikeMaterial = new BABYLON.StandardMaterial('', scene)
-			// strikeMaterial.alpha = 0.999
-			strikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
-			this.strikeMaterial = strikeMaterial
+	// 		let strikeMaterial = new BABYLON.StandardMaterial('', scene)
+	// 		// strikeMaterial.alpha = 0.999
+	// 		strikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+	// 		this.strikeMaterial = strikeMaterial
 
-			let strikeMesh = mainTriangleMesh.clone(`Drum strike mesh`, mainTriangleMesh.parent)
-			strikeMesh.makeGeometryUnique()
-			strikeMesh.material = this.strikeMaterial
-			strikeMesh.isVisible = true
-			this.strikeMesh = strikeMesh
+	// 		let strikeMesh = mainTriangleMesh.clone(`Drum strike mesh`, mainTriangleMesh.parent)
+	// 		strikeMesh.makeGeometryUnique()
+	// 		strikeMesh.material = this.strikeMaterial
+	// 		strikeMesh.isVisible = true
+	// 		this.strikeMesh = strikeMesh
 
-			let innerStrikeMaterial = new BABYLON.StandardMaterial('', scene)
-			innerStrikeMaterial.alpha = 0.5
-			innerStrikeMaterial.backFaceCulling = false
-			innerStrikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
-			this.innerStrikeMaterial = innerStrikeMaterial
+	// 		let innerStrikeMaterial = new BABYLON.StandardMaterial('', scene)
+	// 		innerStrikeMaterial.alpha = 0.5
+	// 		innerStrikeMaterial.backFaceCulling = false
+	// 		innerStrikeMaterial.emissiveColor.set(0.5, 0.5, 0.5)
+	// 		this.innerStrikeMaterial = innerStrikeMaterial
 
-			let innerStrikeMesh = makeTrianglePolygonMesh()
-			innerStrikeMesh.isVisible = true
-			innerStrikeMesh.material = this.innerStrikeMaterial
-			innerStrikeMesh.scaling.set(210, 180, 210)
-			innerStrikeMesh.parent = this.strikeMesh
-			this.innerStrikeMesh = innerStrikeMesh
+	// 		let innerStrikeMesh = makeTrianglePolygonMesh()
+	// 		innerStrikeMesh.isVisible = true
+	// 		innerStrikeMesh.material = this.innerStrikeMaterial
+	// 		innerStrikeMesh.scaling.set(210, 180, 210)
+	// 		innerStrikeMesh.parent = this.strikeMesh
+	// 		this.innerStrikeMesh = innerStrikeMesh
 
-			this.isVisible = false
-		}
+	// 		this.isVisible = false
+	// 	}
 
-		material = null
-		mesh = null
+	// 	material = null
+	// 	mesh = null
 
-		strikeMaterial = null
-		strikeMesh = null
+	// 	strikeMaterial = null
+	// 	strikeMesh = null
 
-		innerStrikeMaterial = null
-		innerStrikeMesh = null
+	// 	innerStrikeMaterial = null
+	// 	innerStrikeMesh = null
 
-		json = null
-		header = null
-		noteStartIndex = 0
-		noteCount = 0
+	// 	json = null
+	// 	header = null
+	// 	noteStartIndex = 0
+	// 	noteCount = 0
 
-		currentNoteOnIndex = null
-		nextNoteOnIndex = 0
-		nextNoteOffIndex = 0
+	// 	currentNoteOnIndex = null
+	// 	nextNoteOnIndex = 0
+	// 	nextNoteOffIndex = 0
 
-		note = null
+	// 	note = null
 		
-		_currentNoteDuration = 0
-		get currentNoteDuration() { return this._currentNoteDuration }
-		set currentNoteDuration(value) {
-			this._currentNoteDuration = value
-			this.fade = 0.999 * (1 - value / this.maxDuration)
-			const scaling = this.minScaling + (this.maxScaling - this.minScaling) * (value / this.maxDuration)
-			// console.debug(`Drum: duration = ${value}, alpha = ${this.material.alpha}, scaling = ${scaling}`)
-			this.scaling = scaling
-		}
+	// 	_currentNoteDuration = 0
+	// 	get currentNoteDuration() { return this._currentNoteDuration }
+	// 	set currentNoteDuration(value) {
+	// 		this._currentNoteDuration = value
+	// 		this.fade = 0.999 * (1 - value / this.maxDuration)
+	// 		const scaling = this.minScaling + (this.maxScaling - this.minScaling) * (value / this.maxDuration)
+	// 		// console.debug(`Drum: duration = ${value}, alpha = ${this.material.alpha}, scaling = ${scaling}`)
+	// 		this.scaling = scaling
+	// 	}
 		
-		get isVisible() { return this.mesh.isVisible }
-		set isVisible(value) {
-			this.mesh.isVisible = value
-		}
+	// 	get isVisible() { return this.mesh.isVisible }
+	// 	set isVisible(value) {
+	// 		this.mesh.isVisible = value
+	// 	}
 
-		set fade(value) {
-			value = Math.max(0, value)
+	// 	set fade(value) {
+	// 		value = Math.max(0, value)
 			
-			this.alpha = value
+	// 		this.alpha = value
 
-			if (this.isVisible) {
-				const redRange = 1 - this._color[0]
-				const greenRange = 1 - this._color[1]
-				const blueRange = 1 - this._color[2]
-				const redDelta = redRange * value
-				const greenDelta = greenRange * value
-				const blueDelta = blueRange * value
-				const r = this._color[0] + redDelta
-				const g = this._color[1] + greenDelta
-				const b = this._color[2] + blueDelta
-				this.strikeMaterial.emissiveColor.set(r, g, b)
-				// console.debug(`value = ${value}, red: original = ${this._color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
+	// 		if (this.isVisible) {
+	// 			const redRange = 1 - this._color[0]
+	// 			const greenRange = 1 - this._color[1]
+	// 			const blueRange = 1 - this._color[2]
+	// 			const redDelta = redRange * value
+	// 			const greenDelta = greenRange * value
+	// 			const blueDelta = blueRange * value
+	// 			const r = this._color[0] + redDelta
+	// 			const g = this._color[1] + greenDelta
+	// 			const b = this._color[2] + blueDelta
+	// 			this.strikeMaterial.emissiveColor.set(r, g, b)
+	// 			// console.debug(`value = ${value}, red: original = ${this._color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
 
-				const white = 0.5 + 0.5 * value
-				this.innerStrikeMaterial.emissiveColor.set(white, white, white)
+	// 			const white = 0.5 + 0.5 * value
+	// 			this.innerStrikeMaterial.emissiveColor.set(white, white, white)
 
-				this.strikeMesh.position.y = this.strikeMeshPositionY + (value * -this.strikeMeshPositionY)
-				// this.strikeMesh.scaling.y = this.strikeMeshScale[1] - value / (this.strikeMeshScale[1] * 1.111)
-			}
-		}
+	// 			this.strikeMesh.position.y = this.strikeMeshPositionY + (value * -this.strikeMeshPositionY)
+	// 			// this.strikeMesh.scaling.y = this.strikeMeshScale[1] - value / (this.strikeMeshScale[1] * 1.111)
+	// 		}
+	// 	}
 
-		set alpha(value) {
-			this.material.alpha = value
-		}
+	// 	set alpha(value) {
+	// 		this.material.alpha = value
+	// 	}
 
-		set scaling(value) {
-			this.mesh.scaling.set(value, 1, value)
-		}
+	// 	set scaling(value) {
+	// 		this.mesh.scaling.set(value, 1, value)
+	// 	}
 
-		noteOn = (i) => {
-			if (!!this.note && this.note.isOn) {
-				this.noteOff()
-			}
-			this.currentNoteOnIndex = i
-			this.currentNoteDuration = 0
-			const note = this.json[i].noteOn
-			note.isOn = this.isVisible = true
-			this.note = note
-		}
+	// 	noteOn = (i) => {
+	// 		if (!!this.note && this.note.isOn) {
+	// 			this.noteOff()
+	// 		}
+	// 		this.currentNoteOnIndex = i
+	// 		this.currentNoteDuration = 0
+	// 		const note = this.json[i].noteOn
+	// 		note.isOn = this.isVisible = true
+	// 		this.note = note
+	// 	}
 
-		noteOff = () => {
-            const note = this.note
-            if (!!note) {
-                note.isOn = this.isVisible = false
-            }
-			this.note = null
-		}
+	// 	noteOff = () => {
+    //         const note = this.note
+    //         if (!!note) {
+    //             note.isOn = this.isVisible = false
+    //         }
+	// 		this.note = null
+	// 	}
 
-		setJson = (json) => {
-			this.json = json
-			this.header = json[0]
+	// 	setJson = (json) => {
+	// 		this.json = json
+	// 		this.header = json[0]
 
-			for (let i = 1; i < json.length; i++) {
-				let noteOn = json[i].noteOn
-				noteOn.isOn = false
+	// 		for (let i = 1; i < json.length; i++) {
+	// 			let noteOn = json[i].noteOn
+	// 			noteOn.isOn = false
 
-				// Skip preallocation notes.
-				if (noteOn.time == 0.005) {
-					continue
-				}
-				else if (this.noteStartIndex == 0) {
-					this.noteStartIndex = i
-					this.position = noteOn.xyz
-				}
+	// 			// Skip preallocation notes.
+	// 			if (noteOn.time == 0.005) {
+	// 				continue
+	// 			}
+	// 			else if (this.noteStartIndex == 0) {
+	// 				this.noteStartIndex = i
+	// 				this.position = noteOn.xyz
+	// 			}
 
-				noteOn.offTime = noteOn.time + this.maxDuration
-				this.noteCount++
-			}
+	// 			noteOn.offTime = noteOn.time + this.maxDuration
+	// 			this.noteCount++
+	// 		}
 
-			// console.debug(`Drum ${this.uuid} json ...`)
-			// console.debug(json)
+	// 		// console.debug(`Drum ${this.uuid} json ...`)
+	// 		// console.debug(json)
 
-			this.reset()
-		}
+	// 		this.reset()
+	// 	}
 
-		isReset = false
+	// 	isReset = false
 
-		reset = () => {
-			if (this.isReset) {
-				return
-			}
-			this.isReset = true
-			this.nextNoteOnIndex = this.noteStartIndex
-			this.nextNoteOffIndex = this.noteStartIndex
-			this.currentNoteOnIndex = null
-			this.currentNoteDuration = this.maxDuration
-		}
+	// 	reset = () => {
+	// 		if (this.isReset) {
+	// 			return
+	// 		}
+	// 		this.isReset = true
+	// 		this.nextNoteOnIndex = this.noteStartIndex
+	// 		this.nextNoteOffIndex = this.noteStartIndex
+	// 		this.currentNoteOnIndex = null
+	// 		this.currentNoteDuration = this.maxDuration
+	// 	}
 
-		render = (time) => {
-			if (this.isReset) {
-				this.noteOff()
-				this.isReset = false
-			}
-            while (this.nextNoteOnIndex < this.json.length
-					&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-				if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
-					this.noteOn(this.nextNoteOnIndex);
-				}
-				this.nextNoteOnIndex++;
-			}
-			while (this.nextNoteOffIndex < this.json.length
-					&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-				if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
-					this.noteOff();
-				}
-				this.nextNoteOffIndex++;
-			}
-			if (!!this.note && this.note.isOn) {
-				this.currentNoteDuration = time - this.note.time
-			}
-			if (this.isVisible) {
-				centerLight.intensity += 0.25
-			}
-		}
-	}
+	// 	render = (time) => {
+	// 		if (this.isReset) {
+	// 			this.noteOff()
+	// 			this.isReset = false
+	// 		}
+    //         while (this.nextNoteOnIndex < this.json.length
+	// 				&& this.json[this.nextNoteOnIndex].noteOn.time <= time) {
+	// 			if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
+	// 				this.noteOn(this.nextNoteOnIndex);
+	// 			}
+	// 			this.nextNoteOnIndex++;
+	// 		}
+	// 		while (this.nextNoteOffIndex < this.json.length
+	// 				&& this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
+	// 			if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
+	// 				this.noteOff();
+	// 			}
+	// 			this.nextNoteOffIndex++;
+	// 		}
+	// 		if (!!this.note && this.note.isOn) {
+	// 			this.currentNoteDuration = time - this.note.time
+	// 		}
+	// 		if (this.isVisible) {
+	// 			centerLight.intensity += 0.25
+	// 		}
+	// 	}
+	// }
 
-	const kickStrikeMeshPositionY = 2
-	const snareStrikeMeshPositionY = 1
+	// const kickStrikeMeshPositionY = 2
+	// const snareStrikeMeshPositionY = 1
 
-	const kickStrikeMeshScale = new Array(3).fill(30 / mainTriangleMeshHeight)
-	const snareStrikeMeshScale = new Array(3).fill(20 / mainTriangleMeshHeight)
+	// const kickStrikeMeshScale = new Array(3).fill(30 / mainTriangleMeshHeight)
+	// const snareStrikeMeshScale = new Array(3).fill(20 / mainTriangleMeshHeight)
 
-	const kick1 = new Drum
-	kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
-	kick1.strikeMeshPositionY = kickStrikeMeshPositionY
-	kick1.strikeMeshScale = kickStrikeMeshScale
-	kick1.maxDuration = 0.1
-	kick1.minScaling = 1
-	kick1.maxScaling = 40
-	kick1.color = [ 1, 0.5, 0.1 ]
+	// const kick1 = new Drum
+	// kick1.uuid = 'e274e9138ef048c4ba9c4d42e836c85c'
+	// kick1.strikeMeshPositionY = kickStrikeMeshPositionY
+	// kick1.strikeMeshScale = kickStrikeMeshScale
+	// kick1.maxDuration = 0.1
+	// kick1.minScaling = 1
+	// kick1.maxScaling = 40
+	// kick1.color = [ 1, 0.5, 0.1 ]
 
-	const kick2Left = new Drum
-	kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
-	kick2Left.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
-	kick2Left.strikeMeshPositionY = kickStrikeMeshPositionY
-	kick2Left.strikeMeshScale = kickStrikeMeshScale
-	kick2Left.maxDuration = 0.1
-	kick2Left.minScaling = 1
-	kick2Left.maxScaling = 40
-	kick2Left.color = [ 0.1, 1, 0.5 ]
+	// const kick2Left = new Drum
+	// kick2Left.uuid = '8aac7747b6b44366b1080319e34a8616'
+	// kick2Left.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
+	// kick2Left.strikeMeshPositionY = kickStrikeMeshPositionY
+	// kick2Left.strikeMeshScale = kickStrikeMeshScale
+	// kick2Left.maxDuration = 0.1
+	// kick2Left.minScaling = 1
+	// kick2Left.maxScaling = 40
+	// kick2Left.color = [ 0.1, 1, 0.5 ]
 
-	const kick2Right = new Drum
-	kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
-	kick2Right.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
-	kick2Right.strikeMeshPositionY = kickStrikeMeshPositionY
-	kick2Right.strikeMeshScale = kickStrikeMeshScale
-	kick2Right.maxDuration = 0.1
-	kick2Right.minScaling = 1
-	kick2Right.maxScaling = 40
-	kick2Right.color = [ 0.5, 0.1, 1 ]
+	// const kick2Right = new Drum
+	// kick2Right.uuid = '8e12ccc0dff44a4283211d553199a8cd'
+	// kick2Right.rotation = [ 0, BABYLON.Angle.FromDegrees(120).radians(), 0 ]
+	// kick2Right.strikeMeshPositionY = kickStrikeMeshPositionY
+	// kick2Right.strikeMeshScale = kickStrikeMeshScale
+	// kick2Right.maxDuration = 0.1
+	// kick2Right.minScaling = 1
+	// kick2Right.maxScaling = 40
+	// kick2Right.color = [ 0.5, 0.1, 1 ]
 
-	const snare = new Drum
-	snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
-	snare.strikeMeshPositionY = snareStrikeMeshPositionY
-	snare.strikeMeshScale = snareStrikeMeshScale
-	snare.maxDuration = 0.25
-	snare.minScaling = 0.24
-	snare.maxScaling = 60
-	snare.color = [ 0.1, 0.1, 1 ]
+	// const snare = new Drum
+	// snare.uuid = '6aecd056fd3f4c6d9a108de531c48ddf'
+	// snare.strikeMeshPositionY = snareStrikeMeshPositionY
+	// snare.strikeMeshScale = snareStrikeMeshScale
+	// snare.maxDuration = 0.25
+	// snare.minScaling = 0.24
+	// snare.maxScaling = 60
+	// snare.color = [ 0.1, 0.1, 1 ]
 
 	//#endregion
 
@@ -1659,14 +1659,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			for (let i = 0; i < this.activeNotes.length; i++) {
 				const note = this.activeNotes[i]
 				if (!note.isActive) {
-					assert(time < note.onTime || note.offTime < time, `Note should be active.`)
+					assert(time < note.onTime || note.offTime <= time, `Note should be active.`)
 					if (this.duration.normalize) {
 						note.duration = time < note.onTime ? 0 : 1
 					}
 					else {
 						note.duration = time < note.onTime ? 0 : note.totalDuration
 					}
-					console.debug(`Duration = ${note.duration}.`)
+					// console.debug(`Duration = ${note.duration}.`)
 				}
 			}
 
@@ -1690,7 +1690,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 						note.duration = time - note.onTime
 					}
 				}
-				console.debug(`Duration = ${note.duration}.`)
+				// console.debug(`Duration = ${note.duration}.`)
 			}
 		}
 
@@ -1712,20 +1712,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		flashScalingMin = 10
 		flashScalingMax = 100
 
-		get alpha() { return this._flashMeshMaterial.alpha }
-		set alpha(value) { this._flashMeshMaterial.alpha = value }
-
 		get color() { return this._flashMeshMaterial.emissiveColor.asArray() }
 		set color(value) {
 			this._flashMeshMaterial.emissiveColor.fromArray(value)
 			this._strikerLegsMeshMaterial.emissiveColor.fromArray(value)
 		}
 
-		get fade() { return this.alpha }
-		set fade(value) {
-			this.alpha = value = Math.max(0, value)
+		set duration(value) {
+			value = Math.max(0, value)
+			const oneMinusValue = 1 - value
 
-			if (!this.isVisible) {
+			this._flashMeshMaterial.alpha = oneMinusValue
+
+			if (!this.isRunning) {
 				return
 			}
 
@@ -1733,28 +1732,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			const redRange = 1 - color[0]
 			const greenRange = 1 - color[1]
 			const blueRange = 1 - color[2]
-			const redDelta = redRange * value
-			const greenDelta = greenRange * value
-			const blueDelta = blueRange * value
+			const redDelta = redRange * oneMinusValue
+			const greenDelta = greenRange * oneMinusValue
+			const blueDelta = blueRange * oneMinusValue
 			const r = color[0] + redDelta
 			const g = color[1] + greenDelta
 			const b = color[2] + blueDelta
 			this._strikerLegsMeshMaterial.emissiveColor.set(r, g, b)
-			// console.debug(`value = ${value}, red: original = ${this.color[0]}, range = ${redRange}, delta = ${redDelta}, final = ${r}`)
 
-			const white = 0.5 + 0.5 * value
-			this._strikerGlassMeshMaterial.emissiveColor.setAll(white)
+			const white = 0.5 + 0.5 * oneMinusValue
+			this._strikerGlassMeshMaterial.emissiveColor.set(white, white, white)
 
-			this._strikerLegsMesh.position.y = this.strikerMeshPositionY + (value * -this.strikerMeshPositionY)
-	}
+			this._strikerLegsMesh.position.y = this.strikerMeshY + (oneMinusValue * -this.strikerMeshY)
+			this.scaling = this.flashScalingMin + this.flashScalingTotal * value
+		}
 
-		get isVisible() { return this._flashMesh.isVisible }
-		set isVisible(value) { this._flashMesh.isVisible = value }
+		get flashScalingTotal() { return this.flashScalingMax - this.flashScalingMin }
+
+		get isRunning() { return this._flashMesh.isVisible }
+		set isRunning(value) { this._flashMesh.isVisible = value }
+
+		set position(value) {
+			this._flashMesh.position.fromArray(value)
+			this._strikerLegsMesh.position.set(value[0], this.strikerMeshY, value[2])
+		}
+
+		set rotation(value) {
+			this._flashMesh.rotation.fromArray(value)
+			this._strikerLegsMesh.rotation.fromArray(value)
+		}
 
 		set scaling(value) { this._flashMesh.scaling.set(value, 1, value) }
 
-		get strikerMeshPositionY() { return this._strikerLegsMesh.position.y }
-		set strikerMeshPositionY(value) { this._strikerLegsMesh.position.y = value }
+		set strikerMeshScaling(value) { this._strikerLegsMesh.scaling.fromArray(value) }
+
+		_strikerMeshY = 0
+		get strikerMeshY() { return this._strikerMeshY }
+		set strikerMeshY(value) {
+			this._strikerMeshY = value
+			this._strikerLegsMesh.position.y = value
+		}
+
+		_flashScalingRange = this.flashScalingMax - this.flashScalingMin
 
 		_flashMesh = null
 		_flashMeshMaterial = null
@@ -1768,14 +1787,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		constructor() {
 			super()
 
+			this._flashScalingRange = this.flashScalingMax - this.flashScalingMin
+
 			this._flashMesh = makeTrianglePolygonMesh()
 			this._flashMesh.position.setAll(0)
-			this._flashMesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMax)
+			this._flashMesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMin)
 			this._flashMesh.bakeCurrentTransformIntoVertices()
 			
 			this._flashMeshMaterial = new BABYLON.StandardMaterial('', scene)
 			this._flashMeshMaterial.alpha = 0.999
-			this._flashMeshMaterial.emissiveColor.setAll(0.5)
+			this._flashMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
 			this._flashMesh.material = this._flashMeshMaterial
 
 			this._strikerLegsMesh = mainTriangleMesh.clone(`Drum striker legs mesh`, mainTriangleMesh.parent)
@@ -1783,7 +1804,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this._strikerLegsMesh.isVisible = true
 
 			this._strikerLegsMeshMaterial = new BABYLON.StandardMaterial('', scene)
-			this._strikerLegsMeshMaterial.emissiveColor.setAll(0.5)
+			this._strikerLegsMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
 			this._strikerLegsMesh.material = this._strikerLegsMeshMaterial
 
 			this._strikerGlassMesh = makeTrianglePolygonMesh()
@@ -1797,9 +1818,54 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this._strikerGlassMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
 			this._strikerGlassMesh.material = this._strikerGlassMeshMaterial
 
-			this.isVisible = false
+			this.isRunning = false
 		}
 	}
+
+	//#endregion
+
+	//#region class DrumAnimationSystem
+
+	class DrumAnimationSystem extends System {
+		static requiredComponentTypes = () => { return [
+			TrackComponent,
+			TrackNoteDurationComponent,
+			DrumAnimationComponent
+		]}
+
+		track = null
+		animation = null
+
+		constructor(components) {
+			super(components)
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
+				if (component.isA(TrackComponent)) {
+					this.track = component
+				}
+				else if (component.isA(DrumAnimationComponent)) {
+					this.animation = component
+				}
+			}
+			assert(this.track, `${TrackComponent.name} missing.`)
+			assert(this.animation, `${HiHatAnimationComponent.name} missing.`)
+
+			this.animation.position = this.track.notes[0].xyz
+		}
+
+		run = (time, deltaTime) => {
+			if (0 < this.track.activeNotes.length) {
+				this.animation.isRunning = true
+				this.animation.duration = this.track.activeNotes[0].duration
+			}
+			else {
+				this.animation.duration = 1
+				this.animation.isRunning = false
+			}
+		}
+	}
+
+	world.add(DrumAnimationSystem)
 
 	//#endregion
 
@@ -1920,7 +1986,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		]}
 
 		track = null
-		hiHatAnimation = null
+		animation = null
 
 		constructor(components) {
 			super(components)
@@ -1930,11 +1996,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 					this.track = component
 				}
 				else if (component.isA(HiHatAnimationComponent)) {
-					this.hiHatAnimation = component
+					this.animation = component
 				}
 			}
 			assert(this.track, `${TrackComponent.name} missing.`)
-			assert(this.hiHatAnimation, `${HiHatAnimationComponent.name} missing.`)
+			assert(this.animation, `${HiHatAnimationComponent.name} missing.`)
 		}
 
 		run = (time, deltaTime) => {
@@ -1942,11 +2008,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 				return
 			}
 			if (0 < this.track.activeNotes.length) {
-				this.hiHatAnimation.isVisible = true
-				this.hiHatAnimation.position = this.track.activeNotes[0].xyz
+				this.animation.isVisible = true
+				this.animation.position = this.track.activeNotes[0].xyz
 			}
 			else {
-				this.hiHatAnimation.isVisible = false
+				this.animation.isVisible = false
 			}
 		}
 	}
@@ -1961,7 +2027,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		const entity = new Entity
 		entity.id = id
 		const track = new TrackComponent
-		entity.addComponent(track)
 		track.name = options.name
 		track.header = json[0]
 		for (let i = 1; i < json.length; i++) {
@@ -1977,30 +2042,62 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 			track.notes.push(note)
 		}
+		entity.addComponent(track)
 		return entity
 	}
 
 	const createDrumAnimation = (id, json, options) => {
 		const entity = createTrack(id, json, options)
 		const duration = new TrackNoteDurationComponent
+		duration.normalize = true
 		entity.addComponent(duration)
-		if (options.normalizeDuration) {
-			duration.normalize = options.normalizeDuration
+		const animation = new DrumAnimationComponent
+		if (options.color !== undefined) {
+			animation.color = options.color
 		}
+		if (options.flashScalingMin !== undefined) {
+			animation.flashScalingMin = options.flashScalingMin
+		}
+		if (options.flashScalingMax !== undefined) {
+			animation.flashScalingMax = options.flashScalingMax			
+		}
+		if (options.strikerMeshScaling !== undefined) {
+			animation.strikerMeshScaling = options.strikerMeshScaling
+		}
+		if (options.strikerMeshY !== undefined) {
+			animation.strikerMeshY = options.strikerMeshY
+		}
+		entity.addComponent(animation)
 		return entity
 	}
 
 	const createHiHatAnimation = (id, json, options) => {
 		const entity = createTrack(id, json, options)
-		const hiHatAnimation = new HiHatAnimationComponent
-		entity.addComponent(hiHatAnimation)
+		const animation = new HiHatAnimationComponent
 		if (options.color !== undefined) {
-			hiHatAnimation.color = options.color
+			animation.color = options.color
 		}
 		if (options.y !== undefined) {
-			hiHatAnimation.y = options.y
+			animation.y = options.y
 		}
+		entity.addComponent(animation)
 		return entity
+	}
+
+	const kickOptions = {
+		totalDuration: 0.1,
+		flashScalingMin: 1,
+		flashScalingMax: 40,
+		strikerMeshY: 2,
+		strikerMeshScaling: new Array(3).fill(30 / mainTriangleMeshHeight)
+	}
+
+	const snareOptions = {
+		totalDuration: 0.25,
+		flashScalingMin: 0.24,
+		flashScalingMax: 60,
+		strikerMeshY: 1,
+		strikerMeshScaling: new Array(3).fill(20 / mainTriangleMeshHeight)
 	}
 
 	const createTrackMap = {
@@ -2008,28 +2105,48 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			function: createDrumAnimation,
 			options: {
 				name: '00: Kick 1',
-				totalDuration: 0.1
+				totalDuration: kickOptions.totalDuration,
+				color: [ 1, 0.5, 0.1 ],
+				flashScalingMin: kickOptions.flashScalingMin,
+				flashScalingMax: kickOptions.flashScalingMax,
+				strikerMeshScaling: kickOptions.strikerMeshScaling,
+				strikerMeshY: kickOptions.strikerMeshY
 			}
 		},
 		'8aac7747b6b44366b1080319e34a8616': {
-			function: createTrack,
+			function: createDrumAnimation,
 			options: {
 				name: '01: Kick 2: Left',
-				totalDuration: 0.1
+				totalDuration: kickOptions.totalDuration,
+				color: [ 0.1, 1, 0.5 ],
+				flashScalingMin: kickOptions.flashScalingMin,
+				flashScalingMax: kickOptions.flashScalingMax,
+				strikerMeshScaling: kickOptions.strikerMeshScaling,
+				strikerMeshY: kickOptions.strikerMeshY
 			}
 		},
 		'8e12ccc0dff44a4283211d553199a8cd': {
-			function: createTrack,
+			function: createDrumAnimation,
 			options: {
 				name: '02: Kick 2: Right', 
-				totalDuration: 0.1
+				totalDuration: kickOptions.totalDuration,
+				color: [ 0.5, 0.1, 1 ],
+				flashScalingMin: kickOptions.flashScalingMin,
+				flashScalingMax: kickOptions.flashScalingMax,
+				strikerMeshScaling: kickOptions.strikerMeshScaling,
+				strikerMeshY: kickOptions.strikerMeshY
 			}
 		},
 		'6aecd056fd3f4c6d9a108de531c48ddf': {
-			function: createTrack,
+			function: createDrumAnimation,
 			options: {
 				name: '03: Snare',
-				totalDuration: 0.25
+				totalDuration: snareOptions.totalDuration,
+				color: [ 0.1, 0.1, 1 ],
+				flashScalingMin: snareOptions.flashScalingMin,
+				flashScalingMax: snareOptions.flashScalingMax,
+				strikerMeshScaling: snareOptions.strikerMeshScaling,
+				strikerMeshY: snareOptions.strikerMeshY
 			}
 		},
 		'e3e7d57082834a28b53e021beaeb783d': {
