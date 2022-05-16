@@ -1536,10 +1536,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			TrackComponent
 		]}
 
-		noteOffIndex = 0
-		noteOnIndex = 0
 		track = null
 
+		noteOffIndex = 0
+		noteOnIndex = 0
+		
 		constructor(components) {
 			super(components)
 			components.forEach((component) => {
@@ -1629,9 +1630,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			TrackNoteDurationComponent
 		]}
 
-		activeNotes = []
-		duration = null
 		track = null
+		duration = null
+
+		activeNotes = []
 
 		constructor(components) {
 			super(components)
@@ -1909,25 +1911,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	class HiHatAnimationSystem extends System {
 		static requiredComponentTypes = () => { return [
-			HiHatAnimationComponent,
-			TrackComponent
+			TrackComponent,
+			HiHatAnimationComponent
 		]}
 
-		hiHatAnimation = null
 		track = null
+		hiHatAnimation = null
 
 		constructor(components) {
 			super(components)
 			components.forEach((component) => {
-				if (component.isA(HiHatAnimationComponent)) {
-					this.hiHatAnimation = component
-				}
-				else if (component.isA(TrackComponent)) {
+				if (component.isA(TrackComponent)) {
 					this.track = component
 				}
+				else if (component.isA(HiHatAnimationComponent)) {
+					this.hiHatAnimation = component
+				}
 			})
-			assert(this.hiHatAnimation, `${HiHatAnimationComponent.name} missing.`)
 			assert(this.track, `${TrackComponent.name} missing.`)
+			assert(this.hiHatAnimation, `${HiHatAnimationComponent.name} missing.`)
 		}
 
 		run = (time, deltaTime) => {
