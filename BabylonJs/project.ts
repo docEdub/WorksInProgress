@@ -881,22 +881,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		}
 
 		build = () => {
-			this.#SystemTypes.forEach((SystemType) => {
-				this.#entities.forEach((entity) => {
+			for (let i = 0; i < this.#SystemTypes.length; i++) {
+				const SystemType = this.#SystemTypes[i]
+				for (let j = 0; j < this.#entities.length; j++) {
+					const entity = this.#entities[j]
 					let components = entity.findComponents(SystemType.requiredComponentTypes())
 					if (components) {
 						const system = new SystemType(components)
 						system.entity = entity
 						this.#systems.push(system)
 					}
-				})
-			})
+				}
+			}
 		}
 
 		run = (time, deltaTime) => {
-			this.#systems.forEach((system) => {
-				system.run(time, deltaTime)
-			})
+			for (let i = 0; i < this.#systems.length; i++) {
+				this.#systems[i].run(time, deltaTime)
+			}
 		}
 	}
 
@@ -1543,11 +1545,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		
 		constructor(components) {
 			super(components)
-			components.forEach((component) => {
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
 				if (component.isA(TrackComponent)) {
 					this.track = component
 				}
-			})
+			}
 			assert(this.track, `${TrackComponent.name} missing.`)
 		}
 
@@ -1637,14 +1640,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		constructor(components) {
 			super(components)
-			components.forEach((component) => {
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
 				if (component.isA(TrackComponent)) {
 					this.track = component
 				}
 				else if (component.isA(TrackNoteDurationComponent)) {
 					this.duration = component
 				}
-			})
+			}
 			assert(this.track, `${TrackComponent.name} missing.`)
 			assert(this.duration, `${TrackNoteDurationComponent.name} missing.`)
 			this.#initializeTotalDurations()
@@ -1920,14 +1924,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 		constructor(components) {
 			super(components)
-			components.forEach((component) => {
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
 				if (component.isA(TrackComponent)) {
 					this.track = component
 				}
 				else if (component.isA(HiHatAnimationComponent)) {
 					this.hiHatAnimation = component
 				}
-			})
+			}
 			assert(this.track, `${TrackComponent.name} missing.`)
 			assert(this.hiHatAnimation, `${HiHatAnimationComponent.name} missing.`)
 		}
@@ -12390,7 +12395,9 @@ const csdJson = `
 	//#region World initialization
 
 	const csdData = JSON.parse(csdJson)
-	Object.keys(csdData).forEach((id) => {
+	const csdDataUuids = Object.keys(csdData)
+	for (let i = 0; i < csdDataUuids.length; i++) {
+		const id = csdDataUuids[i]
 		if (createTrackMap[id]) {
 			const trackEntity = createTrackMap[id].function(id, csdData[id], createTrackMap[id].options)
 			world.add(trackEntity)
@@ -12398,7 +12405,7 @@ const csdJson = `
 		else {
 			console.warn(`No create track function found for id ${id}.`)
 		}
-	})
+	}
 
 	world.build()
 
