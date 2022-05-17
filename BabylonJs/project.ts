@@ -930,38 +930,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 	
-	//#region class CenterLight
-
-	class CenterLight {
-		get baseIntensity() { return this._baseIntensity }
-		set baseIntensity(value) { this._baseIntensity = value }
-
-		get intensity() { return this._light.intensity }
-		set intensity(value) {
-			if (this.intensity < value) {
-				this._light.intensity = value
-			}
-		}
-
-		constructor() {
-			this._light.intensity = this.baseIntensity
-			this._light.range = 200	
-		}
-
-		_baseIntensity = 0.25
-		_light = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
-		
-		reset = () => {
-		}
-
-		render = () => {
-			this._light.intensity = this.baseIntensity
-		}
-	}
-	const centerLight = new CenterLight
-
-	//#endregion
-
 	//#region class Bass
 
 	class Bass {
@@ -1237,6 +1205,74 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
+	//#region class ObjectPropertyResetComponent
+
+	class ObjectPropertyResetComponent extends Component {
+		object = null
+		keys = []
+	}
+
+	//#endregion
+
+	//#region class ObjectPropertyResetSystem
+
+	class ObjectPropertyResetSystem extends System {
+		static requiredComponentTypes = () => { return [
+			ObjectPropertyResetComponent
+		]}
+
+		reset = null
+
+		previousValues = {}
+
+		constructor(components) {
+			super(components)
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
+				if (component.isA(ObjectPropertyResetComponent)) {
+					this.reset = component
+				}
+			}
+			assert(this.reset, `${ObjectPropertyResetComponent.name} missing.`)
+			this.#checkKeys()
+			this.#initializePreviousValues()
+		}
+
+		run = (time, deltaTime) => {
+			const object = this.reset.object
+			const keys = this.reset.keys
+			const previousValues = this.previousValues
+			for (let i = 0; i < keys.length; i++) {
+				const key = keys[i]
+				object[key] = previousValues[key]
+			}
+		}
+
+		#checkKeys = () => {
+			const object = this.reset.object
+			const keys = this.reset.keys
+			for (let i = 0; i < keys.length; i++) {
+				if (object[keys[i]] === undefined) {
+					console.warn(`Object key not found. Key = ${keys[i]}. Object = ${object}.`)
+				}
+			}
+		}
+
+		#initializePreviousValues = () => {
+			const object = this.reset.object
+			const keys = this.reset.keys
+			const previousValues = this.previousValues
+			for (let i = 0; i < keys.length; i++) {
+				const key = keys[i]
+				previousValues[key] = object[key]
+			}
+		}
+	}
+
+	world.add(ObjectPropertyResetSystem)
+
+	//#endregion
+
 	//#region class TrackComponent
 
 	class TrackComponent extends Component {
@@ -1332,6 +1368,51 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 
 	world.add(TrackNoteActivationSystem)
+
+	//#endregion
+
+	//#region class TrackActiveNotesChangedCallbackComponent
+
+	class TrackActiveNotesChangedCallbackComponent extends Component {
+		function = (activeNotes) => {}
+	}
+
+	//#endregion
+
+	//#region class TrackActiveNotesChangedCallbackSystem
+
+	class TrackActiveNotesChangedCallbackSystem extends System {
+		static requiredComponentTypes = () => { return [
+			TrackComponent,
+			TrackActiveNotesChangedCallbackComponent
+		]}
+
+		track = null
+		callback = null
+
+		constructor(components) {
+			super(components)
+			for (let i = 0; i < components.length; i++) {
+				const component = components[i]
+				if (component.isA(TrackComponent)) {
+					this.track = component
+				}
+				else if (component.isA(TrackActiveNotesChangedCallbackComponent)) {
+					this.callback = component
+				}
+			}
+			assert(this.track, `${TrackComponent.name} missing.`)
+			assert(this.callback, `${TrackActiveNotesChangedCallbackComponent.name} missing.`)
+		}
+
+		run = (time, deltaTime) => {
+			if (this.track.activeNotesChanged) {
+				this.callback.function(this.track.activeNotes)
+			}
+		}
+	}
+
+	world.add(TrackActiveNotesChangedCallbackSystem)
 
 	//#endregion
 
@@ -1746,6 +1827,41 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#region World setup
 
+	//#region class CenterLight
+
+	class CenterLight {
+		get intensity() { return this._light.intensity }
+		set intensity(value) { this._light.intensity = value }
+
+		constructor() {
+			this._light.intensity = 0.25
+			this._light.range = 200
+
+			const entity = new Entity
+			const reset = new ObjectPropertyResetComponent
+			reset.object = this
+			reset.keys = [ 'intensity' ]
+			entity.addComponent(reset)
+			world.add(entity)
+		}
+
+		_light = new BABYLON.PointLight('', new BABYLON.Vector3(0, 0, 0), scene)
+	}
+
+	const centerLight = new CenterLight
+
+	const addCenterLightFlashComponent = (entity) => {
+		const callback = new TrackActiveNotesChangedCallbackComponent
+		callback.function = (activeNotes) => {
+			if (0 < activeNotes.length) {
+				centerLight.intensity += 0.25
+			}
+		}
+		entity.addComponent(callback)
+	}
+
+	//#endregion
+
 	const createTrack = (id, json, options) => {
 		const entity = new Entity
 		entity.id = id
@@ -1791,6 +1907,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			animation.strikerMeshY = options.strikerMeshY
 		}
 		entity.addComponent(animation)
+		addCenterLightFlashComponent(entity)
 		return entity
 	}
 
@@ -1804,6 +1921,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			animation.y = options.y
 		}
 		entity.addComponent(animation)
+		addCenterLightFlashComponent(entity)
 		return entity
 	}
 
