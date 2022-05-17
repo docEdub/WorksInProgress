@@ -6,9 +6,10 @@ import * as CSOUND from "./@doc.e.dub/csound-browser"
 declare global {
     interface Document {
         Csound: CSOUND.Csound
-        isProduction: boolean // If falsey then we're running in the playground.
-		useDawTiming: boolean // If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
-		debugAsserts: boolean // If truthy then call `debugger` to break in `assert` function.
+        isProduction: boolean	// If falsey then we're running in the playground.
+		useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
+		debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
+		alwaysRun: boolean	   // Always move camera fast on keyboard input, not just when caps lock is on.
     }
 
 	class OSC {	
@@ -38,6 +39,7 @@ declare global {
 document.isProduction = true
 document.useDawTiming = true
 document.debugAsserts = true
+document.alwaysRun = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
@@ -395,7 +397,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		#speed = this.slowSpeed
 
 		onInputChanged = (input) => {
-            if (input.heldKeys[KeyCode.CapsLock] || input.heldKeys[KeyCode.Shift] || input.heldKeys[KeyCode.Space]) {
+            if (document.alwaysRun
+					|| input.heldKeys[KeyCode.CapsLock]
+					|| input.heldKeys[KeyCode.Shift]
+					|| input.heldKeys[KeyCode.Space]) {
                 this.#flatScreenCamera.speed = this.fastSpeed
             }
             else {
