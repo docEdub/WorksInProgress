@@ -774,138 +774,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region ECS classes
-
-	class EcsObject {
-		isA = (Type) => {
-			return Type === this.constructor || Type.isPrototypeOf(this.constructor)
-		}
-	}
-
-	class Entity extends EcsObject {
-		#id = ''
-		get id() { return this.#id }
-		set id(value) { this.#id = value }
-
-		#components = []
-		get components() { return this.#components }
-
-		addComponent = (component) => {
-			if (!component) {
-				return
-			}
-			if (!component.isA(Component)) {
-				return
-			}
-			if (this.#components.includes(component)) {
-				return
-			}
-			this.#components.push(component)
-		}
-
-		/// Finds and returns the components matching the class types listed in the componentTypes array argument.
-		/// Returns null if any of the componentTypes array argument's class types are not found.
-		///
-		findComponents = (ComponentTypes) => {
-			let components = []
-			for (let i = 0; i < ComponentTypes.length; i++) {
-				const ComponentType = ComponentTypes[i]
-				let found = false
-				for (let j = 0; j < this.#components.length; j++) {
-					const component = this.#components[j]
-					if (component.isA(ComponentType)) {
-						found = true
-						components.push(component)
-					}
-				}
-				if (!found) {
-					return null
-				}
-			}
-			return components
-		}
-	}
-
-	class Component extends EcsObject {
-		entity: null
-	}
-
-	class System extends EcsObject {
-		static hasSubclass = (Type) => {
-			return System === Type || System.isPrototypeOf(Type)
-		}
-
-		entity = null
-
-		// Subclasses should reimplement the following functions.
-		static requiredComponentTypes = () => { return [] }
-		constructor(components) { super() }
-		run = (time, deltaTime) => {}
-	}
-
-	class World {
-		#entities = []
-		get entities() { return this.#entities }
-
-		#SystemTypes = []
-		get SystemTypes() { return this.#SystemTypes }
-
-		#systems = []
-		get systems() { return this.#systems }
-
-		#addEntity = (entity) => {
-			this.#entities.push(entity)
-		}
-
-		#addSystemType = (SystemType) => {
-			if (this.#SystemTypes.includes(SystemType)) {
-				return
-			}
-			this.#SystemTypes.push(SystemType)
-		}
-
-		add = (ecsObjectOrType) => {
-			if (!ecsObjectOrType) {
-				return
-			}
-			const isObject = typeof(ecsObjectOrType) === 'object'
-			if (isObject && ecsObjectOrType.isA(Entity)) {
-				this.#addEntity(ecsObjectOrType)
-				return
-			}
-			const isType = typeof(ecsObjectOrType) === 'function'
-			if (isType && System.hasSubclass(ecsObjectOrType)) {
-				this.#addSystemType(ecsObjectOrType)
-				return
-			}
-		}
-
-		build = () => {
-			for (let i = 0; i < this.#SystemTypes.length; i++) {
-				const SystemType = this.#SystemTypes[i]
-				for (let j = 0; j < this.#entities.length; j++) {
-					const entity = this.#entities[j]
-					let components = entity.findComponents(SystemType.requiredComponentTypes())
-					if (components) {
-						const system = new SystemType(components)
-						system.entity = entity
-						this.#systems.push(system)
-					}
-				}
-			}
-		}
-
-		run = (time, deltaTime) => {
-			for (let i = 0; i < this.#systems.length; i++) {
-				this.#systems[i].run(time, deltaTime)
-			}
-		}
-	}
-
-	const world = new World
-
-	//#endregion
-
 	//#region class SunLight
 	
 	class SunLight {
@@ -1202,6 +1070,140 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	// scene.registerBeforeRender(() => {
 	// 	cameraAnimator.render(engine.getDeltaTime() / 1000)
 	// })
+
+	//#endregion
+
+	// ECS
+
+	//#region ECS base classes
+
+	class EcsObject {
+		isA = (Type) => {
+			return Type === this.constructor || Type.isPrototypeOf(this.constructor)
+		}
+	}
+
+	class Entity extends EcsObject {
+		#id = ''
+		get id() { return this.#id }
+		set id(value) { this.#id = value }
+
+		#components = []
+		get components() { return this.#components }
+
+		addComponent = (component) => {
+			if (!component) {
+				return
+			}
+			if (!component.isA(Component)) {
+				return
+			}
+			if (this.#components.includes(component)) {
+				return
+			}
+			this.#components.push(component)
+		}
+
+		/// Finds and returns the components matching the class types listed in the componentTypes array argument.
+		/// Returns null if any of the componentTypes array argument's class types are not found.
+		///
+		findComponents = (ComponentTypes) => {
+			let components = []
+			for (let i = 0; i < ComponentTypes.length; i++) {
+				const ComponentType = ComponentTypes[i]
+				let found = false
+				for (let j = 0; j < this.#components.length; j++) {
+					const component = this.#components[j]
+					if (component.isA(ComponentType)) {
+						found = true
+						components.push(component)
+					}
+				}
+				if (!found) {
+					return null
+				}
+			}
+			return components
+		}
+	}
+
+	class Component extends EcsObject {
+		entity: null
+	}
+
+	class System extends EcsObject {
+		static hasSubclass = (Type) => {
+			return System === Type || System.isPrototypeOf(Type)
+		}
+
+		entity = null
+
+		// Subclasses should reimplement the following functions.
+		static requiredComponentTypes = () => { return [] }
+		constructor(components) { super() }
+		run = (time, deltaTime) => {}
+	}
+
+	class World {
+		#entities = []
+		get entities() { return this.#entities }
+
+		#SystemTypes = []
+		get SystemTypes() { return this.#SystemTypes }
+
+		#systems = []
+		get systems() { return this.#systems }
+
+		#addEntity = (entity) => {
+			this.#entities.push(entity)
+		}
+
+		#addSystemType = (SystemType) => {
+			if (this.#SystemTypes.includes(SystemType)) {
+				return
+			}
+			this.#SystemTypes.push(SystemType)
+		}
+
+		add = (ecsObjectOrType) => {
+			if (!ecsObjectOrType) {
+				return
+			}
+			const isObject = typeof(ecsObjectOrType) === 'object'
+			if (isObject && ecsObjectOrType.isA(Entity)) {
+				this.#addEntity(ecsObjectOrType)
+				return
+			}
+			const isType = typeof(ecsObjectOrType) === 'function'
+			if (isType && System.hasSubclass(ecsObjectOrType)) {
+				this.#addSystemType(ecsObjectOrType)
+				return
+			}
+		}
+
+		build = () => {
+			for (let i = 0; i < this.#SystemTypes.length; i++) {
+				const SystemType = this.#SystemTypes[i]
+				for (let j = 0; j < this.#entities.length; j++) {
+					const entity = this.#entities[j]
+					let components = entity.findComponents(SystemType.requiredComponentTypes())
+					if (components) {
+						const system = new SystemType(components)
+						system.entity = entity
+						this.#systems.push(system)
+					}
+				}
+			}
+		}
+
+		run = (time, deltaTime) => {
+			for (let i = 0; i < this.#systems.length; i++) {
+				this.#systems[i].run(time, deltaTime)
+			}
+		}
+	}
+
+	const world = new World
 
 	//#endregion
 
@@ -1825,9 +1827,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
 	//#endregion
 
-	//#region World setup
+	// World setup
 
-	//#region class CenterLight
+	//#region World center light setup
 
 	class CenterLight {
 		get intensity() { return this._light.intensity }
@@ -1861,6 +1863,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 	}
 
 	//#endregion
+
+	//#region World track setup
 
 	const createTrack = (id, json, options) => {
 		const entity = new Entity
