@@ -803,253 +803,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    //#region class Bass
-
-    class Bass {
-        uuid = null
-        baseScale = 1
-
-        get rotation() { return this.mesh.rotation.y }
-        set rotation(value) {
-            this.mesh.rotation.y = value
-            this.frameMesh.rotation.y = value
-        }
-
-        meshesToColor = []
-
-        constructor() {
-            const material = new BABYLON.StandardMaterial('', scene)
-            material.emissiveColor.set(1, 1, 1)
-            material.backFaceCulling = false
-            material.alpha = 0.75
-            this.material = material
-
-            const mesh = trianglePlaneMesh.clone('Bass')
-            mesh.material = this.material
-            this.mesh = mesh
-
-            const frameMaterial = new BABYLON.StandardMaterial('', scene)
-            frameMaterial.emissiveColor.set(1, 0, 0)
-            this.frameMaterial = frameMaterial
-
-            this.frameMesh.material = this.frameMaterial
-            this.frameMesh.isVisible = false
-
-            BABYLON.VertexData.ComputeNormals(this.frameMeshPositions, this.frameMeshIndices, this.frameMeshNormals)
-            const frameMeshVertexData = new BABYLON.VertexData()
-            frameMeshVertexData.positions = this.frameMeshPositions
-            frameMeshVertexData.indices = this.frameMeshIndices
-            frameMeshVertexData.normals = this.frameMeshNormals
-            frameMeshVertexData.applyToMesh(this.frameMesh, true)
-
-            this.meshesToColor.push(this.frameMesh)
-        }
-
-        material = null
-        mesh = null
-
-        frameMaterial = null
-        frameMeshPositions = [
-            // [0] Leg point 1
-            0, 0, 171.34,
-
-            // [1] Leg point 2
-            -148.385, 0, -85.67,
-
-            // [2] Leg point 3
-            148.385, 0, -86.67,
-
-            // [3 and 4] Frame left
-            -77.05, -1, 44.485,
-            -77.05, 1, 44.485,
-
-            // [5 and 6] Frame bottom
-            0, -1, -88.97,
-            0, 1, -88.97,
-
-            // [7 and 8] Frame right
-            77.05, -1, 44.485,
-            77.05, 1, 44.485,
-        ]
-        frameMeshIndices = [
-            // Frame left
-            0, 3, 4,
-            4, 3, 1,
-            1, 0, 4,
-            0, 1, 3,
-
-            // Frame bottom
-            1, 5, 6,
-            6, 5, 2,
-            2, 1, 6,
-            1, 2, 5,
-
-            // Frame right
-            2, 7, 8,
-            8, 7, 0,
-            0, 2, 8,
-            2, 0, 7
-        ]
-        frameMeshNormals = []
-        frameMesh = new BABYLON.Mesh('BassFrameMesh', scene)
-
-        json = null
-        header = null
-        noteStartIndex = 0
-        noteCount = 0
-
-        nextNoteOnIndex = 0
-        nextNoteOffIndex = 0
-
-        note = null
-        nextNoteKArrayIndex = 0
-
-        setColorFromPitch = (pitch) => {
-            const hue = 256 * ((pitch - 32) / 15)
-            BABYLON.Color3.HSVtoRGBToRef(hue, 1, 0.667, this.material.emissiveColor)
-            for (let i = 0; i < this.meshesToColor.length; i++) {
-                BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshesToColor[i].material.emissiveColor)
-            }
-        }
-
-        yFromPitch = (pitch) => {
-            return ((pitch - 28) / 23) * (mainTriangleMeshHeight * this.baseScale)
-        }
-
-        scaleXZFromY = (y) => {
-            // Main triangle mesh height.
-            const maxHeight = 220.46 * this.baseScale
-
-            // Triangle plane mesh scale at y = 0 (spreads points to inside edge of main triangle mesh legs).
-            const maxScaleXZ = 197.624 * this.baseScale
-
-            return Math.max(0, maxScaleXZ * ((maxHeight - y) / maxHeight))
-        }
-
-        setPitch = (pitch) => {
-            this.setColorFromPitch(pitch)
-            this.mesh.position.y = this.frameMesh.position.y = this.yFromPitch(pitch)
-            // console.debug(`Bass y = ${this.mesh.position.y}`)
-            const scaleXZ = this.scaleXZFromY(this.mesh.position.y)
-            this.mesh.scaling.set(scaleXZ, 1, scaleXZ)
-            this.frameMesh.scaling.set(scaleXZ / 197.624, 1, scaleXZ / 197.624)
-        }
-
-        noteOn = (i) => {
-            if (!!this.note) {
-                this.noteOff()
-            }
-            const note = this.json[i].noteOn
-            this.note = note
-            this.nextNoteKArrayIndex = 1
-
-            this.setPitch(note.k[0].pitch)
-            this.mesh.isVisible = this.frameMesh.isVisible = true
-            note.isOn = true
-        }
-
-        noteOff = () => {
-            const note = this.note
-            if (!!note) {
-                note.isOn = this.mesh.isVisible = this.frameMesh.isVisible = false;
-            }
-            this.note = null
-
-            for (let i = 0; i < this.meshesToColor.length; i++) {
-                this.meshesToColor[i].material.emissiveColor.set(
-                    mainTrianglesDefaultColor[0],
-                    mainTrianglesDefaultColor[1],
-                    mainTrianglesDefaultColor[2])
-            }
-        }
-
-        setJson = (json) => {
-            // console.debug('Bass json ...')
-            // console.debug(json)
-
-            this.json = json
-            this.header = json[0]
-
-            for (let i = 1; i < json.length; i++) {
-                let noteOn = json[i].noteOn
-                noteOn.isOn = false
-
-                // Skip preallocation notes.
-                if (noteOn.time == 0.005) {
-                    continue
-                }
-                else if (this.noteStartIndex == 0) {
-                    this.noteStartIndex = i
-                }
-
-                // Note off time = note on time + delta of last k-pass event, which should be {"volume":0}.
-                noteOn.offTime = noteOn.time + noteOn.k[noteOn.k.length - 1].time
-                this.noteCount++
-            }
-
-            this.reset()
-        }
-
-        isReset = false
-
-        reset = () => {
-            if (this.isReset) {
-                return
-            }
-            this.isReset = true
-            this.nextNoteOnIndex = this.noteStartIndex;
-            this.nextNoteOffIndex = this.noteStartIndex;
-            this.nextNoteKArrayIndex = 0
-        }
-
-        render = (time) => {
-            if (this.isReset) {
-                this.noteOff()
-                this.isReset = false
-            }
-            while (this.nextNoteOnIndex < this.json.length
-                    && this.json[this.nextNoteOnIndex].noteOn.time <= time) {
-                if (time < this.json[this.nextNoteOnIndex].noteOn.offTime) {
-                    this.noteOn(this.nextNoteOnIndex);
-                }
-                this.nextNoteOnIndex++;
-            }
-            while (this.nextNoteOffIndex < this.json.length
-                    && this.json[this.nextNoteOffIndex].noteOn.offTime <= time) {
-                if (this.json[this.nextNoteOffIndex].noteOn.isOn) {
-                    this.noteOff();
-                }
-                this.nextNoteOffIndex++;
-            }
-            if (!!this.note) {
-                const note = this.note
-                const kTime = time - note.time
-                if (note.k[this.nextNoteKArrayIndex].time <= kTime) {
-                    while (this.nextNoteKArrayIndex < note.k.length
-                            && note.k[this.nextNoteKArrayIndex].time <= kTime) {
-                        this.nextNoteKArrayIndex++
-                    }
-                    const kItem = note.k[this.nextNoteKArrayIndex - 1]
-                    if (!!kItem.pitch) {
-                        this.setPitch(kItem.pitch)
-                    }
-                }
-            }
-        }
-    }
-    const bass = new Bass
-    bass.uuid = 'ab018f191c70470f98ac3becb76e6d13'
-    bass.meshesToColor.push(scene.getMeshByName('MainTriangles'))
-
-    const bassDistant = new Bass
-    bassDistant.uuid = 'b0ba6f144fac4f668ba6981c691277d6'
-    bassDistant.baseScale = mainTrianglesOuterMeshScale
-    bassDistant.rotation = mainTrianglesOuterMeshRotationY
-    bassDistant.meshesToColor.push(scene.getMeshByName('OuterMainTriangles'))
-    bassDistant.meshesToColor.push(scene.getMeshByName('MainTriangles'))
-
-    //#endregion
-
     //#region class CameraAnimator
 
     class CameraAnimator {
@@ -1594,7 +1347,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     }
                     if (k[key] !== undefined) {
                         note[key] = k[key]
-                        console.debug(`${key} = ${note[key]}`)
+                        // console.debug(`${key} = ${note[key]}`)
                     }
                     note.kIndex++
                 }
@@ -1921,6 +1674,177 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region class BassAnimationComponent
+
+    class BassAnimationComponent extends Component {
+        baseScale = 1
+        meshesToColor = []
+
+        get isVisible() { return this._mesh.isVisible }
+        set isVisible(value) {
+            if (this.isVisible == value) {
+                return
+            }
+            this._mesh.isVisible = this._frameMesh.isVisible = value
+            for (let i = 0; i < this.meshesToColor.length; i++) {
+                this.meshesToColor[i].material.emissiveColor.fromArray(mainTrianglesDefaultColor)
+            }
+        }
+
+        set pitch(value) {
+            this.#setColorFromPitch(value)
+            this._mesh.position.y = this._frameMesh.position.y = this.#yFromPitch(value)
+            // console.debug(`Bass y = ${this.mesh.position.y}`)
+            const scaleXZ = this.#scaleXZFromY(this._mesh.position.y)
+            this._mesh.scaling.set(scaleXZ, 1, scaleXZ)
+            this._frameMesh.scaling.set(scaleXZ / 197.624, 1, scaleXZ / 197.624)
+        }
+
+        get rotation() { return this._mesh.rotation.y }
+        set rotation(value) {
+            this._mesh.rotation.y = value
+            this._frameMesh.rotation.y = value
+        }
+
+        _mesh = null
+        _meshMaterial = null
+
+        _frameMesh = new BABYLON.Mesh('BassFrameMesh', scene)
+        _frameMeshMaterial = null
+        _frameMeshPositions = [
+            // [0] Leg point 1
+            0, 0, 171.34,
+
+            // [1] Leg point 2
+            -148.385, 0, -85.67,
+
+            // [2] Leg point 3
+            148.385, 0, -86.67,
+
+            // [3 and 4] Frame left
+            -77.05, -1, 44.485,
+            -77.05, 1, 44.485,
+
+            // [5 and 6] Frame bottom
+            0, -1, -88.97,
+            0, 1, -88.97,
+
+            // [7 and 8] Frame right
+            77.05, -1, 44.485,
+            77.05, 1, 44.485,
+        ]
+        _frameMeshIndices = [
+            // Frame left
+            0, 3, 4,
+            4, 3, 1,
+            1, 0, 4,
+            0, 1, 3,
+
+            // Frame bottom
+            1, 5, 6,
+            6, 5, 2,
+            2, 1, 6,
+            1, 2, 5,
+
+            // Frame right
+            2, 7, 8,
+            8, 7, 0,
+            0, 2, 8,
+            2, 0, 7
+        ]
+        _frameMeshNormals = []
+
+        #setColorFromPitch = (pitch) => {
+            const hue = 256 * ((pitch - 32) / 15)
+            BABYLON.Color3.HSVtoRGBToRef(hue, 1, 0.667, this._meshMaterial.emissiveColor)
+            for (let i = 0; i < this.meshesToColor.length; i++) {
+                BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshesToColor[i].material.emissiveColor)
+            }
+        }
+
+        #yFromPitch = (pitch) => {
+            return ((pitch - 28) / 23) * (mainTriangleMeshHeight * this.baseScale)
+        }
+
+        #scaleXZFromY = (y) => {
+            // Main triangle mesh height.
+            const maxHeight = 220.46 * this.baseScale
+
+            // Triangle plane mesh scale at y = 0 (spreads points to inside edge of main triangle mesh legs).
+            const maxScaleXZ = 197.624 * this.baseScale
+
+            return Math.max(0, maxScaleXZ * ((maxHeight - y) / maxHeight))
+        }
+
+        constructor() {
+            super()
+
+            this._mesh = trianglePlaneMesh.clone('Bass')
+            this._meshMaterial = new BABYLON.StandardMaterial('', scene)
+            this._meshMaterial.emissiveColor.set(1, 1, 1)
+            this._meshMaterial.backFaceCulling = false
+            this._meshMaterial.alpha = 0.75
+            this._mesh.material = this._meshMaterial
+
+            this._frameMesh = new BABYLON.Mesh('', scene)
+            this._frameMeshMaterial = new BABYLON.StandardMaterial('', scene)
+            this._frameMeshMaterial.emissiveColor.set(1, 0, 0)
+            this._frameMesh.material = this._frameMeshMaterial
+            this._frameMesh.isVisible = false
+
+            BABYLON.VertexData.ComputeNormals(this._frameMeshPositions, this._frameMeshIndices, this._frameMeshNormals)
+            const frameMeshVertexData = new BABYLON.VertexData()
+            frameMeshVertexData.positions = this._frameMeshPositions
+            frameMeshVertexData.indices = this._frameMeshIndices
+            frameMeshVertexData.normals = this._frameMeshNormals
+            frameMeshVertexData.applyToMesh(this._frameMesh, true)
+
+            this.meshesToColor.push(this._frameMesh)
+        }
+    }
+
+    //#endregion
+
+    //#region class BassAnimationSystem
+
+    class BassAnimationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            BassAnimationComponent
+        ]}
+
+        track = null
+        animation = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(BassAnimationComponent)) {
+                    this.animation = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.animation, `${BassAnimationComponent.name} missing.`)
+        }
+
+        run = (time, deltaTime) => {
+            if (this.track.activeNotesChanged) {
+                this.animation.isVisible = 0 < this.track.activeNotes.length
+            }
+            if (this.animation.isVisible) {
+                this.animation.pitch = this.track.activeNotes[0].pitch
+            }
+        }
+    }
+
+    world.add(BassAnimationSystem)
+
+    //#endregion
+
     // World setup
 
     //#region World center light setup
@@ -2032,6 +1956,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const pitchController = new TrackActiveNoteControllerComponent
         pitchController.key = 'pitch'
         entity.addComponent(pitchController)
+        const animation = new BassAnimationComponent
+        if (options.baseScale !== undefined) {
+            animation.baseScale = options.baseScale
+        }
+        if (options.rotation !== undefined) {
+            animation.rotation = options.rotation
+        }
+        if (options.meshesToColor !== undefined) {
+            animation.meshesToColor.push(...options.meshesToColor)
+        }
+        entity.addComponent(animation)
         return entity
     }
 
@@ -2121,7 +2056,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         'ab018f191c70470f98ac3becb76e6d13': {
             function: createBassAnimation,
             options: {
-                name: '07: Bass 1+2: Edited'
+                name: '07: Bass 1+2: Edited',
+                meshesToColor: [
+                    scene.getMeshByName('MainTriangles')
+                ]
+            }
+        },
+        'b0ba6f144fac4f668ba6981c691277d6': {
+            function: createBassAnimation,
+            options: {
+                name: '08: Bass 1+2: Distant',
+                baseScale: mainTrianglesOuterMeshScale,
+                rotation: mainTrianglesOuterMeshRotationY,
+                meshesToColor: [
+                    scene.getMeshByName('MainTriangles'),
+                    scene.getMeshByName('OuterMainTriangles')
+                ]
             }
         }
     }
