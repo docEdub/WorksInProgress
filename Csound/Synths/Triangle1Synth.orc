@@ -172,7 +172,7 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giTriangle1Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"noteOn\":{\"time\":%.3f}}", times())
+            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f}}", times())
             ficlose(SJsonFile)
         ${CSOUND_ENDIF}
     endif

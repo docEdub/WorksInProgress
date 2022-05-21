@@ -659,7 +659,7 @@ instr ReferenceTrack
         log_i_error("Given track reference index %d is less than zero.", i_trackRefIndex)
     elseif (i_trackRefIndex >= TRACK_COUNT_MAX) then
         log_i_error("Given track reference index %d exceeds track count max %d.", i_trackRefIndex, TRACK_COUNT_MAX)
-    endif    
+    endif
     gi_trackRefs[i_trackIndex][i_trackRefIndex] = true
     turnoff
 endin
@@ -673,7 +673,7 @@ instr RegisterPlugin
 
     log_i_trace("instr RegisterPlugin(i_trackIndex = %d, i_pluginIndex = %d, S_orcPath = %s, SUuid = %s) ...",
         i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
-    
+
     setPlugin(i_trackIndex, i_pluginIndex, S_orcPath, SUuid)
 
     // Log plugins.
@@ -889,7 +889,7 @@ instr HandleOscScoreGenerationMessages
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3.sco"
     elseif (i_mode == 4) then
         S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode4.sco"
-        
+
         fprints(S_filename, "i \"EndOfInstrumentAllocations\" 3 -1\n")
         fprints(S_filename, "i \"SendStartupMessage\" 0 1\n") // preallocation instance
         fprints(S_filename, "i \"SendStartupMessage\" 4 -1\n")
@@ -1002,7 +1002,7 @@ instr WriteTracksetFiles
         iDone = true
         while (iI < iTrackCount) do
             if (iTracksAddedToTrackset[iI] == false) then
-                // Flag aux track if it has track refs that haven't been added to trackset yet. 
+                // Flag aux track if it has track refs that haven't been added to trackset yet.
                 iHasPendingRef = false
                 iJ = 0
                 while (iJ < iTrackCount && iHasPendingRef == false) do
@@ -1052,7 +1052,7 @@ instr WriteTracksetFiles
         kTrackIndex = giTracksetOrder[kI]
         log_k_debug("[%d]: Track index = %d, type = %d, orc = %s, uuid = %s", kI, kTrackIndex, gi_trackTypes[kTrackIndex],
             gS_trackOrcPaths[kTrackIndex], gSTrackUuids[kTrackIndex])
-        kI += 1 
+        kI += 1
     od
 
     // Log track references.
@@ -1105,7 +1105,7 @@ endin
 
 instr WriteTrackDefinesFile
     log_i_info("%s ...", nstrstr(p1))
-    
+
     S_filename = "${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/_.mode3_TrackDefines.h"
     kI = 0
     kPreviousTrackType = TRACK_TYPE_NONE
@@ -1160,7 +1160,7 @@ instr WriteTrackDefinesFile
     fprintks(S_filename, "#define FinalMixInstrument %d\n", TRACK_PLAYBACK_INSTRUMENT_START_INDEX + kInstrumentNumber)
 
     turnoff
-    
+
     log_i_info("%s - done", nstrstr(p1))
 endin
 
@@ -1283,7 +1283,7 @@ instr WriteTracksetOrcFile
         kI += 1
     od
     turnoff
-    
+
     log_i_info("%s - done", nstrstr(p1))
 endin
 
