@@ -1517,6 +1517,95 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region class TrackActiveNoteControllerComponent
+
+    class TrackActiveNoteControllerComponent extends Component {
+        key = ''
+        defaultValue = 0
+    }
+
+    //#endregion
+
+    //#region class TrackActiveNoteControllerSystem
+
+    class TrackActiveNoteControllerSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            TrackActiveNoteControllerComponent
+        ]}
+
+        track = null
+        controller = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(TrackActiveNoteControllerComponent)) {
+                    this.controller = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.controller, `${TrackActiveNoteControllerComponent.name} missing.`)
+            this.#initializeControllerValues()
+            this.#reset()
+        }
+
+        run = (time, deltaTime) => {
+            if (deltaTime < 0) {
+                this.#reset()
+            }
+            this.#updateControllerValues(time)
+        }
+
+        #initializeControllerValues = () => {
+            const notes = this.track.notes
+            const key = this.controller.key
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i]
+                for (let j = 0; j < note.k.length; j++) {
+                    note.k[j].time += note.onTime
+                }
+            }
+        }
+
+        #reset = () => {
+            const notes = this.track.notes
+            const key = this.controller.key
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i]
+                note[key] = this.controller.defaultValue
+                note.kIndex = 0
+            }
+        }
+
+        #updateControllerValues = (time) => {
+            const activeNotes = this.track.activeNotes
+            const key = this.controller.key
+            for (let i = 0; i < activeNotes.length; i++) {
+                const note = activeNotes[i]
+                while (note.kIndex < note.k.length) {
+                    const k = note.k[note.kIndex]
+                    if (time < k.time) {
+                        break
+                    }
+                    if (k[key] !== undefined) {
+                        note[key] = k[key]
+                        console.debug(`${key} = ${note[key]}`)
+                    }
+                    note.kIndex++
+                }
+            }
+        }
+    }
+
+    world.add(TrackActiveNoteControllerSystem)
+
+    //#endregion
+
     //#region class DrumAnimationComponent
 
     class DrumAnimationComponent extends Component {
@@ -1888,6 +1977,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (options.totalDuration) {
                 note.offTime = note.onTime + options.totalDuration
             }
+            else if (note.k !== undefined) {
+                // Use the last controller value's time for the off time.
+                note.offTime = note.onTime + note.k[note.k.length - 1].time
+            }
             track.notes.push(note)
         }
         entity.addComponent(track)
@@ -1931,6 +2024,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
         entity.addComponent(animation)
         addCenterLightFlashComponent(entity)
+        return entity
+    }
+
+    const createBassAnimation = (id, json, options) => {
+        const entity = createTrack(id, json, options)
+        const pitchController = new TrackActiveNoteControllerComponent
+        pitchController.key = 'pitch'
+        entity.addComponent(pitchController)
         return entity
     }
 
@@ -2015,6 +2116,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 totalDuration: 0.034,
                 color: [ 0.333, 0.333, 1 ],
                 y: 60
+            }
+        },
+        'ab018f191c70470f98ac3becb76e6d13': {
+            function: createBassAnimation,
+            options: {
+                name: '07: Bass 1+2: Edited'
             }
         }
     }
