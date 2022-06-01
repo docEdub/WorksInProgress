@@ -26,6 +26,11 @@ opcode json_end_k, 0, 0
     printsk(JSON_END)
 endop
 
+instr Json_CloseFile
+    ficlose(strget(p4))
+    turnoff
+endin
+
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
 //----------------------------------------------------------------------------------------------------------------------

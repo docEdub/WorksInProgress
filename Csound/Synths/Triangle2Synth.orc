@@ -40,6 +40,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "json.orc"
 ${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
@@ -203,9 +204,13 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f}}",
-                times(), iNoteNumber, iNoteNumberLfoTime)
-            ficlose(SJsonFile)
+            iOnTime = times()
+            SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f",
+                iOnTime, iNoteNumber, iNoteNumberLfoTime)
+            if (lastcycle() == true) then
+                fprintks(SJsonFile, "%s,\"offTime\":%.3f}}", SJsonData, timeinsts() + iOnTime)
+                scoreline(sprintfk("i \"Json_CloseFile\" 0 -1 \"%s\"", SJsonFile), 1)
+            endif
         ${CSOUND_ENDIF}
     endif
 end:
