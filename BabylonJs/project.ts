@@ -831,15 +831,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    // ECS
+    // ECS base classes
 
-    //#region ECS base classes
+    //#region class EcsObject
 
     class EcsObject {
         isA = (Type) => {
             return Type === this.constructor || Type.isPrototypeOf(this.constructor)
         }
     }
+
+    //#endregion
+
+    //#region class Entity
 
     class Entity extends EcsObject {
         #id = ''
@@ -885,9 +889,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
     }
 
+    //#endregion
+
+    //#region class Component
+
     class Component extends EcsObject {
         entity: null
     }
+
+    //#endregion
+
+    //#region class System
 
     class System extends EcsObject {
         static hasSubclass = (Type) => {
@@ -901,6 +913,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         constructor(components) { super() }
         run = (time, deltaTime) => {}
     }
+
+    //#endregion
+
+    //#region class World
 
     class World {
         #entities = []
@@ -964,6 +980,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const world = new World
 
     //#endregion
+
+    // ECS common classes
 
     //#region class ObjectPropertyResetComponent
 
@@ -1358,6 +1376,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     world.add(TrackActiveNoteControllerSystem)
 
     //#endregion
+
+    // ECS track classes
 
     //#region class DrumAnimationComponent
 
