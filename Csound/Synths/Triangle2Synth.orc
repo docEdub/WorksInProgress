@@ -62,8 +62,19 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, sprintf(",\"noteNumberLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
-        fprints(SJsonFile, "}")
+        fprints(SJsonFile, sprintf(",\"pitchLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
+
+        iLfoShapeTable = ftgenonce(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
+        fprints(SJsonFile, ",\"pitchLfoShape\":[")
+        iLfoShapeTableIndex = 0
+        while (iLfoShapeTableIndex < 60) do
+            if (iLfoShapeTableIndex > 0) then
+                fprints(SJsonFile, ",")
+            endif
+            fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, iLfoShapeTable)))
+            iLfoShapeTableIndex += 1
+        od
+        fprints(SJsonFile, "]}")
         turnoff
     endin
 ${CSOUND_ENDIF}
