@@ -85,7 +85,7 @@ gkNoteNumberLfo init 0
 instr CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)
     log_i_trace("%s ...", nstrstr(p1))
 
-    gkNoteNumberLfo = lfo(33, .03, LFO_SHAPE_TRIANGLE)
+    gkNoteNumberLfo = abs(lfo(33, .03, LFO_SHAPE_TRIANGLE))
 
     #if !IS_PLAYBACK
         if (gkReloaded == true) then
