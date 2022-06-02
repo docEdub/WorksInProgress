@@ -1197,7 +1197,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class TrackNoteDurationComponent
 
     class TrackNoteDurationComponent extends Component {
-        normalize = true
     }
 
     //#endregion
@@ -1211,7 +1210,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         ]}
 
         track = null
-        duration = null
 
         activeNotes = []
 
@@ -1222,13 +1220,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 if (component.isA(TrackComponent)) {
                     this.track = component
                 }
-                else if (component.isA(TrackNoteDurationComponent)) {
-                    this.duration = component
-                }
             }
             assert(this.track, `${TrackComponent.name} missing.`)
-            assert(this.duration, `${TrackNoteDurationComponent.name} missing.`)
-            this.#initializeTotalDurations()
+            this.#initializeNoteValues()
         }
 
         run = (time, deltaTime) => {
@@ -1237,12 +1231,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 const note = this.activeNotes[i]
                 if (!note.isActive) {
                     assert(time < note.onTime || note.offTime <= time, `Note should be active.`)
-                    if (this.duration.normalize) {
-                        note.duration = time < note.onTime ? 0 : 1
-                    }
-                    else {
-                        note.duration = time < note.onTime ? 0 : note.totalDuration
-                    }
+                    note.duration = time < note.onTime ? 0 : note.totalDuration
                 }
             }
 
@@ -1257,34 +1246,74 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // Update durations for current active notes.
             for (let i = 0; i < this.activeNotes.length; i++) {
                 const note = this.activeNotes[i]
-                if (this.duration.normalize) {
-                    if (note.offTime <= time) {
-                        note.duration = 1
-                    }
-                    else {
-                        note.duration = (time - note.onTime) / note.totalDuration
-                    }
+                if (note.offTime <= time) {
+                    note.duration = note.totalDuration
                 }
                 else {
-                    if (note.offTime <= time) {
-                        note.duration = note.totalDuration
-                    }
-                    else {
-                        note.duration = time - note.onTime
-                    }
+                    note.duration = time - note.onTime
                 }
             }
         }
 
-        #initializeTotalDurations = () => {
+        #initializeNoteValues = () => {
             for (let i = 0; i < this.track.notes.length; i++) {
                 const note = this.track.notes[i]
                 note.totalDuration = note.offTime - note.onTime
+                note.duration = 0
             }
         }
     }
 
     world.add(TrackNoteDurationSystem)
+
+    //#endregion
+
+    //#region class TrackNoteNormalizedDurationComponent
+
+    class TrackNoteNormalizedDurationComponent extends Component {
+    }
+
+    //#endregion
+
+    //#region class TrackNoteNormalizedDurationSystem
+
+    class TrackNoteNormalizedDurationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            TrackNoteDurationComponent,
+            TrackNoteNormalizedDurationComponent
+        ]}
+
+        track = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            this.#initializeNoteValues()
+        }
+
+        run = (time, deltaTime) => {
+            for (let i = 0; i < this.track.activeNotes.length; i++) {
+                const note = this.track.activeNotes[i]
+                note.normalizedDuration = note.duration / note.totalDuration
+            }
+        }
+
+        #initializeNoteValues = () => {
+            for (let i = 0; i < this.track.notes.length; i++) {
+                const note = this.track.notes[i]
+                note.normalizedDuration = 0
+            }
+        }
+    }
+
+    world.add(TrackNoteNormalizedDurationSystem)
 
     //#endregion
 
@@ -1503,6 +1532,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         static requiredComponentTypes = () => { return [
             TrackComponent,
             TrackNoteDurationComponent,
+            TrackNoteNormalizedDurationComponent,
             DrumAnimationComponent
         ]}
 
@@ -1529,7 +1559,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         run = (time, deltaTime) => {
             if (0 < this.track.activeNotes.length) {
                 this.animation.isRunning = true
-                this.animation.duration = this.track.activeNotes[0].duration
+                this.animation.duration = this.track.activeNotes[0].normalizedDuration
             }
             else {
                 this.animation.duration = 1
@@ -1934,8 +1964,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const createDrumAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
         const duration = new TrackNoteDurationComponent
-        duration.normalize = true
         entity.addComponent(duration)
+        const normalizedDuration = new TrackNoteNormalizedDurationComponent
+        entity.addComponent(normalizedDuration)
         const animation = new DrumAnimationComponent
         if (options.color !== undefined) {
             animation.color = options.color
