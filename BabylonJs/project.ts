@@ -1406,6 +1406,81 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region class TrackActiveNoteLfoComponent
+
+    class TrackActiveNoteLfoComponent extends Component {
+        amp = 1
+        shape = [] // Expects 60 normalized values for 1 full cycle of LFO.
+        timeKey = ''
+        valueKey = ''
+        defaultValue = 0
+    }
+
+    //#endregion
+
+    //#region class TrackActiveNoteLfoSystem
+
+    class TrackActiveNoteLfoSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            TrackNoteDurationComponent,
+            TrackActiveNoteLfoComponent
+        ]}
+
+        track = null
+        lfo = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(TrackActiveNoteLfoComponent)) {
+                    this.lfo = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.lfo, `${TrackActiveNoteLfoComponent.name} missing.`)
+            this.#reset()
+        }
+
+        run = (time, deltaTime) => {
+            if (deltaTime < 0) {
+                this.#reset()
+            }
+            this.#updateLfoValues()
+        }
+
+        #reset = () => {
+            const notes = this.track.notes
+            const noteLfoValueKey = this.lfo.noteLfoValueKey
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i]
+                note[noteLfoValueKey] = this.lfo.defaultValue
+            }
+        }
+
+        #updateLfoValues = () => {
+            const activeNotes = this.track.activeNotes
+            const lfo = this.lfo
+            const valueKey = lfo.valueKey
+            for (let i = 0; i < activeNotes.length; i++) {
+                const note = activeNotes[i]
+                const shapeIndex = Math.round(lfo.shape.length * note.duration * note[lfo.timeKey]) % lfo.shape.length
+                note[valueKey] = lfo.amp * lfo.shape[shapeIndex]
+                if (i == 0) {
+                    console.debug(`lfo: shapeIndex = ${shapeIndex}, duration = ${note.duration}, value = ${note[valueKey]}`)
+                }
+            }
+        }
+    }
+
+    world.add(TrackActiveNoteLfoSystem)
+
+    //#endregion
+
     // ECS track classes
 
     //#region class DrumAnimationComponent
@@ -2002,6 +2077,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         return entity
     }
 
+    const createBeaconAnimation = (id, json, options) => {
+        const entity = createTrack(id, json, options)
+        const duration = new TrackNoteDurationComponent
+        entity.addComponent(duration)
+        const pitchLfo = new TrackActiveNoteLfoComponent
+        const header = json[0]
+        pitchLfo.amp = header.pitchLfoAmp
+        pitchLfo.shape = header.pitchLfoShape
+        pitchLfo.timeKey = 'pitchLfoTime'
+        pitchLfo.valueKey = 'pitchLfo'
+        entity.addComponent(pitchLfo)
+        return entity
+    }
+
     const createBassAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
         const pitchController = new TrackActiveNoteControllerComponent
@@ -2102,6 +2191,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 totalDuration: 0.034,
                 color: [ 0.333, 0.333, 1 ],
                 y: 60
+            }
+        },
+        'fd575f03378047af835c19ef4f7d5991': {
+            function: createBeaconAnimation,
+            options: {
+                name: '06: Beacon'
             }
         },
         'ab018f191c70470f98ac3becb76e6d13': {
