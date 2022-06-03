@@ -40,6 +40,7 @@ event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
+${CSOUND_INCLUDE} "json.orc"
 ${CSOUND_INCLUDE} "math.orc"
 ${CSOUND_INCLUDE} "PositionUdos.orc"
 ${CSOUND_INCLUDE} "time.orc"
@@ -61,8 +62,19 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, sprintf(",\"noteNumberLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
-        fprints(SJsonFile, "}")
+        fprints(SJsonFile, sprintf(",\"pitchLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
+
+        iLfoShapeTable = ftgenonce(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
+        fprints(SJsonFile, ",\"pitchLfoShape\":[")
+        iLfoShapeTableIndex = 0
+        while (iLfoShapeTableIndex < 60) do
+            if (iLfoShapeTableIndex > 0) then
+                fprints(SJsonFile, ",")
+            endif
+            fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, iLfoShapeTable)))
+            iLfoShapeTableIndex += 1
+        od
+        fprints(SJsonFile, "]}")
         turnoff
     endin
 ${CSOUND_ENDIF}
@@ -73,7 +85,7 @@ gkNoteNumberLfo init 0
 instr CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)
     log_i_trace("%s ...", nstrstr(p1))
 
-    gkNoteNumberLfo = lfo(33, .03, LFO_SHAPE_TRIANGLE)
+    gkNoteNumberLfo = abs(lfo(33, .03, LFO_SHAPE_TRIANGLE))
 
     #if !IS_PLAYBACK
         if (gkReloaded == true) then
@@ -203,9 +215,18 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f}}",
-                times(), iNoteNumber, iNoteNumberLfoTime)
-            ficlose(SJsonFile)
+            iOnTime = times()
+            SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f",
+                iOnTime, iNoteNumber, iNoteNumberLfoTime)
+            if (lastcycle() == true) then
+                // Only print the position xyz for the first note since all other notes are in the same position.
+                fprintks(SJsonFile, SJsonData)
+                if (CC_VALUE_k(positionEnabled) == true && giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] == 1) then
+                    fprintks(SJsonFile, ",\"xyz\":[%.3f,%.3f,%.3f]", kX, kY, kZ)
+                endif
+                fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
+                scoreline(sprintfk("i \"Json_CloseFile\" 0 -1 \"%s\"", SJsonFile), 1)
+            endif
         ${CSOUND_ENDIF}
     endif
 end:
