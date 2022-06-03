@@ -354,12 +354,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #height = 2
         get height() { return this.#height }
 
-        #settingIndex = 0
+        #settingIndex = 1
         #settings = [
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
             // 1
-            { position: new BABYLON.Vector3(0, this.height, -400), target: new BABYLON.Vector3(0, 100, 0) },
+            { position: new BABYLON.Vector3(0, this.height, 400), target: new BABYLON.Vector3(0, 100, 0) },
             // 2
             { position: new BABYLON.Vector3(-137, this.height, -298), target: new BABYLON.Vector3(0, 100, 0) },
             // 3
@@ -1414,6 +1414,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         timeKey = ''
         valueKey = ''
         defaultValue = 0
+		animationRate = 1
     }
 
     //#endregion
@@ -1468,8 +1469,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const valueKey = lfo.valueKey
             for (let i = 0; i < activeNotes.length; i++) {
                 const note = activeNotes[i]
-                const shapeIndex = Math.round(lfo.shape.length * note.duration * note[lfo.timeKey]) % lfo.shape.length
-                note[valueKey] = lfo.amp * lfo.shape[shapeIndex]
+                const shapeIndex = Math.round(lfo.shape.length * note.duration * note[lfo.timeKey] * lfo.animationRate)
+                note[valueKey] = lfo.amp * lfo.shape[shapeIndex % lfo.shape.length]
                 // if (i == 0) {
                 //     console.debug(`lfo: shapeIndex = ${shapeIndex}, duration = ${note.duration}, value = ${note[valueKey]}`)
                 // }
@@ -1820,6 +1821,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 		}
 
+		set position(value) {
+			this._mesh.position.fromArray(value)
+			this._pillarMesh.position.fromArray(value)
+		}
+
 		updateActiveNoteDataMatrixes = () => {
 			for (let i = 0; i < this._activeNoteData.length; i++) {
 				const activeNoteData = this._activeNoteData[i]
@@ -1836,9 +1842,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		resetActiveNoteData = () => {
 			for (let i = 0; i < this._activeNoteData.length; i++) {
 				const activeNoteData = this._activeNoteData[i]
-				activeNoteData.scale.setAll(0)
-				activeNoteData.yaw = 0
-				activeNoteData.translation.setAll(0)
+				// activeNoteData.scale.setAll(1)
+				// activeNoteData.yaw = 0
+				//activeNoteData.translation.setAll(0)
 			}
 			this.updateActiveNoteDataMatrixes()
 		}
@@ -1846,12 +1852,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 		setActiveNoteDataAt = (index, scale, yawDelta, pitch) => {
 			this._activeNoteData[index].scale.setAll(scale)
 			this._activeNoteData[index].yaw += yawDelta
-			this._activeNoteData[index].translation.y = pitch - this.pitchFloor
+			this._activeNoteData[index].translation.y = (pitch - this.pitchFloor) / 2
 		}
 
 		_activeNoteData = []
 		_mesh = null
 		_meshMaterial = null
+
+		_pillarMesh = null
+		_pillarMeshMaterial = null
 
         constructor() {
             super()
@@ -1874,8 +1883,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._mesh = BABYLON.Mesh.MergeMeshes([ triangleMesh1, triangleMesh2, triangleMesh3 ], true)
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.emissiveColor.set(1, 0, 0)
-            this._meshMaterial.backFaceCulling = false
+			this._meshMaterial.specularPower = 0.25
             this._mesh.material = this._meshMaterial
+
+			this._pillarMesh = makeTrianglePolygonMesh()
+			this._pillarMesh.isVisible = true
+			this._pillarMesh.scaling.set(1, 10, 1)
+			this._pillarMesh.bakeCurrentTransformIntoVertices()
+			this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
+			this._pillarMeshMaterial.diffuseColor.set(1, 0, 0)
+			this._pillarMeshMaterial.emissiveColor.set(1, 0, 0)
+			this._pillarMeshMaterial.specularPower = 0.25
+			this._pillarMesh.material = this._pillarMeshMaterial
 		}
 	}
 
@@ -1916,7 +1935,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 			for (let i = 0; i < this.track.activeNotes.length; i++) {
 				const activeNote = this.track.activeNotes[i]
-				const scale = 1 - Math.abs(-1 + activeNote.normalizedDuration + activeNote.normalizedDuration)
+				const scale = 1// - Math.abs(-1 + activeNote.normalizedDuration + activeNote.normalizedDuration)
 				const yawDelta = deltaTime * this.animation.rotationSpeed * 2 * Math.PI
 				const pitch = activeNote.pitch + activeNote.pitchLfo
 				this.animation.setActiveNoteDataAt(i, scale, yawDelta, pitch)
@@ -2219,9 +2238,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pitchLfo.shape = header.pitchLfoShape
         pitchLfo.timeKey = 'pitchLfoTime'
         pitchLfo.valueKey = 'pitchLfo'
+		pitchLfo.animationRate = 0.2
         entity.addComponent(pitchLfo)
 		const animation = new BeaconAnimationComponent
 		animation.maximumActiveNoteCount = 2
+		animation.position = json[1].note.xyz
 		entity.addComponent(animation)
         return entity
     }
