@@ -359,7 +359,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
             // 1
-            { position: new BABYLON.Vector3(0, this.height, 400), target: new BABYLON.Vector3(0, 100, 0) },
+            { position: new BABYLON.Vector3(0, this.height, -400), target: new BABYLON.Vector3(0, 100, 0) },
             // 2
             { position: new BABYLON.Vector3(-137, this.height, -298), target: new BABYLON.Vector3(0, 100, 0) },
             // 3
@@ -1839,16 +1839,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			}
 		}
 
-		resetActiveNoteData = () => {
-			for (let i = 0; i < this._activeNoteData.length; i++) {
-				const activeNoteData = this._activeNoteData[i]
-				// activeNoteData.scale.setAll(1)
-				// activeNoteData.yaw = 0
-				//activeNoteData.translation.setAll(0)
-			}
-			this.updateActiveNoteDataMatrixes()
-		}
-
 		setActiveNoteDataAt = (index, scale, yawDelta, pitch) => {
 			this._activeNoteData[index].scale.setAll(scale)
 			this._activeNoteData[index].yaw += yawDelta
@@ -1930,12 +1920,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         run = (time, deltaTime) => {
-            if (this.track.activeNotesChanged) {
-                this.animation.resetActiveNoteData()
-			}
 			for (let i = 0; i < this.track.activeNotes.length; i++) {
 				const activeNote = this.track.activeNotes[i]
-				const scale = 1// - Math.abs(-1 + activeNote.normalizedDuration + activeNote.normalizedDuration)
+				const scale = 1
 				const yawDelta = deltaTime * this.animation.rotationSpeed * 2 * Math.PI
 				const pitch = activeNote.pitch + activeNote.pitchLfo
 				this.animation.setActiveNoteDataAt(i, scale, yawDelta, pitch)
