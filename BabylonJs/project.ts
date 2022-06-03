@@ -354,7 +354,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #height = 2
         get height() { return this.#height }
 
-        #settingIndex = 2
+        #settingIndex = 0
         #settings = [
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
@@ -1470,9 +1470,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 const note = activeNotes[i]
                 const shapeIndex = Math.round(lfo.shape.length * note.duration * note[lfo.timeKey]) % lfo.shape.length
                 note[valueKey] = lfo.amp * lfo.shape[shapeIndex]
-                if (i == 0) {
-                    console.debug(`lfo: shapeIndex = ${shapeIndex}, duration = ${note.duration}, value = ${note[valueKey]}`)
-                }
+                // if (i == 0) {
+                //     console.debug(`lfo: shapeIndex = ${shapeIndex}, duration = ${note.duration}, value = ${note[valueKey]}`)
+                // }
             }
         }
     }
@@ -1799,6 +1799,136 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+	//#region class BeaconAnimationComponent
+
+	class BeaconAnimationComponent extends Component {
+		pitchFloor = 60
+		rotationSpeed = 2
+
+		set maximumActiveNoteCount(value) {
+			this._activeNoteData.length = value
+			for (let i = 0; i < value; i++) {
+				const activeNoteData = this._activeNoteData[i] = {
+					scale: new BABYLON.Vector3,
+					yaw: 0,
+					rotation: new BABYLON.Quaternion,
+					translation: new BABYLON.Vector3,
+					matrix: new BABYLON.Matrix,
+					thinInstanceIndex: -1
+				}
+				activeNoteData.thinInstanceIndex = this._mesh.thinInstanceAdd(activeNoteData.matrix)
+			}
+		}
+
+		updateActiveNoteDataMatrixes = () => {
+			for (let i = 0; i < this._activeNoteData.length; i++) {
+				const activeNoteData = this._activeNoteData[i]
+				BABYLON.Quaternion.RotationYawPitchRollToRef(activeNoteData.yaw, 0, 0, activeNoteData.rotation)
+				BABYLON.Matrix.ComposeToRef(
+					activeNoteData.scale,
+					activeNoteData.rotation,
+					activeNoteData.translation,
+					activeNoteData.matrix)
+				this._mesh.thinInstanceSetMatrixAt(activeNoteData.thinInstanceIndex, activeNoteData.matrix)
+			}
+		}
+
+		resetActiveNoteData = () => {
+			for (let i = 0; i < this._activeNoteData.length; i++) {
+				const activeNoteData = this._activeNoteData[i]
+				activeNoteData.scale.setAll(0)
+				activeNoteData.yaw = 0
+				activeNoteData.translation.setAll(0)
+			}
+			this.updateActiveNoteDataMatrixes()
+		}
+
+		setActiveNoteDataAt = (index, scale, yawDelta, pitch) => {
+			this._activeNoteData[index].scale.setAll(scale)
+			this._activeNoteData[index].yaw += yawDelta
+			this._activeNoteData[index].translation.y = pitch - this.pitchFloor
+		}
+
+		_activeNoteData = []
+		_mesh = null
+		_meshMaterial = null
+
+        constructor() {
+            super()
+
+			const triangleMesh1 = makeTrianglePolygonMesh()
+			triangleMesh1.position.x = 1.225
+			triangleMesh1.rotation.x = triangleMesh1.rotation.z = Math.PI / 2
+			triangleMesh1.bakeCurrentTransformIntoVertices()
+			const triangleMesh2 = makeTrianglePolygonMesh()
+			triangleMesh2.position.x = 1.225
+			triangleMesh2.rotation.x = triangleMesh2.rotation.z = Math.PI / 2
+			triangleMesh2.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.UpReadOnly, -0.667 * Math.PI)
+			triangleMesh2.bakeCurrentTransformIntoVertices()
+			const triangleMesh3 = makeTrianglePolygonMesh()
+			triangleMesh3.position.x = 1.225
+			triangleMesh3.rotation.x = triangleMesh3.rotation.z = Math.PI / 2
+			triangleMesh3.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.UpReadOnly, 0.667 * Math.PI)
+			triangleMesh3.bakeCurrentTransformIntoVertices()
+
+            this._mesh = BABYLON.Mesh.MergeMeshes([ triangleMesh1, triangleMesh2, triangleMesh3 ], true)
+            this._meshMaterial = new BABYLON.StandardMaterial('', scene)
+            this._meshMaterial.emissiveColor.set(1, 0, 0)
+            this._meshMaterial.backFaceCulling = false
+            this._mesh.material = this._meshMaterial
+		}
+	}
+
+	//#endregion
+
+	//#region class BeaconAnimationSystem
+
+	class BeaconAnimationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+			TrackNoteDurationComponent,
+			TrackNoteNormalizedDurationComponent,
+			TrackActiveNoteLfoComponent,
+            BeaconAnimationComponent
+        ]}
+
+		track = null
+		animation = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(BeaconAnimationComponent)) {
+                    this.animation = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.animation, `${BeaconAnimationComponent.name} missing.`)
+        }
+
+        run = (time, deltaTime) => {
+            if (this.track.activeNotesChanged) {
+                this.animation.resetActiveNoteData()
+			}
+			for (let i = 0; i < this.track.activeNotes.length; i++) {
+				const activeNote = this.track.activeNotes[i]
+				const scale = 1 - Math.abs(-1 + activeNote.normalizedDuration + activeNote.normalizedDuration)
+				const yawDelta = deltaTime * this.animation.rotationSpeed * 2 * Math.PI
+				const pitch = activeNote.pitch + activeNote.pitchLfo
+				this.animation.setActiveNoteDataAt(i, scale, yawDelta, pitch)
+			}
+			this.animation.updateActiveNoteDataMatrixes()
+        }
+	}
+
+	world.add(BeaconAnimationSystem)
+
+	//#endregion
+
     //#region class BassAnimationComponent
 
     class BassAnimationComponent extends Component {
@@ -2081,6 +2211,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const entity = createTrack(id, json, options)
         const duration = new TrackNoteDurationComponent
         entity.addComponent(duration)
+        const normalizedDuration = new TrackNoteNormalizedDurationComponent
+        entity.addComponent(normalizedDuration)
         const pitchLfo = new TrackActiveNoteLfoComponent
         const header = json[0]
         pitchLfo.amp = header.pitchLfoAmp
@@ -2088,6 +2220,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pitchLfo.timeKey = 'pitchLfoTime'
         pitchLfo.valueKey = 'pitchLfo'
         entity.addComponent(pitchLfo)
+		const animation = new BeaconAnimationComponent
+		animation.maximumActiveNoteCount = 2
+		entity.addComponent(animation)
         return entity
     }
 
