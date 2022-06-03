@@ -219,7 +219,12 @@ instr INSTRUMENT_ID
             SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f",
                 iOnTime, iNoteNumber, iNoteNumberLfoTime)
             if (lastcycle() == true) then
-                fprintks(SJsonFile, "%s,\"offTime\":%.3f}}", SJsonData, timeinsts() + iOnTime)
+                // Only print the position xyz for the first note since all other notes are in the same position.
+                fprintks(SJsonFile, SJsonData)
+                if (CC_VALUE_k(positionEnabled) == true && giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] == 1) then
+                    fprintks(SJsonFile, ",\"xyz\":[%.3f,%.3f,%.3f]", kX, kY, kZ)
+                endif
+                fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
                 scoreline(sprintfk("i \"Json_CloseFile\" 0 -1 \"%s\"", SJsonFile), 1)
             endif
         ${CSOUND_ENDIF}
