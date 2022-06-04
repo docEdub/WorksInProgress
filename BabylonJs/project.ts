@@ -762,7 +762,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const trianglePlaneMesh = makeTrianglePlaneMesh()
 
     const makeTrianglePolygonMesh = () => {
-        return makeMesh(
+        const mesh = makeMesh(
             [ 0, 1.225, 0,
               0, 0, 0.867,
               0.75, 0, -0.433,
@@ -774,6 +774,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
               2, 3, 1
             ]
         )
+        const boundingInfo = mesh.getBoundingInfo()
+        boundingInfo.centerOn(BABYLON.Vector3.ZeroReadOnly, new BABYLON.Vector3(0.867, 1.225, 0.867))
+        mesh.setBoundingInfo(boundingInfo)
+        return mesh
     }
     const trianglePolygonMesh = makeTrianglePolygonMesh()
 
@@ -1879,7 +1883,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this._pillarMesh = makeTrianglePolygonMesh()
 			this._pillarMesh.isVisible = true
 			this._pillarMesh.scaling.set(1, 10, 1)
-			this._pillarMesh.bakeCurrentTransformIntoVertices()
 			this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
 			this._pillarMeshMaterial.diffuseColor.set(1, 0, 0)
 			this._pillarMeshMaterial.emissiveColor.set(1, 0, 0)
