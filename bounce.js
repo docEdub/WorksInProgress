@@ -43,11 +43,11 @@ if (os.type() === 'Darwin') {
     data = data.replace(/\s*\n/g, '\n')
 
     // Replace leading whitespace with tabs.
-    data = data.replace(/\n\s*/g, '\n\t')
+    data = data.replace(/\n\s*/g, '\n    ')
 
     // Wrap with Javascript multiline string variable named `csdText`.
     let output = 'const csdText = `' + data + '`'
-    
+
     // Update BabylonJs/project.ts csdText variable.
     data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
     data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
@@ -69,7 +69,7 @@ if (os.type() === 'Darwin') {
         const jsonData = fs.readFileSync(bounceDir + '/DawPlayback.json', 'ascii')
 
         // Wrap JSON data with Javascript multiline string variable named `csdJson`.
-        output = 'const csdJson = `\n\t' + jsonData + '\n\t`'
+        output = 'const csdJson = `\n    ' + jsonData + '\n    `'
 
             // Update BabylonJs/project.ts csdJson variable.
         data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
