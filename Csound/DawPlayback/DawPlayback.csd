@@ -375,10 +375,10 @@ instr FinalMixInstrument
     ayr = -(ay * km0 + az * km3 + ax * km6)
     azr =   ay * km1 + az * km4 + ax * km7
     axr = -(ay * km2 + az * km5 + ax * km8)
-    aw dconv aw, 256, gi_AF_3D_HrirChannel1TableNumber
-    ay dconv ayr, 256, gi_AF_3D_HrirChannel2TableNumber
-    az dconv azr, 256, gi_AF_3D_HrirChannel3TableNumber
-    ax dconv axr, 256, gi_AF_3D_HrirChannel4TableNumber
+    aw ftconv aw, gi_AF_3D_HrirChannel1TableNumber, 256
+    ay ftconv ayr, gi_AF_3D_HrirChannel2TableNumber, 256
+    az ftconv azr, gi_AF_3D_HrirChannel3TableNumber, 256
+    ax ftconv axr, gi_AF_3D_HrirChannel4TableNumber, 256
     aL = aw + ay + az + ax
     aR = aw - ay + az + ax
 
