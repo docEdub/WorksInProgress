@@ -57,6 +57,10 @@ function(preprocess_file)
         # -x c:  Force language to C.
         # See https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-flags.
         set(flags -C -E -P -x c ${include_flags} ${in_file})
+    elseif("MSVC" STREQUAL "${CMAKE_C_COMPILER_ID}")
+        set(compiler "${CMAKE_C_COMPILER}")
+        set(include_flags /I${PREPROCESSOR_INCLUDE_DIR})
+        set(flags /nologo /C /EP /TC ${include_flags} ${in_file})
     else()
         message(FATAL_ERROR "Compiler \"${CMAKE_C_COMPILER_ID}\" is not supported yet.")
     endif()
