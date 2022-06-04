@@ -3,16 +3,16 @@ var os = require('os');
 var path = require('path');
 var spawnSync = require('child_process').spawnSync;
 
-if (os.type() === 'Darwin') {
-    const csoundDir = path.resolve('Csound');
-    const buildDir = csoundDir + '/build';
-    const mixdownDir = buildDir + '/mixdown';
-    const playbackDir = buildDir + '/playback';
-    const bounceDir = buildDir + '/bounce';
-    const jsonDir = bounceDir + '/json';
-    const bounceMixdownDir = bounceDir + '/mixdown';
-    const babylonJsDir = path.resolve('BabylonJs')
+const csoundDir = path.resolve('Csound');
+const buildDir = path.join(csoundDir, '/build');
+const mixdownDir = path.join(buildDir, '/mixdown');
+const playbackDir = path.join(buildDir, '/playback');
+const bounceDir = path.join(buildDir, '/bounce');
+const jsonDir = path.join(bounceDir, '/json');
+const bounceMixdownDir = path.join(bounceDir, '/mixdown');
+const babylonJsDir = path.resolve('BabylonJs')
 
+if (os.type() === 'Darwin') {
     spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
         stdio: 'inherit'
     });
@@ -98,6 +98,14 @@ if (os.type() === 'Darwin') {
             stdio: 'inherit'
         });
     }
+}
+else if (os.type() == "Windows_NT") {
+    spawnSync('cmd', [ '/c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
+        stdio: 'inherit'
+    });
+    spawnSync('cmd', [ '/c', 'cd ' + playbackDir + ' && CMake --build . 2>&1' ], {
+        stdio: 'inherit'
+    });    
 }
 else {
     throw new Error('Unsupported OS: ' + os.type())

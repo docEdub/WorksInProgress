@@ -43,3 +43,11 @@ endif()
 
 set(CSOUND_CMAKE_CONFIGURED_FILES_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/configured")
 set(CSOUND_CMAKE_PREPROCESSED_FILES_DIR "${CSOUND_CMAKE_OUTPUT_DIR}/preprocessed")
+
+if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
+    set(cat_command "cat")
+    set(dev_null "/dev/null")
+elseif("MSVC" STREQUAL "${CMAKE_C_COMPILER_ID}")
+    set(cat_command "type")
+    set(dev_null "nul")
+endif()

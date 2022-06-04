@@ -17,6 +17,10 @@ function(add_preprocess_file_command)
         get_filename_component(out_file_dir "${out_file}" DIRECTORY)
         get_filename_component(out_file_name "${out_file}" NAME)
         set(error_check_file "${CSOUND_CMAKE_ERROR_CHECK_DIR}/${out_file_name}")
+        if("MSVC" STREQUAL "${CMAKE_C_COMPILER_ID}")
+            string(REPLACE "/" "\\\\" out_file "${out_file}")
+            string(REPLACE "/" "\\\\" error_check_file "${error_check_file}")
+        endif()
         add_custom_command(
             OUTPUT "${out_file}"
             MAIN_DEPENDENCY "${in_file}"
@@ -37,18 +41,18 @@ function(add_preprocess_file_command)
                 && (csound
                         --syntax-check-only
                         "${error_check_file}"
-                        >/dev/null 2>&1
+                        >${dev_null} 2>&1
                     || csound
                         --messagelevel=0
                         --syntax-check-only
                         "${error_check_file}"
-                        >/dev/null
+                        >${dev_null}
                     )
                 # If the error check file is different than the out file, copy the contents to the out file.
                 # NB: We copy the contents only because copying the file itself breaks plugin .csd symlinks.
                 && (${CMAKE_COMMAND} -E compare_files "${error_check_file}" "${out_file}"
                     || (${CMAKE_COMMAND} -E make_directory "${out_file_dir}"
-                        && cat "${error_check_file}" >"${out_file}"
+                        && ${cat_command} "${error_check_file}" >"${out_file}"
                         )
                     )
         )

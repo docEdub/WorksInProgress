@@ -50,7 +50,7 @@ function(add_vst3)
                     --export-${vst3_plugin_type}
                     "${csd_output_file_path}"
                     --destination "${plugin_path}"
-                    > /dev/null 2>&1
+                    >${dev_null} 2>&1
             )
 
         # Link the output .csd to the plugin .csd.
