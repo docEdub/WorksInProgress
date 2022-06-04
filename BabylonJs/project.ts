@@ -1847,6 +1847,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 			this._activeNoteData[index].scale.setAll(scale)
 			this._activeNoteData[index].yaw += yawDelta
 			this._activeNoteData[index].translation.y = (pitch - this.pitchFloor) / 2
+            if (index == 0) {
+                this._pillarMesh.rotation.y += yawDelta
+            }
 		}
 
 		_activeNoteData = []
