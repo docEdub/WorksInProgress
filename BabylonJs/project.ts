@@ -4686,8 +4686,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
     sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
-    if (gk_i % 10 == 0) then
-    endif
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
     endop
     opcode AF_3D_Audio_ChannelGains_RTZ, 0, kkkPp

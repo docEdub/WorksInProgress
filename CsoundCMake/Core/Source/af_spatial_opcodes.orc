@@ -208,12 +208,6 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
         sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
-    if (gk_i % 10 == 0) then
-        log_k_debug("L=[%.03f, %.03f, %.03f], D=[%.03f, %.03f, %.03f], A=%f",
-            gk_AF_3D_ListenerPosition[$X], gk_AF_3D_ListenerPosition[$Y], gk_AF_3D_ListenerPosition[$Z],
-            k_direction[$X], k_direction[$Y], k_direction[$Z],
-            k_azimuth)
-    endif
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 

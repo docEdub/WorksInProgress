@@ -188,7 +188,7 @@ instr INSTRUMENT_ID
             //----------------------------------------------------------------------------------------------------------
             // Amplitude envelope (fast decay).
             aenv = linseg:a(1, 0.07, 0)
-            // Frequency of the attack sound. Quickly glisses from 400 Hz to sub-audio. 
+            // Frequency of the attack sound. Quickly glisses from 400 Hz to sub-audio.
             acps = expsega(400, 0.07, 0.001, 1, 0.001)
             // Attack sound.
             aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
@@ -213,7 +213,7 @@ instr INSTRUMENT_ID
 
             iNoteDuration = iNseDur
             p3 = iNoteDuration
-            
+
             // Sine tones.
             //----------------------------------------------------------------------------------------------------------
             // Amplitude envelope.
@@ -263,7 +263,7 @@ instr INSTRUMENT_ID
             // Duration of the note.
             iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
             p3 = iNoteDuration
-            
+
             // Pitched element
             //----------------------------------------------------------------------------------------------------------
             // Amplitude envelope for the pulse oscillators.
@@ -287,7 +287,7 @@ instr INSTRUMENT_ID
             amix = buthp(amix, 5000)
             // Apply the amplitude envelope.
             amix = (amix * aenv)
-            
+
             // Noise element
             //----------------------------------------------------------------------------------------------------------
             // Amplitude envelope for the noise.
@@ -302,7 +302,7 @@ instr INSTRUMENT_ID
             anoise = buthp(anoise, 8000)
             // Apply the amplitude envelope.
             anoise = anoise * aenv
-            
+
             // Mix pulse oscillator and noise.
             aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
 
@@ -351,14 +351,14 @@ instr INSTRUMENT_ID
             amix = buthp(amix, 5000)
             // Apply the amplitude envelope.
             amix = (amix * aenv)
-            
+
             // Noise element.
             //----------------------------------------------------------------------------------------------------------
             // Amplitude envelope for the noise.
             aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
             // White noise.
             anoise = noise(0.8, 0)
-            // Cutoff frequency envelope for a lowpass filter            
+            // Cutoff frequency envelope for a lowpass filter
             kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
             // Lowpass filter the noise signal.
             anoise = butlp(anoise, kcf)
@@ -366,7 +366,7 @@ instr INSTRUMENT_ID
             anoise = buthp(anoise, 8000)
             // Apply the amplitude envelope.
             anoise = anoise * aenv
-            
+
             // Mix pulse oscillator and noise.
             aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
 
@@ -383,17 +383,6 @@ instr INSTRUMENT_ID
             aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
 
             AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-            ; #if LOGGING
-            ;     kLoggedGains init false
-            ;     if (kLoggedGains == false) then
-            ;         log_k_trace("Ambisonic gains = (%.03f, %.03f, %.03f, %.03f)",
-            ;             gkAmbisonicChannelGains[0],
-            ;             gkAmbisonicChannelGains[1],
-            ;             gkAmbisonicChannelGains[2],
-            ;             gkAmbisonicChannelGains[3])
-            ;         kLoggedGains = true
-            ;     endif
-            ; #endif
             a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
             a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
             a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut

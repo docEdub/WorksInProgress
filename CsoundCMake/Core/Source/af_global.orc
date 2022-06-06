@@ -30,53 +30,6 @@ ${CSOUND_INCLUDE} "time.orc"
 // Sets the global listener rotation matrix to the global listener matrix table updated by Javascript.
 //
 opcode AF_3D_UpdateListenerRotationMatrix, 0, 0
-
-    ; kM11 = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
-    ; if (changed(kM11) == true) then
-    ;     printsk("listener azimuth = %.03f\n", sininv(kM11) * $AF_MATH__RADIANS_TO_DEGREES)
-    ; endif
-
-    ; kChanged = false
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[0]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[1]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[2]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[3]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[4]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[5]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[6]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[7]) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(gk_AF_3D_ListenerRotationMatrix[8]) == true) then
-    ;     kChanged = true
-    ; endif
-
-    ; kPrinted init false
-    ; if (kChanged == true) then
-    ;     kPrinted = false
-    ; endif
-
-    ; if (kChanged == false && kPrinted == false) then
-    ;     printsk("gk_AF_3D_ListenerRotationMatrix ...\n")
-    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[0], gk_AF_3D_ListenerRotationMatrix[1], gk_AF_3D_ListenerRotationMatrix[2])
-    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[3], gk_AF_3D_ListenerRotationMatrix[4], gk_AF_3D_ListenerRotationMatrix[5])
-    ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
-    ;     kPrinted = true
-    ; endif
     gk_AF_3D_ListenerRotationMatrix[0] = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
     gk_AF_3D_ListenerRotationMatrix[1] = tab:k(1, gi_AF_3D_ListenerMatrixTableNumber)
     gk_AF_3D_ListenerRotationMatrix[2] = tab:k(2, gi_AF_3D_ListenerMatrixTableNumber)
@@ -95,20 +48,6 @@ endop
 // Sets the global listener position vector to the global listener matrix table updated by Javascript.
 //
 opcode AF_3D_UpdateListenerPosition, 0, 0
-
-    ; kChanged = false
-    ; if (changed(kX) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(kY) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (changed(kZ) == true) then
-    ;     kChanged = true
-    ; endif
-    ; if (kChanged == true) then
-    ;     printsk("%s: Raw Csound listener position = [%.3f, %.3f, %.3f]\n", time_string_k(), kX, kY, kZ)
-    ; endif
     gk_AF_3D_ListenerPosition[0] = tab:k(12, gi_AF_3D_ListenerMatrixTableNumber)
     gk_AF_3D_ListenerPosition[1] = tab:k(13, gi_AF_3D_ListenerMatrixTableNumber)
     gk_AF_3D_ListenerPosition[2] = tab:k(14, gi_AF_3D_ListenerMatrixTableNumber)
