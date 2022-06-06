@@ -33,5 +33,7 @@ ${CSOUND_DEFINE} AF_3D_FRAME_DURATION #0.01666667# // 1/60th of a second
 ; ${CSOUND_DEFINE} AF_3D_FRAME_DURATION_OVER_2 #0.00833333# // 1/60th of a second divided by 2
 ${CSOUND_DEFINE} AF_3D_FRAME_DURATION_OVER_2 #0.05# // Same as audio context buffer size in browsers that support it.
 
+${CSOUND_DEFINE} AF_3D_LISTENER_LAG_TIME #0.05#
+
 
 ${CSOUND_INCLUDE_GUARD_ENDIF}

@@ -3,8 +3,8 @@ ${CSOUND_IFNDEF} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
 ${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
 ${CSOUND_ENDIF}
 
-${CSOUND_IFNDEF} TriangleMonoSynth_NoteNumberPortamentoTime
-${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberPortamentoTime #0.01#
+${CSOUND_IFNDEF} TriangleMonoSynth_NoteNumberLagTime
+${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime #0.1#
 ${CSOUND_ENDIF}
 
 ${CSOUND_IFNDEF} TriangleMonoSynth_VcoBandwith
@@ -137,14 +137,14 @@ instr INSTRUMENT_ID
         kActiveNoteCountPrevious init 0
         kNoteNumberWhenActivated init 0
         kActiveNoteCountChanged = false
-        kNoteNumberNeedsPortamento init false
+        kNoteNumberNeedsLag init false
         if (changed2(kActiveNoteCount) == true || kActiveNoteCountPrevious == 0) then
             ; log_k_trace("%s: kActiveNoteCount changed to %d", nstrstr(p1), kActiveNoteCount)
             if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
                 ; log_k_trace("Attack started")
                 kNoteNumberWhenActivated = gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX]
                 kActiveNoteCountChanged = true
-                kNoteNumberNeedsPortamento = false
+                kNoteNumberNeedsLag = false
                 kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
             elseif (kActiveNoteCount == 0) then
                 ; log_k_trace("Decay started")
@@ -189,17 +189,17 @@ instr INSTRUMENT_ID
         kCurrentNoteNumber = gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX]
         if (changed2(kCurrentNoteNumber) == true) then
             if (kActiveNoteCountChanged == false) then
-                log_k_trace("Setting kNoteNumberNeedsPortamento to true")
-                kNoteNumberNeedsPortamento = true
+                log_k_trace("Setting kNoteNumberNeedsLag to true")
+                kNoteNumberNeedsLag = true
             endif
         endif
-        kNoteNumberPortamentoTime init 0
-        if (kNoteNumberNeedsPortamento == false) then
-            kNoteNumberPortamentoTime = 0
+        kNoteNumberLagTime init 0
+        if (kNoteNumberNeedsLag == false) then
+            kNoteNumberLagTime = 0
         else
-            kNoteNumberPortamentoTime = $TriangleMonoSynth_NoteNumberPortamentoTime
+            kNoteNumberLagTime = $TriangleMonoSynth_NoteNumberLagTime
         endif
-        kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
+        kNoteNumber = lag:k(kCurrentNoteNumber, kNoteNumberLagTime)
 
         kCps = cpsmidinn(kNoteNumber)
         aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP, 0.5, 0, $TriangleMonoSynth_VcoBandwith)

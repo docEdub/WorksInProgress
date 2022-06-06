@@ -50,7 +50,7 @@ instr 1
     od
 
     // Update the listener rotation matrix before using it to convert from ambisonic to binaural.
-    AF_3D_UpdateListenerRotationMatrix($AF_3D_FRAME_DURATION_OVER_2)
+    AF_3D_UpdateListenerRotationMatrix()
 
     // Output the signals to the host DAW.
     if (nchnls_i == 6 && nchnls == 6) then

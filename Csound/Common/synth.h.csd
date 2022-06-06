@@ -34,8 +34,8 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
     ${CSOUND_INCLUDE} "Position_instr_1_head.orc"
-    AF_3D_UpdateListenerRotationMatrix(0.01)
-    AF_3D_UpdateListenerPosition(0.01)
+    AF_3D_UpdateListenerRotationMatrix()
+    AF_3D_UpdateListenerPosition()
 endin
 
 

@@ -70,8 +70,8 @@ ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
 gkPlaybackTimeInSeconds init 0
 
 instr 1
-    AF_3D_UpdateListenerRotationMatrix(0.1)
-    AF_3D_UpdateListenerPosition(0.1)
+    AF_3D_UpdateListenerRotationMatrix()
+    AF_3D_UpdateListenerPosition()
 
     iSecondsPerKPass = 1 / kr
     gkPlaybackTimeInSeconds += iSecondsPerKPass
