@@ -2377,13 +2377,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csdText = `
     <CsoundSynthesizer>
     <CsOptions>
-    --messagelevel=0
+    --messagelevel=134
     --midi-device=0
     --nodisplays
     --nosound
     </CsOptions>
     <CsInstruments>
-    giPresetUuidPreallocationCount[] = fillarray( 9, /* instr 4 -- DistanceDelaySynth */ 9, /* instr 5 -- PointSynth */ 0 /* instr 6 -- PowerLineSynth */ )
+    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 0 /* dummy */ )
     #ifndef OUTPUT_CHANNEL_COUNT
     #define OUTPUT_CHANNEL_COUNT #2#
     #end
@@ -5421,6 +5421,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_4
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[0]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 4, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
     #ifdef IS_GENERATING_JSON
     setPluginUuid(1, 0, "8aac7747b6b44366b1080319e34a8616")
     instr Json_5
@@ -5597,6 +5606,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_5
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[1]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 5, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
     #ifdef IS_GENERATING_JSON
     setPluginUuid(2, 0, "8e12ccc0dff44a4283211d553199a8cd")
     instr Json_6
@@ -5773,6 +5791,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_6
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[2]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 6, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
     #ifdef IS_GENERATING_JSON
     setPluginUuid(3, 0, "6aecd056fd3f4c6d9a108de531c48ddf")
     instr Json_7
@@ -5949,6 +5976,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_7
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[3]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 7, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 7))
     #ifdef IS_GENERATING_JSON
     setPluginUuid(4, 0, "e3e7d57082834a28b53e021beaeb783d")
     instr Json_8
@@ -6125,6 +6161,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_8
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[4]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 8, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
     #ifdef IS_GENERATING_JSON
     setPluginUuid(5, 0, "02c103e8fcef483292ebc49d3898ef96")
     instr Json_9
@@ -6301,6 +6346,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_9
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[5]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 9, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 9))
     #ifndef ADSR_LINSEGR_UDO_ORC
     #define ADSR_LINSEGR_UDO_ORC ##
     opcode adsr_linsegr, a, iiii
@@ -6576,6 +6630,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_10
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[6]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 10, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 10))
     #ifndef ADSR_LINSEGR_UDO_ORC
     #define ADSR_LINSEGR_UDO_ORC ##
     opcode adsr_linsegr, a, iiii
@@ -7013,6 +7076,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_11
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[7]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 11, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 11))
     #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #end
@@ -7310,6 +7382,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
+    instr Preallocate_12
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[8]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 12, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 12))
     gSCcInfo_Reverb[] = fillarray( \\
     \\
     "enabled", "bool", "false", "synced", \\
@@ -7480,7 +7561,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     instr Preallocate_15
     ii = 0
-    while (ii < 10) do
+    while (ii < 4) do
     scoreline_i(sprintf("i %d.%.3d 0 .1 0 0 0", 15, ii))
     ii += 1
     od

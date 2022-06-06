@@ -3,8 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
---messagelevel=0
-; --messagelevel=134
+; --messagelevel=0
+--messagelevel=134
 --midi-device=0
 --nodisplays
 -+rtmidi=null
@@ -19,9 +19,16 @@
 <CsInstruments>
 
 giPresetUuidPreallocationCount[] = fillarray( \
-    9,  /* instr 4 -- DistanceDelaySynth */ \
-    9,   /* instr 5 -- PointSynth */ \
-    0    /* instr 6 -- PowerLineSynth */ \
+    5,  /* instr 4  -- 00: Kick 1 */ \
+    6,  /* instr 5  -- 01: Kick 2: Left */ \
+    6,  /* instr 6  -- 02: Kick 2: Right */ \
+    4,  /* instr 7  -- 03: Snare */ \
+    5,  /* instr 8  -- 04: HiHat 1 */ \
+    7,  /* instr 9  -- 05: HiHat 2 */ \
+    5,  /* instr 10 -- 06: Beacon */ \
+    4,  /* instr 11 -- 07: Bass 1+2: Edited */ \
+    4,  /* instr 12 -- 08: Bass 1+2: Distant */ \
+    0   /* dummy */ \
 )
 
 ${CSOUND_IFNDEF} OUTPUT_CHANNEL_COUNT

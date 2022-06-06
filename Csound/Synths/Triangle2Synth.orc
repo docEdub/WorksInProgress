@@ -232,4 +232,16 @@ instr INSTRUMENT_ID
 end:
 endin
 
+#if IS_PLAYBACK
+    instr CONCAT(Preallocate_, INSTRUMENT_ID)
+        ii = 0
+        while (ii < giPresetUuidPreallocationCount[INSTRUMENT_TRACK_INDEX]) do
+            scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", INSTRUMENT_ID, ii, EVENT_NOTE_GENERATED))
+            ii += 1
+        od
+        turnoff
+    endin
+    scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------
