@@ -4452,6 +4452,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define AF_MATH__RADIANS_TO_DEGREES #$AF_MATH__180_OVER_PI#
     #define AF_3D_FRAME_DURATION #0.01666667#
     #define AF_3D_FRAME_DURATION_OVER_2 #0.05#
+    #define AF_3D_LISTENER_LAG_TIME #0.05#
     opcode AF_FuzzyEqual, k, kk
     k_a, k_b xin
     k_equal = $AF_TRUE
@@ -4749,31 +4750,26 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     if (0 < k_deltaTime) then
     k_deltaDistance = k_currentDistance - k_previousDistance
     k_velocity = k_deltaDistance / k_deltaTime
-    k_dopplerShift = port($AF_3D_AUDIO__SPEED_OF_SOUND / ($AF_3D_AUDIO__SPEED_OF_SOUND + k_velocity),
+    k_dopplerShift = lag:k($AF_3D_AUDIO__SPEED_OF_SOUND / ($AF_3D_AUDIO__SPEED_OF_SOUND + k_velocity),
     $AF_3D_FRAME_DURATION_OVER_2, 1)
     endif
     xout k_dopplerShift
     endop
-    opcode AF_3D_UpdateListenerRotationMatrix, 0, i
-    i_portamento_halftime xin
-    gk_AF_3D_ListenerRotationMatrix[0] = port(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[1] = port(tab:k(1, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[2] = port(tab:k(2, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[3] = port(tab:k(4, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[4] = port(tab:k(5, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[5] = port(tab:k(6, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[6] = port(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[7] = port(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
-    gk_AF_3D_ListenerRotationMatrix[8] = port(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), i_portamento_halftime)
+    opcode AF_3D_UpdateListenerRotationMatrix, 0, 0
+    gk_AF_3D_ListenerRotationMatrix[0] = lag:k(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[1] = lag:k(tab:k(1, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[2] = lag:k(tab:k(2, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[3] = lag:k(tab:k(4, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[4] = lag:k(tab:k(5, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[5] = lag:k(tab:k(6, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[6] = lag:k(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[7] = lag:k(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[8] = lag:k(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
     endop
-    opcode AF_3D_UpdateListenerPosition, 0, i
-    i_portamento_halftime xin
-    kX = tab:k(12, gi_AF_3D_ListenerMatrixTableNumber)
-    kY = tab:k(13, gi_AF_3D_ListenerMatrixTableNumber)
-    kZ = tab:k(14, gi_AF_3D_ListenerMatrixTableNumber)
-    gk_AF_3D_ListenerPosition[0] = port(kX, i_portamento_halftime)
-    gk_AF_3D_ListenerPosition[1] = port(kY, i_portamento_halftime)
-    gk_AF_3D_ListenerPosition[2] = port(kZ, i_portamento_halftime)
+    opcode AF_3D_UpdateListenerPosition, 0, 0
+    gk_AF_3D_ListenerPosition[0] = lag:k(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerPosition[1] = lag:k(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerPosition[2] = lag:k(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
     endop
     ga_AF_3D_AmbisonicOutput[] init 4
     opcode AF_Ambisonics_Send, 0, ai[]P
@@ -4811,8 +4807,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     gkPlaybackTimeInSeconds init 0
     instr 1
-    AF_3D_UpdateListenerRotationMatrix(0.1)
-    AF_3D_UpdateListenerPosition(0.1)
+    AF_3D_UpdateListenerRotationMatrix()
+    AF_3D_UpdateListenerPosition()
     iSecondsPerKPass = 1 / kr
     gkPlaybackTimeInSeconds += iSecondsPerKPass
     endin
@@ -6511,38 +6507,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut *= aEnvelopeS_decayAmount
     aOut = tone(aOut, 999 + 333)
     if (gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionEnabled] == 1) then
-    iPositionPortTime = 50 / giKR
-    kPositionMaxAmpWhenClose = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionMaxAmpWhenClose], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionMaxAmpWhenClose])
-    kPositionReferenceDistance = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionReferenceDistance], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionReferenceDistance])
-    kPositionRolloffFactor = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionRolloffFactor], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionRolloffFactor])
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionRolloffFactor], iPositionLagTime)
     kX, kY, kZ dEd_position gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionOpcodeComboBoxIndex]
-    iXOffsetSign = 1
-    iYOffsetSign = 1
-    iZOffsetSign = 1
-    if (giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXOffset] < 0) then
-    iXOffsetSign = -1
-    endif
-    if (giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYOffset] < 0) then
-    iOffsetSign = -1
-    endif
-    if (giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZOffset] < 0) then
-    iZOffsetSign = -1
-    endif
-    kPositionXScale = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXScale], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXScale])
-    kPositionYScale = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYScale], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYScale])
-    kPositionZScale = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZScale], iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZScale])
-    kPositionXOffset = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXOffset] * iXOffsetSign, iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXOffset] * iXOffsetSign)
-    kPositionYOffset = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYOffset] * iYOffsetSign, iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYOffset] * iYOffsetSign)
-    kPositionZOffset = portk(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZOffset] * iZOffsetSign, iPositionPortTime, giCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZOffset] * iZOffsetSign)
-    kPositionXOffset *= iXOffsetSign
-    kPositionYOffset *= iYOffsetSign
-    kPositionZOffset *= iZOffsetSign
-    kX *= kPositionXScale
-    kY *= kPositionYScale
-    kZ *= kPositionZScale
-    kX += kPositionXOffset
-    kY += kPositionYOffset
-    kZ += kPositionZOffset
+    kX *= lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZOffset], iPositionLagTime)
     kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
     kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
     aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
@@ -6729,20 +6704,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #end
-    #ifdef TriangleBassMonoSynth_NoteNumberPortamentoTime
-    #undef TriangleBassMonoSynth_NoteNumberPortamentoTime
+    #ifdef TriangleBassMonoSynth_NoteNumberLagTime
+    #undef TriangleBassMonoSynth_NoteNumberLagTime
     #end
     #ifdef TriangleMonoSynth_VcoBandwith
     #undef TriangleMonoSynth_VcoBandwith
     #end
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
-    #define TriangleMonoSynth_NoteNumberPortamentoTime # 0.025 #
+    #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
-    #ifndef TriangleMonoSynth_NoteNumberPortamentoTime
-    #define TriangleMonoSynth_NoteNumberPortamentoTime #0.01#
+    #ifndef TriangleMonoSynth_NoteNumberLagTime
+    #define TriangleMonoSynth_NoteNumberLagTime #0.1#
     #end
     #ifndef TriangleMonoSynth_VcoBandwith
     #define TriangleMonoSynth_VcoBandwith #0.5#
@@ -6846,12 +6821,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kActiveNoteCountPrevious init 0
     kNoteNumberWhenActivated init 0
     kActiveNoteCountChanged = 0
-    kNoteNumberNeedsPortamento init 0
+    kNoteNumberNeedsLag init 0
     if (changed2(kActiveNoteCount) == 1 || kActiveNoteCountPrevious == 0) then
     if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[0]
     kActiveNoteCountChanged = 1
-    kNoteNumberNeedsPortamento = 0
+    kNoteNumberNeedsLag = 0
     kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
     elseif (kActiveNoteCount == 0) then
     kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
@@ -6892,52 +6867,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kCurrentNoteNumber = gkTriangle4BassMonoSynth_NoteNumber[0]
     if (changed2(kCurrentNoteNumber) == 1) then
     if (kActiveNoteCountChanged == 0) then
-    kNoteNumberNeedsPortamento = 1
+    kNoteNumberNeedsLag = 1
     endif
     endif
-    kNoteNumberPortamentoTime init 0
-    if (kNoteNumberNeedsPortamento == 0) then
-    kNoteNumberPortamentoTime = 0
+    kNoteNumberLagTime init 0
+    if (kNoteNumberNeedsLag == 0) then
+    kNoteNumberLagTime = 0
     else
-    kNoteNumberPortamentoTime = $TriangleMonoSynth_NoteNumberPortamentoTime
+    kNoteNumberLagTime = $TriangleMonoSynth_NoteNumberLagTime
     endif
-    kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
+    kNoteNumber = lag:k(kCurrentNoteNumber, kNoteNumberLagTime)
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(iAmp, kCps, 12, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
     aOut *= aVolumeEnvelope
     if (gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionEnabled] == 1) then
-    iPositionPortTime = 50 / giKR
-    kPositionMaxAmpWhenClose = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose])
-    kPositionReferenceDistance = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance])
-    kPositionRolloffFactor = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor])
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor], iPositionLagTime)
     kX, kY, kZ dEd_position gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionOpcodeComboBoxIndex]
-    iXOffsetSign = 1
-    iYOffsetSign = 1
-    iZOffsetSign = 1
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] < 0) then
-    iXOffsetSign = -1
-    endif
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] < 0) then
-    iOffsetSign = -1
-    endif
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] < 0) then
-    iZOffsetSign = -1
-    endif
-    kPositionXScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale])
-    kPositionYScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale])
-    kPositionZScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale])
-    kPositionXOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] * iXOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] * iXOffsetSign)
-    kPositionYOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] * iYOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] * iYOffsetSign)
-    kPositionZOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] * iZOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] * iZOffsetSign)
-    kPositionXOffset *= iXOffsetSign
-    kPositionYOffset *= iYOffsetSign
-    kPositionZOffset *= iZOffsetSign
-    kX *= kPositionXScale
-    kY *= kPositionYScale
-    kZ *= kPositionZScale
-    kX += kPositionXOffset
-    kY += kPositionYOffset
-    kZ += kPositionZOffset
+    kX *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset], iPositionLagTime)
     iScaleFactorX = random:i(-20, 20)
     kX *= iScaleFactorX
     kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
@@ -7047,20 +7001,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #end
-    #ifdef TriangleBassMonoSynth_NoteNumberPortamentoTime
-    #undef TriangleBassMonoSynth_NoteNumberPortamentoTime
+    #ifdef TriangleBassMonoSynth_NoteNumberLagTime
+    #undef TriangleBassMonoSynth_NoteNumberLagTime
     #end
     #ifdef TriangleMonoSynth_VcoBandwith
     #undef TriangleMonoSynth_VcoBandwith
     #end
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
-    #define TriangleMonoSynth_NoteNumberPortamentoTime # 0.025 #
+    #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
-    #ifndef TriangleMonoSynth_NoteNumberPortamentoTime
-    #define TriangleMonoSynth_NoteNumberPortamentoTime #0.01#
+    #ifndef TriangleMonoSynth_NoteNumberLagTime
+    #define TriangleMonoSynth_NoteNumberLagTime #0.1#
     #end
     #ifndef TriangleMonoSynth_VcoBandwith
     #define TriangleMonoSynth_VcoBandwith #0.5#
@@ -7164,12 +7118,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kActiveNoteCountPrevious init 0
     kNoteNumberWhenActivated init 0
     kActiveNoteCountChanged = 0
-    kNoteNumberNeedsPortamento init 0
+    kNoteNumberNeedsLag init 0
     if (changed2(kActiveNoteCount) == 1 || kActiveNoteCountPrevious == 0) then
     if (kActiveNoteCount == 1 && kActiveNoteCountPrevious == 0) then
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[1]
     kActiveNoteCountChanged = 1
-    kNoteNumberNeedsPortamento = 0
+    kNoteNumberNeedsLag = 0
     kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
     elseif (kActiveNoteCount == 0) then
     kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
@@ -7210,52 +7164,31 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kCurrentNoteNumber = gkTriangle4BassMonoSynth_NoteNumber[1]
     if (changed2(kCurrentNoteNumber) == 1) then
     if (kActiveNoteCountChanged == 0) then
-    kNoteNumberNeedsPortamento = 1
+    kNoteNumberNeedsLag = 1
     endif
     endif
-    kNoteNumberPortamentoTime init 0
-    if (kNoteNumberNeedsPortamento == 0) then
-    kNoteNumberPortamentoTime = 0
+    kNoteNumberLagTime init 0
+    if (kNoteNumberNeedsLag == 0) then
+    kNoteNumberLagTime = 0
     else
-    kNoteNumberPortamentoTime = $TriangleMonoSynth_NoteNumberPortamentoTime
+    kNoteNumberLagTime = $TriangleMonoSynth_NoteNumberLagTime
     endif
-    kNoteNumber = portk(kCurrentNoteNumber, kNoteNumberPortamentoTime)
+    kNoteNumber = lag:k(kCurrentNoteNumber, kNoteNumberLagTime)
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(iAmp, kCps, 12, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
     aOut *= aVolumeEnvelope
     if (gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionEnabled] == 1) then
-    iPositionPortTime = 50 / giKR
-    kPositionMaxAmpWhenClose = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose])
-    kPositionReferenceDistance = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance])
-    kPositionRolloffFactor = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor])
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionRolloffFactor], iPositionLagTime)
     kX, kY, kZ dEd_position gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionOpcodeComboBoxIndex]
-    iXOffsetSign = 1
-    iYOffsetSign = 1
-    iZOffsetSign = 1
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] < 0) then
-    iXOffsetSign = -1
-    endif
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] < 0) then
-    iOffsetSign = -1
-    endif
-    if (giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] < 0) then
-    iZOffsetSign = -1
-    endif
-    kPositionXScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale])
-    kPositionYScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale])
-    kPositionZScale = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale], iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale])
-    kPositionXOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] * iXOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset] * iXOffsetSign)
-    kPositionYOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] * iYOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset] * iYOffsetSign)
-    kPositionZOffset = portk(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] * iZOffsetSign, iPositionPortTime, giCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset] * iZOffsetSign)
-    kPositionXOffset *= iXOffsetSign
-    kPositionYOffset *= iYOffsetSign
-    kPositionZOffset *= iZOffsetSign
-    kX *= kPositionXScale
-    kY *= kPositionYScale
-    kZ *= kPositionZScale
-    kX += kPositionXOffset
-    kY += kPositionYOffset
-    kZ += kPositionZOffset
+    kX *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset], iPositionLagTime)
     iScaleFactorX = random:i(-20, 20)
     kX *= iScaleFactorX
     kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
