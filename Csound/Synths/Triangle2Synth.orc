@@ -51,6 +51,8 @@ giTriangle2Synth_NoteNumberLfoAmp = 0.333
 
 giTriangle2Synth_NoteIndex[] init ORC_INSTANCE_COUNT
 
+giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
+
 #endif // #ifndef Triangle2Synth_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -64,14 +66,13 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, sprintf(",\"pitchLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
 
-        iLfoShapeTable = ftgenonce(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
         fprints(SJsonFile, ",\"pitchLfoShape\":[")
         iLfoShapeTableIndex = 0
         while (iLfoShapeTableIndex < 60) do
             if (iLfoShapeTableIndex > 0) then
                 fprints(SJsonFile, ",")
             endif
-            fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, iLfoShapeTable)))
+            fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, giTriangle2Synth_LfoShapeTable)))
             iLfoShapeTableIndex += 1
         od
         fprints(SJsonFile, "]}")

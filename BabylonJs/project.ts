@@ -6508,6 +6508,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTriangle2Synth_PlaybackReverbAdjustment = 1.5
     giTriangle2Synth_NoteNumberLfoAmp = 0.333
     giTriangle2Synth_NoteIndex[] init 1
+    giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, 7, 0, 15, 1, 30, -1, 15, 0)
     #ifdef IS_GENERATING_JSON
     setPluginUuid(6, 0, "fd575f03378047af835c19ef4f7d5991")
     instr Json_10
@@ -6515,14 +6516,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "{")
     fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "-"))
     fprints(SJsonFile, sprintf(",\\"pitchLfoAmp\\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
-    iLfoShapeTable = ftgenonce(0, 0, 60, 7, 0, 15, 1, 30, -1, 15, 0)
     fprints(SJsonFile, ",\\"pitchLfoShape\\":[")
     iLfoShapeTableIndex = 0
     while (iLfoShapeTableIndex < 60) do
     if (iLfoShapeTableIndex > 0) then
     fprints(SJsonFile, ",")
     endif
-    fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, iLfoShapeTable)))
+    fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, giTriangle2Synth_LfoShapeTable)))
     iLfoShapeTableIndex += 1
     od
     fprints(SJsonFile, "]}")
