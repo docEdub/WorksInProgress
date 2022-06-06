@@ -374,7 +374,7 @@ endop
 //
 opcode AF_3D_Audio_SourceDirection, k[], k[]
     k_sourcePosition[] xin
-    
+
     // Calculate distance to listener.
     k_direction[] = fillarray(k_sourcePosition[$X] - gk_AF_3D_ListenerPosition[$X],
         k_sourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y],

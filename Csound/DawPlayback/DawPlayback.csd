@@ -209,7 +209,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         endif
 
         fprints("DawPlayback.json", sprintf("\"%s\":[", SPluginUuid))
-    
+
         iI = 0
         iWriteComma = false
 

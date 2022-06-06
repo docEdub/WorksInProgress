@@ -110,7 +110,7 @@ opcode AF_3D_UpdateListenerPosition, 0, 0
     ; endif
     ; if (changed(kZ) == true) then
     ;     kChanged = true
-    ; endif    
+    ; endif
     ; if (kChanged == true) then
     ;     printsk("%s: Raw Csound listener position = [%.3f, %.3f, %.3f]\n", time_string_k(), kX, kY, kZ)
     ; endif
@@ -133,10 +133,10 @@ ga_AF_3D_AmbisonicOutput[] init 4
 //
 opcode AF_Ambisonics_Send, 0, ai[]P
     a_signal, i_position[], k_width xin
-    
+
     // Get the ambisonic channel gains.
     AF_3D_Audio_ChannelGains(i_position, k_width)
-    
+
     // Mix the ambisonic channel gains into the global ambisonic outputs.
     ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
     ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
@@ -156,10 +156,10 @@ endop
 //
 opcode AF_Ambisonics_Send, 0, ak[]P
     a_signal, k_position[], k_width xin
-    
+
     // Get the ambisonic channel gains.
     AF_3D_Audio_ChannelGains(k_position, k_width)
-    
+
     // Mix the ambisonic channel gains into the global ambisonic outputs.
     ga_AF_3D_AmbisonicOutput[0] = ga_AF_3D_AmbisonicOutput[0] + (gkAmbisonicChannelGains[0] * a_signal)
     ga_AF_3D_AmbisonicOutput[1] = ga_AF_3D_AmbisonicOutput[1] + (gkAmbisonicChannelGains[1] * a_signal)
