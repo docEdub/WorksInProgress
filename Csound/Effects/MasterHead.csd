@@ -73,17 +73,11 @@ instr 1
         ayr = -(ay * km0 + az * km3 + ax * km6)
         azr =   ay * km1 + az * km4 + ax * km7
         axr = -(ay * km2 + az * km5 + ax * km8)
-
-        // Use sh_hrir_order_1.wav to convert ambisonic output to stereo.
-        i_hrir_0 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 1)
-        i_hrir_1 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 2)
-        i_hrir_2 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 3)
-        i_hrir_3 = ftgen(0, 0, 0, 1, "3rdparty/ResonanceAudio/1.0.0/sh_hrir_order_1.wav", 0, 0, 4)
-        aw dconv aw, 256, i_hrir_0
-        ay dconv ayr, 256, i_hrir_1
-        az dconv azr, 256, i_hrir_2
-        ax dconv axr, 256, i_hrir_3
-
+        iHrirLength = ftlen(gi_AF_3D_HrirChannel1TableNumber)
+        aw ftconv aw, gi_AF_3D_HrirChannel1TableNumber, iHrirLength
+        ay ftconv ayr, gi_AF_3D_HrirChannel2TableNumber, iHrirLength
+        az ftconv azr, gi_AF_3D_HrirChannel3TableNumber, iHrirLength
+        ax ftconv axr, gi_AF_3D_HrirChannel4TableNumber, iHrirLength
         outch(1, aw + ay + az + ax)
         outch(2, aw - ay + az + ax)
 
