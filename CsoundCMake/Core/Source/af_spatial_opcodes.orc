@@ -101,8 +101,10 @@ gk_AF_3D_ListenerPosition[] init 3
 //
 opcode AF_3D_Audio_ChannelGains, 0, kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
-    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
-    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
+    kLagAzimuth = lag:k(k_azimuth, $AF_3D_LISTENER_LAG_TIME)
+    kLagElevation = lag:k(k_elevation, $AF_3D_LISTENER_LAG_TIME)
+    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(kLagAzimuth)
+    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(kLagElevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
     gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 1
@@ -284,6 +286,26 @@ endop
 
 
 //---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_DistanceAttenuation
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the attenuation for the given distance using the inverse distance model.
+// See https://medium.com/@kfarr/understanding-web-audio-api-positional-audio-distance-models-for-webxr-e77998afcdff
+// See https://www.desmos.com/calculator/blu4geqjci
+//
+// in  k  : Distance.
+// in  P  : Reference distance. Defaults to 1.
+// in  P  : Rolloff factor. Default to 1.
+//
+// out k  : Attenuation.
+//
+opcode AF_3D_Audio_DistanceAttenuation, a, aPP
+    aDistance, kReferenceDistance, kRolloffFactor xin
+    aAttenuation = kReferenceDistance / ((max(aDistance, a(kReferenceDistance)) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
+    xout aAttenuation
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_SourceDistance
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the distance and direction from the listener to the given source position.
@@ -326,6 +348,27 @@ endop
 
 
 //---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance_a
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
+// in  k: Source's position x.
+// in  k: Source's position y.
+// in  k: Source's position z.
+//
+// out a  : Distance from listener to given source position.
+//
+opcode AF_3D_Audio_SourceDistance_a, a, kkk
+    kSourcePositionX, kSourcePositionY, kSourcePositionZ xin
+    kVector[] init 3
+    kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
+    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
 // AF_3D_Audio_SourceDistance
 //---------------------------------------------------------------------------------------------------------------------
 // Returns the distance and direction from the listener to the given source position.
@@ -337,9 +380,9 @@ endop
 opcode AF_3D_Audio_SourceDistance, k, i[]
     iSourcePosition[] xin
     kVector[] init 3
-    kVector[$X] = iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
-    kVector[$Y] = iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
-    kVector[$Z] = iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
+    kVector[$X] = lag:k(iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Y] = lag:k(iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Z] = lag:k(iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
 endop
 
@@ -356,10 +399,29 @@ endop
 opcode AF_3D_Audio_SourceDistance, k, k[]
     kSourcePosition[] xin
     kVector[] init 3
+    kVector[$X] = lag:k(kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Y] = lag:k(kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Z] = lag:k(kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+endop
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// AF_3D_Audio_SourceDistance_a
+//---------------------------------------------------------------------------------------------------------------------
+// Returns the distance and direction from the listener to the given source position.
+//
+// in  k[]: Source's position [x, y, z].
+//
+// out a  : Distance from listener to given source position.
+//
+opcode AF_3D_Audio_SourceDistance_a, a, k[]
+    kSourcePosition[] xin
+    kVector[] init 3
     kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
 endop
 
 

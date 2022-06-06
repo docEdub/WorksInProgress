@@ -318,10 +318,10 @@ instr INSTRUMENT_ID
             //
             // Frequencies of the 6 oscillators.
             kFrq1 = 296 * octave(giTR_808_ClosedHighHat_Tune)
-            kFrq2 = 285 * octave(giTR_808_ClosedHighHat_Tune) 	
-            kFrq3 = 365 * octave(giTR_808_ClosedHighHat_Tune) 	
-            kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune) 	
-            kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune) 	
+            kFrq2 = 285 * octave(giTR_808_ClosedHighHat_Tune)
+            kFrq3 = 365 * octave(giTR_808_ClosedHighHat_Tune)
+            kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
+            kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
             kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
 
             // Duration of the note.
@@ -376,12 +376,11 @@ instr INSTRUMENT_ID
             ; log_i_trace("Calling position UDO ...")
             #include "Position_iXYZ.orc"
 
-            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-                kPositionRolloffFactor)
-            kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-            aDistancedOut = aOut * kDistanceAmp
-            aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            aDistancedOut = aOut * aDistanceAmp
+            aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
 
             AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
             ; #if LOGGING
@@ -395,10 +394,10 @@ instr INSTRUMENT_ID
             ;         kLoggedGains = true
             ;     endif
             ; #endif
-            a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-            a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-            a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-            a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
         else
             // Disabled.
             a1 = aDistancedOut

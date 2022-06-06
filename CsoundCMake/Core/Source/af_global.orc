@@ -27,19 +27,9 @@ ${CSOUND_INCLUDE} "time.orc"
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_UpdateListenerRotationMatrix
 //---------------------------------------------------------------------------------------------------------------------
-// Sets the global listener rotation matrix to the global listener matrix table updated by Javascript, applying the
-// given lag/smoothing to account for the frame rate being lower than the k-rate.
+// Sets the global listener rotation matrix to the global listener matrix table updated by Javascript.
 //
 opcode AF_3D_UpdateListenerRotationMatrix, 0, 0
-    gk_AF_3D_ListenerRotationMatrix[0] = lag:k(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[1] = lag:k(tab:k(1, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[2] = lag:k(tab:k(2, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[3] = lag:k(tab:k(4, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[4] = lag:k(tab:k(5, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[5] = lag:k(tab:k(6, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[6] = lag:k(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[7] = lag:k(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[8] = lag:k(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
 
     ; kM11 = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
     ; if (changed(kM11) == true) then
@@ -87,19 +77,24 @@ opcode AF_3D_UpdateListenerRotationMatrix, 0, 0
     ;     printsk("[%.3f, %.3f, %.3f]\n", gk_AF_3D_ListenerRotationMatrix[6], gk_AF_3D_ListenerRotationMatrix[7], gk_AF_3D_ListenerRotationMatrix[8])
     ;     kPrinted = true
     ; endif
+    gk_AF_3D_ListenerRotationMatrix[0] = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[1] = tab:k(1, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[2] = tab:k(2, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[3] = tab:k(4, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[4] = tab:k(5, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[5] = tab:k(6, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[6] = tab:k(8, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[7] = tab:k(9, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[8] = tab:k(10, gi_AF_3D_ListenerMatrixTableNumber)
 endop
 
 
 //---------------------------------------------------------------------------------------------------------------------
 // AF_3D_UpdateListenerPosition
 //---------------------------------------------------------------------------------------------------------------------
-// Sets the global listener position vector to the global listener matrix table updated by Javascript, applying the
-// given a lag/smoothing to account for the frame rate being lower than the k-rate.
+// Sets the global listener position vector to the global listener matrix table updated by Javascript.
 //
 opcode AF_3D_UpdateListenerPosition, 0, 0
-    gk_AF_3D_ListenerPosition[0] = lag:k(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerPosition[1] = lag:k(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerPosition[2] = lag:k(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
 
     ; kChanged = false
     ; if (changed(kX) == true) then
@@ -114,6 +109,9 @@ opcode AF_3D_UpdateListenerPosition, 0, 0
     ; if (kChanged == true) then
     ;     printsk("%s: Raw Csound listener position = [%.3f, %.3f, %.3f]\n", time_string_k(), kX, kY, kZ)
     ; endif
+    gk_AF_3D_ListenerPosition[0] = tab:k(12, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerPosition[1] = tab:k(13, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerPosition[2] = tab:k(14, gi_AF_3D_ListenerMatrixTableNumber)
 endop
 
 

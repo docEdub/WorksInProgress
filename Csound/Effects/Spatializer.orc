@@ -90,9 +90,9 @@ instr INSTRUMENT_ID
         if (CC_VALUE_k(positionEnabled) == true) then
             #include "Position_kXYZ.orc"
 
-            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-            aOut = aIn * min(kDistanceAmp, kPositionMaxAmpWhenClose)
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aOut = aIn * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
 
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
             a1 = gkAmbisonicChannelGains[0] * aOut

@@ -363,18 +363,18 @@ instr FinalMixInstrument
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    km0 = gk_AF_3D_ListenerRotationMatrix[0]
-    km1 = gk_AF_3D_ListenerRotationMatrix[1]
-    km2 = gk_AF_3D_ListenerRotationMatrix[2]
-    km3 = gk_AF_3D_ListenerRotationMatrix[3]
-    km4 = gk_AF_3D_ListenerRotationMatrix[4]
-    km5 = gk_AF_3D_ListenerRotationMatrix[5]
-    km6 = gk_AF_3D_ListenerRotationMatrix[6]
-    km7 = gk_AF_3D_ListenerRotationMatrix[7]
-    km8 = gk_AF_3D_ListenerRotationMatrix[8]
-    ayr = -(ay * km0 + az * km3 + ax * km6)
-    azr =   ay * km1 + az * km4 + ax * km7
-    axr = -(ay * km2 + az * km5 + ax * km8)
+    am0 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[0]), $AF_3D_LISTENER_LAG_TIME)
+    am1 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[1]), $AF_3D_LISTENER_LAG_TIME)
+    am2 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[2]), $AF_3D_LISTENER_LAG_TIME)
+    am3 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[3]), $AF_3D_LISTENER_LAG_TIME)
+    am4 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[4]), $AF_3D_LISTENER_LAG_TIME)
+    am5 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[5]), $AF_3D_LISTENER_LAG_TIME)
+    am6 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[6]), $AF_3D_LISTENER_LAG_TIME)
+    am7 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[7]), $AF_3D_LISTENER_LAG_TIME)
+    am8 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[8]), $AF_3D_LISTENER_LAG_TIME)
+    ayr = -(ay * am0 + az * am3 + ax * am6)
+    azr =   ay * am1 + az * am4 + ax * am7
+    axr = -(ay * am2 + az * am5 + ax * am8)
     iHrirLength = ftlen(gi_AF_3D_HrirChannel1TableNumber)
     aw ftconv aw, gi_AF_3D_HrirChannel1TableNumber, iHrirLength
     ay ftconv ayr, gi_AF_3D_HrirChannel2TableNumber, iHrirLength

@@ -123,16 +123,15 @@ instr INSTRUMENT_ID
             ; log_i_trace("Calling position UDO ...")
             #include "Position_kXYZ.orc"
 
-            kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-            kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-                kPositionRolloffFactor)
-            aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
 
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            a1 = gkAmbisonicChannelGains[0] * aOut
-            a2 = gkAmbisonicChannelGains[1] * aOut
-            a3 = gkAmbisonicChannelGains[2] * aOut
-            a4 = gkAmbisonicChannelGains[3] * aOut
+            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
         else
             // Disabled.
             a1 = aOut

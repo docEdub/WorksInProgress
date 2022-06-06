@@ -4625,8 +4625,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkAmbisonicChannelGains[] init 4
     opcode AF_3D_Audio_ChannelGains, 0, kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
-    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
-    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
+    kLagAzimuth = lag:k(k_azimuth, $AF_3D_LISTENER_LAG_TIME)
+    kLagElevation = lag:k(k_elevation, $AF_3D_LISTENER_LAG_TIME)
+    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(kLagAzimuth)
+    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(kLagElevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
     gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 1
@@ -4701,6 +4703,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kAttenuation = kReferenceDistance / ((max(kDistance, kReferenceDistance) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
     xout kAttenuation
     endop
+    opcode AF_3D_Audio_DistanceAttenuation, a, aPP
+    aDistance, kReferenceDistance, kRolloffFactor xin
+    aAttenuation = kReferenceDistance / ((max(aDistance, a(kReferenceDistance)) - kReferenceDistance) * kRolloffFactor + kReferenceDistance)
+    xout aAttenuation
+    endop
     opcode AF_3D_Audio_SourceDistance, k, iii
     iSourcePositionX, iSourcePositionY, iSourcePositionZ xin
     kVector[] init 3
@@ -4717,21 +4724,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
     endop
+    opcode AF_3D_Audio_SourceDistance_a, a, kkk
+    kSourcePositionX, kSourcePositionY, kSourcePositionZ xin
+    kVector[] init 3
+    kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
+    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
+    endop
     opcode AF_3D_Audio_SourceDistance, k, i[]
     iSourcePosition[] xin
     kVector[] init 3
-    kVector[$X] = iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
-    kVector[$Y] = iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
-    kVector[$Z] = iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
+    kVector[$X] = lag:k(iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Y] = lag:k(iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Z] = lag:k(iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
     xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
     endop
     opcode AF_3D_Audio_SourceDistance, k, k[]
     kSourcePosition[] xin
     kVector[] init 3
+    kVector[$X] = lag:k(kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Y] = lag:k(kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
+    kVector[$Z] = lag:k(kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
+    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    endop
+    opcode AF_3D_Audio_SourceDistance_a, a, k[]
+    kSourcePosition[] xin
+    kVector[] init 3
     kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
     endop
     opcode AF_3D_Audio_SourceDirection, k[], k[]
     k_sourcePosition[] xin
@@ -4756,20 +4779,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     xout k_dopplerShift
     endop
     opcode AF_3D_UpdateListenerRotationMatrix, 0, 0
-    gk_AF_3D_ListenerRotationMatrix[0] = lag:k(tab:k(0, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[1] = lag:k(tab:k(1, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[2] = lag:k(tab:k(2, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[3] = lag:k(tab:k(4, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[4] = lag:k(tab:k(5, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[5] = lag:k(tab:k(6, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[6] = lag:k(tab:k(8, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[7] = lag:k(tab:k(9, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerRotationMatrix[8] = lag:k(tab:k(10, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerRotationMatrix[0] = tab:k(0, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[1] = tab:k(1, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[2] = tab:k(2, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[3] = tab:k(4, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[4] = tab:k(5, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[5] = tab:k(6, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[6] = tab:k(8, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[7] = tab:k(9, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerRotationMatrix[8] = tab:k(10, gi_AF_3D_ListenerMatrixTableNumber)
     endop
     opcode AF_3D_UpdateListenerPosition, 0, 0
-    gk_AF_3D_ListenerPosition[0] = lag:k(tab:k(12, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerPosition[1] = lag:k(tab:k(13, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
-    gk_AF_3D_ListenerPosition[2] = lag:k(tab:k(14, gi_AF_3D_ListenerMatrixTableNumber), $AF_3D_LISTENER_LAG_TIME)
+    gk_AF_3D_ListenerPosition[0] = tab:k(12, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerPosition[1] = tab:k(13, gi_AF_3D_ListenerMatrixTableNumber)
+    gk_AF_3D_ListenerPosition[2] = tab:k(14, gi_AF_3D_ListenerMatrixTableNumber)
     endop
     ga_AF_3D_AmbisonicOutput[] init 4
     opcode AF_Ambisonics_Send, 0, ai[]P
@@ -5362,17 +5385,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -5539,17 +5561,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -5716,17 +5737,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -5893,17 +5913,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -6070,17 +6089,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -6247,17 +6265,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionMaxAmpWhenClose init iPositionMaxAmpWhenClose
     kPositionReferenceDistance init iPositionReferenceDistance
     kPositionRolloffFactor init iPositionRolloffFactor
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance,
-    kPositionRolloffFactor)
-    kDistanceAmp = min(kDistanceAmp, kPositionMaxAmpWhenClose)
-    aDistancedOut = aOut * kDistanceAmp
-    aAuxOut = aOut * min((kDistanceAmp * 3), 0.5)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aDistanceAmp = min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aDistancedOut = aOut * aDistanceAmp
+    aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
     AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-    a1 = gkAmbisonicChannelGains[0] * aDistancedOut
-    a2 = gkAmbisonicChannelGains[1] * aDistancedOut
-    a3 = gkAmbisonicChannelGains[2] * aDistancedOut
-    a4 = gkAmbisonicChannelGains[3] * aDistancedOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
     else
     a1 = aDistancedOut
     a2 = 0
@@ -6518,14 +6535,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kX += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionXOffset], iPositionLagTime)
     kY += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionYOffset], iPositionLagTime)
     kZ += lag:k(gkCcValues_Triangle2Synth[iOrcInstanceIndex][giCc_Triangle2Synth_positionZOffset], iPositionLagTime)
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-    aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-    a1 = gkAmbisonicChannelGains[0] * aOut
-    a2 = gkAmbisonicChannelGains[1] * aOut
-    a3 = gkAmbisonicChannelGains[2] * aOut
-    a4 = gkAmbisonicChannelGains[3] * aOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
     else
     a1 = 0
     a2 = 0
@@ -6894,14 +6911,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kZ += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset], iPositionLagTime)
     iScaleFactorX = random:i(-20, 20)
     kX *= iScaleFactorX
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-    aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-    a1 = gkAmbisonicChannelGains[0] * aOut
-    a2 = gkAmbisonicChannelGains[1] * aOut
-    a3 = gkAmbisonicChannelGains[2] * aOut
-    a4 = gkAmbisonicChannelGains[3] * aOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
     else
     a1 = aOut
     a2 = 0
@@ -7191,14 +7208,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kZ += lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionZOffset], iPositionLagTime)
     iScaleFactorX = random:i(-20, 20)
     kX *= iScaleFactorX
-    kDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
-    kDistanceAmp = AF_3D_Audio_DistanceAttenuation(kDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-    aOut *= min(kDistanceAmp, kPositionMaxAmpWhenClose)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-    a1 = gkAmbisonicChannelGains[0] * aOut
-    a2 = gkAmbisonicChannelGains[1] * aOut
-    a3 = gkAmbisonicChannelGains[2] * aOut
-    a4 = gkAmbisonicChannelGains[3] * aOut
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
     else
     a1 = aOut
     a2 = 0
@@ -7537,18 +7554,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    km0 = gk_AF_3D_ListenerRotationMatrix[0]
-    km1 = gk_AF_3D_ListenerRotationMatrix[1]
-    km2 = gk_AF_3D_ListenerRotationMatrix[2]
-    km3 = gk_AF_3D_ListenerRotationMatrix[3]
-    km4 = gk_AF_3D_ListenerRotationMatrix[4]
-    km5 = gk_AF_3D_ListenerRotationMatrix[5]
-    km6 = gk_AF_3D_ListenerRotationMatrix[6]
-    km7 = gk_AF_3D_ListenerRotationMatrix[7]
-    km8 = gk_AF_3D_ListenerRotationMatrix[8]
-    ayr = -(ay * km0 + az * km3 + ax * km6)
-    azr = ay * km1 + az * km4 + ax * km7
-    axr = -(ay * km2 + az * km5 + ax * km8)
+    am0 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[0]), $AF_3D_LISTENER_LAG_TIME)
+    am1 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[1]), $AF_3D_LISTENER_LAG_TIME)
+    am2 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[2]), $AF_3D_LISTENER_LAG_TIME)
+    am3 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[3]), $AF_3D_LISTENER_LAG_TIME)
+    am4 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[4]), $AF_3D_LISTENER_LAG_TIME)
+    am5 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[5]), $AF_3D_LISTENER_LAG_TIME)
+    am6 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[6]), $AF_3D_LISTENER_LAG_TIME)
+    am7 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[7]), $AF_3D_LISTENER_LAG_TIME)
+    am8 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[8]), $AF_3D_LISTENER_LAG_TIME)
+    ayr = -(ay * am0 + az * am3 + ax * am6)
+    azr = ay * am1 + az * am4 + ax * am7
+    axr = -(ay * am2 + az * am5 + ax * am8)
     iHrirLength = ftlen(gi_AF_3D_HrirChannel1TableNumber)
     aw ftconv aw, gi_AF_3D_HrirChannel1TableNumber, iHrirLength
     ay ftconv ayr, gi_AF_3D_HrirChannel2TableNumber, iHrirLength
