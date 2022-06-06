@@ -12,16 +12,8 @@ const jsonDir = path.join(bounceDir, '/json');
 const bounceMixdownDir = path.join(bounceDir, '/mixdown');
 const babylonJsDir = path.resolve('BabylonJs')
 
-if (os.type() === 'Darwin') {
-    spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
-        stdio: 'inherit'
-    });
-    spawnSync('bash', [ '-c', 'cd ' + playbackDir + ' && make 2>&1' ], {
-        stdio: 'inherit'
-    });
-
-    // Save DawPlayback.csd as DawPlayback.js.csd with all backslashes converted for use as Javascript multiline string.
-    let data = fs.readFileSync(csoundDir + '/build/bounce/DawPlayback.csd', 'ascii')
+const updateBabylonJsProject = () => {
+    let data = fs.readFileSync(path.join(csoundDir, 'build', 'bounce', 'DawPlayback.csd'), 'ascii')
 
     // Remove "-+rtmidi=null" option.
     data = data.replace('-+rtmidi=null', '')
@@ -34,25 +26,36 @@ if (os.type() === 'Darwin') {
     data = data.replace(/\\/g, '\\\\');
 
     // Remove lines starting with "//"".
-    data = data.replace(/\s*\/\/.*\n/g, '\n')
+    data = data.replace(/\s*\/\/.*\r?\n/g, os.EOL)
 
     // Remove lines starting with ";".
-    data = data.replace(/\s*;.*\n/g, '\n')
+    data = data.replace(/\s*;.*\r?\n/g, os.EOL)
 
     // Remove blank lines.
-    data = data.replace(/\s*\n/g, '\n')
+    data = data.replace(/\s*\r?\n/g, os.EOL)
 
     // Replace leading whitespace with tabs.
-    data = data.replace(/\n\s*/g, '\n    ')
+    data = data.replace(/\r?\n\s*/g, '\r\n    ')
 
     // Wrap with Javascript multiline string variable named `csdText`.
     let output = 'const csdText = `' + data + '`'
 
     // Update BabylonJs/project.ts csdText variable.
-    data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
+    data = fs.readFileSync(path.join(babylonJsDir, '/project.ts'), 'ascii')
     data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
     fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
     console.log('-- Updating BabylonJs/project.ts `csdText` done')
+}
+
+if (os.type() === 'Darwin') {
+    spawnSync('bash', [ '-c', 'cmake -B ' + playbackDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=OFF' ], {
+        stdio: 'inherit'
+    });
+    spawnSync('bash', [ '-c', 'cd ' + playbackDir + ' && make 2>&1' ], {
+        stdio: 'inherit'
+    });
+
+    updateBabylonJsProject()
 
     if (process.argv.indexOf('--with-json') != -1) {
         // Wipe the json folder.
@@ -69,10 +72,10 @@ if (os.type() === 'Darwin') {
         const jsonData = fs.readFileSync(bounceDir + '/DawPlayback.json', 'ascii')
 
         // Wrap JSON data with Javascript multiline string variable named `csdJson`.
-        output = 'const csdJson = `\n    ' + jsonData + '\n    `'
+        let output = 'const csdJson = `\n    ' + jsonData + '\n    `'
 
             // Update BabylonJs/project.ts csdJson variable.
-        data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
+        let data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
 
         data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
         fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
@@ -105,7 +108,9 @@ else if (os.type() == "Windows_NT") {
     });
     spawnSync('cmd', [ '/c', 'cd ' + playbackDir + ' && CMake --build . 2>&1' ], {
         stdio: 'inherit'
-    });    
+    });
+
+    updateBabylonJsProject()
 }
 else {
     throw new Error('Unsupported OS: ' + os.type())
