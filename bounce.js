@@ -69,7 +69,11 @@ if (os.type() === 'Darwin') {
             stdio: 'inherit'
         });
 
-        const jsonData = fs.readFileSync(bounceDir + '/DawPlayback.json', 'ascii')
+        let jsonData = fs.readFileSync(bounceDir + '/DawPlayback.json', 'ascii')
+
+        // Minify JSON data.
+        jsonData = JSON.stringify(JSON.parse(jsonData))
+        fs.writeFileSync(bounceDir + '/DawPlayback.min.json', jsonData)
 
         // Wrap JSON data with Javascript multiline string variable named `csdJson`.
         let output = 'const csdJson = `\n    ' + jsonData + '\n    `'
