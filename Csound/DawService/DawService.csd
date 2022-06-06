@@ -1225,7 +1225,7 @@ instr WriteTracksetOrcFile
 
             fprintks(S_filename, "#define INSTRUMENT_ID %s // -%d\n", SInstrumentId, 0)
             fprintks(S_filename, "#define INSTRUMENT_NAME %s // -%d\n", S_instrumentName, 0)
-            fprintks(S_filename, "#define INSTANCE_NAME STRINGIZE(%s) // -%d\n", SInstanceName, 0)
+            fprintks(S_filename, "#define INSTANCE_NAME STRINGIZE(-%s) // -%d\n", SInstanceName, 0)
             fprintks(S_filename, "#define INSTRUMENT_TRACK_INDEX %d\n", kI)
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX 0\n")
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_UUID \"%s\" // -%d\n", STrackUuid, 0)
