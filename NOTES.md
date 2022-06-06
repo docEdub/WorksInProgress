@@ -6,3 +6,4 @@ Using `dconv` | ~17600 ms
 Using `pconvolve` | ~9600 ms
 Using `ftconv` | ~9500 ms
 Csound compiled with MSVC /fp:fast flag | ~7900 ms
+Using a-rate smoothing for spatial audio calculations | ~10600 ms
