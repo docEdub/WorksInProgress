@@ -10,6 +10,7 @@ declare global {
         useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
         alwaysRun: boolean	   // Always move camera fast on keyboard input, not just when caps lock is on.
+        visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
     }
 
     class OSC {
@@ -260,6 +261,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#isStarted = true
 
             console.debug('Starting Csound playback - done')
+        }
+
+        pause = () => {
+            this.#csoundObj.pause()
+            this.#audioContext.suspend()
+        }
+
+        resume = () => {
+            this.#csoundObj.resume()
+            this.#audioContext.resume()
         }
 
         #startIfRequested = async () => {
@@ -12891,6 +12902,22 @@ const csdJson = `
 
         world.run(time, time - previousTime)
     })
+
+    let documentWasVisible = true
+    setInterval(() => {
+        if (document.visible !== undefined) {
+            if (documentWasVisible && !document.visible) {
+                console.debug(`Pausing Csound`)
+                csound.pause()
+                documentWasVisible = false
+            }
+            else if (!documentWasVisible && document.visible) {
+                console.debug(`Resuming Csound`)
+                csound.resume()
+                documentWasVisible = true
+            }
+        }
+    }, 100)
 
     //#endregion
 
