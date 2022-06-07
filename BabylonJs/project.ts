@@ -259,18 +259,51 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('Csound starting ...')
             csound.start()
             this.#isStarted = true
+            this.volume = 1
 
             console.debug('Starting Csound playback - done')
         }
 
+        _isPaused = false
+        _isResumed = false
+
         pause = () => {
-            this.#csoundObj.pause()
-            this.#audioContext.suspend()
+            if (!this.isStarted) {
+                return
+            }
+            this.volume = 0
+            this._isResumed = false
+            setTimeout(async () => {
+                if (this._isResumed) {
+                    return
+                }
+                this._isPaused = true
+                this.#csoundObj.pause()
+                this.#audioContext.suspend()
+            }, 1000)
         }
 
         resume = () => {
+            if (!this.isStarted) {
+                return
+            }
+            this.volume = 1
+            this._isResumed = true
+            if (!this._isPaused) {
+                return
+            }
+            this._isPaused = false
             this.#csoundObj.resume()
             this.#audioContext.resume()
+        }
+
+        _volume = 0
+        set volume(value) {
+            if (this._volume == value) {
+                return
+            }
+            this._volume = value
+            this.#csoundObj.setControlChannel('main-volume', value)
         }
 
         #startIfRequested = async () => {
@@ -4839,6 +4872,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     gkPlaybackTimeInSeconds init 0
     iDummy = vco2init(31)
+    chn_k("main-volume", 1, 2, 1, 0, 1)
     instr 1
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()
@@ -7666,7 +7700,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aR = aw - ay + az + ax
     aL += ga_masterSignals[4]
     aR += ga_masterSignals[5]
-    outs(aL, aR)
+    aMainVolume = lag:a(a(chnget:k("main-volume")), 0.1)
+    outs(aL * aMainVolume, aR * aMainVolume)
     endin
     instr EndOfInstrumentAllocations
     prints("-------------------------------------------------------------------------------------------------------\\n")

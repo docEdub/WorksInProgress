@@ -79,6 +79,8 @@ gkPlaybackTimeInSeconds init 0
 // Initialize all vco2 tables so they don't get initialized during real-time performance and cause xruns on Quest 2.
 iDummy = vco2init(31)
 
+chn_k("main-volume", 1, 2, 1, 0, 1)
+
 instr 1
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()
@@ -397,7 +399,8 @@ instr FinalMixInstrument
     aL += ga_masterSignals[4]
     aR += ga_masterSignals[5]
 
-    outs(aL, aR)
+    aMainVolume = lag:a(a(chnget:k("main-volume")), 0.1)
+    outs(aL * aMainVolume, aR * aMainVolume)
 endin
 
 
