@@ -9,7 +9,7 @@ declare global {
         isProduction: boolean	// If falsey then we're running in the playground.
         useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
-        alwaysRun: boolean	   // Always move camera fast on keyboard input, not just when caps lock is on.
+        alwaysRun: boolean	    // Always move camera fast on keyboard input, not just when caps lock is on.
         visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
     }
 
