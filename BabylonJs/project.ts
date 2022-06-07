@@ -185,7 +185,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 if (!this.isStarted) {
                     return
                 }
-                if (camera.matrixIsDirty) {
+                if (camera.matrixIsDirty && camera.matrix) {
                     console.debug('Setting Csound listener position to ['
                         + camera.matrix[12] + ', '
                         + camera.matrix[13] + ', '
