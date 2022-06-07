@@ -4827,6 +4827,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
     ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     gkPlaybackTimeInSeconds init 0
+    iDummy = vco2init(31)
     instr 1
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()

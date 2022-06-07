@@ -76,6 +76,9 @@ ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
 
 gkPlaybackTimeInSeconds init 0
 
+// Initialize all vco2 tables so they don't get initialized during real-time performance and cause xruns on Quest 2.
+iDummy = vco2init(31)
+
 instr 1
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()
