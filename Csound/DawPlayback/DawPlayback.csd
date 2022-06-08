@@ -505,13 +505,13 @@ ${CSOUND_ENDIF}
 
 s
 ; Allow time for the reverb tail to fade out and the camera animation speed to slow down to zero.
-i "SendEndedMessage" 30 -1
+i "SendEndedMessage" 5 -1
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     i "GenerateJson" 0 1
 ${CSOUND_ELSE}
     ; Allow time to rewind the score. Csound will error out if the score times out before it is rewound.
-    e 60
+    e 6
 ${CSOUND_ENDIF}
 
 </CsScore>
