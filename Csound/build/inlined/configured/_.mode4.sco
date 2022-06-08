@@ -1,7 +1,7 @@
 i "EndOfInstrumentAllocations" 3 -1
 i "SendStartupMessage" 0 1
-i "SendStartupMessage" 4 -1
 b $SCORE_START_DELAY
+i "SendStartupMessage" 0 -1
 i  Triangle4BassMonoSynth_7    0.01 1 Cc 2 100.00 Unused(0)
 i  Triangle4BassMonoSynth_7    0.01 1 Cc 3 0.25 Unused(0)
 i  Triangle4BassMonoSynth_7    0.01 1 Cc 4 1.00 Unused(0)

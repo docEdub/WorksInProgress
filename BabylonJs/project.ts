@@ -271,7 +271,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             if (!this.isStarted) {
                 return
             }
-            this.volume = 0
+            this.#csoundObj.setControlChannel('pause', 1)
             this._isResumed = false
             setTimeout(async () => {
                 if (this._isResumed) {
@@ -279,22 +279,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 }
                 this._isPaused = true
                 this.#csoundObj.pause()
-                this.#audioContext.suspend()
-            }, 1000)
+            }, 500)
         }
 
         resume = () => {
             if (!this.isStarted) {
                 return
             }
-            this.volume = 1
+            this.#csoundObj.setControlChannel('pause', 0)
             this._isResumed = true
             if (!this._isPaused) {
                 return
             }
             this._isPaused = false
             this.#csoundObj.resume()
-            this.#audioContext.resume()
         }
 
         _volume = 0
@@ -321,13 +319,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('Restart count =', this.restartCount)
         }
 
+        get adjustedAudioContextTime() {
+            return this.#audioContext.currentTime - (3 * this.#latency)
+        }
+
         onLogMessage = (console, args) => {
-            if (args[0] === 'csd:started') {
-                this.#startTime = this.#audioContext.currentTime - (4 - 3 * this.#latency)
+            if (args[0].startsWith('csd:started')) {
+                const scoreTime = Number(args[0].split(' at ')[1])
+                this.#startTime = this.adjustedAudioContextTime - scoreTime
                 this.#playbackIsStarted = true
                 console.debug('Playback start message received')
             }
-            else if (args[0] === 'csd:ended') {
+            else if (args[0].startsWith('csd:resumed')) {
+                const scoreTime = Number(args[0].split(' at ')[1])
+                this.#startTime = this.adjustedAudioContextTime - scoreTime - 1 // - 1 offsets FinalMixInstrument's start time
+                console.debug('Playback resumed message received')
+            }
+            else if (args[0].startsWith('csd:ended')) {
                 console.debug('Playback end message received')
                 this.#restart()
             }
@@ -2421,7 +2429,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const csdText = `
     <CsoundSynthesizer>
     <CsOptions>
-    --messagelevel=134
+    --messagelevel=0
     --midi-device=0
     --nodisplays
     --nosound
@@ -4873,6 +4881,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkPlaybackTimeInSeconds init 0
     iDummy = vco2init(31)
     chn_k("main-volume", 1, 2, 1, 0, 1)
+    chn_k("pause", 1)
     instr 1
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()
@@ -7700,7 +7709,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aR = aw - ay + az + ax
     aL += ga_masterSignals[4]
     aR += ga_masterSignals[5]
-    aMainVolume = lag:a(a(chnget:k("main-volume")), 0.1)
+    kMainVolume init 1
+    kPaused init 0
+    kPause = chnget:k("pause")
+    if (kPause == 1 && kPaused == 0) then
+    kMainVolume = 0
+    kPaused = 1
+    printsk("csd:paused at %.3f\\n", timeinsts())
+    elseif (kPause == 0 && kPaused == 1) then
+    kMainVolume = 1
+    kPaused = 0
+    printsk("csd:resumed at %.3f\\n", timeinsts())
+    endif
+    aMainVolume = lag:a(a(kMainVolume), 0.05)
     outs(aL * aMainVolume, aR * aMainVolume)
     endin
     instr EndOfInstrumentAllocations
@@ -7711,7 +7732,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     instr SendStartupMessage
     if (p3 == -1) then
-    prints("csd:started\\n")
+    prints("csd:started at %.3f\\n", times())
     endif
     turnoff
     endin
@@ -7813,8 +7834,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 16 0.004 1 9 5 0.71
     i "EndOfInstrumentAllocations" 3 -1
     i "SendStartupMessage" 0 1
-    i "SendStartupMessage" 4 -1
     b $SCORE_START_DELAY
+    i "SendStartupMessage" 0 -1
     i 11 0.01 1 4 2 100.00
     i 11 0.01 1 4 3 0.25
     i 11 0.01 1 4 4 1.00
@@ -12845,7 +12866,7 @@ const csdJson = `
         const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
         const clientOsc = new OSC({ plugin: clientPlugin })
         clientOsc.on('/daw/time_in_seconds', message => {
-            dawOscTimeInSeconds = message.args[0] + 3.5 // + 3.5 for score start delay
+            dawOscTimeInSeconds = message.args[0]
             if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
                 dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
                 // console.debug(`dawOscTimeInSeconds = ${dawOscTimeInSeconds}`)

@@ -3,8 +3,8 @@
 <CsoundSynthesizer>
 <CsOptions>
 
-; --messagelevel=0
---messagelevel=134
+--messagelevel=0
+; --messagelevel=134
 --midi-device=0
 --nodisplays
 -+rtmidi=null
@@ -80,6 +80,7 @@ gkPlaybackTimeInSeconds init 0
 iDummy = vco2init(31)
 
 chn_k("main-volume", 1, 2, 1, 0, 1)
+chn_k("pause", 1)
 
 instr 1
     AF_3D_UpdateListenerRotationMatrix()
@@ -399,7 +400,19 @@ instr FinalMixInstrument
     aL += ga_masterSignals[4]
     aR += ga_masterSignals[5]
 
-    aMainVolume = lag:a(a(chnget:k("main-volume")), 0.1)
+    kMainVolume init 1
+    kPaused init false
+    kPause = chnget:k("pause")
+    if (kPause == true && kPaused == false) then
+        kMainVolume = 0
+        kPaused = true
+        printsk("csd:paused at %.3f\n", timeinsts())
+    elseif (kPause == false && kPaused == true) then
+        kMainVolume = 1
+        kPaused = false
+        printsk("csd:resumed at %.3f\n", timeinsts())
+    endif
+    aMainVolume = lag:a(a(kMainVolume), 0.05)
     outs(aL * aMainVolume, aR * aMainVolume)
 endin
 
@@ -416,9 +429,8 @@ endin
 
 instr SendStartupMessage
     // If the duration is not -1 then this is the preallocation instance of this instrument.
-    // Only sound the tone if this is not the preallocation instance.
     if (p3 == -1) then
-        prints("csd:started\n")
+        prints("csd:started at %.3f\n", times())
     endif
     turnoff
 endin
@@ -426,7 +438,6 @@ endin
 
 instr SendEndedMessage
     // If the duration is not -1 then this is the preallocation instance of this instrument.
-    // Only sound the tone if this is not the preallocation instance.
     if (p3 == -1) then
         prints("csd:ended\n")
     endif
