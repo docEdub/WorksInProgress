@@ -11,6 +11,10 @@ ${CSOUND_IFNDEF} TriangleMonoSynth_VcoBandwith
 ${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith #0.5#
 ${CSOUND_ENDIF}
 
+${CSOUND_IFNDEF} TriangleMonoSynth_EffectChain
+${CSOUND_DEFINE} TriangleMonoSynth_EffectChain(aOut) ##
+${CSOUND_ENDIF}
+
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
     setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
@@ -204,6 +208,8 @@ instr INSTRUMENT_ID
         kCps = cpsmidinn(kNoteNumber)
         aOut = vco2(iAmp, kCps, VCO2_WAVEFORM_TRIANGLE_NO_RAMP, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
         aOut *= aVolumeEnvelope
+
+        $TriangleMonoSynth_EffectChain(aOut)
 
         if (CC_VALUE_k(positionEnabled) == true) then
             #include "../Position_kXYZ.orc"

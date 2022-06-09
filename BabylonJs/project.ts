@@ -6832,8 +6832,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTriangle4BassMonoSynth_NoteIndex[] init 2
     gkTriangle4BassMonoSynth_NoteNumber[] init 2
     gSTriangle4BassMonoSynth_Json[] init 2
+    opcode dEd_HighPassFilter, a, ia
+    iCutoffFrequencyHz, a1 xin
+    xout atone(a1, k(iCutoffFrequencyHz))
+    endop
     giTriangle4BassMonoSynth_PlaybackVolumeAdjustment = 0.9
     giTriangle4BassMonoSynth_PlaybackReverbAdjustment = 1.5
+    giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 160
     #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #end
@@ -6843,9 +6848,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_VcoBandwith
     #undef TriangleMonoSynth_VcoBandwith
     #end
+    #ifdef TriangleMonoSynth_EffectChain
+    #undef TriangleMonoSynth_EffectChain
+    #end
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
+    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = dEd_HighPassFilter( giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz, $aOut ) #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
@@ -6854,6 +6863,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #end
     #ifndef TriangleMonoSynth_VcoBandwith
     #define TriangleMonoSynth_VcoBandwith #0.5#
+    #end
+    #ifndef TriangleMonoSynth_EffectChain
+    #define TriangleMonoSynth_EffectChain(aOut) ##
     #end
     #ifdef IS_GENERATING_JSON
     setPluginUuid(7, 0, "ab018f191c70470f98ac3becb76e6d13")
@@ -7013,6 +7025,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(iAmp, kCps, 12, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
     aOut *= aVolumeEnvelope
+    $TriangleMonoSynth_EffectChain(aOut)
     if (gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionEnabled] == 1) then
     iPositionLagTime = 2
     kPositionMaxAmpWhenClose = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionLagTime)
@@ -7149,9 +7162,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_VcoBandwith
     #undef TriangleMonoSynth_VcoBandwith
     #end
+    #ifdef TriangleMonoSynth_EffectChain
+    #undef TriangleMonoSynth_EffectChain
+    #end
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
+    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = dEd_HighPassFilter( giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz, $aOut ) #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
@@ -7160,6 +7177,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #end
     #ifndef TriangleMonoSynth_VcoBandwith
     #define TriangleMonoSynth_VcoBandwith #0.5#
+    #end
+    #ifndef TriangleMonoSynth_EffectChain
+    #define TriangleMonoSynth_EffectChain(aOut) ##
     #end
     #ifdef IS_GENERATING_JSON
     setPluginUuid(8, 0, "b0ba6f144fac4f668ba6981c691277d6")
@@ -7319,6 +7339,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kCps = cpsmidinn(kNoteNumber)
     aOut = vco2(iAmp, kCps, 12, 0.5, 0, $TriangleMonoSynth_VcoBandwith)
     aOut *= aVolumeEnvelope
+    $TriangleMonoSynth_EffectChain(aOut)
     if (gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionEnabled] == 1) then
     iPositionLagTime = 2
     kPositionMaxAmpWhenClose = lag:k(gkCcValues_Triangle4BassMonoSynth[iOrcInstanceIndex][giCc_Triangle4BassMonoSynth_positionMaxAmpWhenClose], iPositionLagTime)

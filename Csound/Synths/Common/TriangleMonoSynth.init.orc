@@ -8,3 +8,6 @@ ${CSOUND_ENDIF}
 ${CSOUND_IFDEF} TriangleMonoSynth_VcoBandwith
 ${CSOUND_UNDEF} TriangleMonoSynth_VcoBandwith
 ${CSOUND_ENDIF}
+${CSOUND_IFDEF} TriangleMonoSynth_EffectChain
+${CSOUND_UNDEF} TriangleMonoSynth_EffectChain
+${CSOUND_ENDIF}

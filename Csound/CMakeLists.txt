@@ -11,6 +11,7 @@ include("${CMAKE_SOURCE_DIR}/Udos/PositionUdos.cmake")
 include("${ROOT_DIR}/CsoundCMake/CsoundCMake.cmake")
 find_package(CsoundCMake.Cabbage REQUIRED)
 
+include("${CMAKE_SOURCE_DIR}/Udos/EffectUdos.cmake")
 include("${CMAKE_SOURCE_DIR}/Udos/SynthUdos.cmake")
 
 add_csd_targets(
