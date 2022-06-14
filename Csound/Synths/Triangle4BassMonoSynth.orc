@@ -14,11 +14,19 @@
 
 #include "synth-inside-include-guard.h.orc"
 #include "Common/TriangleMonoSynth.in-include-guard.orc"
-#include "Udos/EffectUdos/HighPassFilter.h.orc"
 
 giTriangle4BassMonoSynth_PlaybackVolumeAdjustment = 0.9
 giTriangle4BassMonoSynth_PlaybackReverbAdjustment = 1.5
 giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 160
+
+opcode Triangle4BassMonoSynth_EffectChain, a, a
+    a1 xin
+
+    // Roll off lows with high pass filter.
+    a1 = atone(a1, k(giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz))
+
+    xout a1
+endop
 
 #endif // #ifndef ${InstrumentName}_orc__include_guard
 
@@ -29,13 +37,7 @@ giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 160
 ${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05  #
 ${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime                # 0.215 #
 ${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith                      # 0.075 #
-${CSOUND_DEFINE} TriangleMonoSynth_EffectChain(aOut) # \
-    $aOut = \
-        dEd_HighPassFilter( \
-            giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz, \
-            \
-            $aOut \
-        ) \
-    #
+
+${CSOUND_DEFINE} TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
 
 #include "Common/TriangleMonoSynth.instr.orc"

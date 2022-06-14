@@ -6832,13 +6832,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTriangle4BassMonoSynth_NoteIndex[] init 2
     gkTriangle4BassMonoSynth_NoteNumber[] init 2
     gSTriangle4BassMonoSynth_Json[] init 2
-    opcode dEd_HighPassFilter, a, ia
-    iCutoffFrequencyHz, a1 xin
-    xout atone(a1, k(iCutoffFrequencyHz))
-    endop
     giTriangle4BassMonoSynth_PlaybackVolumeAdjustment = 0.9
     giTriangle4BassMonoSynth_PlaybackReverbAdjustment = 1.5
     giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 160
+    opcode Triangle4BassMonoSynth_EffectChain, a, a
+    a1 xin
+    a1 = atone(a1, k(giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz))
+    xout a1
+    endop
     #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #end
@@ -6854,7 +6855,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
-    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = dEd_HighPassFilter( giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz, $aOut ) #
+    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
@@ -7168,7 +7169,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
-    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = dEd_HighPassFilter( giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz, $aOut ) #
+    #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
     #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
     #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
     #end
