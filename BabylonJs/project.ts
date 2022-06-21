@@ -38,7 +38,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -12910,6 +12910,7 @@ const csdJson = `
             if (serverOsc.status() == OSC_STATUS.IS_CLOSED) {
                 console.debug("Re-openinig OSC server")
                 serverOsc.open()
+                sendJavascriptScoreLinesViaOsc()
             }
         }, 1000)
 
@@ -12930,6 +12931,36 @@ const csdJson = `
                 camera.matrixIsDirty = false
             }
         }, camera.matrixMillisecondsPerUpdate)
+
+
+        const beaconPositionZOffset = 300
+        const javascriptScoreLines = []
+        javascriptScoreLines.push({
+            instrumentId: 'fd575f03378047af835c19ef4f7d5991',
+            parameters: [
+                `Position Z Offset`,
+                `${beaconPositionZOffset}`
+            ]
+        })
+
+        const sendJavascriptScoreLinesViaOsc = () => {
+            if (serverOsc.status() !== OSC_STATUS.IS_OPEN) {
+                setTimeout(sendJavascriptScoreLinesViaOsc, 10)
+                return
+            }
+            console.debug(`Sending JavaScript score lines via OSC ...`)
+            for (let i = 0; i < javascriptScoreLines.length; i++) {
+                const scoreLine = javascriptScoreLines[i]
+                const message = new OSC.Message('/DawService/javascript_score_line')
+                message.add(scoreLine.instrumentId)
+                for (let j = 0; j < scoreLine.parameters.length; j++) {
+                    const parameter = scoreLine.parameters[j]
+                    message.add(parameter)
+                }
+                serverOsc.send(message)
+            }
+        }
+        sendJavascriptScoreLinesViaOsc()
     }
     else {
         csound = new Csound(csdText)

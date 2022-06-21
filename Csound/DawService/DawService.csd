@@ -240,6 +240,36 @@ end:
 endop
 
 
+opcode sendJavascriptScoreLine, k, SSSk
+    SUuid, SParameterName, SParameterValue, kDummy xin
+    kTrackIndex = 0
+    kTrackPort = -1
+    STrackUuid init ""
+    iInstrumentNumber = nstrnum("SendJavascriptScoreLine")
+    while (kTrackIndex < TRACK_COUNT_MAX && kTrackPort != 0) do
+        kTrackPort = gi_trackPorts[kTrackIndex]
+        STrackUuid = sprintfk("%s", gSTrackUuids[kTrackIndex])
+        if (strcmpk(STrackUuid, SUuid) == 0) then
+            kTrackIndex = TRACK_COUNT_MAX // break out of while loop
+        endif
+        kTrackIndex += 1
+    od
+    if (strcmpk(STrackUuid, "") != 0) then
+        // Track matching given UUID was found.
+        log_k_trace("UDO sendJavascriptScoreLine: Found track id %s", STrackUuid)
+        scoreline(sprintfk("i%d 0 1 %d \"%s\" \"%s\"",
+            iInstrumentNumber,
+            kTrackPort,
+            SParameterName,
+            SParameterValue),
+            1)
+    else
+        log_k_warning("UDO sendJavascriptScoreLine: track id %s not found", SUuid)
+    endif
+    xout kDummy
+endop
+
+
 opcode addTrackReference, 0, SS
     S_trackIndex, S_trackRefIndex xin
     i_instrumentNumber =  nstrnum("ReferenceTrack")
@@ -506,6 +536,22 @@ instr HandleOscMessages
                 endif
 
 
+                // Javascript score lines
+                //
+                if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_JAVASCRIPT_SCORE_LINE_PATH) == true) then
+                    if (k_argCount < 3) then
+                        log_k_error("OSC path '%s' requires 3 arguments but was given %d.",
+                            DAW_SERVICE_OSC_JAVASCRIPT_SCORE_LINE_PATH, k_argCount)
+                    else
+                        STrackUuid = S_oscMessages[k(2)]
+                        SParameterName = S_oscMessages[k(3)]
+                        SParameterValue = S_oscMessages[k(4)]
+                        log_k_trace("Sending javascript score line...")
+                        kDummy = sendJavascriptScoreLine(STrackUuid, SParameterName, SParameterValue, 1)
+                    endif
+                endif
+
+
                 // Track registration
                 //
                 if (string_begins_with(S_oscPath, DAW_SERVICE_OSC_TRACK_REGISTRATION_PATH) == true) then
@@ -729,6 +775,19 @@ instr UpdateCameraMatrix
     log_ik_info("instr UpdateCameraMatrix(iOscPort = %d, [%f, %f, %f, %f, ...])", iOscPort, kM1, kM2, kM3, kM4)
     OSCsend(1, TRACK_OSC_ADDRESS, iOscPort, TRACK_OSC_CAMERA_MATRIX_PATH, "ffffffffffffffff",
         kM1, kM2, kM3, kM4, kM5, kM6, kM7, kM8, kM9, kM10, kM11, kM12, kM13, kM14, kM15, kM16)
+    turnoff
+endin
+
+
+instr SendJavascriptScoreLine
+    iOscPort init p4
+    SParameterName init strget(p5)
+    SParameterValue init strget(p6)
+    log_ik_info("instr SendJavascriptScoreLine(iOscPort = %d, SParameterName = \"%s\", SParameterValue = \"%s\")",
+        iOscPort,
+        SParameterName,
+        SParameterValue)
+    OSCsend(1, TRACK_OSC_ADDRESS, iOscPort, TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "ss", SParameterName, SParameterValue)
     turnoff
 endin
 
