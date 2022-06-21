@@ -772,7 +772,7 @@ instr UpdateCameraMatrix
     kM14 init p18
     kM15 init p19
     kM16 init p20
-    log_ik_info("instr UpdateCameraMatrix(iOscPort = %d, [%f, %f, %f, %f, ...])", iOscPort, kM1, kM2, kM3, kM4)
+    log_k_info("instr UpdateCameraMatrix(iOscPort = %d, [%f, %f, %f, %f, ...])", iOscPort, kM1, kM2, kM3, kM4)
     OSCsend(1, TRACK_OSC_ADDRESS, iOscPort, TRACK_OSC_CAMERA_MATRIX_PATH, "ffffffffffffffff",
         kM1, kM2, kM3, kM4, kM5, kM6, kM7, kM8, kM9, kM10, kM11, kM12, kM13, kM14, kM15, kM16)
     turnoff
@@ -783,7 +783,7 @@ instr SendJavascriptScoreLine
     iOscPort init p4
     SParameterName init strget(p5)
     SParameterValue init strget(p6)
-    log_ik_info("instr SendJavascriptScoreLine(iOscPort = %d, SParameterName = \"%s\", SParameterValue = \"%s\")",
+    log_k_info("instr SendJavascriptScoreLine(iOscPort = %d, SParameterName = \"%s\", SParameterValue = \"%s\")",
         iOscPort,
         SParameterName,
         SParameterValue)
