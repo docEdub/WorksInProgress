@@ -12888,7 +12888,7 @@ const csdJson = `
         const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
         const clientOsc = new OSC({ plugin: clientPlugin })
         clientOsc.on('/daw/time_in_seconds', message => {
-            dawOscTimeInSeconds = message.args[0]
+            dawOscTimeInSeconds = message.args[0] + 3.5 // + 3.5 for score start delay
             if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
                 dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
                 // console.debug(`dawOscTimeInSeconds = ${dawOscTimeInSeconds}`)
