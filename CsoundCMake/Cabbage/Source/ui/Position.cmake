@@ -3,6 +3,7 @@ include("${CsoundCMake.Cabbage_DIR}/Source/ui/Settings.cmake")
 
 set(preprocessed_files
     "Position_ccIndexes.orc"
+    "Position_ccJavascriptScorelineHandler.orc"
     "Position_defines.h"
     "Position_global.orc"
     "Position_instr_1_head.orc"

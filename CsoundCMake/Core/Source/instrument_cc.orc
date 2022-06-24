@@ -46,6 +46,8 @@ ${CSOUND_DEFINE} CC_SYNC_TO_CHANNEL #1#
 #define CC_VALUE_i(channel) giCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
 #define CC_VALUE_k(channel) gkCcValues[iOrcInstanceIndex][CC_INDEX(channel)]
 
+${CSOUND_DEFINE} CC_CHANNEL_NAME(channel) #gSCcInfo_$INSTRUMENT_NAME[CC_INDEX($channel)][$CC_INFO_CHANNEL]#
+
 #define InitializeCcValuesInstrument CONCAT(INSTRUMENT_NAME, _InitializeCcValues)
 #define CreateCcIndexesInstrument CONCAT(INSTRUMENT_NAME, _CreateCcIndexes)
 

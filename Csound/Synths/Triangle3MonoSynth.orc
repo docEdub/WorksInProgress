@@ -28,3 +28,4 @@ ${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05  #
 ${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime                # 0.215 #
 
 #include "Common/TriangleMonoSynth.instr.orc"
+#include "synth.instr.h.orc"

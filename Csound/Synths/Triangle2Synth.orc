@@ -7,43 +7,14 @@
 //  Single triangle wave oscillator with piano-like decay and 2 note number LFOs.
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifndef INSTRUMENT_NAME
-    #define INSTRUMENT_NAME ${InstrumentName}
-#endif
+#include "synth-before-include-guard.h.orc"
 
-#include "instrument_orc_definitions.h"
-#include "Position_defines.h"
+#ifndef ${InstrumentName}_orc__include_guard
+#define ${InstrumentName}_orc__include_guard
 
+#include "synth-inside-include-guard.h.orc"
 
-#ifndef Triangle2Synth_orc__include_guard
-#define Triangle2Synth_orc__include_guard
-
-${CSOUND_INCLUDE} "adsr_linsegr.udo.orc"
-
-CONCAT(gSCcInfo_, INSTRUMENT_NAME)[] = fillarray( _(\)
-_(\)
-    POSITION_CC_INFO
-_(\)
-    "",                                         "",         "",                 "") // dummy line
-
-${CSOUND_DEFINE} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count) #52#
-
-#include "instrument_cc.orc"
-
-instr CreateCcIndexesInstrument
-    #include "Position_ccIndexes.orc"
-    turnoff
-endin
-
-event_i("i", STRINGIZE(CreateCcIndexesInstrument), 0, -1)
-
-//----------------------------------------------------------------------------------------------------------------------
-
-${CSOUND_INCLUDE} "af_spatial_opcodes.orc"
 ${CSOUND_INCLUDE} "json.orc"
-${CSOUND_INCLUDE} "math.orc"
-${CSOUND_INCLUDE} "PositionUdos.orc"
-${CSOUND_INCLUDE} "time.orc"
 
 giTriangle2Synth_PlaybackVolumeAdjustment = 0.9
 giTriangle2Synth_PlaybackReverbAdjustment = 1.5
@@ -53,7 +24,7 @@ giTriangle2Synth_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
 
-#endif // #ifndef Triangle2Synth_orc__include_guard
+#endif // #ifndef ${InstrumentName}_orc__include_guard
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -244,5 +215,7 @@ endin
     endin
     scoreline_i(sprintf("i \"Preallocate_%d\" 0 -1", INSTRUMENT_ID))
 #endif
+
+#include "synth.instr.h.orc"
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -787,7 +787,13 @@ instr SendJavascriptScoreLine
         iOscPort,
         SParameterName,
         SParameterValue)
-    OSCsend(1, TRACK_OSC_ADDRESS, iOscPort, TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "ss", SParameterName, SParameterValue)
+    OSCsend(
+        1,
+        TRACK_OSC_ADDRESS,
+        iOscPort,
+        sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, SParameterName),
+        "s",
+        SParameterValue)
     turnoff
 endin
 

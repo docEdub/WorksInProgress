@@ -12938,7 +12938,7 @@ const csdJson = `
         javascriptScoreLines.push({
             instrumentId: 'fd575f03378047af835c19ef4f7d5991',
             parameters: [
-                `Position Z Offset`,
+                `Position/Z/Offset`,
                 `${beaconPositionZOffset}`
             ]
         })
