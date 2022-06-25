@@ -34,7 +34,7 @@ instr HandleOscCameraMatrixMessages
         kReceived = OSClisten(gi_oscHandle, TRACK_OSC_CAMERA_MATRIX_PATH, "ffffffffffffffff",
             kM1, kM2, kM3, kM4, kM5, kM6, kM7, kM8, kM9, kM10, kM11, kM12, kM13, kM14, kM15, kM16)
         if (kReceived == true) then
-            log_k_trace("Camera matrix [%f, %f, %f, %f, ...]", kM1, kM2, kM3, kM4)
+            log_k_debug("Camera matrix [%f, %f, %f, %f, ...]", kM1, kM2, kM3, kM4)
             tabw(kM1, 0, gi_AF_3D_ListenerMatrixTableNumber)
             tabw(kM2, 1, gi_AF_3D_ListenerMatrixTableNumber)
             tabw(kM3, 2, gi_AF_3D_ListenerMatrixTableNumber)

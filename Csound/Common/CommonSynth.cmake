@@ -4,6 +4,7 @@ set(form_height 516)
 set(Project_CommonSynth_HeaderFiles
     "synth-before-include-guard.h.orc"
     "synth-inside-include-guard.h.orc"
+    "synth.instr.h.orc"
     )
 
 set(CSD_SOURCE_FILE_PATH "${CSD_SOURCE_DIR}/${InstrumentName}.csd")
