@@ -2203,6 +2203,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region World track setup
 
+    const beaconTrackId = 'fd575f03378047af835c19ef4f7d5991'
+
     const createTrack = (id, json, options) => {
         const entity = new Entity
         entity.id = id
@@ -2287,7 +2289,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         entity.addComponent(pitchLfo)
         const animation = new BeaconAnimationComponent
         animation.maximumActiveNoteCount = 2
-        animation.position = json[1].note.xyz
+        let position = json[1].note.xyz
+        if (options.x != undefined) {
+            position[0] = options.x
+        }
+        if (options.z != undefined) {
+            position[2] = options.z
+        }
+        animation.position = position
         entity.addComponent(animation)
         return entity
     }
@@ -2327,99 +2336,101 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         strikerMeshScaling: new Array(3).fill(20 / mainTriangleMeshHeight)
     }
 
-    const createTrackMap = {
-        'e274e9138ef048c4ba9c4d42e836c85c': {
-            function: createDrumAnimation,
-            options: {
-                name: '00: Kick 1',
-                totalDuration: kickOptions.totalDuration,
-                color: [ 1, 0.5, 0.1 ],
-                flashScalingMin: kickOptions.flashScalingMin,
-                flashScalingMax: kickOptions.flashScalingMax,
-                strikerMeshScaling: kickOptions.strikerMeshScaling,
-                strikerMeshY: kickOptions.strikerMeshY
-            }
-        },
-        '8aac7747b6b44366b1080319e34a8616': {
-            function: createDrumAnimation,
-            options: {
-                name: '01: Kick 2: Left',
-                totalDuration: kickOptions.totalDuration,
-                color: [ 0.1, 1, 0.5 ],
-                flashScalingMin: kickOptions.flashScalingMin,
-                flashScalingMax: kickOptions.flashScalingMax,
-                strikerMeshScaling: kickOptions.strikerMeshScaling,
-                strikerMeshY: kickOptions.strikerMeshY
-            }
-        },
-        '8e12ccc0dff44a4283211d553199a8cd': {
-            function: createDrumAnimation,
-            options: {
-                name: '02: Kick 2: Right',
-                totalDuration: kickOptions.totalDuration,
-                color: [ 0.5, 0.1, 1 ],
-                flashScalingMin: kickOptions.flashScalingMin,
-                flashScalingMax: kickOptions.flashScalingMax,
-                strikerMeshScaling: kickOptions.strikerMeshScaling,
-                strikerMeshY: kickOptions.strikerMeshY
-            }
-        },
-        '6aecd056fd3f4c6d9a108de531c48ddf': {
-            function: createDrumAnimation,
-            options: {
-                name: '03: Snare',
-                totalDuration: snareOptions.totalDuration,
-                color: [ 0.1, 0.1, 1 ],
-                flashScalingMin: snareOptions.flashScalingMin,
-                flashScalingMax: snareOptions.flashScalingMax,
-                strikerMeshScaling: snareOptions.strikerMeshScaling,
-                strikerMeshY: snareOptions.strikerMeshY
-            }
-        },
-        'e3e7d57082834a28b53e021beaeb783d': {
-            function: createHiHatAnimation,
-            options: {
-                name: '04: HiHat 1',
-                totalDuration: 0.034,
-                color: [ 1, 0.333, 0.333 ],
-                y: 20
-            }
-        },
-        '02c103e8fcef483292ebc49d3898ef96': {
-            function: createHiHatAnimation,
-            options: {
-                name: '05: HiHat 2',
-                totalDuration: 0.034,
-                color: [ 0.333, 0.333, 1 ],
-                y: 60
-            }
-        },
-        'fd575f03378047af835c19ef4f7d5991': {
-            function: createBeaconAnimation,
-            options: {
-                name: '06: Beacon'
-            }
-        },
-        'ab018f191c70470f98ac3becb76e6d13': {
-            function: createBassAnimation,
-            options: {
-                name: '07: Bass 1+2: Edited',
-                meshesToColor: [
-                    scene.getMeshByName('MainTriangles')
-                ]
-            }
-        },
-        'b0ba6f144fac4f668ba6981c691277d6': {
-            function: createBassAnimation,
-            options: {
-                name: '08: Bass 1+2: Distant',
-                baseScale: mainTrianglesOuterMeshScale,
-                rotation: mainTrianglesOuterMeshRotationY,
-                meshesToColor: [
-                    scene.getMeshByName('MainTriangles'),
-                    scene.getMeshByName('OuterMainTriangles')
-                ]
-            }
+    let trackOptionsMap = {}
+
+    trackOptionsMap['e274e9138ef048c4ba9c4d42e836c85c'] = {
+        function: createDrumAnimation,
+        options: {
+            name: '00: Kick 1',
+            totalDuration: kickOptions.totalDuration,
+            color: [ 1, 0.5, 0.1 ],
+            flashScalingMin: kickOptions.flashScalingMin,
+            flashScalingMax: kickOptions.flashScalingMax,
+            strikerMeshScaling: kickOptions.strikerMeshScaling,
+            strikerMeshY: kickOptions.strikerMeshY
+        }
+    }
+    trackOptionsMap['8aac7747b6b44366b1080319e34a8616'] = {
+        function: createDrumAnimation,
+        options: {
+            name: '01: Kick 2: Left',
+            totalDuration: kickOptions.totalDuration,
+            color: [ 0.1, 1, 0.5 ],
+            flashScalingMin: kickOptions.flashScalingMin,
+            flashScalingMax: kickOptions.flashScalingMax,
+            strikerMeshScaling: kickOptions.strikerMeshScaling,
+            strikerMeshY: kickOptions.strikerMeshY
+        }
+    }
+    trackOptionsMap['8e12ccc0dff44a4283211d553199a8cd'] = {
+        function: createDrumAnimation,
+        options: {
+            name: '02: Kick 2: Right',
+            totalDuration: kickOptions.totalDuration,
+            color: [ 0.5, 0.1, 1 ],
+            flashScalingMin: kickOptions.flashScalingMin,
+            flashScalingMax: kickOptions.flashScalingMax,
+            strikerMeshScaling: kickOptions.strikerMeshScaling,
+            strikerMeshY: kickOptions.strikerMeshY
+        }
+    }
+    trackOptionsMap['6aecd056fd3f4c6d9a108de531c48ddf'] = {
+        function: createDrumAnimation,
+        options: {
+            name: '03: Snare',
+            totalDuration: snareOptions.totalDuration,
+            color: [ 0.1, 0.1, 1 ],
+            flashScalingMin: snareOptions.flashScalingMin,
+            flashScalingMax: snareOptions.flashScalingMax,
+            strikerMeshScaling: snareOptions.strikerMeshScaling,
+            strikerMeshY: snareOptions.strikerMeshY
+        }
+    }
+    trackOptionsMap['e3e7d57082834a28b53e021beaeb783d'] = {
+        function: createHiHatAnimation,
+        options: {
+            name: '04: HiHat 1',
+            totalDuration: 0.034,
+            color: [ 1, 0.333, 0.333 ],
+            y: 20
+        }
+    }
+    trackOptionsMap['02c103e8fcef483292ebc49d3898ef96'] = {
+        function: createHiHatAnimation,
+        options: {
+            name: '05: HiHat 2',
+            totalDuration: 0.034,
+            color: [ 0.333, 0.333, 1 ],
+            y: 60
+        }
+    }
+    trackOptionsMap[beaconTrackId] = {
+        function: createBeaconAnimation,
+        options: {
+            name: '06: Beacon',
+            x: 0,
+            z: -300
+        }
+    }
+    trackOptionsMap['ab018f191c70470f98ac3becb76e6d13'] = {
+        function: createBassAnimation,
+        options: {
+            name: '07: Bass 1+2: Edited',
+            meshesToColor: [
+                scene.getMeshByName('MainTriangles')
+            ]
+        }
+    }
+    trackOptionsMap['b0ba6f144fac4f668ba6981c691277d6'] = {
+        function: createBassAnimation,
+        options: {
+            name: '08: Bass 1+2: Distant',
+            baseScale: mainTrianglesOuterMeshScale,
+            rotation: mainTrianglesOuterMeshRotationY,
+            meshesToColor: [
+                scene.getMeshByName('MainTriangles'),
+                scene.getMeshByName('OuterMainTriangles')
+            ]
         }
     }
 
@@ -12887,6 +12898,54 @@ const csdJson = `
 
         const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
         const clientOsc = new OSC({ plugin: clientPlugin })
+
+        let heartbeatCount = 0
+        let previousHeartbeatCount = 0
+        let missedHeartbeatCount = 0
+        let heartbeatIsActive = false
+        clientOsc.on('/daw/heartbeat', message => {
+            //console.debug(`daw heartbeat received`)
+            heartbeatCount += 1
+        })
+        setInterval(() => {
+            if (previousHeartbeatCount != heartbeatCount) {
+                previousHeartbeatCount = heartbeatCount
+                missedHeartbeatCount = 0
+                if (!heartbeatIsActive) {
+                    heartbeatIsActive = true
+                    onHeartbeatActivated()
+                }
+            }
+            else if (heartbeatIsActive) {
+                missedHeartbeatCount += 1
+                if (missedHeartbeatCount == 2) {
+                    heartbeatIsActive = false
+                    onHeartbeatDeactivated()
+                }
+            }
+        }, 500)
+
+        const onHeartbeatActivated = () => {
+            console.debug("DAW heartbeat activated")
+
+            // The heartbeat from the MasterHead plugin often arrives before other plugins are ready to receive
+            // javascript score lines, so send the initial OSC messages to the DAW every second for 5 seconds.
+            // TODO: Add a heartbeat for every plugin instead of relying on only the MasterHead plugin's heartbeat.
+            let callCount = 0
+            const timer = setInterval(() => {
+                camera.matrixIsDirty = true
+                sendJavascriptScoreLinesViaOsc()
+                callCount += 1
+                if (5 <= callCount) {
+                    clearInterval(timer)
+                }
+            }, 1000)
+        }
+
+        const onHeartbeatDeactivated = () => {
+            console.debug("DAW heartbeat deactivated")
+        }
+
         clientOsc.on('/daw/time_in_seconds', message => {
             dawOscTimeInSeconds = message.args[0] + 3.5 // + 3.5 for score start delay
             if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
@@ -12910,6 +12969,7 @@ const csdJson = `
             if (serverOsc.status() == OSC_STATUS.IS_CLOSED) {
                 console.debug("Re-openinig OSC server")
                 serverOsc.open()
+                camera.matrixIsDirty = true
                 sendJavascriptScoreLinesViaOsc()
             }
         }, 1000)
@@ -12932,14 +12992,19 @@ const csdJson = `
             }
         }, camera.matrixMillisecondsPerUpdate)
 
-
-        const beaconPositionZOffset = 300
         const javascriptScoreLines = []
         javascriptScoreLines.push({
-            instrumentId: 'fd575f03378047af835c19ef4f7d5991',
+            instrumentId: beaconTrackId,
+            parameters: [
+                `Position/X/Offset`,
+                `${trackOptionsMap[beaconTrackId].options.x}`
+            ]
+        })
+        javascriptScoreLines.push({
+            instrumentId: beaconTrackId,
             parameters: [
                 `Position/Z/Offset`,
-                `${beaconPositionZOffset}`
+                `${trackOptionsMap[beaconTrackId].options.z}`
             ]
         })
 
@@ -12960,7 +13025,6 @@ const csdJson = `
                 serverOsc.send(message)
             }
         }
-        sendJavascriptScoreLinesViaOsc()
     }
     else {
         csound = new Csound(csdText)
@@ -12975,8 +13039,8 @@ const csdJson = `
     const csdDataUuids = Object.keys(csdData)
     for (let i = 0; i < csdDataUuids.length; i++) {
         const id = csdDataUuids[i]
-        if (createTrackMap[id]) {
-            const trackEntity = createTrackMap[id].function(id, csdData[id], createTrackMap[id].options)
+        if (trackOptionsMap[id]) {
+            const trackEntity = trackOptionsMap[id].function(id, csdData[id], trackOptionsMap[id].options)
             world.add(trackEntity)
         }
         else {

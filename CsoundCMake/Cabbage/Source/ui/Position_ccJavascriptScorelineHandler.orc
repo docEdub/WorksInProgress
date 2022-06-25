@@ -10,6 +10,36 @@ instr PositionHandler_$INSTRUMENT_NAME
         else
             log_i_trace("Listening for position channel updates on port %d.", gi_oscPort)
 
+            SPositionXOffset init "0"
+            kReceived = OSClisten(
+                gi_oscHandle,
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "Position/X/Offset"),
+                "s",
+                SPositionXOffset)
+            if (kReceived == true) then
+                kPositionXOffset = strtodk(SPositionXOffset)
+                log_k_debug("Position/X/Offset = %.3f", kPositionXOffset)
+                SInstrument = "\"$INSTRUMENT_NAME\""
+                SScoreLine = sprintfk("i  %s    0 1 %d %d %.03f", SInstrument, EVENT_CC, CC_INDEX(positionXOffset), kPositionXOffset)
+                scoreline(SScoreLine, 1)
+                chnset(kPositionXOffset, $CC_CHANNEL_NAME(positionXOffset))
+            endif
+
+            SPositionYOffset init "0"
+            kReceived = OSClisten(
+                gi_oscHandle,
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "Position/Y/Offset"),
+                "s",
+                SPositionYOffset)
+            if (kReceived == true) then
+                kPositionYOffset = strtodk(SPositionYOffset)
+                log_k_debug("Position/Y/Offset = %.3f", kPositionYOffset)
+                SInstrument = "\"$INSTRUMENT_NAME\""
+                SScoreLine = sprintfk("i  %s    0 1 %d %d %.03f", SInstrument, EVENT_CC, CC_INDEX(positionYOffset), kPositionYOffset)
+                scoreline(SScoreLine, 1)
+                chnset(kPositionYOffset, $CC_CHANNEL_NAME(positionYOffset))
+            endif
+
             SPositionZOffset init "0"
             kReceived = OSClisten(
                 gi_oscHandle,
