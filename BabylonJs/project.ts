@@ -2336,7 +2336,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         strikerMeshScaling: new Array(3).fill(20 / mainTriangleMeshHeight)
     }
 
-    let trackOptionsMap = {}
+    const trackOptionsMap = {}
+    const javascriptScoreLines = []
 
     trackOptionsMap['e274e9138ef048c4ba9c4d42e836c85c'] = {
         function: createDrumAnimation,
@@ -2350,6 +2351,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             strikerMeshY: kickOptions.strikerMeshY
         }
     }
+
     trackOptionsMap['8aac7747b6b44366b1080319e34a8616'] = {
         function: createDrumAnimation,
         options: {
@@ -2362,6 +2364,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             strikerMeshY: kickOptions.strikerMeshY
         }
     }
+
     trackOptionsMap['8e12ccc0dff44a4283211d553199a8cd'] = {
         function: createDrumAnimation,
         options: {
@@ -2374,6 +2377,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             strikerMeshY: kickOptions.strikerMeshY
         }
     }
+
     trackOptionsMap['6aecd056fd3f4c6d9a108de531c48ddf'] = {
         function: createDrumAnimation,
         options: {
@@ -2386,6 +2390,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             strikerMeshY: snareOptions.strikerMeshY
         }
     }
+
     trackOptionsMap['e3e7d57082834a28b53e021beaeb783d'] = {
         function: createHiHatAnimation,
         options: {
@@ -2395,6 +2400,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             y: 20
         }
     }
+
     trackOptionsMap['02c103e8fcef483292ebc49d3898ef96'] = {
         function: createHiHatAnimation,
         options: {
@@ -2404,14 +2410,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             y: 60
         }
     }
+
     trackOptionsMap[beaconTrackId] = {
         function: createBeaconAnimation,
         options: {
             name: '06: Beacon',
             x: 0,
-            z: -300
+            z: 300
         }
     }
+    javascriptScoreLines.push({
+        trackId: beaconTrackId,
+        parameters: [
+            `Position/X/Offset`,
+            `${trackOptionsMap[beaconTrackId].options.x}`
+        ]
+    })
+    javascriptScoreLines.push({
+        trackId: beaconTrackId,
+        parameters: [
+            `Position/Z/Offset`,
+            `${trackOptionsMap[beaconTrackId].options.z}`
+        ]
+    })
+
     trackOptionsMap['ab018f191c70470f98ac3becb76e6d13'] = {
         function: createBassAnimation,
         options: {
@@ -2421,6 +2443,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ]
         }
     }
+
     trackOptionsMap['b0ba6f144fac4f668ba6981c691277d6'] = {
         function: createBassAnimation,
         options: {
@@ -12992,22 +13015,6 @@ const csdJson = `
             }
         }, camera.matrixMillisecondsPerUpdate)
 
-        const javascriptScoreLines = []
-        javascriptScoreLines.push({
-            instrumentId: beaconTrackId,
-            parameters: [
-                `Position/X/Offset`,
-                `${trackOptionsMap[beaconTrackId].options.x}`
-            ]
-        })
-        javascriptScoreLines.push({
-            instrumentId: beaconTrackId,
-            parameters: [
-                `Position/Z/Offset`,
-                `${trackOptionsMap[beaconTrackId].options.z}`
-            ]
-        })
-
         const sendJavascriptScoreLinesViaOsc = () => {
             if (serverOsc.status() !== OSC_STATUS.IS_OPEN) {
                 setTimeout(sendJavascriptScoreLinesViaOsc, 10)
@@ -13016,13 +13023,16 @@ const csdJson = `
             console.debug(`Sending JavaScript score lines via OSC ...`)
             for (let i = 0; i < javascriptScoreLines.length; i++) {
                 const scoreLine = javascriptScoreLines[i]
-                const message = new OSC.Message('/DawService/javascript_score_line')
-                message.add(scoreLine.instrumentId)
-                for (let j = 0; j < scoreLine.parameters.length; j++) {
-                    const parameter = scoreLine.parameters[j]
-                    message.add(parameter)
+                if (scoreLine.oscMessage === undefined) {
+                    const message = new OSC.Message('/DawService/javascript_score_line')
+                    message.add(scoreLine.trackId)
+                    for (let j = 0; j < scoreLine.parameters.length; j++) {
+                        const parameter = scoreLine.parameters[j]
+                        message.add(parameter)
+                    }
+                    scoreLine.oscMessage = message
                 }
-                serverOsc.send(message)
+                serverOsc.send(scoreLine.oscMessage)
             }
         }
     }
