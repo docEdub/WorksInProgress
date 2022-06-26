@@ -136,25 +136,25 @@ instr INSTRUMENT_ID
         //--------------------------------------------------------------------------------------------------------------
         aOut = tone(aOut, 999 + 333)
 
-    if (CC_VALUE_k(positionEnabled) == true) then
-        #include "Position_kXYZ.orc"
+        if (CC_VALUE_k(positionEnabled) == true) then
+            #include "Position_kXYZ.orc"
 
-        aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
-        aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-        aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
 
-        AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-        a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
-        a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
-        a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
-        a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
-    else
-        // Disabled.
-        a1 = 0
-        a2 = 0
-        a3 = 0
-        a4 = aOut
-    endif
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
+        else
+            // Disabled.
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = aOut
+        endif
 
         #if IS_PLAYBACK
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
