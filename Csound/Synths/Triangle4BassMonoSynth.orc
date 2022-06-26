@@ -17,13 +17,17 @@
 
 giTriangle4BassMonoSynth_PlaybackVolumeAdjustment = 0.9
 giTriangle4BassMonoSynth_PlaybackReverbAdjustment = 1.5
-giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 160
+giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz = 150
+giTriangle4BassMonoSynth_LowPassCutoffFrequencyHz = 1000
 
 opcode Triangle4BassMonoSynth_EffectChain, a, a
     a1 xin
 
     // Roll off lows with high pass filter.
     a1 = atone(a1, k(giTriangle4BassMonoSynth_HighPassCutoffFrequencyHz))
+
+    // Roll off highs with low pass filter.
+    a1 = tone(a1, k(giTriangle4BassMonoSynth_LowPassCutoffFrequencyHz))
 
     xout a1
 endop

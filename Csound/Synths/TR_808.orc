@@ -72,13 +72,19 @@ ${CSOUND_INCLUDE} "PositionUdos.orc"
 giTR_808_PlaybackVolumeAdjustment = 1
 giTR_808_PlaybackReverbAdjustment = 1
 
+
 giTR_808_BassDrum_Level = 1
 giTR_808_BassDrum_Decay = 1
 giTR_808_BassDrum_Tune init 0
 
+giTR_808_BassDrum_HighPassCutoffFrequencyHz = 80
+giTR_808_BassDrum_LowPassCutoffFrequencyHz = 1000
+
+
 giTR_808_SnareDrum_Level = 1
 giTR_808_SnareDrum_Decay = 1
 giTR_808_SnareDrum_Tune init 0
+
 
 giTR_808_OpenHighHat_Level = 1
 giTR_808_OpenHighHat_Decay = 1
@@ -88,34 +94,13 @@ giTR_808_ClosedHighHat_Level = 1
 giTR_808_ClosedHighHat_Decay = 1
 giTR_808_ClosedHighHat_Tune init 0
 
+giTR_808_HighHat_HighPassCutoffFrequencyHz = 20000
+
+
 giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
 giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
-
-
-
-gisine = giTR_808_Sine_TableNumber
-gicos = giTR_808_Cosine_TableNumber
-
-gklevel1 init giTR_808_BassDrum_Level
-gkdur1   init giTR_808_BassDrum_Decay
-gktune1  init giTR_808_BassDrum_Tune
-
-gklevel2 init giTR_808_SnareDrum_Level
-gkdur2   init giTR_808_SnareDrum_Decay
-gktune2  init giTR_808_SnareDrum_Tune
-
-gklevel3 init giTR_808_OpenHighHat_Level
-gkdur3   init giTR_808_OpenHighHat_Decay
-gktune3  init giTR_808_OpenHighHat_Tune
-
-gklevel4 init giTR_808_ClosedHighHat_Level
-gkdur4   init giTR_808_ClosedHighHat_Decay
-gktune4  init giTR_808_ClosedHighHat_Tune
-
-gklevel init 1
-
 
 #endif // #ifndef TR_808_orc__include_guard
 
@@ -195,6 +180,12 @@ instr INSTRUMENT_ID
 
             // Mix sustain and attack sound elements and scale using global bass drum level.
             aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+
+            // Roll off lows with high pass filter.
+            aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
+
+            // Roll off highs with low pass filter.
+            aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
 
         elseif (iNoteNumber == TR_808_SNARE_DRUM_KEY) then
             //----------------------------------------------------------------------------------------------------------
@@ -306,6 +297,9 @@ instr INSTRUMENT_ID
             // Mix pulse oscillator and noise.
             aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
 
+            // Roll off lows with high pass filter.
+            aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
+
         elseif (iNoteNumber == TR_808_CLOSED_HIGH_HAT_KEY) then
             //----------------------------------------------------------------------------------------------------------
             // Closed high hat
@@ -369,6 +363,9 @@ instr INSTRUMENT_ID
 
             // Mix pulse oscillator and noise.
             aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+
+            // Roll off lows with high pass filter.
+            aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
 
         endif
 
