@@ -2164,6 +2164,140 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region class RimAnimationComponent
+
+    class RimAnimationComponent extends Component {
+        segments = 120
+        segmentRadius = 300
+        segmentCenterY = 250
+        rows = 5
+        rowAngle = 1 // degrees
+
+        _positions = []
+        _indices = []
+        _normals = []
+        _mesh = new BABYLON.Mesh(RimAnimationComponent.name, scene)
+        _material = null
+
+        _initVertexData = () => {
+            const angleToGround = -Math.asin(this.segmentCenterY / this.segmentRadius)
+            const groundRadius =  Math.cos(angleToGround) * this.segmentRadius
+            const segmentAngleIncrement = 2 * Math.PI / this.segments
+            for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
+                const rowAngle = angleToGround + rowIndex * this.rowAngle / 180 * Math.PI
+                const positionY = Math.sin(rowAngle) * this.segmentRadius + this.segmentCenterY
+                let positionRadius = Math.cos(rowAngle) * this.segmentRadius
+                positionRadius = groundRadius - (positionRadius - groundRadius)
+                const segmentAngleOffset = rowIndex * segmentAngleIncrement / 2
+                for (let segmentIndex = 0; segmentIndex < this.segments; segmentIndex++) {
+                    const segmentAngle = segmentIndex * segmentAngleIncrement + segmentAngleOffset
+                    const positionX = Math.cos(segmentAngle) * positionRadius
+                    const positionZ = Math.sin(segmentAngle) * positionRadius
+                    this._positions.push(
+                        positionX,
+                        positionY,
+                        positionZ
+                    )
+                }
+            }
+            for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+                const baseSegmentIndex = this.segments * rowIndex
+                for (let segmentIndex = 0; segmentIndex < this.segments; segmentIndex++) {
+                    let index1a = segmentIndex % this.segments
+                    let index2a = index1a - 1
+                    if (index2a < 0) {
+                        index2a += this.segments
+                    }
+                    let index3a = index2a + this.segments
+                    this._indices.push(
+                        index1a + baseSegmentIndex,
+                        index2a + baseSegmentIndex,
+                        index3a + baseSegmentIndex
+                    )
+
+                    let index1b = segmentIndex
+                    let index2b = index1b + this.segments - 1
+                    if (index2b < this.segments) {
+                        index2b += this.segments
+                    }
+                    let index3b = index1b + this.segments
+                    this._indices.push(
+                        index1b + baseSegmentIndex,
+                        index2b + baseSegmentIndex,
+                        index3b + baseSegmentIndex
+                    )
+                }
+            }
+
+            this._updateNormals()
+            let vertexData = new BABYLON.VertexData()
+            vertexData.positions = this._positions
+            vertexData.indices = this._indices
+            vertexData.normals = this._normals
+            vertexData.applyToMesh(this._mesh, true)
+        }
+
+        _updateNormals = () => {
+            BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals)
+        }
+
+        _updateMeshVertices = () => {
+            this._mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this._positions)
+            this._mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this._normals)
+        }
+
+        constructor() {
+            super()
+
+            const material = new BABYLON.StandardMaterial('', scene)
+            material.backFaceCulling = false
+            material.diffuseColor = material.specularColor.set(0.01, 0.01, 0.01)
+            material.emissiveColor.set(0.1, 0.1, 0.1)
+            material.wireframe = true
+            this._mesh.material = this._material = material
+            this._mesh.isPickable = false
+            this._mesh.scaling.setAll(2)
+            this._mesh.position.y = 200
+
+            this._initVertexData()
+        }
+    }
+
+    const rimAnimationComponent = new RimAnimationComponent()
+
+    //#endregion
+
+    //#region class RimAnimationSystem
+
+    class RimAnimationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            RimAnimationComponent
+        ]}
+
+        track = null
+        animation = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(RimAnimationComponent)) {
+                    this.animation = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.animation, `${RimAnimationComponent.name} missing.`)
+        }
+    }
+
+    world.add(RimAnimationSystem)
+
+    //#endregion
+
     // World setup
 
     //#region World center light setup
