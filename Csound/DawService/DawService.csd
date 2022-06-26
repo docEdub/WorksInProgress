@@ -23,6 +23,7 @@ gSPresetUuidOrder[] = fillarray( \
     "fd575f03378047af835c19ef4f7d5991", /* Beacon */ \
     "ab018f191c70470f98ac3becb76e6d13", /* Bass 1+2: Edited */ \
     "b0ba6f144fac4f668ba6981c691277d6", /* Bass 1+2: Distant */ \
+    "0e3635ef4c2c431b9aede90e4ca361a0", /* Rim 1 */ \
     "f6341a2a81244ea79dd0e1486eb93386"  /* UDO Triggers */ \
 )
 
