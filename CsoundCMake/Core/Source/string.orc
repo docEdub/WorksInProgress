@@ -110,6 +110,48 @@ opcode string_escape_i, S, S
     xout SEscaped
 endop
 
+/// NB: Assumes input string does not begin or end with separator.
+///
+opcode string_split_i, S[], SS
+    SIn, SSeparator xin
+    ; prints("SIn = \"%s\"\n", SIn)
+
+    iSeparatorAsciiCode = strchar(SSeparator)
+
+    // Get output array count.
+    ii = 1
+    iOutCount = 1
+    while (ii < strlen(SIn) - 1) do
+        iCurrentAsciiCode = strchar(SIn, ii)
+        if (iCurrentAsciiCode == iSeparatorAsciiCode) then
+            iOutCount += 1
+        endif
+        ii += 1
+    od
+    ; prints("iOutCount = %d\n", iOutCount)
+
+    // Fill output array.
+    SOut[] init iOutCount
+    iArrayIndex = 0
+    iStartIndex = 0
+    iEndIndex = 1
+    while (iEndIndex < strlen(SIn)) do
+        iCurrentAsciiCode = strchar(SIn, iEndIndex)
+        if (iCurrentAsciiCode == iSeparatorAsciiCode) then
+            SOut[iArrayIndex] = strsub(SIn, iStartIndex, iEndIndex)
+            ; prints("SOut[%d] = %s\n", iArrayIndex, SOut[iArrayIndex])
+            iArrayIndex += 1
+            iEndIndex += 1
+            iStartIndex = iEndIndex
+        endif
+        iEndIndex += 1
+    od
+    SOut[iArrayIndex] = strsub(SIn, iStartIndex)
+    ; prints("SOut[%d] = %s\n", iArrayIndex, SOut[iArrayIndex])
+
+    xout SOut
+endop
+
 ${CSOUND_INCLUDE_GUARD_ENDIF}
 
 //----------------------------------------------------------------------------------------------------------------------

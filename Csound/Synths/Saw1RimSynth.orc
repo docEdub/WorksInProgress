@@ -16,11 +16,112 @@
 
 ${CSOUND_INCLUDE} "json.orc"
 
-giSaw1RimSynth_PlaybackVolumeAdjustment = 0.9
-giSaw1RimSynth_PlaybackReverbAdjustment = 1.5
-giSaw1RimSynth_NoteNumberLfoAmp = 0.333
+gi${InstrumentName}_PlaybackVolumeAdjustment = 0.9
+gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
+gi${InstrumentName}_NoteNumberLfoAmp = 0.333
 
-giSaw1RimSynth_NoteIndex[] init ORC_INSTANCE_COUNT
+gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
+
+// Geometry set in Javascript.
+gi${InstrumentName}_SegmentCount init 1
+gi${InstrumentName}_RowCount init 1
+gi${InstrumentName}_TrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
+
+instr ${InstrumentName}_SegmentCount
+    if (gi${InstrumentName}_SegmentCount != p4) then
+        gi${InstrumentName}_SegmentCount = p4
+        iTrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
+        gi${InstrumentName}_TrianglePositions = iTrianglePositions
+    endif
+    turnoff
+endin
+
+instr ${InstrumentName}_RowCount
+    if (gi${InstrumentName}_RowCount != p4) then
+        gi${InstrumentName}_RowCount = p4
+        iTrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
+        gi${InstrumentName}_TrianglePositions = iTrianglePositions
+    endif
+    turnoff
+endin
+
+instr ${InstrumentName}_TrianglePosition
+    iSegment = p4
+    iRow = p5
+    iX = p6
+    iY = p7
+    iZ = p8
+    log_i_trace("instr ${InstrumentName}_TrianglePosition: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
+        iSegment, iRow, iX, iY, iZ)
+    if (iRow < gi${InstrumentName}_RowCount && iSegment < gi${InstrumentName}_SegmentCount) then
+        gi${InstrumentName}_TrianglePositions[iSegment][iRow][0] = iX
+        gi${InstrumentName}_TrianglePositions[iSegment][iRow][1] = iY
+        gi${InstrumentName}_TrianglePositions[iSegment][iRow][2] = iZ
+    endif
+    turnoff
+endin
+
+#if !IS_PLAYBACK
+    instr ${InstrumentName}_TrianglePositionString
+        SArgs[] = string_split_i(strget(p4), "/")
+        scoreline_i(sprintf(
+            "i\"${InstrumentName}_TrianglePosition\" 0 1 %s %s %s %s %s",
+            SArgs[0],
+            SArgs[1],
+            SArgs[2],
+            SArgs[3],
+            SArgs[4]))
+
+        turnoff
+    endin
+
+    instr ${InstrumentName}_GeometryJavascriptOscHandler
+        if (gi_oscHandle == -1) then
+            // Restart this instrument to see if the OSC handle has been set, yet.
+            log_i_trace("OSC not initialized. Restarting instrument in 1 second.")
+            event("i", p1, 1, -1)
+            turnoff
+        else
+            log_i_trace("Listening for geometry Javascript OSC messages on port %d.", gi_oscPort)
+
+            SSegmentCount init "0"
+            kReceived = OSClisten(
+                gi_oscHandle,
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "SegmentCount"),
+                "s",
+                SSegmentCount)
+            if (kReceived == true) then
+                kSegmentCount = strtodk(SSegmentCount)
+                log_k_debug("SegmentCount = %d", kSegmentCount)
+                scoreline( sprintfk("i\"${InstrumentName}_SegmentCount\" 0 1 %d", kSegmentCount), 1)
+            endif
+
+            SRowCount init "0"
+            kReceived = OSClisten(
+                gi_oscHandle,
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "RowCount"),
+                "s",
+                SRowCount)
+            if (kReceived == true) then
+                kRowCount = strtodk(SRowCount)
+                log_k_debug("RowCount = %d", kRowCount)
+                scoreline( sprintfk("i\"${InstrumentName}_RowCount\" 0 1 %d", kRowCount), 1)
+            endif
+
+            STrianglePosition init "0"
+            kReceived = OSClisten(
+                gi_oscHandle,
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "TrianglePosition"),
+                "s",
+                STrianglePosition)
+            if (kReceived == true) then
+                ; log_k_debug("TrianglePosition = %s", STrianglePosition)
+                scoreline(sprintfk("i\"${InstrumentName}_TrianglePositionString\" 0 1 \"%s\"", STrianglePosition), 1)
+            endif
+        endif
+    endin
+    scoreline_i("i \"${InstrumentName}_GeometryJavascriptOscHandler\" 0 -1")
+#endif
 
 #endif // #ifndef ${InstrumentName}_orc__include_guard
 

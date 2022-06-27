@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs"
+import { join } from "core-js/core/array"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 //#region Non-playground setup
@@ -2164,32 +2165,41 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    //#region class RimAnimationComponent
+    //#region class Rim1AnimationComponent
 
-    class RimAnimationComponent extends Component {
-        segments = 120
+    class Rim1AnimationComponent extends Component {
+        static singleton = null
+
+        segments = 240
+        rows = 5
         segmentRadius = 300
         segmentCenterY = 250
-        rows = 5
         rowAngle = 1 // degrees
 
+        get segmentsD2() { return this._segmentsD2 }
+        get positions() { return this._positions }
+        get trianglePositions() { return this._trianglePositions }
+
+        _segmentsD2 = this.segments / 2
         _positions = []
         _indices = []
         _normals = []
-        _mesh = new BABYLON.Mesh(RimAnimationComponent.name, scene)
+        _mesh = new BABYLON.Mesh(Rim1AnimationComponent.name, scene)
         _material = null
+
+        _trianglePositions = [] // [row][segment]
 
         _initVertexData = () => {
             const angleToGround = -Math.asin(this.segmentCenterY / this.segmentRadius)
             const groundRadius =  Math.cos(angleToGround) * this.segmentRadius
-            const segmentAngleIncrement = 2 * Math.PI / this.segments
+            const segmentAngleIncrement = 2 * Math.PI / this.segmentsD2
             for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
                 const rowAngle = angleToGround + rowIndex * this.rowAngle / 180 * Math.PI
                 const positionY = Math.sin(rowAngle) * this.segmentRadius + this.segmentCenterY
                 let positionRadius = Math.cos(rowAngle) * this.segmentRadius
                 positionRadius = groundRadius - (positionRadius - groundRadius)
                 const segmentAngleOffset = rowIndex * segmentAngleIncrement / 2
-                for (let segmentIndex = 0; segmentIndex < this.segments; segmentIndex++) {
+                for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
                     const segmentAngle = segmentIndex * segmentAngleIncrement + segmentAngleOffset
                     const positionX = Math.cos(segmentAngle) * positionRadius
                     const positionZ = Math.sin(segmentAngle) * positionRadius
@@ -2199,16 +2209,34 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         positionZ
                     )
                 }
+                // Calculate center points
+                if (rowIndex < this.rows) {
+                    const rowCenterPositions = []
+                    const rowCenterAngle = rowAngle + (this.rowAngle / 2) / 180 * Math.PI
+                    const rowCenterY = Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY
+                    for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
+                        const segmentCenterAngleA = segmentIndex * segmentAngleIncrement + segmentAngleOffset
+                        const positionXA = Math.cos(segmentCenterAngleA) * positionRadius
+                        const positionZA = Math.sin(segmentCenterAngleA) * positionRadius
+                        rowCenterPositions.push([ positionXA, rowCenterY, positionZA ])
+
+                        const segmentCenterAngleB = segmentCenterAngleA + segmentAngleIncrement / 2
+                        const positionXB = Math.cos(segmentCenterAngleB) * positionRadius
+                        const positionZB = Math.sin(segmentCenterAngleB) * positionRadius
+                        rowCenterPositions.push([ positionXB, rowCenterY, positionZB ])
+                    }
+                    this._trianglePositions.push(rowCenterPositions)
+                }
             }
             for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
-                const baseSegmentIndex = this.segments * rowIndex
-                for (let segmentIndex = 0; segmentIndex < this.segments; segmentIndex++) {
-                    let index1a = segmentIndex % this.segments
+                const baseSegmentIndex = this.segmentsD2 * rowIndex
+                for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
+                    let index1a = segmentIndex % this.segmentsD2
                     let index2a = index1a - 1
                     if (index2a < 0) {
-                        index2a += this.segments
+                        index2a += this.segmentsD2
                     }
-                    let index3a = index2a + this.segments
+                    let index3a = index2a + this.segmentsD2
                     this._indices.push(
                         index1a + baseSegmentIndex,
                         index2a + baseSegmentIndex,
@@ -2216,11 +2244,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     )
 
                     let index1b = segmentIndex
-                    let index2b = index1b + this.segments - 1
-                    if (index2b < this.segments) {
-                        index2b += this.segments
+                    let index2b = index1b + this.segmentsD2 - 1
+                    if (index2b < this.segmentsD2) {
+                        index2b += this.segmentsD2
                     }
-                    let index3b = index1b + this.segments
+                    let index3b = index1b + this.segmentsD2
                     this._indices.push(
                         index1b + baseSegmentIndex,
                         index2b + baseSegmentIndex,
@@ -2248,6 +2276,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         constructor() {
             super()
+            Rim1AnimationComponent.singleton = this
 
             const material = new BABYLON.StandardMaterial('', scene)
             material.backFaceCulling = false
@@ -2263,16 +2292,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
     }
 
-    const rimAnimationComponent = new RimAnimationComponent()
+    new Rim1AnimationComponent
 
     //#endregion
 
-    //#region class RimAnimationSystem
+    //#region class Rim1AnimationSystem
 
-    class RimAnimationSystem extends System {
+    class Rim1AnimationSystem extends System {
         static requiredComponentTypes = () => { return [
             TrackComponent,
-            RimAnimationComponent
+            Rim1AnimationComponent
         ]}
 
         track = null
@@ -2285,16 +2314,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 if (component.isA(TrackComponent)) {
                     this.track = component
                 }
-                else if (component.isA(RimAnimationComponent)) {
+                else if (component.isA(Rim1AnimationComponent)) {
                     this.animation = component
                 }
             }
             assert(this.track, `${TrackComponent.name} missing.`)
-            assert(this.animation, `${RimAnimationComponent.name} missing.`)
+            assert(this.animation, `${Rim1AnimationComponent.name} missing.`)
         }
     }
 
-    world.add(RimAnimationSystem)
+    world.add(Rim1AnimationSystem)
 
     //#endregion
 
@@ -2338,6 +2367,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region World track setup
 
     const beaconTrackId = 'fd575f03378047af835c19ef4f7d5991'
+    const rim1TrackId = '0e3635ef4c2c431b9aede90e4ca361a0'
 
     const createTrack = (id, json, options) => {
         const entity = new Entity
@@ -2451,6 +2481,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             animation.meshesToColor.push(...options.meshesToColor)
         }
         entity.addComponent(animation)
+        return entity
+    }
+
+    const createRim1Animation = (id, json, options) => {
+        const entity = createTrack(id, json, options)
         return entity
     }
 
@@ -2590,6 +2625,47 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ]
         }
     }
+
+    trackOptionsMap[rim1TrackId] = {
+        function: createRim1Animation,
+        options: {
+            name: '10 Rim 1'
+        }
+    }
+    javascriptScoreLines.push({
+        trackId: rim1TrackId,
+        parameters: [
+            `SegmentCount`,
+            `${Rim1AnimationComponent.singleton.segments}`
+        ]
+    })
+    javascriptScoreLines.push({
+        trackId: rim1TrackId,
+        parameters: [
+            `RowCount`,
+            `${Rim1AnimationComponent.singleton.rows}`
+        ]
+    })
+    const initRim1TrackPositions = () => {
+        const singleton = Rim1AnimationComponent.singleton
+        const rows = singleton.rows
+        const segments = singleton.segments
+        const positions = singleton.trianglePositions
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < segments; j++) {
+                const position = positions[i][j]
+                javascriptScoreLines.push({
+                    trackId: rim1TrackId,
+                    parameters: [
+                        `TrianglePosition`,
+                        `${j}/${i}/${position[0].toFixed(3)}/${position[1].toFixed(3)}/${position[2].toFixed(3)}`
+                    ]
+                })
+            }
+        }
+    }
+    initRim1TrackPositions()
 
     //#endregion
 
