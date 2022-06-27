@@ -2171,7 +2171,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         static singleton = null
 
         segments = 240
-        rows = 5
+        rows = 6
         segmentRadius = 300
         segmentCenterY = 250
         rowAngle = 1 // degrees
