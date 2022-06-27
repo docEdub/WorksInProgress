@@ -13062,18 +13062,17 @@ const csdJson = `
         const onHeartbeatActivated = () => {
             console.debug("DAW heartbeat activated")
 
+            camera.matrixIsDirty = true
+            sendJavascriptScoreLinesViaOsc()
+
             // The heartbeat from the MasterHead plugin often arrives before other plugins are ready to receive
-            // javascript score lines, so send the initial OSC messages to the DAW every second for 5 seconds.
-            // TODO: Add a heartbeat for every plugin instead of relying on only the MasterHead plugin's heartbeat.
+            // javascript score lines, so send the initial OSC messages to the DAW again after 5 seconds.
+            // TODO: Send a plugin awake OSC message to Javascript so we know when to send the initial OSC messages.
             let callCount = 0
-            const timer = setInterval(() => {
+            setTimeout(() => {
                 camera.matrixIsDirty = true
                 sendJavascriptScoreLinesViaOsc()
-                callCount += 1
-                if (5 <= callCount) {
-                    clearInterval(timer)
-                }
-            }, 1000)
+            }, 5000)
         }
 
         const onHeartbeatDeactivated = () => {
