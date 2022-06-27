@@ -22,56 +22,54 @@ gi${InstrumentName}_NoteNumberLfoAmp = 0.333
 
 gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
-// Geometry set in Javascript.
-gi${InstrumentName}_SegmentCount init 1
-gi${InstrumentName}_RowCount init 1
-gi${InstrumentName}_TrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
+// Mesh geometry generated in Javascript.
+gi${InstrumentName}_MeshSegmentCount init 1
+gi${InstrumentName}_MeshRowCount init 1
+gi${InstrumentName}_MeshAudioPositions[][][] init \
+    gi${InstrumentName}_MeshSegmentCount, \
+    gi${InstrumentName}_MeshRowCount, \
+    3
 
-instr ${InstrumentName}_SegmentCount
-    if (gi${InstrumentName}_SegmentCount != p4) then
-        gi${InstrumentName}_SegmentCount = p4
-        iTrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
-        gi${InstrumentName}_TrianglePositions = iTrianglePositions
+instr ${InstrumentName}_MeshSegmentCount
+    if (gi${InstrumentName}_MeshSegmentCount != p4) then
+        gi${InstrumentName}_MeshSegmentCount = p4
+        iMeshAudioPositions[][][] init gi${InstrumentName}_MeshSegmentCount, gi${InstrumentName}_MeshRowCount, 3
+        gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
     endif
     turnoff
 endin
 
-instr ${InstrumentName}_RowCount
-    if (gi${InstrumentName}_RowCount != p4) then
-        gi${InstrumentName}_RowCount = p4
-        iTrianglePositions[][][] init gi${InstrumentName}_SegmentCount, gi${InstrumentName}_RowCount, 3
-        gi${InstrumentName}_TrianglePositions = iTrianglePositions
+instr ${InstrumentName}_MeshRowCount
+    if (gi${InstrumentName}_MeshRowCount != p4) then
+        gi${InstrumentName}_MeshRowCount = p4
+        iMeshAudioPositions[][][] init gi${InstrumentName}_MeshSegmentCount, gi${InstrumentName}_MeshRowCount, 3
+        gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
     endif
     turnoff
 endin
 
-instr ${InstrumentName}_TrianglePosition
-    iSegment = p4
-    iRow = p5
-    iX = p6
-    iY = p7
-    iZ = p8
-    log_i_trace("instr ${InstrumentName}_TrianglePosition: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
+instr ${InstrumentName}_MeshAudioPosition
+    iIndex = p4
+    iX = p5
+    iY = p6
+    iZ = p7
+    iSegment = iIndex % gi${InstrumentName}_MeshSegmentCount
+    iRow = floor(iIndex / gi${InstrumentName}_MeshSegmentCount)
+    log_i_trace("instr ${InstrumentName}_MeshAudioPositions: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
         iSegment, iRow, iX, iY, iZ)
-    if (iRow < gi${InstrumentName}_RowCount && iSegment < gi${InstrumentName}_SegmentCount) then
-        gi${InstrumentName}_TrianglePositions[iSegment][iRow][0] = iX
-        gi${InstrumentName}_TrianglePositions[iSegment][iRow][1] = iY
-        gi${InstrumentName}_TrianglePositions[iSegment][iRow][2] = iZ
+    if (iRow < gi${InstrumentName}_MeshRowCount && iSegment < gi${InstrumentName}_MeshSegmentCount) then
+        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][0] = iX
+        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][1] = iY
+        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][2] = iZ
     endif
     turnoff
 endin
 
 #if !IS_PLAYBACK
-    instr ${InstrumentName}_TrianglePositionString
+    instr ${InstrumentName}_MeshAudioPositionString
         SArgs[] = string_split_i(strget(p4), "/")
-        scoreline_i(sprintf(
-            "i\"${InstrumentName}_TrianglePosition\" 0 1 %s %s %s %s %s",
-            SArgs[0],
-            SArgs[1],
-            SArgs[2],
-            SArgs[3],
-            SArgs[4]))
-
+        iInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPosition") + frac(p1)
+        scoreline_i(sprintf("i%f 0 1 %s %s %s %s", iInstrumentNumber, SArgs[0], SArgs[1], SArgs[2], SArgs[3]))
         turnoff
     endin
 
@@ -84,40 +82,51 @@ endin
         else
             log_i_trace("Listening for geometry Javascript OSC messages on port %d.", gi_oscPort)
 
-            SSegmentCount init "0"
+            SMeshSegmentCount init "0"
             kReceived = OSClisten(
                 gi_oscHandle,
-                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "SegmentCount"),
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "MeshSegmentCount"),
                 "s",
-                SSegmentCount)
+                SMeshSegmentCount)
             if (kReceived == true) then
-                kSegmentCount = strtodk(SSegmentCount)
-                log_k_debug("SegmentCount = %d", kSegmentCount)
-                scoreline( sprintfk("i\"${InstrumentName}_SegmentCount\" 0 1 %d", kSegmentCount), 1)
+                kMeshSegmentCount = strtodk(SMeshSegmentCount)
+                log_k_debug("MeshSegmentCount = %d", kMeshSegmentCount)
+                scoreline( sprintfk("i\"${InstrumentName}_MeshSegmentCount\" 0 1 %d", kMeshSegmentCount), 1)
             endif
 
-            SRowCount init "0"
+            SMeshRowCount init "0"
             kReceived = OSClisten(
                 gi_oscHandle,
-                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "RowCount"),
+                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "MeshRowCount"),
                 "s",
-                SRowCount)
+                SMeshRowCount)
             if (kReceived == true) then
-                kRowCount = strtodk(SRowCount)
-                log_k_debug("RowCount = %d", kRowCount)
-                scoreline( sprintfk("i\"${InstrumentName}_RowCount\" 0 1 %d", kRowCount), 1)
+                kMeshRowCount = strtodk(SMeshRowCount)
+                log_k_debug("MeshRowCount = %d", kMeshRowCount)
+                scoreline( sprintfk("i\"${InstrumentName}_MeshRowCount\" 0 1 %d", kMeshRowCount), 1)
             endif
 
-            STrianglePosition init "0"
-            kReceived = OSClisten(
-                gi_oscHandle,
-                sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "TrianglePosition"),
-                "s",
-                STrianglePosition)
-            if (kReceived == true) then
-                ; log_k_debug("TrianglePosition = %s", STrianglePosition)
-                scoreline(sprintfk("i\"${InstrumentName}_TrianglePositionString\" 0 1 \"%s\"", STrianglePosition), 1)
-            endif
+            SMeshAudioPosition init "0"
+            kReceived = true
+            iMeshAudioPositionStringInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPositionString")
+            kInstrumentNumberFraction = 1
+            while (kReceived == true) do
+                kReceived = OSClisten(
+                    gi_oscHandle,
+                    sprintfk("%s/%s", TRACK_OSC_JAVASCRIPT_SCORE_LINE_PATH, "MeshAudioPosition"),
+                    "s",
+                    SMeshAudioPosition)
+                if (kReceived == true) then
+                    ; log_k_debug("MeshAudioPosition = %s", SMeshAudioPosition)
+                    scoreline(
+                        sprintfk("i%d.%05d 0 1 \"%s\"",
+                            iMeshAudioPositionStringInstrumentNumber,
+                            kInstrumentNumberFraction,
+                            SMeshAudioPosition),
+                        1)
+                endif
+                kInstrumentNumberFraction += 1
+            od
         endif
     endin
     scoreline_i("i \"${InstrumentName}_GeometryJavascriptOscHandler\" 0 -1")

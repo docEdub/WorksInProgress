@@ -2,6 +2,8 @@ import * as BABYLON from "babylonjs"
 import { join } from "core-js/core/array"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
+import Rim1Mesh from "./Meshes/Rim1Mesh"
+
 //#region Non-playground setup
 
 declare global {
@@ -2170,108 +2172,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     class Rim1AnimationComponent extends Component {
         static singleton = null
 
-        segments = 240
-        rows = 6
-        segmentRadius = 300
-        segmentCenterY = 250
-        rowAngle = 1 // degrees
-
-        get segmentsD2() { return this._segmentsD2 }
-        get positions() { return this._positions }
-        get trianglePositions() { return this._trianglePositions }
-
-        _segmentsD2 = this.segments / 2
-        _positions = []
-        _indices = []
         _normals = []
         _mesh = new BABYLON.Mesh(Rim1AnimationComponent.name, scene)
         _material = null
 
-        _trianglePositions = [] // [row][segment]
-
         _initVertexData = () => {
-            const angleToGround = -Math.asin(this.segmentCenterY / this.segmentRadius)
-            const groundRadius =  Math.cos(angleToGround) * this.segmentRadius
-            const segmentAngleIncrement = 2 * Math.PI / this.segmentsD2
-            for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
-                const rowAngle = angleToGround + rowIndex * this.rowAngle / 180 * Math.PI
-                const positionY = Math.sin(rowAngle) * this.segmentRadius + this.segmentCenterY
-                let positionRadius = Math.cos(rowAngle) * this.segmentRadius
-                positionRadius = groundRadius - (positionRadius - groundRadius)
-                const segmentAngleOffset = rowIndex * segmentAngleIncrement / 2
-                for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
-                    const segmentAngle = segmentIndex * segmentAngleIncrement + segmentAngleOffset
-                    const positionX = Math.cos(segmentAngle) * positionRadius
-                    const positionZ = Math.sin(segmentAngle) * positionRadius
-                    this._positions.push(
-                        positionX,
-                        positionY,
-                        positionZ
-                    )
-                }
-                // Calculate center points
-                if (rowIndex < this.rows) {
-                    const rowCenterPositions = []
-                    const rowCenterAngle = rowAngle + (this.rowAngle / 2) / 180 * Math.PI
-                    const rowCenterY = Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY
-                    for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
-                        const segmentCenterAngleA = segmentIndex * segmentAngleIncrement + segmentAngleOffset
-                        const positionXA = Math.cos(segmentCenterAngleA) * positionRadius
-                        const positionZA = Math.sin(segmentCenterAngleA) * positionRadius
-                        rowCenterPositions.push([ positionXA, rowCenterY, positionZA ])
-
-                        const segmentCenterAngleB = segmentCenterAngleA + segmentAngleIncrement / 2
-                        const positionXB = Math.cos(segmentCenterAngleB) * positionRadius
-                        const positionZB = Math.sin(segmentCenterAngleB) * positionRadius
-                        rowCenterPositions.push([ positionXB, rowCenterY, positionZB ])
-                    }
-                    this._trianglePositions.push(rowCenterPositions)
-                }
-            }
-            for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
-                const baseSegmentIndex = this.segmentsD2 * rowIndex
-                for (let segmentIndex = 0; segmentIndex < this.segmentsD2; segmentIndex++) {
-                    let index1a = segmentIndex % this.segmentsD2
-                    let index2a = index1a - 1
-                    if (index2a < 0) {
-                        index2a += this.segmentsD2
-                    }
-                    let index3a = index2a + this.segmentsD2
-                    this._indices.push(
-                        index1a + baseSegmentIndex,
-                        index2a + baseSegmentIndex,
-                        index3a + baseSegmentIndex
-                    )
-
-                    let index1b = segmentIndex
-                    let index2b = index1b + this.segmentsD2 - 1
-                    if (index2b < this.segmentsD2) {
-                        index2b += this.segmentsD2
-                    }
-                    let index3b = index1b + this.segmentsD2
-                    this._indices.push(
-                        index1b + baseSegmentIndex,
-                        index2b + baseSegmentIndex,
-                        index3b + baseSegmentIndex
-                    )
-                }
-            }
-
             this._updateNormals()
             let vertexData = new BABYLON.VertexData()
-            vertexData.positions = this._positions
-            vertexData.indices = this._indices
-            vertexData.normals = this._normals
+            vertexData.positions = Rim1Mesh.vertexPositions
+            vertexData.indices = Rim1Mesh.vertexIndices
             vertexData.applyToMesh(this._mesh, true)
         }
 
         _updateNormals = () => {
-            BABYLON.VertexData.ComputeNormals(this._positions, this._indices, this._normals)
-        }
-
-        _updateMeshVertices = () => {
-            this._mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, this._positions)
-            this._mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, this._normals)
+            BABYLON.VertexData.ComputeNormals(Rim1Mesh.vertexPositions, Rim1Mesh.vertexIndices, this._normals)
         }
 
         constructor() {
@@ -2632,37 +2546,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             name: '10 Rim 1'
         }
     }
-    javascriptScoreLines.push({
-        trackId: rim1TrackId,
-        parameters: [
-            `SegmentCount`,
-            `${Rim1AnimationComponent.singleton.segments}`
-        ]
-    })
-    javascriptScoreLines.push({
-        trackId: rim1TrackId,
-        parameters: [
-            `RowCount`,
-            `${Rim1AnimationComponent.singleton.rows}`
-        ]
-    })
+    javascriptScoreLines.push(
+        { trackId: rim1TrackId, parameters: [`MeshSegmentCount`, `${Rim1Mesh.segments}`]},
+        { trackId: rim1TrackId, parameters: [`MeshRowCount`, `${Rim1Mesh.rows}`]}
+    )
     const initRim1TrackPositions = () => {
-        const singleton = Rim1AnimationComponent.singleton
-        const rows = singleton.rows
-        const segments = singleton.segments
-        const positions = singleton.trianglePositions
+        const count = Rim1Mesh.segments * Rim1Mesh.rows
+        const stride = 3 // xyz
+        const positions = Rim1Mesh.audioPositions
 
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < segments; j++) {
-                const position = positions[i][j]
-                javascriptScoreLines.push({
-                    trackId: rim1TrackId,
-                    parameters: [
-                        `TrianglePosition`,
-                        `${j}/${i}/${position[0].toFixed(3)}/${position[1].toFixed(3)}/${position[2].toFixed(3)}`
-                    ]
-                })
-            }
+        for (let i = 0, j = 0; i < count; i++, j += stride) {
+            const x = positions[j].toFixed(3)
+            const y = positions[j + 1].toFixed(3)
+            const z = positions[j + 2].toFixed(3)
+
+            javascriptScoreLines.push({
+                trackId: rim1TrackId,
+                parameters: [`MeshAudioPosition`, `${i}/${x}/${y}/${z}`]
+            })
         }
     }
     initRim1TrackPositions()
