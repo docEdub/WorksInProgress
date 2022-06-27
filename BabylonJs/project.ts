@@ -1,5 +1,4 @@
 import * as BABYLON from "babylonjs"
-import { join } from "core-js/core/array"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 import Rim1Mesh from "./Meshes/Rim1Mesh"
