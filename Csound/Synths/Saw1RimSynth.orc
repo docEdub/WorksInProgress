@@ -55,8 +55,8 @@ instr ${InstrumentName}_MeshAudioPosition
     iZ = p7
     iSegment = iIndex % gi${InstrumentName}_MeshSegmentCount
     iRow = floor(iIndex / gi${InstrumentName}_MeshSegmentCount)
-    log_i_trace("instr ${InstrumentName}_MeshAudioPositions: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
-        iSegment, iRow, iX, iY, iZ)
+    ; log_i_trace("instr ${InstrumentName}_MeshAudioPositions: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
+    ;     iSegment, iRow, iX, iY, iZ)
     if (iRow < gi${InstrumentName}_MeshRowCount && iSegment < gi${InstrumentName}_MeshSegmentCount) then
         gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][0] = iX
         gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][1] = iY
@@ -65,14 +65,30 @@ instr ${InstrumentName}_MeshAudioPosition
     turnoff
 endin
 
-#if !IS_PLAYBACK
-    instr ${InstrumentName}_MeshAudioPositionString
-        SArgs[] = string_split_i(strget(p4), "/")
-        iInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPosition") + frac(p1)
-        scoreline_i(sprintf("i%f 0 1 %s %s %s %s", iInstrumentNumber, SArgs[0], SArgs[1], SArgs[2], SArgs[3]))
-        turnoff
-    endin
+instr ${InstrumentName}_MeshSegmentCountString
+    SCount init "0"
+    SCount = strget(p4)
+    iCount = strtod(SCount)
+    scoreline_i(sprintf("i\"${InstrumentName}_MeshSegmentCount\" 0 1 %d", iCount))
+    turnoff
+endin
 
+instr ${InstrumentName}_MeshRowCountString
+    SCount init "0"
+    SCount = strget(p4)
+    iCount = strtod(SCount)
+    scoreline_i(sprintf("i\"${InstrumentName}_MeshRowCount\" 0 1 %d", iCount))
+    turnoff
+endin
+
+instr ${InstrumentName}_MeshAudioPositionString
+    SArgs[] = string_split_i(strget(p4), "/")
+    iInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPosition") + frac(p1)
+    scoreline_i(sprintf("i%f 0 1 %s %s %s %s", iInstrumentNumber, SArgs[0], SArgs[1], SArgs[2], SArgs[3]))
+    turnoff
+endin
+
+#if !IS_PLAYBACK
     instr ${InstrumentName}_GeometryJavascriptOscHandler
         if (gi_oscHandle == -1) then
             // Restart this instrument to see if the OSC handle has been set, yet.
@@ -89,9 +105,8 @@ endin
                 "s",
                 SMeshSegmentCount)
             if (kReceived == true) then
-                kMeshSegmentCount = strtodk(SMeshSegmentCount)
-                log_k_debug("MeshSegmentCount = %d", kMeshSegmentCount)
-                scoreline( sprintfk("i\"${InstrumentName}_MeshSegmentCount\" 0 1 %d", kMeshSegmentCount), 1)
+                log_k_debug("MeshSegmentCount = %s", SMeshSegmentCount)
+                scoreline(sprintfk("i\"${InstrumentName}_MeshSegmentCountString\" 0 1 \"%s\"", SMeshSegmentCount), 1)
             endif
 
             SMeshRowCount init "0"
@@ -101,9 +116,8 @@ endin
                 "s",
                 SMeshRowCount)
             if (kReceived == true) then
-                kMeshRowCount = strtodk(SMeshRowCount)
-                log_k_debug("MeshRowCount = %d", kMeshRowCount)
-                scoreline( sprintfk("i\"${InstrumentName}_MeshRowCount\" 0 1 %d", kMeshRowCount), 1)
+                log_k_debug("MeshRowCount = %s", SMeshRowCount)
+                scoreline(sprintfk("i\"${InstrumentName}_MeshRowCountString\" 0 1 \"%s\"", SMeshRowCount), 1)
             endif
 
             SMeshAudioPosition init "0"
