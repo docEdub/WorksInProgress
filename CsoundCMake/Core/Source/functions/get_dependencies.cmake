@@ -39,7 +39,7 @@ function(get_dependencies)
     if(NOT arguments_valid OR NOT global_variables_valid)
         return()
     endif()
-    
+
     # Set `compiler` and `flags` local variables.
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
         set(compiler "${CMAKE_C_COMPILER}")
