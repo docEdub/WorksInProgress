@@ -23,72 +23,73 @@ gi${InstrumentName}_NoteNumberLfoAmp = 0.333
 gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
 // Mesh geometry generated in Javascript.
-gi${InstrumentName}_MeshSegmentCount init 1
-gi${InstrumentName}_MeshRowCount init 1
-gi${InstrumentName}_MeshAudioPositions[][][] init \
-    gi${InstrumentName}_MeshSegmentCount, \
-    gi${InstrumentName}_MeshRowCount, \
-    3
-
-instr ${InstrumentName}_MeshSegmentCount
-    if (gi${InstrumentName}_MeshSegmentCount != p4) then
-        gi${InstrumentName}_MeshSegmentCount = p4
-        iMeshAudioPositions[][][] init gi${InstrumentName}_MeshSegmentCount, gi${InstrumentName}_MeshRowCount, 3
-        gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
-    endif
-    turnoff
-endin
-
-instr ${InstrumentName}_MeshRowCount
-    if (gi${InstrumentName}_MeshRowCount != p4) then
-        gi${InstrumentName}_MeshRowCount = p4
-        iMeshAudioPositions[][][] init gi${InstrumentName}_MeshSegmentCount, gi${InstrumentName}_MeshRowCount, 3
-        gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
-    endif
-    turnoff
-endin
-
-instr ${InstrumentName}_MeshAudioPosition
-    iIndex = p4
-    iX = p5
-    iY = p6
-    iZ = p7
-    iSegment = iIndex % gi${InstrumentName}_MeshSegmentCount
-    iRow = floor(iIndex / gi${InstrumentName}_MeshSegmentCount)
-    ; log_i_trace("instr ${InstrumentName}_MeshAudioPositions: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
-    ;     iSegment, iRow, iX, iY, iZ)
-    if (iRow < gi${InstrumentName}_MeshRowCount && iSegment < gi${InstrumentName}_MeshSegmentCount) then
-        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][0] = iX
-        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][1] = iY
-        gi${InstrumentName}_MeshAudioPositions[iSegment][iRow][2] = iZ
-    endif
-    turnoff
-endin
-
-instr ${InstrumentName}_MeshSegmentCountString
-    SCount init "0"
-    SCount = strget(p4)
-    iCount = strtod(SCount)
-    scoreline_i(sprintf("i\"${InstrumentName}_MeshSegmentCount\" 0 1 %d", iCount))
-    turnoff
-endin
-
-instr ${InstrumentName}_MeshRowCountString
-    SCount init "0"
-    SCount = strget(p4)
-    iCount = strtod(SCount)
-    scoreline_i(sprintf("i\"${InstrumentName}_MeshRowCount\" 0 1 %d", iCount))
-    turnoff
-endin
-
-instr ${InstrumentName}_MeshAudioPositionString
-    SArgs[] = string_split_i(strget(p4), "/")
-    iInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPosition") + frac(p1)
-    scoreline_i(sprintf("i%f 0 1 %s %s %s %s", iInstrumentNumber, SArgs[0], SArgs[1], SArgs[2], SArgs[3]))
-    turnoff
-endin
-
 #if !IS_PLAYBACK
+    gi${InstrumentName}_MeshSegmentCount init 1
+    gi${InstrumentName}_MeshRowCount init 1
+    gi${InstrumentName}_MeshAudioPositions[] init 1 // [segment, row, xyz]
+
+    instr ${InstrumentName}_MeshSegmentCount
+        if (gi${InstrumentName}_MeshSegmentCount != p4) then
+            gi${InstrumentName}_MeshSegmentCount = p4
+            iMeshAudioPositions[] init gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount * 3
+            gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
+        endif
+        turnoff
+    endin
+
+    instr ${InstrumentName}_MeshRowCount
+        if (gi${InstrumentName}_MeshRowCount != p4) then
+            gi${InstrumentName}_MeshRowCount = p4
+            iMeshAudioPositions[] init gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount * 3
+            gi${InstrumentName}_MeshAudioPositions = iMeshAudioPositions
+        endif
+        turnoff
+    endin
+
+    instr ${InstrumentName}_MeshAudioPosition
+        iIndex = p4
+        iX = p5
+        iY = p6
+        iZ = p7
+        log_i_trace(
+            "instr ${InstrumentName}_MeshAudioPositions: iSegment = %d, iRow = %d, iX = %.3f, iY = %.3f, iZ = %.3f",
+            iIndex % gi${InstrumentName}_MeshSegmentCount,
+            floor(iIndex / gi${InstrumentName}_MeshSegmentCount),
+            iX,
+            iY,
+            iZ)
+        if (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) then
+            iIndex *= 3
+            gi${InstrumentName}_MeshAudioPositions[iIndex + 0] = iX
+            gi${InstrumentName}_MeshAudioPositions[iIndex + 1] = iY
+            gi${InstrumentName}_MeshAudioPositions[iIndex + 2] = iZ
+        endif
+        turnoff
+    endin
+
+    instr ${InstrumentName}_MeshSegmentCountString
+        SCount init "0"
+        SCount = strget(p4)
+        iCount = strtod(SCount)
+        scoreline_i(sprintf("i\"${InstrumentName}_MeshSegmentCount\" 0 1 %d", iCount))
+        turnoff
+    endin
+
+    instr ${InstrumentName}_MeshRowCountString
+        SCount init "0"
+        SCount = strget(p4)
+        iCount = strtod(SCount)
+        scoreline_i(sprintf("i\"${InstrumentName}_MeshRowCount\" 0 1 %d", iCount))
+        turnoff
+    endin
+
+    instr ${InstrumentName}_MeshAudioPositionString
+        SArgs[] = string_split_i(strget(p4), "/")
+        iInstrumentNumber = nstrnum("${InstrumentName}_MeshAudioPosition") + frac(p1)
+        scoreline_i(sprintf("i%f 0 1 %s %s %s %s", iInstrumentNumber, SArgs[0], SArgs[1], SArgs[2], SArgs[3]))
+        turnoff
+    endin
+
     instr ${InstrumentName}_GeometryJavascriptOscHandler
         if (gi_oscHandle == -1) then
             // Restart this instrument to see if the OSC handle has been set, yet.
@@ -220,7 +221,10 @@ instr INSTRUMENT_ID
             kZ = 0
 
             aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
-            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+                aDistance,
+                kPositionReferenceDistance,
+                kPositionRolloffFactor)
             aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
 
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
