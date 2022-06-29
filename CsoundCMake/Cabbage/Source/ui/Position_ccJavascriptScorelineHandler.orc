@@ -1,7 +1,7 @@
 #include "definitions.h"
 
-instr CONCAT(PositionHandler_, INSTRUMENT_NAME)
-    #if IS_PLAYBACK
+#if !IS_PLAYBACK
+    instr CONCAT(PositionHandler_, INSTRUMENT_NAME)
         if (gi_oscHandle == -1) then
             // Restart this instrument to see if the OSC handle has been set, yet.
             log_i_trace("OSC not initialized. Restarting instrument in 1 second.")
@@ -52,7 +52,7 @@ instr CONCAT(PositionHandler_, INSTRUMENT_NAME)
                 chnset(kPositionZOffset, $CC_CHANNEL_NAME(positionZOffset))
             endif
         endif
-    #endif
-endin
+    endin
 
-scoreline_i(sprintf("i \"PositionHandler_%s\" 0 -1", STRINGIZE(INSTRUMENT_NAME)))
+    scoreline_i(sprintf("i \"PositionHandler_%s\" 0 -1", STRINGIZE(INSTRUMENT_NAME)))
+#endif
