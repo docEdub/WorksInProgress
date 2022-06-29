@@ -39,7 +39,7 @@ function(get_dependencies)
     if(NOT arguments_valid OR NOT global_variables_valid)
         return()
     endif()
-    
+
     # Set `compiler` and `flags` local variables.
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
         set(compiler "${CMAKE_C_COMPILER}")
@@ -62,8 +62,16 @@ function(get_dependencies)
     get_filename_component(working_directory "${in_file}" DIRECTORY)
 
     # Run compiler command with compiler-specific flags to write dependencies to stdout.
+    string(REPLACE "${ROOT_DIR}/" "" relative_in_file "${in_file}")
+    message("-- Finding dependencies for ${relative_in_file}")
     execute_process(COMMAND "${compiler}" ${flags} WORKING_DIRECTORY "${working_directory}" RESULT_VARIABLE result
         OUTPUT_VARIABLE stdout)
+    if("...${stdout}..." STREQUAL "......")
+        string(REPLACE ";" " " flags "${flags}")
+        message(SEND_ERROR "Empty stdout for command \"${compiler}\" ${flags}")
+        return()
+    endif()
+    message("-- Finding dependencies for ${relative_in_file} - done")
 
     # Parse output file.
     if("AppleClang" STREQUAL "${CMAKE_C_COMPILER_ID}")
