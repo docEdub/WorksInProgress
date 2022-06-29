@@ -1,7 +1,7 @@
 #include "definitions.h"
 
-instr PositionHandler_$INSTRUMENT_NAME
-    #if !IS_PLAYBACK
+instr CONCAT(PositionHandler_, INSTRUMENT_NAME)
+    #if IS_PLAYBACK
         if (gi_oscHandle == -1) then
             // Restart this instrument to see if the OSC handle has been set, yet.
             log_i_trace("OSC not initialized. Restarting instrument in 1 second.")
@@ -19,8 +19,7 @@ instr PositionHandler_$INSTRUMENT_NAME
             if (kReceived == true) then
                 kPositionXOffset = strtodk(SPositionXOffset)
                 log_k_debug("Position/X/Offset = %.3f", kPositionXOffset)
-                SInstrument = "\"$INSTRUMENT_NAME\""
-                SScoreLine = sprintfk("i  %s    0 1 %d %d %.03f", SInstrument, EVENT_CC, CC_INDEX(positionXOffset), kPositionXOffset)
+                SScoreLine = sprintfk("i  \"%s\"    0 1 %d %d %.03f",  STRINGIZE(INSTRUMENT_NAME), EVENT_CC, CC_INDEX(positionXOffset), kPositionXOffset)
                 scoreline(SScoreLine, 1)
                 chnset(kPositionXOffset, $CC_CHANNEL_NAME(positionXOffset))
             endif
@@ -34,8 +33,7 @@ instr PositionHandler_$INSTRUMENT_NAME
             if (kReceived == true) then
                 kPositionYOffset = strtodk(SPositionYOffset)
                 log_k_debug("Position/Y/Offset = %.3f", kPositionYOffset)
-                SInstrument = "\"$INSTRUMENT_NAME\""
-                SScoreLine = sprintfk("i  %s    0 1 %d %d %.03f", SInstrument, EVENT_CC, CC_INDEX(positionYOffset), kPositionYOffset)
+                SScoreLine = sprintfk("i  \"%s\"    0 1 %d %d %.03f",  STRINGIZE(INSTRUMENT_NAME), EVENT_CC, CC_INDEX(positionYOffset), kPositionYOffset)
                 scoreline(SScoreLine, 1)
                 chnset(kPositionYOffset, $CC_CHANNEL_NAME(positionYOffset))
             endif
@@ -49,8 +47,7 @@ instr PositionHandler_$INSTRUMENT_NAME
             if (kReceived == true) then
                 kPositionZOffset = strtodk(SPositionZOffset)
                 log_k_debug("Position/Z/Offset = %.3f", kPositionZOffset)
-                SInstrument = "\"$INSTRUMENT_NAME\""
-                SScoreLine = sprintfk("i  %s    0 1 %d %d %.03f", SInstrument, EVENT_CC, CC_INDEX(positionZOffset), kPositionZOffset)
+                SScoreLine = sprintfk("i  \"%s\"    0 1 %d %d %.03f", STRINGIZE(INSTRUMENT_NAME), EVENT_CC, CC_INDEX(positionZOffset), kPositionZOffset)
                 scoreline(SScoreLine, 1)
                 chnset(kPositionZOffset, $CC_CHANNEL_NAME(positionZOffset))
             endif
@@ -58,4 +55,4 @@ instr PositionHandler_$INSTRUMENT_NAME
     #endif
 endin
 
-scoreline_i("i \"PositionHandler_$INSTRUMENT_NAME\" 0 -1")
+scoreline_i(sprintf("i \"PositionHandler_%s\" 0 -1", STRINGIZE(INSTRUMENT_NAME)))
