@@ -226,42 +226,41 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
         iI = 0
         iWriteComma = false
 
-        while (true == true) do
+        while (iI != -1) do
             SFileName = sprintf("json/%s.%d.json", SPluginUuid, iI)
+            if (filevalid(SFileName) == false) then
+                iI = -1
+            else
+                iLineNumber = 0
+                while (iLineNumber != -1) do
+                    SLine, iLineNumber readfi SFileName
 
-            iLineNumber = 0
-            while (iLineNumber != -1) do
-                // Csound will delete this instrument if the given file doesn't exist.
-                SLine, iLineNumber readfi SFileName
-
-                if (iLineNumber == -1) then
-                    log_i_debug("%s - done", SFileName)
-                else
-
-                    // A comma isn't needed if the file doesn't exist so we wait to write the comma after Csound is given a
-                    // chance to delete this instrument if the file doesn't exist.
-                    if (iWriteComma == true) then
-                        fprints("DawPlayback.json", ",")
+                    if (iLineNumber == -1) then
+                        log_i_debug("%s - done", SFileName)
                     else
-                        iWriteComma = true
+                        if (iWriteComma == true) then
+                            fprints("DawPlayback.json", ",")
+                        else
+                            iWriteComma = true
+                        endif
+
+                        // Remove trailing newline.
+                        if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\n") == 0) then
+                            SLine = strsub(SLine, 0, strlen(SLine) - 1)
+                        endif
+
+                        // Workaround Csound readfi opcode bug duplicating first letter of each line after first line.
+                        if (iLineNumber > 1) then
+                            SLine = strsub(SLine, 1, strlen(SLine))
+                        endif
+
+                        fprints("DawPlayback.json", SLine)
+                        log_i_debug("%s(%d): %s", SFileName, iLineNumber, SLine)
                     endif
+                od
 
-                    // Remove trailing newline.
-                    if (strcmp(strsub(SLine, strlen(SLine) - 1, strlen(SLine)), "\n") == 0) then
-                        SLine = strsub(SLine, 0, strlen(SLine) - 1)
-                    endif
-
-                    // Workaround Csound readfi opcode bug duplicating first character of each line after first line.
-                    if (iLineNumber > 1) then
-                        SLine = strsub(SLine, 1, strlen(SLine))
-                    endif
-
-                    fprints("DawPlayback.json", SLine)
-                    log_i_debug("%s(%d): %s", SFileName, iLineNumber, SLine)
-                endif
-            od
-
-            iI += 1
+                iI += 1
+            endif
         od
     endin
 

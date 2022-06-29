@@ -45,4 +45,4 @@ ${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith                      # 0.075 #
 ${CSOUND_DEFINE} TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
 
 #include "Common/TriangleMonoSynth.instr.orc"
-#include "synth.h.orc"
+#include "synth.instr.h.orc"
