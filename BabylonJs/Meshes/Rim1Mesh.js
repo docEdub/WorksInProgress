@@ -21,10 +21,16 @@ class Rim1Mesh {
         return this._private.vertexIndices
     }
 
+    get audioPositionsString() {
+        this.#init()
+        return this._private.audioPositionsString
+    }
+
     _private = {
         audioPositions: null,
         vertexPositions: null,
-        vertexIndices: null
+        vertexIndices: null,
+        audioPositionsString: null
     }
 
     #init = () => {
@@ -108,6 +114,13 @@ class Rim1Mesh {
                 )
             }
         }
+
+        // Set audio position string.
+        let s = `${this._private.audioPositions.length}`
+        for (let i = 0; i < this._private.audioPositions.length; i++) {
+            s +=  `\ngiSaw1RimSynth_MeshAudioPositions[${i}] =  ${this._private.audioPositions[i].toFixed(3)}`
+        }
+        this._private.audioPositionsString = s
     }
 }
 

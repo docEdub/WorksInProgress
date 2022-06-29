@@ -23,7 +23,21 @@ gi${InstrumentName}_NoteNumberLfoAmp = 0.333
 gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
 // Mesh geometry generated in Javascript.
-#if !IS_PLAYBACK
+#if IS_PLAYBACK
+    gi${InstrumentName}_MeshSegmentCount init ${Rim1Mesh.segments}
+    gi${InstrumentName}_MeshRowCount init ${Rim1Mesh.rows}
+    gi${InstrumentName}_MeshAudioPositions[] init ${Rim1Mesh.audioPositionsString}
+
+    iIndex = 0
+    while (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) do
+        iCoordIndex = iIndex * 3
+        prints("%d = [%.3f, %.3f, %.3f]",
+            iIndex,
+            gi${InstrumentName}_MeshAudioPositions[iCoordIndex],
+            gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 1],
+            gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 2])
+    od
+#else
     gi${InstrumentName}_MeshSegmentCount init 1
     gi${InstrumentName}_MeshRowCount init 1
     gi${InstrumentName}_MeshAudioPositions[] init 1 // [segment, row, xyz]
@@ -60,7 +74,7 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
             iZ)
         if (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) then
             iIndex *= 3
-            gi${InstrumentName}_MeshAudioPositions[iIndex + 0] = iX
+            gi${InstrumentName}_MeshAudioPositions[iIndex] = iX
             gi${InstrumentName}_MeshAudioPositions[iIndex + 1] = iY
             gi${InstrumentName}_MeshAudioPositions[iIndex + 2] = iZ
         endif
