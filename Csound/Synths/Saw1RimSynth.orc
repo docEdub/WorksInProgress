@@ -24,9 +24,9 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
 // Mesh geometry generated in Javascript.
 #if IS_PLAYBACK
-    gi${InstrumentName}_MeshSegmentCount init ${Rim1Mesh.segments}
-    gi${InstrumentName}_MeshRowCount init ${Rim1Mesh.rows}
-    gi${InstrumentName}_MeshAudioPositions[] init ${Rim1Mesh.audioPositionsString}
+    gi${InstrumentName}_MeshSegmentCount init _($){Rim1Mesh.segments}
+    gi${InstrumentName}_MeshRowCount init _($){Rim1Mesh.rows}
+    gi${InstrumentName}_MeshAudioPositions[] init _($){Rim1Mesh.audioPositionsString}
 
     iIndex = 0
     while (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) do
