@@ -1,6 +1,10 @@
 
-const Meshes = require('./Meshes')
+const files = [
+    'Meshes/Rim1Mesh'
+]
 
-module.exports = {
-    ...Meshes
+for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    const object = file.split('/').pop()
+    module.exports[object] = require(`./${file}`)
 }
