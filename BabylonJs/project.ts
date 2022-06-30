@@ -1,7 +1,7 @@
 import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
-import Rim1Mesh from "./Meshes/Rim1Mesh"
+import Rim1Mesh from "./SharedModules/Meshes/Rim1Mesh"
 
 //#region Non-playground setup
 
