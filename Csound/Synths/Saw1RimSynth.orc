@@ -27,17 +27,6 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
     gi${InstrumentName}_MeshSegmentCount init _($){Rim1Mesh.segments}
     gi${InstrumentName}_MeshRowCount init _($){Rim1Mesh.rows}
     gi${InstrumentName}_MeshAudioPositions[] init _($){Rim1Mesh.audioPositionsString}
-
-    iIndex = 0
-    while (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) do
-        iCoordIndex = iIndex * 3
-        prints("%d = [%.3f, %.3f, %.3f]\n",
-            iIndex,
-            gi${InstrumentName}_MeshAudioPositions[iCoordIndex],
-            gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 1],
-            gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 2])
-        iIndex += 1
-    od
 #else
     gi${InstrumentName}_MeshSegmentCount init 1
     gi${InstrumentName}_MeshRowCount init 1

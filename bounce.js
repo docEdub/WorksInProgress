@@ -45,7 +45,7 @@ const updateBabylonJsProject = () => {
     data = fs.readFileSync(path.join(babylonJsDir, '/project.ts'), 'ascii')
     data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
     fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-    console.log('-- Updating BabylonJs/project.ts `csdText` done')
+    console.log('-- Updating BabylonJs/project.ts `csdText` - done')
 }
 
 if (os.type() === 'Darwin') {
@@ -67,13 +67,11 @@ if (os.type() === 'Darwin') {
     // Replace all configuration variables in playback .csd. Configuration variables = ${.*}
     let data = fs.readFileSync(path.join(csoundDir, 'build', 'bounce', 'DawPlayback.csd'), 'ascii')
     const matches = data.match(/\$\{.*\}/g)
-    console.log(matches)
     for (let i = 0; i < matches.length; i++) {
         const match = matches[i]
         data = data.replaceAll(match, readSharedModule(match))
     }
     fs.writeFileSync(bounceDir + '/DawPlayback.configured.csd', data)
-
 
     if (process.argv.indexOf('--with-json') != -1) {
         // Wipe the json folder.
@@ -101,7 +99,7 @@ if (os.type() === 'Darwin') {
 
         data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
         fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-        console.log('-- Updating BabylonJs/project.ts `csdJson` done')
+        console.log('-- Updating BabylonJs/project.ts `csdJson` - done')
     }
 
     if (process.argv.indexOf('--mixdown') != -1) {
