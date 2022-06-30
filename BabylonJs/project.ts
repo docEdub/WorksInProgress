@@ -2579,26 +2579,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     --nosound
     </CsOptions>
     <CsInstruments>
-
-    giSaw1RimSynth_MeshSegmentCount init ${Rim1Mesh.segments}
-    giSaw1RimSynth_MeshRowCount init ${Rim1Mesh.rows}
-    giSaw1RimSynth_MeshAudioPositions[] init ${Rim1Mesh.audioPositionsString}
-
-    instr printRimArray
-        iIndex = 0
-        while (iIndex < giSaw1RimSynth_MeshSegmentCount * giSaw1RimSynth_MeshRowCount) do
-            iCoordIndex = iIndex * 3
-            prints("%d = [%.3f, %.3f, %.3f]\\n",
-                iIndex,
-                giSaw1RimSynth_MeshAudioPositions[iCoordIndex],
-                giSaw1RimSynth_MeshAudioPositions[iCoordIndex + 1],
-                giSaw1RimSynth_MeshAudioPositions[iCoordIndex + 2])
-            iIndex += 1
-        od
-        turnoff
-    endin
-    scoreline_i("i\\"printRimArray\\" 0 1")
-
     giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 0 /* dummy */ )
     #ifndef OUTPUT_CHANNEL_COUNT
     #define OUTPUT_CHANNEL_COUNT #2#
