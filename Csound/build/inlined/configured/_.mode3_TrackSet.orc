@@ -160,8 +160,26 @@
 #undef INSTRUMENT_NAME
 #undef INSTRUMENT_ID
 
-#define INSTRUMENT_ID Reverb_9_0 // -0
+#define INSTRUMENT_ID Saw1RimSynth_9 // -0
+#define INSTRUMENT_NAME Saw1RimSynth // -0
+#define INSTANCE_NAME STRINGIZE(-) // -0
 #define INSTRUMENT_TRACK_INDEX 9
+#define INSTRUMENT_PLUGIN_INDEX 0
+#define INSTRUMENT_PLUGIN_UUID "0e3635ef4c2c431b9aede90e4ca361a0" // -0
+#define ORC_INSTANCE_COUNT 1
+#define ORC_INSTANCE_INDEX 0
+#include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Saw1RimSynth/Saw1RimSynth.orc" // -0
+#undef ORC_INSTANCE_INDEX
+#undef ORC_INSTANCE_COUNT
+#undef INSTRUMENT_PLUGIN_UUID
+#undef INSTRUMENT_PLUGIN_INDEX
+#undef INSTRUMENT_TRACK_INDEX
+#undef INSTANCE_NAME
+#undef INSTRUMENT_NAME
+#undef INSTRUMENT_ID
+
+#define INSTRUMENT_ID Reverb_10_0 // -0
+#define INSTRUMENT_TRACK_INDEX 10
 #define INSTRUMENT_PLUGIN_INDEX 1
 #define ORC_INSTANCE_COUNT 1
 #define ORC_INSTANCE_INDEX 0
