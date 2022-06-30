@@ -31,11 +31,12 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
     iIndex = 0
     while (iIndex < gi${InstrumentName}_MeshSegmentCount * gi${InstrumentName}_MeshRowCount) do
         iCoordIndex = iIndex * 3
-        prints("%d = [%.3f, %.3f, %.3f]",
+        prints("%d = [%.3f, %.3f, %.3f]\n",
             iIndex,
             gi${InstrumentName}_MeshAudioPositions[iCoordIndex],
             gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 1],
             gi${InstrumentName}_MeshAudioPositions[iCoordIndex + 2])
+        iIndex += 1
     od
 #else
     gi${InstrumentName}_MeshSegmentCount init 1
