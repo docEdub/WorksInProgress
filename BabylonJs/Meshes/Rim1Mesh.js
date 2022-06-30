@@ -124,4 +124,4 @@ class Rim1Mesh {
     }
 }
 
-export default new Rim1Mesh
+module.exports = new Rim1Mesh
