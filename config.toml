@@ -51,9 +51,9 @@ theme = "hello-friend"
       #           # qoc|E|qup
       # logoHomeLink = "/"
     # or
-    
-    path = "/img/docEdub.svg"
-    alt = "docEdub"
+
+    path = "/img/docEdub.png"
+    alt = "docEdub logo"
 
     # [languages.en.menu]
     #   [[languages.en.menu.main]]
