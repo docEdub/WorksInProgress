@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1656731728
+<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1657493638
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -15,8 +15,8 @@
   VIDEO_CONFIG 0 0 256
   PANMODE 3
   CURSOR 0
-  ZOOM 2.60583500602691 0 0
-  VZOOMEX 0 107
+  ZOOM 6.12735126424904 0 0
+  VZOOMEX 0 0
   USE_REC_CFG 0
   RECMODE 1
   SMPTESYNC 0 30 100 40 1000 300 0 0 1 0 0
@@ -1137,7 +1137,7 @@
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.22529831355291 0 -1 -1 1
+    VOLPAN 0.12007554149779 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -5495,11 +5495,11 @@
     >
   >
   <TRACK {88D0197A-3821-E447-AA42-2C46D8C86EE2}
-    NAME "10: Rim 1"
+    NAME "10: Rim 1: Hi"
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.78304335735222 0 -1 -1 1
+    VOLPAN 0.50761876644739 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -5510,7 +5510,7 @@
     SEL 0
     REC 0 5088 1 0 0 0 0
     VU 2
-    TRACKHEIGHT 0 0 0 0 0 0
+    TRACKHEIGHT 25 0 0 0 0 0
     INQ 0 0 0 0.5 100 0 0 100
     NCHAN 6
     FX 1
@@ -5525,17 +5525,17 @@
       DOCKED 0
       BYPASS 0 0 0
       <VST "VST3i: Saw1RimSynth     (CabbageAudio    ) (6 out)" Saw1RimSynth.vst3 0 "" 97607883{ABCDEF019182FAEB4361626230303131} ""
-        y2DRBe5e7f4AAAAABgAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAKYDAAABAAAA//8QAA==
-        lgMAAAEAAABWQzIhUQMAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
-        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iIiB0cmFja0luZGV4PSIxMyIgcGx1Z2luSW5kZXg9IjAiIHBsdWdpblV1aWQ9IjE0YWZjMGRmZjY5MzQ1OWZiNmZj
-        NTIxYmNmM2RiMGJjIiBmaXJzdF90YWJfYnVnX3dvcmthcm91bmRfdGFiPSIwLjAiIHM4OF90YWI9IjEuMCIgcG9zaXRpb25fdGFiPSIwLjAiIGxvZ190YWI9IjAuMCIg
-        Uzg4X2tub2JfMT0iMC4wIiBTODhfa25vYl8yPSIwLjAiIFM4OF9rbm9iXzM9IjAuMCIgUzg4X2tub2JfND0iMC4wIiBTODhfa25vYl81PSIwLjAiIFM4OF9rbm9iXzY9
-        IjAuMCIgUzg4X2tub2JfNz0iMC4wIiBTODhfa25vYl84PSIwLjAiIFM4OF9waXRjaGJlbmQ9IjAuMCIgUzg4X21vZHdoZWVsPSIwLjAiIHBvc2l0aW9uRW5hYmxlZD0i
-        MC4wIiBwb3NpdGlvbk1heEFtcFdoZW5DbG9zZT0iMC45OTk5OTk5NDAzOTUzNTUyIiBwb3NpdGlvblJlZmVyZW5jZURpc3RhbmNlPSIwLjA5OTk5OTk5NDAzOTUzNTUy
-        IiBwb3NpdGlvblJvbGxvZmZGYWN0b3I9IjAuMDA5OTk5OTk5Nzc2NDgyNTgyIiBwb3NpdGlvbk9wY29kZUNvbWJvQm94SW5kZXg9IjEuMCIgcG9zaXRpb25PcGNvZGU9
-        IiIgcG9zaXRpb25YU2NhbGU9IjEwMC4wMDAxMjIwNzAzMTI1IiBwb3NpdGlvbllTY2FsZT0iMTAwLjAwMDEyMjA3MDMxMjUiIHBvc2l0aW9uWlNjYWxlPSIxMDAuMDAw
-        MTIyMDcwMzEyNSIgcG9zaXRpb25YT2Zmc2V0PSIwLjAiIHBvc2l0aW9uWU9mZnNldD0iMC4wIiBwb3NpdGlvblpPZmZzZXQ9IjAuMCIvPjwvQ0FCQkFHRV9QUkVTRVRT
-        PgAAAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQABAUJ5cGFzcwABAQMAHQAAAAAAAABKVUNFUHJpdmF0ZURhdGEAAAAAAAAAAA==
+        y2DRBe5e7f4AAAAABgAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAKUDAAABAAAA//8QAA==
+        lQMAAAEAAABWQzIhUAMAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
+        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iIiB0cmFja0luZGV4PSIwIiBwbHVnaW5JbmRleD0iMCIgcGx1Z2luVXVpZD0iMTRhZmMwZGZmNjkzNDU5ZmI2ZmM1
+        MjFiY2YzZGIwYmMiIGZpcnN0X3RhYl9idWdfd29ya2Fyb3VuZF90YWI9IjAuMCIgczg4X3RhYj0iMS4wIiBwb3NpdGlvbl90YWI9IjAuMCIgbG9nX3RhYj0iMC4wIiBT
+        ODhfa25vYl8xPSIwLjAiIFM4OF9rbm9iXzI9IjAuMCIgUzg4X2tub2JfMz0iMC4wIiBTODhfa25vYl80PSIwLjAiIFM4OF9rbm9iXzU9IjAuMCIgUzg4X2tub2JfNj0i
+        MC4wIiBTODhfa25vYl83PSIwLjAiIFM4OF9rbm9iXzg9IjAuMCIgUzg4X3BpdGNoYmVuZD0iMC4wIiBTODhfbW9kd2hlZWw9IjAuMCIgcG9zaXRpb25FbmFibGVkPSIw
+        LjAiIHBvc2l0aW9uTWF4QW1wV2hlbkNsb3NlPSIwLjk5OTk5OTk0MDM5NTM1NTIiIHBvc2l0aW9uUmVmZXJlbmNlRGlzdGFuY2U9IjAuMDk5OTk5OTk0MDM5NTM1NTIi
+        IHBvc2l0aW9uUm9sbG9mZkZhY3Rvcj0iMC4wMDk5OTk5OTk3NzY0ODI1ODIiIHBvc2l0aW9uT3Bjb2RlQ29tYm9Cb3hJbmRleD0iMS4wIiBwb3NpdGlvbk9wY29kZT0i
+        IiBwb3NpdGlvblhTY2FsZT0iMTAwLjAwMDEyMjA3MDMxMjUiIHBvc2l0aW9uWVNjYWxlPSIxMDAuMDAwMTIyMDcwMzEyNSIgcG9zaXRpb25aU2NhbGU9IjEwMC4wMDAx
+        MjIwNzAzMTI1IiBwb3NpdGlvblhPZmZzZXQ9IjAuMCIgcG9zaXRpb25ZT2Zmc2V0PSIwLjAiIHBvc2l0aW9uWk9mZnNldD0iMC4wIi8+PC9DQUJCQUdFX1BSRVNFVFM+
+        AAAAAAAAAAAASlVDRVByaXZhdGVEYXRhAAEBQnlwYXNzAAEBAwAdAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQAAAAAAAAAA
         AEZhY3RvcnkgUHJlc2V0cwAQAAAA
       >
       PRESETNAME "Factory Presets"
@@ -5544,20 +5544,20 @@
       WAK 0 0
     >
     <ITEM
-      POSITION 44
+      POSITION 45.5
       SNAPOFFS 0
-      LENGTH 68
+      LENGTH 16
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
-      SEL 1
+      SEL 0
       IGUID {2B6E9005-65BF-D244-B11B-7A5690EC6E5F}
       IID 306
       NAME "18-10: Rim 1-Recorded MIDI"
       VOLPAN 1 0 1 -1
-      SOFFS 12 24
+      SOFFS 13.5 27
       PLAYRATE 1 1 0 -1 0 0.0025
       CHANMODE 0
       GUID {DFE30BBB-36C1-6E46-BA7A-56806C9D8231}
@@ -5581,80 +5581,118 @@
         E 33 80 40 00
         E 1910 90 3e 5c
         E 28 80 3c 00
-        E 14644 80 3e 00
-        E 636 90 3e 50
-        E 11 90 35 4a
-        E 3819 90 37 5b
-        E 7 90 40 64
-        E 50 80 35 00
-        E 3 80 3e 00
-        E 3809 90 41 67
-        E 20 90 39 65
-        E 12 80 37 00
-        E 20 80 40 00
-        E 3763 90 37 4b
-        E 25 90 40 64
+        E 14425 80 3e 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {2B449E36-1D8C-3648-A954-15A21E349C71}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 324
+        VELLANE -1 100 0
+        CFGEDITVIEW 16045.736605 0.005664 46 22 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 61.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {DC07E54F-8C88-F346-B166-4BEFBBBAA314}
+      IID 313
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {EA698048-E065-0C4E-A8D1-FF73FBFECCD6}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {5F75E068-22DD-3643-BA21-8FBF520FF7F5}
+        E 960 90 3e 50
+        E 3785 80 3e 00
+        E 8 90 40 64
+        E 3801 90 41 67
+        E 52 80 40 00
+        E 3788 90 40 64
         E 45 80 41 00
-        E 6 80 39 00
-        E 1868 90 3c 5a
-        E 13 90 34 5b
-        E 17 80 40 00
-        E 23 80 37 00
-        E 1734 90 35 54
-        E 19 90 3e 5c
-        E 15 80 34 00
-        E 21 80 3c 00
-        E 14858 80 35 00
-        E 40 80 3e 00
+        E 1874 90 3c 5a
+        E 30 80 40 00
+        E 1812 80 3c 00
+        E 107 90 3e 5c
+        E 14458 80 3e 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {388E20F7-1BE5-B44C-90DF-66C6C040D908}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 333
+        VELLANE -1 100 0
+        CFGEDITVIEW -369.392089 0.107482 46 22 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 77.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {D407F1C5-2DC3-014D-8A14-26F6E4DDF78B}
+      IID 316
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 16 32
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {26D53D03-53F4-7245-8E00-D9B782DDF6AD}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {9C432818-C268-214A-93D8-E260039AB748}
+        E 0 90 3e 5c
+        E 333 80 3e 00
         E 566 90 3e 54
-        E 15 90 35 50
-        E 3797 90 40 59
-        E 16 90 37 67
-        E 39 80 35 00
-        E 2 80 3e 00
-        E 3762 90 41 5e
-        E 13 90 39 63
-        E 29 80 37 00
-        E 14 80 40 00
-        E 3777 90 45 4f
-        E 20 80 41 00
-        E 2 90 3c 4e
-        E 17 80 39 00
-        E 1755 90 40 50
-        E 13 80 3c 00
-        E 33 80 45 00
-        E 62 90 37 4f
-        E 1802 90 41 5e
-        E 57 90 39 54
-        E 23 80 40 00
-        E 140 80 37 00
-        E 15352 80 39 00
-        E 15 90 3e 4e
-        E 5 90 35 4a
-        E 2 80 41 00
-        E 3753 90 40 51
-        E 9 90 37 65
-        E 25 80 35 00
-        E 15 80 3e 00
-        E 3829 90 41 62
-        E 39 90 39 64
-        E 6 80 40 00
-        E 17 80 37 00
-        E 3687 90 40 5a
-        E 11 90 37 4e
-        E 33 80 39 00
-        E 21 80 41 00
-        E 1776 90 34 4f
-        E 16 90 3c 54
-        E 24 80 37 00
-        E 4 80 40 00
-        E 1981 90 35 52
-        E 7 90 3e 59
-        E 44 80 3c 00
-        E 36 80 34 00
-        E 15660 80 3e 00
-        E 98 80 35 00
-        E 30291 90 3e 5e
+        E 3812 90 40 59
+        E 57 80 3e 00
+        E 3818 80 40 00
+        E 8 90 41 5e
+        E 3789 80 41 00
+        E 55 90 45 4f
+        E 1765 80 45 00
+        E 153 90 40 50
+        E 1791 80 40 00
+        E 15507 90 3e 4e
+        E 3809 80 3e 00
+        E 13 90 40 51
+        E 3816 90 41 62
+        E 45 80 40 00
+        E 3769 80 41 00
+        E 49 90 40 5a
+        E 1771 80 40 00
+        E 149 90 3c 54
+        E 1883 80 3c 00
+        E 52 90 3e 59
+        E 15644 80 3e 00
+        E 30389 90 3e 5e
         E 1 90 41 60
         E 3784 90 43 63
         E 16 80 41 00
@@ -5753,15 +5791,64 @@
         E 19583 b0 7b 00
         CCINTERP 32
         CHASE_CC_TAKEOFFS 1
-        GUID {2B449E36-1D8C-3648-A954-15A21E349C71}
+        GUID {37CFD41A-3F19-3A46-B912-C1A34BFACA23}
         IGNTEMPO 0 120 4 4
-        SRCCOLOR 324
+        SRCCOLOR 336
         VELLANE -1 100 0
-        CFGEDITVIEW 130560 0.004551 55 12 0 -1 0 0 0 0.5
+        CFGEDITVIEW 24202.599183 0.072674 46 22 0 -1 0 0 0 0.5
         KEYSNAP 0
         TRACKSEL -252
         EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
-        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 424 121 1440 720 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 93.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {F1C67736-512B-7C40-BD52-EED6EC16CC2E}
+      IID 315
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {13E16DA2-6B24-5E48-A1DB-7FBF8CB9E257}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {5F1A6978-8FE4-0C4D-8FBA-E0E76C471C14}
+        E 899 90 3e 54
+        E 3812 90 40 59
+        E 57 80 3e 00
+        E 3818 80 40 00
+        E 8 90 41 5e
+        E 3789 80 41 00
+        E 55 90 45 4f
+        E 1918 90 40 50
+        E 644 80 45 00
+        E 1147 80 40 00
+        E 106 90 41 5e
+        E 15408 80 41 00
+        E 19 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {BA74DCDA-494C-484B-82D9-FDB83CC3B752}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 335
+        VELLANE -1 100 0
+        CFGEDITVIEW -2385.429477 0.016911 46 22 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
       >
     >
     <ITEM
@@ -5773,7 +5860,7 @@
       FADEIN 1 0 0 1 0 0 0
       FADEOUT 1 0 0 1 0 0 0
       MUTE 0 0
-      SEL 1
+      SEL 0
       IGUID {3E8E9603-68BA-3A4E-872C-1C100478866D}
       IID 307
       NAME "18-10: Rim 1-Recorded MIDI"
@@ -5800,15 +5887,15 @@
         E 244 b0 40 7f
         E 2653 80 43 00
         E 57 80 40 00
-        E 653 90 45 54
+        E 730 90 45 54
         E 9 90 41 5c
-        E 184 b0 40 00
+        E 107 b0 40 00
         E 272 b0 40 7f
         E 2666 80 45 00
         E 187 80 41 00
-        E 542 90 40 5d
+        E 599 90 40 5d
         E 9 90 43 55
-        E 112 b0 40 00
+        E 55 b0 40 00
         E 140 b0 40 7f
         E 712 80 43 00
         E 77 80 40 00
@@ -5824,7 +5911,7 @@
         E 268 b0 40 7f
         E 13679 80 3e 00
         E 63 80 41 00
-        E 1279 90 41 60
+        E 1371 90 41 60
         E 15 90 3e 4d
         E 141 b0 40 00
         E 269 b0 40 7f
@@ -5854,25 +5941,25 @@
         E 233 b0 40 7f
         E 956 80 3c 00
         E 16 80 40 00
-        E 630 90 3e 5c
-        E 9 90 41 4e
-        E 294 b0 40 00
-        E 464 b0 40 7f
-        E 11354 80 3e 00
-        E 75 80 41 00
-        E 3210 90 41 5e
+        e 591 90 3e 5c
+        e 1 90 41 4e
+        e 287 b0 40 00
+        e 464 b0 40 7f
+        e 11354 80 3e 00
+        e 75 80 41 00
+        E 3258 90 41 5e
         E 10 90 3e 4c
         E 125 b0 40 00
         E 230 b0 40 7f
         E 2842 80 3e 00
         E 164 80 41 00
-        E 458 90 40 59
+        E 455 90 40 59
         E 8 90 43 4e
         E 155 b0 40 00
         E 248 b0 40 7f
         E 2768 80 43 00
         E 18 80 40 00
-        E 588 90 41 53
+        E 652 90 41 53
         E 1 90 45 4c
         E 202 b0 40 00
         E 235 b0 40 7f
@@ -5896,41 +5983,41 @@
         E 288 b0 40 7f
         E 14451 80 3e 00
         E 182 80 43 00
-        E 454 90 41 5e
+        E 358 90 41 5e
         E 11 90 3e 4e
         E 104 b0 40 00
         E 236 b0 40 7f
         E 2848 80 3e 00
         E 225 80 41 00
-        E 387 90 40 55
+        E 414 90 40 55
         E 2 90 43 4e
         E 118 b0 40 00
         E 184 b0 40 7f
         E 2863 80 43 00
         E 136 80 40 00
-        E 482 90 45 4f
+        E 521 90 45 4f
         E 1 90 41 5a
         E 82 b0 40 00
         E 209 b0 40 7f
         E 2005 80 41 00
         E 2 80 45 00
-        E 1533 90 45 5c
+        E 1560 90 45 5c
         E 3 90 48 51
         E 9 b0 40 00
         E 152 b0 40 7f
         E 347 80 48 00
         E 13 80 45 00
-        E 1354 90 40 4e
+        E 1403 90 40 4e
         E 2 90 3c 4a
         E 1280 80 3c 00
         E 179 80 40 00
-        E 528 90 41 4c
+        E 463 90 41 4c
         E 3 90 3e 4e
         E 269 b0 40 00
         E 393 b0 40 7f
         E 6388 80 3e 00
         E 45 80 41 00
-        E 688 90 3e 42
+        E 560 90 3e 42
         E 3 90 41 48
         E 146 b0 40 00
         E 203 b0 40 7f
@@ -5942,25 +6029,822 @@
         E 219 b0 40 7f
         E 6594 80 41 00
         E 18 80 3e 00
-        E 842 90 3e 42
-        e 9 90 41 45
-        e 166 b0 40 00
-        e 296 b0 40 7f
-        E 7175 80 3e 00
-        e 2 80 41 00
-        E 125 b0 40 00
-        E 5709 b0 7b 00
+        E 789 90 3e 42
+        E 1 90 41 45
+        E 444 b0 40 00
+        E 296 b0 40 7f
+        E 7023 80 41 00
+        E 62 b0 40 00
+        E 27 80 3e 00
+        E 5682 b0 7b 00
         CCINTERP 32
         CHASE_CC_TAKEOFFS 1
         GUID {6D5D40B9-4805-964E-BC1F-DFE9B4358E47}
         IGNTEMPO 0 120 4 4
         SRCCOLOR 327
         VELLANE -1 100 0
-        CFGEDITVIEW 0 0.004551 55 12 0 -1 0 0 0 0.5
+        CFGEDITVIEW 133844.347526 0.034087 46 22 0 -1 0 0 0 0.5
         KEYSNAP 0
         TRACKSEL -252
         EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
-        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 424 121 1440 720 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+  >
+  <TRACK {18A81DFA-1C4F-C74F-B297-4586FA80EE67}
+    NAME "10: Rim 1: Lo"
+    PEAKCOL 16576
+    BEAT -1
+    AUTOMODE 0
+    VOLPAN 0.50761876644739 0 -1 -1 1
+    MUTESOLO 0 0 0
+    IPHASE 0
+    PLAYOFFS 0 1
+    ISBUS 0 0
+    BUSCOMP 0 0 0 0 0
+    SHOWINMIX 1 0.6667 0.5 1 0.5 0 -1 0
+    FREEMODE 0
+    SEL 0
+    REC 0 5088 1 0 0 0 0
+    VU 2
+    TRACKHEIGHT 25 0 0 0 0 0
+    INQ 0 0 0 0.5 100 0 0 100
+    NCHAN 6
+    FX 1
+    TRACKID {18A81DFA-1C4F-C74F-B297-4586FA80EE67}
+    PERF 0
+    MIDIOUT -1
+    MAINSEND 1 0
+    <FXCHAIN
+      WNDRECT 209 154 1231 598
+      SHOW 0
+      LASTSEL 0
+      DOCKED 0
+      BYPASS 0 0 0
+      <VST "VST3i: Saw1RimSynth     (CabbageAudio    ) (6 out)" Saw1RimSynth.vst3 0 "" 97607883{ABCDEF019182FAEB4361626230303131} ""
+        y2DRBe5e7f4AAAAABgAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAKYDAAABAAAA//8QAA==
+        lgMAAAEAAABWQzIhUQMAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
+        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iIiB0cmFja0luZGV4PSIxMSIgcGx1Z2luSW5kZXg9IjAiIHBsdWdpblV1aWQ9IjE0YWZjMGRmZjY5MzQ1OWZiNmZj
+        NTIxYmNmM2RiMGJjIiBmaXJzdF90YWJfYnVnX3dvcmthcm91bmRfdGFiPSIwLjAiIHM4OF90YWI9IjEuMCIgcG9zaXRpb25fdGFiPSIwLjAiIGxvZ190YWI9IjAuMCIg
+        Uzg4X2tub2JfMT0iMC4wIiBTODhfa25vYl8yPSIwLjAiIFM4OF9rbm9iXzM9IjAuMCIgUzg4X2tub2JfND0iMC4wIiBTODhfa25vYl81PSIwLjAiIFM4OF9rbm9iXzY9
+        IjAuMCIgUzg4X2tub2JfNz0iMC4wIiBTODhfa25vYl84PSIwLjAiIFM4OF9waXRjaGJlbmQ9IjAuMCIgUzg4X21vZHdoZWVsPSIwLjAiIHBvc2l0aW9uRW5hYmxlZD0i
+        MC4wIiBwb3NpdGlvbk1heEFtcFdoZW5DbG9zZT0iMC45OTk5OTk5NDAzOTUzNTUyIiBwb3NpdGlvblJlZmVyZW5jZURpc3RhbmNlPSIwLjA5OTk5OTk5NDAzOTUzNTUy
+        IiBwb3NpdGlvblJvbGxvZmZGYWN0b3I9IjAuMDA5OTk5OTk5Nzc2NDgyNTgyIiBwb3NpdGlvbk9wY29kZUNvbWJvQm94SW5kZXg9IjEuMCIgcG9zaXRpb25PcGNvZGU9
+        IiIgcG9zaXRpb25YU2NhbGU9IjEwMC4wMDAxMjIwNzAzMTI1IiBwb3NpdGlvbllTY2FsZT0iMTAwLjAwMDEyMjA3MDMxMjUiIHBvc2l0aW9uWlNjYWxlPSIxMDAuMDAw
+        MTIyMDcwMzEyNSIgcG9zaXRpb25YT2Zmc2V0PSIwLjAiIHBvc2l0aW9uWU9mZnNldD0iMC4wIiBwb3NpdGlvblpPZmZzZXQ9IjAuMCIvPjwvQ0FCQkFHRV9QUkVTRVRT
+        PgAAAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQABAUJ5cGFzcwABAQMAHQAAAAAAAABKVUNFUHJpdmF0ZURhdGEAAAAAAAAAAA==
+        AEZhY3RvcnkgUHJlc2V0cwAQAAAA
+      >
+      PRESETNAME "Factory Presets"
+      FLOATPOS 573 380 1000 570
+      FXID {C3888281-2E0E-7242-B59F-D1D22DA649A0}
+      WAK 0 0
+    >
+    <ITEM
+      POSITION 13.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {523DDBD2-ED5A-9D49-9815-AEA8A9256D02}
+      IID 326
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 29.5 59
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {44CF23DA-9B3E-7947-8680-F3F4FA03F506}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {78B791A5-675D-E844-B6CC-F26479B9452E}
+        E 17315 b0 40 7f
+        E 242 b0 40 00
+        E 1590 b0 40 7f
+        E 61 b0 40 00
+        E 38369 90 35 4a
+        E 3819 90 37 5b
+        E 57 80 35 00
+        E 3765 90 35 65
+        E 79 80 37 00
+        E 3783 90 37 4b
+        E 46 80 35 00
+        E 1911 90 34 5b
+        E 40 80 37 00
+        E 1768 80 34 00
+        E 42 90 35 54
+        E 14469 80 35 00
+        E 4 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {F10DCBD3-BE3E-B04E-8936-AAA586EE1E66}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 346
+        VELLANE -1 100 0
+        CFGEDITVIEW 25209.505998 0.020348 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 29.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {738DF650-7B2A-D94C-B57D-247EB810E268}
+      IID 334
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 29.5 59
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {A95BAA33-1C40-2648-A6FD-235B42DCD731}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {9555F53D-831B-F54D-9B14-68C5203C9240}
+        E 17315 b0 40 7f
+        E 242 b0 40 00
+        E 1590 b0 40 7f
+        E 61 b0 40 00
+        E 38369 90 35 4a
+        E 3819 90 37 5b
+        E 57 80 35 00
+        E 3765 90 35 65
+        E 79 80 37 00
+        E 3783 90 37 4b
+        E 46 80 35 00
+        E 1911 90 34 5b
+        E 40 80 37 00
+        E 1768 80 34 00
+        E 42 90 35 54
+        E 14469 80 35 00
+        E 4 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {06B9D060-FACA-F147-AF77-1F554E103BDC}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 354
+        VELLANE -1 100 0
+        CFGEDITVIEW 0 0.020348 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 61.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {28A50B4F-F5C5-E34C-8707-95E68DA68DE6}
+      IID 306
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 29.5 59
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {06795B11-226B-C94F-8DAD-9E7B179EF4A0}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {36847926-E006-AA42-B039-F7F7D5DB50A4}
+        E 17315 b0 40 7f
+        E 242 b0 40 00
+        E 1590 b0 40 7f
+        E 61 b0 40 00
+        E 38298 90 35 4a
+        E 3819 90 37 5b
+        E 57 80 35 00
+        E 3832 90 39 65
+        E 12 80 37 00
+        E 3783 90 37 4b
+        E 76 80 39 00
+        E 1881 90 34 5b
+        E 40 80 37 00
+        E 1734 90 35 54
+        E 34 80 34 00
+        E 14586 80 35 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {2B449E36-1D8C-3648-A954-15A21E349C71}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 324
+        VELLANE -1 100 0
+        CFGEDITVIEW 6469.629207 0.002436 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 77.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {2BEC95B9-7A79-8A45-ABA3-C7BA3D5325A2}
+      IID 319
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {57BAD4D8-EB15-A64C-9C3E-C4BB46B9C6C1}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {1BACCA11-EBE0-E847-BB51-9DFC0E9F470C}
+        E 0 80 39 00
+        E 939 90 35 4a
+        E 3764 90 37 65
+        E 25 80 35 00
+        E 3883 90 39 64
+        E 23 80 37 00
+        E 3698 90 37 4e
+        E 33 80 39 00
+        E 1797 90 34 4f
+        E 40 80 37 00
+        E 1985 90 35 52
+        E 87 80 34 00
+        E 14446 80 35 00
+        E 31603 90 3e 5e
+        E 1 90 41 60
+        E 3784 90 43 63
+        E 16 80 41 00
+        E 13 90 40 65
+        E 23 80 3e 00
+        E 3742 90 45 60
+        E 30 90 41 67
+        E 12 80 43 00
+        E 2 80 40 00
+        E 3809 90 43 5c
+        E 19 90 40 52
+        E 11 80 41 00
+        E 4 80 45 00
+        E 1802 80 40 00
+        E 59 90 40 48
+        E 2 90 3c 5b
+        E 14 80 43 00
+        E 1962 80 40 00
+        E 24 90 41 61
+        E 14 80 3c 00
+        E 16 90 3e 5c
+        E 21 d0 05 00
+        E 19 d0 00 00
+        E 14665 80 41 00
+        E 7 80 3e 00
+        E 632 90 3e 5e
+        E 12 90 41 5e
+        E 3763 90 43 59
+        E 38 90 40 5a
+        E 2 80 41 00
+        E 50 80 3e 00
+        E 3832 90 45 5c
+        E 26 90 41 62
+        E 5 80 43 00
+        E 10 80 40 00
+        E 3737 90 43 4e
+        E 6 90 40 58
+        E 5 80 45 00
+        E 35 80 41 00
+        E 1722 80 40 00
+        E 146 80 43 00
+        E 8 90 3c 62
+        E 2 90 40 54
+        E 1948 90 41 58
+        E 7 80 3c 00
+        E 15 90 3e 5b
+        E 2 80 40 00
+        E 14888 80 3e 00
+        E 55 80 41 00
+        E 381 90 41 58
+        E 2 90 3e 59
+        E 3889 90 43 54
+        E 10 80 41 00
+        E 8 90 40 51
+        E 3 80 3e 00
+        E 3733 90 45 53
+        E 10 90 41 5a
+        E 25 80 40 00
+        E 11 80 43 00
+        E 3787 90 47 4d
+        E 9 80 45 00
+        E 18 90 43 49
+        E 33 80 41 00
+        E 1862 80 47 00
+        E 15 90 45 4e
+        E 18 90 48 4d
+        E 42 80 43 00
+        E 1719 80 45 00
+        E 128 90 3e 4e
+        E 54 90 41 4d
+        E 2 80 48 00
+        E 14796 80 3e 00
+        E 101 80 41 00
+        E 486 90 3e 52
+        E 3 90 41 52
+        E 3835 90 43 5d
+        E 28 90 40 58
+        E 11 80 41 00
+        E 14 80 3e 00
+        E 3770 90 41 55
+        E 1 90 45 54
+        E 17 80 40 00
+        E 2 80 43 00
+        E 3750 90 40 4f
+        E 2 90 43 51
+        E 32 80 41 00
+        E 40 80 45 00
+        E 1840 90 3c 4e
+        E 7 80 43 00
+        E 1850 90 41 52
+        E 2 80 40 00
+        E 9 80 3c 00
+        E 18 90 3e 53
+        E 15816 80 41 00
+        E 17 80 3e 00
+        E 19583 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {1F9A0E9C-97F3-8545-879F-6532083646F1}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 339
+        VELLANE -1 100 0
+        CFGEDITVIEW 0 0.016096 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 93.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {B504251C-B221-3A4B-83F5-C2BF2AEACBE4}
+      IID 318
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {347C1614-8565-3742-90DD-8F8BA55B96D2}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {FC173758-252F-2140-84DE-F7D061204ACB}
+        E 914 90 35 50
+        E 3813 90 37 67
+        E 39 80 35 00
+        E 3777 90 39 63
+        E 29 80 37 00
+        E 3813 90 3c 4e
+        E 17 80 39 00
+        E 1768 80 3c 00
+        E 95 90 37 4f
+        E 1859 90 39 54
+        E 163 80 37 00
+        E 14433 80 39 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {29C70213-5B4B-DF42-810B-7A9DAB8AE96A}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 338
+        VELLANE -1 100 0
+        CFGEDITVIEW -2505.114142 0.016096 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 125.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {DF117980-DF29-534D-AC57-EF947F05728B}
+      IID 330
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 29.5 59
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {20E46D8A-BB49-9B40-99A0-4F8E1DFB6115}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {50410709-BC98-9945-ADA5-957758AB7818}
+        E 17315 b0 40 7f
+        E 242 b0 40 00
+        E 1590 b0 40 7f
+        E 61 b0 40 00
+        E 38298 90 35 4a
+        E 3819 90 37 5b
+        E 57 80 35 00
+        E 3832 90 39 65
+        E 12 80 37 00
+        E 3783 90 37 4b
+        E 76 80 39 00
+        E 1881 90 34 5b
+        E 40 80 37 00
+        E 1734 90 35 54
+        E 34 80 34 00
+        E 14586 80 35 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {65783344-86B8-E841-B1E0-A269ADBB9811}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 350
+        VELLANE -1 100 0
+        CFGEDITVIEW 0 0.002436 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 141.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {D33B2BD3-589D-F446-8A81-04F62602CC98}
+      IID 331
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {B624E94F-6F41-9343-9710-22BEBBBE4F84}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {D1608A21-A44A-C641-ABED-A2AB036CDC27}
+        E 0 80 39 00
+        E 939 90 35 4a
+        E 3764 90 37 65
+        E 25 80 35 00
+        E 3883 90 39 64
+        E 23 80 37 00
+        E 3698 90 37 4e
+        E 33 80 39 00
+        E 1797 90 34 4f
+        E 40 80 37 00
+        E 1985 90 35 52
+        E 87 80 34 00
+        E 14446 80 35 00
+        E 31603 90 3e 5e
+        E 1 90 41 60
+        E 3784 90 43 63
+        E 16 80 41 00
+        E 13 90 40 65
+        E 23 80 3e 00
+        E 3742 90 45 60
+        E 30 90 41 67
+        E 12 80 43 00
+        E 2 80 40 00
+        E 3809 90 43 5c
+        E 19 90 40 52
+        E 11 80 41 00
+        E 4 80 45 00
+        E 1802 80 40 00
+        E 59 90 40 48
+        E 2 90 3c 5b
+        E 14 80 43 00
+        E 1962 80 40 00
+        E 24 90 41 61
+        E 14 80 3c 00
+        E 16 90 3e 5c
+        E 21 d0 05 00
+        E 19 d0 00 00
+        E 14665 80 41 00
+        E 7 80 3e 00
+        E 632 90 3e 5e
+        E 12 90 41 5e
+        E 3763 90 43 59
+        E 38 90 40 5a
+        E 2 80 41 00
+        E 50 80 3e 00
+        E 3832 90 45 5c
+        E 26 90 41 62
+        E 5 80 43 00
+        E 10 80 40 00
+        E 3737 90 43 4e
+        E 6 90 40 58
+        E 5 80 45 00
+        E 35 80 41 00
+        E 1722 80 40 00
+        E 146 80 43 00
+        E 8 90 3c 62
+        E 2 90 40 54
+        E 1948 90 41 58
+        E 7 80 3c 00
+        E 15 90 3e 5b
+        E 2 80 40 00
+        E 14888 80 3e 00
+        E 55 80 41 00
+        E 381 90 41 58
+        E 2 90 3e 59
+        E 3889 90 43 54
+        E 10 80 41 00
+        E 8 90 40 51
+        E 3 80 3e 00
+        E 3733 90 45 53
+        E 10 90 41 5a
+        E 25 80 40 00
+        E 11 80 43 00
+        E 3787 90 47 4d
+        E 9 80 45 00
+        E 18 90 43 49
+        E 33 80 41 00
+        E 1862 80 47 00
+        E 15 90 45 4e
+        E 18 90 48 4d
+        E 42 80 43 00
+        E 1719 80 45 00
+        E 128 90 3e 4e
+        E 54 90 41 4d
+        E 2 80 48 00
+        E 14796 80 3e 00
+        E 101 80 41 00
+        E 486 90 3e 52
+        E 3 90 41 52
+        E 3835 90 43 5d
+        E 28 90 40 58
+        E 11 80 41 00
+        E 14 80 3e 00
+        E 3770 90 41 55
+        E 1 90 45 54
+        E 17 80 40 00
+        E 2 80 43 00
+        E 3750 90 40 4f
+        E 2 90 43 51
+        E 32 80 41 00
+        E 40 80 45 00
+        E 1840 90 3c 4e
+        E 7 80 43 00
+        E 1850 90 41 52
+        E 2 80 40 00
+        E 9 80 3c 00
+        E 18 90 3e 53
+        E 15816 80 41 00
+        E 17 80 3e 00
+        E 19583 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {3047100A-7AA3-7641-9ABA-5514EB2A56EA}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 351
+        VELLANE -1 100 0
+        CFGEDITVIEW 0 0.016096 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 157.5
+      SNAPOFFS 0
+      LENGTH 16
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {3C3C83EE-6C41-9C46-A61A-5FE3A2C92735}
+      IID 332
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {9A9A1046-3D3A-2F40-B86B-80D1A6699A07}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {3351894C-43F3-3140-9C7D-5A95F708250E}
+        E 939 90 35 4a
+        E 3764 90 37 65
+        E 25 80 35 00
+        E 3883 90 39 64
+        E 23 80 37 00
+        E 3698 90 37 4e
+        E 33 80 39 00
+        E 1797 90 39 4f
+        E 40 80 37 00
+        E 1985 90 37 52
+        E 87 80 39 00
+        E 14446 80 37 00
+        E 31603 90 3e 5e
+        E 1 90 41 60
+        E 3784 90 43 63
+        E 16 80 41 00
+        E 13 90 40 65
+        E 23 80 3e 00
+        E 3742 90 45 60
+        E 30 90 41 67
+        E 12 80 43 00
+        E 2 80 40 00
+        E 3809 90 43 5c
+        E 19 90 40 52
+        E 11 80 41 00
+        E 4 80 45 00
+        E 1802 80 40 00
+        E 59 90 40 48
+        E 2 90 3c 5b
+        E 14 80 43 00
+        E 1962 80 40 00
+        E 24 90 41 61
+        E 14 80 3c 00
+        E 16 90 3e 5c
+        E 21 d0 05 00
+        E 19 d0 00 00
+        E 14665 80 41 00
+        E 7 80 3e 00
+        E 632 90 3e 5e
+        E 12 90 41 5e
+        E 3763 90 43 59
+        E 38 90 40 5a
+        E 2 80 41 00
+        E 50 80 3e 00
+        E 3832 90 45 5c
+        E 26 90 41 62
+        E 5 80 43 00
+        E 10 80 40 00
+        E 3737 90 43 4e
+        E 6 90 40 58
+        E 5 80 45 00
+        E 35 80 41 00
+        E 1722 80 40 00
+        E 146 80 43 00
+        E 8 90 3c 62
+        E 2 90 40 54
+        E 1948 90 41 58
+        E 7 80 3c 00
+        E 15 90 3e 5b
+        E 2 80 40 00
+        E 14888 80 3e 00
+        E 55 80 41 00
+        E 381 90 41 58
+        E 2 90 3e 59
+        E 3889 90 43 54
+        E 10 80 41 00
+        E 8 90 40 51
+        E 3 80 3e 00
+        E 3733 90 45 53
+        E 10 90 41 5a
+        E 25 80 40 00
+        E 11 80 43 00
+        E 3787 90 47 4d
+        E 9 80 45 00
+        E 18 90 43 49
+        E 33 80 41 00
+        E 1862 80 47 00
+        E 15 90 45 4e
+        E 18 90 48 4d
+        E 42 80 43 00
+        E 1719 80 45 00
+        E 128 90 3e 4e
+        E 54 90 41 4d
+        E 2 80 48 00
+        E 14796 80 3e 00
+        E 101 80 41 00
+        E 486 90 3e 52
+        E 3 90 41 52
+        E 3835 90 43 5d
+        E 28 90 40 58
+        E 11 80 41 00
+        E 14 80 3e 00
+        E 3770 90 41 55
+        E 1 90 45 54
+        E 17 80 40 00
+        E 2 80 43 00
+        E 3750 90 40 4f
+        E 2 90 43 51
+        E 32 80 41 00
+        E 40 80 45 00
+        E 1840 90 3c 4e
+        E 7 80 43 00
+        E 1850 90 41 52
+        E 2 80 40 00
+        E 9 80 3c 00
+        E 18 90 3e 53
+        E 15816 80 41 00
+        E 17 80 3e 00
+        E 19583 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {79206CAC-D4B6-2243-B911-109AB21D376C}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 352
+        VELLANE -1 100 0
+        CFGEDITVIEW 0 0.016096 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+      >
+    >
+    <ITEM
+      POSITION 173.5
+      SNAPOFFS 0
+      LENGTH 20
+      LOOP 1
+      ALLTAKES 0
+      FADEIN 1 0 0 1 0 0 0
+      FADEOUT 1 0 0 1 0 0 0
+      MUTE 0 0
+      SEL 0
+      IGUID {F071FC7E-1F72-DC49-8CED-870A3CB42B56}
+      IID 333
+      NAME "18-10: Rim 1-Recorded MIDI"
+      VOLPAN 1 0 1 -1
+      SOFFS 0 0
+      PLAYRATE 1 1 0 -1 0 0.0025
+      CHANMODE 0
+      GUID {ABAC00C5-56E8-8649-BB9D-B71F59754B38}
+      RECPASS 5
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        CCINTERP 32
+        POOLEDEVTS {E1EAC95E-9E40-DE4D-A6F0-B590013750E2}
+        E 914 90 35 50
+        E 3813 90 37 67
+        E 39 80 35 00
+        E 3777 90 39 63
+        E 29 80 37 00
+        E 3813 90 3c 4e
+        E 17 80 39 00
+        E 1768 80 3c 00
+        E 95 90 37 4f
+        E 1859 90 39 54
+        E 163 80 37 00
+        E 30753 80 39 00
+        E 0 b0 7b 00
+        CCINTERP 32
+        CHASE_CC_TAKEOFFS 1
+        GUID {D25A9F97-5AC7-8647-9104-7B97D1FABDB4}
+        IGNTEMPO 0 120 4 4
+        SRCCOLOR 353
+        VELLANE -1 100 0
+        CFGEDITVIEW -13263.487664 0.003039 48 19 0 -1 0 0 0 0.5
+        KEYSNAP 0
+        TRACKSEL -252
+        EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 0 86 1728 1079 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
       >
     >
   >
@@ -6018,6 +6902,8 @@
     AUXRECV 14 0 0 0 0 0 0 4 4 -1:U 4177951 -1 ''
     AUXRECV 15 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
     AUXRECV 15 0 1.1484393832853 0 0 0 0 4 4 -1:U 4177951 -1 ''
+    AUXRECV 16 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
+    AUXRECV 16 0 1.1484393832853 0 0 0 0 4 4 -1:U 4177951 -1 ''
     MIDIOUT -1
     MAINSEND 0 0
     <FXCHAIN
@@ -6028,11 +6914,11 @@
       BYPASS 0 0 0
       <VST "VST3: BusHead          (CabbageAudio    ) (6ch)" BusHead.vst3 0 "" 131310216{ABCDEF019182FAEB4361626230303033} ""
         iKLTB+5e7f4GAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAAACAAAAAAAAAABgAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAA
-        EAAAAAAAAAAgAAAAAAAAACcBAAABAAAA//8QAA==
-        FwEAAAEAAABWQzIh0gAAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
-        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iMiIgdHJhY2tJbmRleD0iMTAiIHBsdWdpbkluZGV4PSIwIiBwbHVnaW5VdWlkPSI5MDA3YmVmNDlmMzc0ODVmOGJm
-        OWE3MjkxODQwZjEzOSIvPjwvQ0FCQkFHRV9QUkVTRVRTPgAAAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQABAUJ5cGFzcwABAQMAHQAAAAAAAABKVUNFUHJpdmF0ZURhdGEA
-        AAAAAAAAAA==
+        EAAAAAAAAAAgAAAAAAAAACYBAAABAAAA//8QAA==
+        FgEAAAEAAABWQzIh0QAAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
+        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iMiIgdHJhY2tJbmRleD0iOSIgcGx1Z2luSW5kZXg9IjAiIHBsdWdpblV1aWQ9IjkwMDdiZWY0OWYzNzQ4NWY4YmY5
+        YTcyOTE4NDBmMTM5Ii8+PC9DQUJCQUdFX1BSRVNFVFM+AAAAAAAAAAAASlVDRVByaXZhdGVEYXRhAAEBQnlwYXNzAAEBAwAdAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQAA
+        AAAAAAAA
         AEZhY3RvcnkgUHJlc2V0cwAQAAAA
       >
       PRESETNAME "Factory Presets"
@@ -6078,8 +6964,8 @@
     FX 1
     TRACKID {63E5B392-0533-4446-AD46-E347E98D1B2B}
     PERF 0
-    AUXRECV 16 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
-    AUXRECV 16 0 1 0 0 0 0 4 4 -1:U 4177951 -1 ''
+    AUXRECV 17 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
+    AUXRECV 17 0 1 0 0 0 0 4 4 -1:U 4177951 -1 ''
     MIDIOUT -1
     MAINSEND 0 0
     <FXCHAIN
@@ -6092,7 +6978,7 @@
         ja3TDu5e7f4GAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAAACAAAAAAAAAABgAAAAEAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAgAAAAAAAAA
         EAAAAAAAAAAgAAAAAAAAACYBAAABAAAA//8QAA==
         FgEAAAEAAABWQzIh0QAAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxDQUJCQUdFX1BSRVNFVFM+PFBSRVNFVDAgUHJlc2V0TmFtZT0iQ0FC
-        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iIiB0cmFja0luZGV4PSIxMSIgcGx1Z2luSW5kZXg9IjAiIHBsdWdpblV1aWQ9IjkwMDdiZWY0OWYzNzQ4NWY4YmY5
+        QkFHRV9QUkVTRVRTIDAiIGluc3RhbmNlTmFtZT0iIiB0cmFja0luZGV4PSIxMCIgcGx1Z2luSW5kZXg9IjAiIHBsdWdpblV1aWQ9IjkwMDdiZWY0OWYzNzQ4NWY4YmY5
         YTcyOTE4NDBmMTM5Ii8+PC9DQUJCQUdFX1BSRVNFVFM+AAAAAAAAAAAASlVDRVByaXZhdGVEYXRhAAEBQnlwYXNzAAEBAwAdAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQAA
         AAAAAAAA
         AEZhY3RvcnkgUHJlc2V0cwAQAAAA
@@ -6125,8 +7011,8 @@
     FX 1
     TRACKID {ED3BBFC5-F01A-7943-A293-98C96281065A}
     PERF 0
-    AUXRECV 17 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
-    AUXRECV 17 0 1 0 0 0 0 4 0 -1:U 4177951 -1 ''
+    AUXRECV 18 0 1 0 0 0 0 2048 0 -1:U 4177951 -1 ''
+    AUXRECV 18 0 1 0 0 0 0 4 0 -1:U 4177951 -1 ''
     MIDIOUT -1
     MAINSEND 1 0
   >
@@ -6167,7 +7053,7 @@
         PSIwLjAiLz48L0NBQkJBR0VfUFJFU0VUUz4AAAAAAAAAAABKVUNFUHJpdmF0ZURhdGEAAQFCeXBhc3MAAQEDAB0AAAAAAAAASlVDRVByaXZhdGVEYXRhAAAAAAAAAAA=
         AAAQAAAA
       >
-      FLOAT 1228 87 172 430
+      FLOATPOS 1228 87 172 430
       FXID {120B7919-FA90-0F4B-8E0D-53DE4BF4FF8E}
       WAK 0 0
     >
