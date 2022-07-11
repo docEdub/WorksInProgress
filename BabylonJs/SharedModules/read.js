@@ -2,7 +2,7 @@
 /// This is a node.js script that returns the value of the shared module object property given in the CLI arguments.
 /// The given argument should be string containing an object and property name joined by a dot ...
 /// Example call:
-///     const value = read('Rim1Mesh.audioPositionsString')
+///     const value = read('Rim1HiArpMesh.audioPositionsString')
 /// --------------------------------------------------------------------------------------------------------------------
 
 const SharedModules = require('.')

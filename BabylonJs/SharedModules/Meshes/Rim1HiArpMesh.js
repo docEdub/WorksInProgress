@@ -1,10 +1,10 @@
 
-class Rim1Mesh {
-    segments = 240
-    rows = 6
-    segmentRadius = 300
-    segmentCenterY = 250
-    rowAngle = 1 // degrees
+class Rim1HiArpMesh {
+    segments = 960
+    rows = 3
+    segmentRadius = 960
+    segmentCenterY = 500
+    rowAngle = 0.1 // degrees
 
     get audioPositions() {
         this.#init()
@@ -124,4 +124,4 @@ class Rim1Mesh {
     }
 }
 
-module.exports = new Rim1Mesh
+module.exports = new Rim1HiArpMesh

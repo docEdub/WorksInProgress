@@ -1,7 +1,7 @@
 import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
-import Rim1Mesh from "./SharedModules/Meshes/Rim1Mesh"
+import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 
 //#region Non-playground setup
 
@@ -2178,13 +2178,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         _initVertexData = () => {
             this._updateNormals()
             let vertexData = new BABYLON.VertexData()
-            vertexData.positions = Rim1Mesh.vertexPositions
-            vertexData.indices = Rim1Mesh.vertexIndices
+            vertexData.positions = Rim1HiArpMesh.vertexPositions
+            vertexData.indices = Rim1HiArpMesh.vertexIndices
             vertexData.applyToMesh(this._mesh, true)
         }
 
         _updateNormals = () => {
-            BABYLON.VertexData.ComputeNormals(Rim1Mesh.vertexPositions, Rim1Mesh.vertexIndices, this._normals)
+            BABYLON.VertexData.ComputeNormals(Rim1HiArpMesh.vertexPositions, Rim1HiArpMesh.vertexIndices, this._normals)
         }
 
         constructor() {
@@ -2546,13 +2546,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
     }
     javascriptScoreLines.push(
-        { trackId: rim1TrackId, parameters: [`MeshSegmentCount`, `${Rim1Mesh.segments}`]},
-        { trackId: rim1TrackId, parameters: [`MeshRowCount`, `${Rim1Mesh.rows}`]}
+        { trackId: rim1TrackId, parameters: [`MeshSegmentCount`, `${Rim1HiArpMesh.segments}`]},
+        { trackId: rim1TrackId, parameters: [`MeshRowCount`, `${Rim1HiArpMesh.rows}`]}
     )
     const initRim1TrackPositions = () => {
-        const count = Rim1Mesh.segments * Rim1Mesh.rows
+        const count = Rim1HiArpMesh.segments * Rim1HiArpMesh.rows
         const stride = 3 // xyz
-        const positions = Rim1Mesh.audioPositions
+        const positions = Rim1HiArpMesh.audioPositions
 
         for (let i = 0, j = 0; i < count; i++, j += stride) {
             const x = positions[j].toFixed(3)
@@ -7800,9 +7800,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giSaw1RimSynth_PlaybackReverbAdjustment = 1.5
     giSaw1RimSynth_NoteNumberLfoAmp = 0.333
     giSaw1RimSynth_NoteIndex[] init 1
-    giSaw1RimSynth_MeshSegmentCount init ${Rim1Mesh.segments}
-    giSaw1RimSynth_MeshRowCount init ${Rim1Mesh.rows}
-    giSaw1RimSynth_MeshAudioPositions[] init ${Rim1Mesh.audioPositionsString}
+    giSaw1RimSynth_MeshSegmentCount init ${Rim1HiArpMesh.segments}
+    giSaw1RimSynth_MeshRowCount init ${Rim1HiArpMesh.rows}
+    giSaw1RimSynth_MeshAudioPositions[] init ${Rim1HiArpMesh.audioPositionsString}
     #ifdef IS_GENERATING_JSON
     setPluginUuid(9, 0, "0e3635ef4c2c431b9aede90e4ca361a0")
     instr Json_13
