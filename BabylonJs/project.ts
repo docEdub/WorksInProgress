@@ -2,6 +2,8 @@ import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
+import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
+import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
 
 //#region Non-playground setup
 
@@ -2198,8 +2200,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             material.wireframe = true
             this._mesh.material = this._material = material
             this._mesh.isPickable = false
-            this._mesh.scaling.setAll(2)
-            this._mesh.position.y = 200
 
             this._initVertexData()
         }
@@ -2237,6 +2237,88 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     world.add(Rim1AnimationSystem)
+
+    //#endregion
+
+    //#region class Rim2AnimationComponent
+
+    class Rim2AnimationComponent extends Component {
+        static singleton = null
+
+        _normals = []
+        _mesh = new BABYLON.Mesh(Rim2AnimationComponent.name, scene)
+        _material = null
+
+        _initVertexData = () => {
+            this._updateNormals()
+            let vertexData = new BABYLON.VertexData()
+            vertexData.positions = Rim2HiLineMesh.vertexPositions
+            vertexData.indices = Rim2HiLineMesh.vertexIndices
+            vertexData.applyToMesh(this._mesh, true)
+        }
+
+        _updateNormals = () => {
+            BABYLON.VertexData.ComputeNormals(Rim2HiLineMesh.vertexPositions, Rim2HiLineMesh.vertexIndices, this._normals)
+        }
+
+        constructor() {
+            super()
+            Rim2AnimationComponent.singleton = this
+
+            const material = new BABYLON.StandardMaterial('', scene)
+            material.backFaceCulling = false
+            material.diffuseColor = material.specularColor.set(0.01, 0.01, 0.01)
+            material.emissiveColor.set(0.1, 0.1, 0.1)
+            material.wireframe = true
+            this._mesh.material = this._material = material
+            this._mesh.isPickable = false
+
+            this._initVertexData()
+        }
+    }
+
+    new Rim2AnimationComponent
+
+    //#endregion
+
+    //#region class Rim3AnimationComponent
+
+    class Rim3AnimationComponent extends Component {
+        static singleton = null
+
+        _normals = []
+        _mesh = new BABYLON.Mesh(Rim3AnimationComponent.name, scene)
+        _material = null
+
+        _initVertexData = () => {
+            this._updateNormals()
+            let vertexData = new BABYLON.VertexData()
+            vertexData.positions = Rim3LoLineMesh.vertexPositions
+            vertexData.indices = Rim3LoLineMesh.vertexIndices
+            vertexData.applyToMesh(this._mesh, true)
+        }
+
+        _updateNormals = () => {
+            BABYLON.VertexData.ComputeNormals(Rim3LoLineMesh.vertexPositions, Rim3LoLineMesh.vertexIndices, this._normals)
+        }
+
+        constructor() {
+            super()
+            Rim3AnimationComponent.singleton = this
+
+            const material = new BABYLON.StandardMaterial('', scene)
+            material.backFaceCulling = false
+            material.diffuseColor = material.specularColor.set(0.01, 0.01, 0.01)
+            material.emissiveColor.set(0.1, 0.1, 0.1)
+            material.wireframe = true
+            this._mesh.material = this._material = material
+            this._mesh.isPickable = false
+
+            this._initVertexData()
+        }
+    }
+
+    new Rim3AnimationComponent
 
     //#endregion
 

@@ -1,9 +1,11 @@
 
 class Rim3LoLineMesh {
+    scaling = 2
+    y = 200
     segments = 240
     rows = 6
-    segmentRadius = 300
-    segmentCenterY = 0
+    segmentRadius = 400
+    segmentCenterY = 250
     rowAngle = 1 // degrees
 
     get audioPositions() {
@@ -61,26 +63,29 @@ class Rim3LoLineMesh {
                 const positionX = Math.cos(segmentAngle) * positionRadius
                 const positionZ = Math.sin(segmentAngle) * positionRadius
                 this._private.vertexPositions.push(
-                    positionX,
-                    positionY,
-                    positionZ
+                    this.scaling * positionX,
+                    this.scaling * positionY + this.y,
+                    this.scaling * positionZ
                 )
             }
 
             // Calculate audio positions.
             if (rowIndex < this.rows) {
                 const rowCenterAngle = rowAngle + (this.rowAngle / 2) / 180 * Math.PI
-                const rowCenterY = Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY
+                const rowCenterY =
+                    this.scaling
+                    * (Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY)
+                    + this.y
                 for (let segmentIndex = 0; segmentIndex < segmentsD2; segmentIndex++) {
                     const segmentCenterAngleA = segmentIndex * segmentAngleIncrement + segmentAngleOffset
                     const positionXA = Math.cos(segmentCenterAngleA) * positionRadius
                     const positionZA = Math.sin(segmentCenterAngleA) * positionRadius
-                    this._private.audioPositions.push(positionXA, rowCenterY, positionZA)
+                    this._private.audioPositions.push(this.scaling * positionXA, rowCenterY, this.scaling * positionZA)
 
                     const segmentCenterAngleB = segmentCenterAngleA + segmentAngleIncrement / 2
                     const positionXB = Math.cos(segmentCenterAngleB) * positionRadius
                     const positionZB = Math.sin(segmentCenterAngleB) * positionRadius
-                    this._private.audioPositions.push(positionXB, rowCenterY, positionZB)
+                    this._private.audioPositions.push(this.scaling * positionXB, rowCenterY, this.scaling * positionZB)
                 }
             }
         }
