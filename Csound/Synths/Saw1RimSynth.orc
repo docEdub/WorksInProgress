@@ -94,7 +94,7 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
         turnoff
     endin
 
-    instr ${InstrumentName}_GeometryJavascriptOscHandler
+    instr ${InstrumentName}_MeshJavascriptOscHandler
         if (gi_oscHandle == -1) then
             // Restart this instrument to see if the OSC handle has been set, yet.
             log_i_trace("OSC not initialized. Restarting instrument in 1 second.")
@@ -148,7 +148,7 @@ gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
             od
         endif
     endin
-    scoreline_i("i \"${InstrumentName}_GeometryJavascriptOscHandler\" 0 -1")
+    scoreline_i("i \"${InstrumentName}_MeshJavascriptOscHandler\" 0 -1")
 #endif
 
 #endif // #ifndef ${InstrumentName}_orc__include_guard
