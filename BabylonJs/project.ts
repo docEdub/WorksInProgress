@@ -42,7 +42,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -2362,7 +2362,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region World track setup
 
     const beaconTrackId = 'fd575f03378047af835c19ef4f7d5991'
-    const rim1TrackId = '0e3635ef4c2c431b9aede90e4ca361a0'
+    const rim1TrackId = 'd51fb1d5a0104857a7f61b218692743c'
 
     const createTrack = (id, json, options) => {
         const entity = new Entity
