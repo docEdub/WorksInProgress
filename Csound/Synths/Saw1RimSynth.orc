@@ -18,7 +18,11 @@ ${CSOUND_INCLUDE} "json.orc"
 
 gi${InstrumentName}_PlaybackVolumeAdjustment = 0.9
 gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
-gi${InstrumentName}_NoteNumberLfoAmp = 0.333
+gi${InstrumentName}_NoteNumber1 = 89 // F
+gi${InstrumentName}_NoteNumber2 = 91 // G
+gi${InstrumentName}_NoteNumber3 = 93 // A
+gi${InstrumentName}_RimPositionCount = 20
+gi${InstrumentName}_RimPositionOffset = 0
 
 gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
@@ -93,24 +97,63 @@ instr INSTRUMENT_ID
         if (CC_VALUE_k(positionEnabled) == true) then
             #include "Position_kXYZ.orc"
 
-            kX = 0
-            kY = 0
-            kZ = 0
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = 0
 
-            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
-            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
-                aDistance,
-                kPositionReferenceDistance,
-                kPositionRolloffFactor)
-            aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            iMeshRow = 0
+            if (iNoteNumber == gi${InstrumentName}_NoteNumber2) then
+                iMeshRow = 1
+            elseif (iNoteNumber == gi${InstrumentName}_NoteNumber3) then
+                iMeshRow = 2
+            else
+                gi${InstrumentName}_RimPositionOffset += 2
+            endif
+            log_i_debug("iNoteNumber = %d, iMeshRow = %d", iNoteNumber, iMeshRow)
 
-            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            iRimIndexCount = lenarray(gi${InstrumentName}_MeshAudioPositions) / 3
+            iIndex = (((iMeshRow * gi${InstrumentName}_MeshSegmentCount) % iRimIndexCount) * 3) + 1
+            iY = gi${InstrumentName}_MeshAudioPositions[iIndex]
+            kY = iY
+
+            iRimPositionOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
+            kRimPositionIndex = 0
+            kRimPositionIndexWithOffset = 0
+            kPrinted init false
+            while (kRimPositionIndex < gi${InstrumentName}_RimPositionCount) do
+                kIndex = \
+                    kRimPositionIndexWithOffset \
+                    + gi${InstrumentName}_RimPositionOffset \
+                    + (iMeshRow * gi${InstrumentName}_MeshSegmentCount) \
+                    + iMeshRow
+                kIndex = kIndex % iRimIndexCount
+                kIndex *= 3
+                kX = gi${InstrumentName}_MeshAudioPositions[kIndex]
+                kZ = gi${InstrumentName}_MeshAudioPositions[kIndex + 2]
+
+                if (kPrinted == false) then
+                    log_k_debug("Position[%d] = [%.3f, %.3f, %.3f]", kRimPositionIndex, kX, kY, kZ)
+                endif
+
+                aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+                aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+                    aDistance,
+                    kPositionReferenceDistance,
+                    kPositionRolloffFactor)
+                aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+                AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+                a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+                a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+                a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+                a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+
+                kRimPositionIndex += 1
+                kRimPositionIndexWithOffset += iRimPositionOffset
+            od
+            kPrinted = true
         else
-            // Disabled.
+            // Position disabled.
             a1 = 0
             a2 = 0
             a3 = 0
