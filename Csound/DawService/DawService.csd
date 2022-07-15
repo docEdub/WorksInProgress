@@ -24,6 +24,8 @@ gSPresetUuidOrder[] = fillarray( \
     "ab018f191c70470f98ac3becb76e6d13", /* Bass 1+2: Edited */ \
     "b0ba6f144fac4f668ba6981c691277d6", /* Bass 1+2: Distant */ \
     "d51fb1d5a0104857a7f61b218692743c", /* Rim 1: Hi Arp */ \
+    "14afc0dff693459fb6fc521bcf3db0bc", /* Rim 2: Hi Line */ \
+    "5006b8ea266f4bf9aba92ff5badfea3e", /* Rim 3: Lo Line */ \
     "f6341a2a81244ea79dd0e1486eb93386"  /* UDO Triggers */ \
 )
 
