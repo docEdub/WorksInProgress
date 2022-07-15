@@ -2627,27 +2627,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             name: '10 Rim 1'
         }
     }
-    javascriptScoreLines.push(
-        { trackId: rim1TrackId, parameters: [`MeshSegmentCount`, `${Rim1HiArpMesh.segments}`]},
-        { trackId: rim1TrackId, parameters: [`MeshRowCount`, `${Rim1HiArpMesh.rows}`]}
-    )
-    const initRim1TrackPositions = () => {
-        const count = Rim1HiArpMesh.segments * Rim1HiArpMesh.rows
-        const stride = 3 // xyz
-        const positions = Rim1HiArpMesh.audioPositions
-
-        for (let i = 0, j = 0; i < count; i++, j += stride) {
-            const x = positions[j].toFixed(3)
-            const y = positions[j + 1].toFixed(3)
-            const z = positions[j + 2].toFixed(3)
-
-            javascriptScoreLines.push({
-                trackId: rim1TrackId,
-                parameters: [`MeshAudioPosition`, `${i}/${x}/${y}/${z}`]
-            })
-        }
-    }
-    initRim1TrackPositions()
 
     //#endregion
 
