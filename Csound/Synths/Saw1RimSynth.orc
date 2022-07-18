@@ -192,7 +192,7 @@ instr INSTRUMENT_ID
                 INSTRUMENT_PLUGIN_UUID,
                 giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX])
             iOnTime = times()
-            SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
+            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
             if (lastcycle() == true) then
                 fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
                 scoreline(sprintfk("i \"Json_CloseFile\" 0 -1 \"%s\"", SJsonFile), 1)
