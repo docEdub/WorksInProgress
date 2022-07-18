@@ -2640,7 +2640,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     --nosound
     </CsOptions>
     <CsInstruments>
-    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 0 /* dummy */ )
+    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 2, /* instr 13 -- 09: Rim 1: Hi Arp */ 2, /* instr 14 -- 10: Rim 2: Hi Line */ 2, /* instr 15 -- 11: Rim 3: Lo Line */ 0 /* dummy */ )
     #ifndef OUTPUT_CHANNEL_COUNT
     #define OUTPUT_CHANNEL_COUNT #2#
     #end
@@ -5159,8 +5159,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     ga_masterSignals = a_masterSignals
     event_i("i", 3, 0, -1)
-    event_i("i", 14, 1, -1)
-    event_i("i", 18, 1, -1)
+    event_i("i", 17, 1, -1)
+    event_i("i", 21, 1, -1)
     turnoff
     endin
     instr 3
@@ -7778,17 +7778,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endop
     gSCcValueDefaults_Saw1RimSynth[] init giCcCount_Saw1RimSynth
     giCcValueDefaults_Saw1RimSynth[] init giCcCount_Saw1RimSynth
-    gSCcValues_Saw1RimSynth[][] init 1, giCcCount_Saw1RimSynth
-    giCcValues_Saw1RimSynth[][] init 1, giCcCount_Saw1RimSynth
-    gkCcValues_Saw1RimSynth[][] init 1, giCcCount_Saw1RimSynth
-    gkCcSyncTypes_Saw1RimSynth[][] init 1, giCcCount_Saw1RimSynth
+    gSCcValues_Saw1RimSynth[][] init 3, giCcCount_Saw1RimSynth
+    giCcValues_Saw1RimSynth[][] init 3, giCcCount_Saw1RimSynth
+    gkCcValues_Saw1RimSynth[][] init 3, giCcCount_Saw1RimSynth
+    gkCcSyncTypes_Saw1RimSynth[][] init 3, giCcCount_Saw1RimSynth
     instr Saw1RimSynth_InitializeCcValues
     iI = 0
     while (iI < giCcCount_Saw1RimSynth) do
     SType = gSCcInfo_Saw1RimSynth[iI][$CC_INFO_TYPE]
     SValue = gSCcInfo_Saw1RimSynth[iI][$CC_INFO_VALUE]
     iJ = 0
-    while (iJ < 1) do
+    while (iJ < 3) do
     iValue = -1
     if (strcmp(SType, "string") == 0) then
     gSCcValueDefaults_Saw1RimSynth[iI] = SValue
@@ -7817,7 +7817,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     SValue = gSCcInfo_Saw1RimSynth[kI][$CC_INFO_VALUE]
     SSyncType = gSCcInfo_Saw1RimSynth[kI][$CC_INFO_SYNC_TYPE]
     kJ = 0
-    while (kJ < 1) do
+    while (kJ < 3) do
     kValue = -1
     if (strcmpk(SType, "bool") == 0) then
     if (strcmpk(SValue, "false") == 0) then
@@ -7859,15 +7859,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     event_i("i", "Saw1RimSynth_CreateCcIndexes", 0, -1)
     giSaw1RimSynth_PlaybackVolumeAdjustment = 0.9
     giSaw1RimSynth_PlaybackReverbAdjustment = 1.5
-    giSaw1RimSynth_NoteNumberLfoAmp = 0.333
-    giSaw1RimSynth_NoteIndex[] init 1
+    giSaw1RimSynth_NoteNumber1 = 89
+    giSaw1RimSynth_NoteNumber2 = 91
+    giSaw1RimSynth_NoteNumber3 = 93
+    giSaw1RimSynth_RimPositionCount = 20
+    giSaw1RimSynth_RimPositionOffset = 0
+    giSaw1RimSynth_NoteIndex[] init 3
     giSaw1RimSynth_MeshSegmentCount init ${Rim1HiArpMesh.segments}
     giSaw1RimSynth_MeshRowCount init ${Rim1HiArpMesh.rows}
     giSaw1RimSynth_MeshAudioPositions[] init ${Rim1HiArpMesh.audioPositionsString}
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(9, 0, "0e3635ef4c2c431b9aede90e4ca361a0")
+    setPluginUuid(9, 0, "d51fb1d5a0104857a7f61b218692743c")
     instr Json_13
-    SJsonFile = sprintf("json/%s.0.json", "0e3635ef4c2c431b9aede90e4ca361a0")
+    SJsonFile = sprintf("json/%s.0.json", "d51fb1d5a0104857a7f61b218692743c")
     fprints(SJsonFile, "{")
     fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "-"))
     fprints(SJsonFile, "}")
@@ -7924,20 +7928,49 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kX += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionXOffset], iPositionLagTime)
     kY += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionYOffset], iPositionLagTime)
     kZ += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionZOffset], iPositionLagTime)
-    kX = 0
-    kY = 0
-    kZ = 0
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    iMeshRow = 0
+    if (iNoteNumber == giSaw1RimSynth_NoteNumber2) then
+    iMeshRow = 1
+    elseif (iNoteNumber == giSaw1RimSynth_NoteNumber3) then
+    iMeshRow = 2
+    else
+    giSaw1RimSynth_RimPositionOffset += 2
+    endif
+    iRimIndexCount = lenarray(giSaw1RimSynth_MeshAudioPositions) / 3
+    iIndex = (((iMeshRow * giSaw1RimSynth_MeshSegmentCount) % iRimIndexCount) * 3) + 1
+    iY = giSaw1RimSynth_MeshAudioPositions[iIndex]
+    kY = iY
+    iRimPositionOffset = giSaw1RimSynth_MeshSegmentCount / giSaw1RimSynth_RimPositionCount
+    kRimPositionIndex = 0
+    kRimPositionIndexWithOffset = 0
+    kPrinted init 0
+    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
+    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * giSaw1RimSynth_MeshSegmentCount) + iMeshRow
+    kIndex = kIndex % iRimIndexCount
+    kIndex *= 3
+    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
+    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
+    if (kPrinted == 0) then
+    endif
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
     kPositionReferenceDistance,
     kPositionRolloffFactor)
-    aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
     AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
-    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
-    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
-    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    kRimPositionIndex += 1
+    kRimPositionIndexWithOffset += iRimPositionOffset
+    od
+    kPrinted = 1
     else
     a1 = 0
     a2 = 0
@@ -7956,7 +7989,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     giSaw1RimSynth_NoteIndex[0] = giSaw1RimSynth_NoteIndex[0] + 1
     SJsonFile = sprintf("json/%s.%d.json",
-    "0e3635ef4c2c431b9aede90e4ca361a0",
+    "d51fb1d5a0104857a7f61b218692743c",
     giSaw1RimSynth_NoteIndex[0])
     iOnTime = times()
     SJsonData = sprintf("{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
@@ -7977,6 +8010,520 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     turnoff
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 13))
+    #ifdef IS_GENERATING_JSON
+    setPluginUuid(10, 0, "14afc0dff693459fb6fc521bcf3db0bc")
+    instr Json_14
+    SJsonFile = sprintf("json/%s.0.json", "14afc0dff693459fb6fc521bcf3db0bc")
+    fprints(SJsonFile, "{")
+    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "-"))
+    fprints(SJsonFile, "}")
+    turnoff
+    endin
+    #end
+    instr 14
+    iEventType = p4
+    if (iEventType == 4) then
+    iCcIndex = p5
+    iCcValue = p6
+    if (strcmp(gSCcInfo_Saw1RimSynth[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+    gSCcValues_Saw1RimSynth[1][iCcIndex] = strget(iCcValue)
+    else
+    giCcValues_Saw1RimSynth[1][iCcIndex] = iCcValue
+    gkCcValues_Saw1RimSynth[1][iCcIndex] = iCcValue
+    endif
+    turnoff
+    elseif (iEventType == 1) then
+    iNoteNumber = p5
+    iVelocity = p6
+    iOrcInstanceIndex = 1
+    aOut = 0
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    kAmp init 0.333 * (iVelocity / 127)
+    aOut = vco2(kAmp, cpsmidinn(iNoteNumber), 8)
+    iEnvelopeA = 0.01
+    iEnvelopeD = 0.1
+    iEnvelopeS = 0.667
+    iEnvelopeR = 0.1
+    iEnvelopeS_decayTime = 0.333 + 33 * (1 - iNoteNumber / 127)
+    iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
+    aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
+    iEnvelopeS_decayEndTime = iEnvelopeS_decayStartTime + iEnvelopeS_decayTime
+    aEnvelopeS_decayAmount init 1
+    kTime = time_k()
+    if (kTime >= iEnvelopeS_decayStartTime && kTime < iEnvelopeS_decayEndTime) then
+    aEnvelopeS_decayAmount = expon(1, iEnvelopeS_decayTime, iEnvelopeS_decayAmountMinimum)
+    endif
+    aOut *= aEnvelopeS_decayAmount
+    if (gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionEnabled] == 1) then
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionRolloffFactor], iPositionLagTime)
+    kX, kY, kZ dEd_position gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionOpcodeComboBoxIndex]
+    kX *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionZOffset], iPositionLagTime)
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    iMeshRow = 0
+    if (iNoteNumber == giSaw1RimSynth_NoteNumber2) then
+    iMeshRow = 1
+    elseif (iNoteNumber == giSaw1RimSynth_NoteNumber3) then
+    iMeshRow = 2
+    else
+    giSaw1RimSynth_RimPositionOffset += 2
+    endif
+    iRimIndexCount = lenarray(giSaw1RimSynth_MeshAudioPositions) / 3
+    iIndex = (((iMeshRow * giSaw1RimSynth_MeshSegmentCount) % iRimIndexCount) * 3) + 1
+    iY = giSaw1RimSynth_MeshAudioPositions[iIndex]
+    kY = iY
+    iRimPositionOffset = giSaw1RimSynth_MeshSegmentCount / giSaw1RimSynth_RimPositionCount
+    kRimPositionIndex = 0
+    kRimPositionIndexWithOffset = 0
+    kPrinted init 0
+    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
+    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * giSaw1RimSynth_MeshSegmentCount) + iMeshRow
+    kIndex = kIndex % iRimIndexCount
+    kIndex *= 3
+    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
+    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
+    if (kPrinted == 0) then
+    endif
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+    aDistance,
+    kPositionReferenceDistance,
+    kPositionRolloffFactor)
+    aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    kRimPositionIndex += 1
+    kRimPositionIndexWithOffset += iRimPositionOffset
+    od
+    kPrinted = 1
+    else
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = aOut
+    endif
+    gaInstrumentSignals[10][0] = a1
+    gaInstrumentSignals[10][1] = a2
+    gaInstrumentSignals[10][2] = a3
+    gaInstrumentSignals[10][3] = a4
+    gaInstrumentSignals[10][4] = aOut
+    gaInstrumentSignals[10][5] = aOut
+    #ifdef IS_GENERATING_JSON
+    if (giSaw1RimSynth_NoteIndex[1] == 0) then
+    scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_14"))
+    endif
+    giSaw1RimSynth_NoteIndex[1] = giSaw1RimSynth_NoteIndex[1] + 1
+    SJsonFile = sprintf("json/%s.%d.json",
+    "14afc0dff693459fb6fc521bcf3db0bc",
+    giSaw1RimSynth_NoteIndex[1])
+    iOnTime = times()
+    SJsonData = sprintf("{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
+    if (lastcycle() == 1) then
+    fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
+    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
+    endif
+    #end
+    endif
+    end:
+    endin
+    instr Preallocate_14
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[10]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 14, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 14))
+    #ifdef IS_GENERATING_JSON
+    setPluginUuid(11, 0, "5006b8ea266f4bf9aba92ff5badfea3e")
+    instr Json_15
+    SJsonFile = sprintf("json/%s.0.json", "5006b8ea266f4bf9aba92ff5badfea3e")
+    fprints(SJsonFile, "{")
+    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "-"))
+    fprints(SJsonFile, "}")
+    turnoff
+    endin
+    #end
+    instr 15
+    iEventType = p4
+    if (iEventType == 4) then
+    iCcIndex = p5
+    iCcValue = p6
+    if (strcmp(gSCcInfo_Saw1RimSynth[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+    gSCcValues_Saw1RimSynth[2][iCcIndex] = strget(iCcValue)
+    else
+    giCcValues_Saw1RimSynth[2][iCcIndex] = iCcValue
+    gkCcValues_Saw1RimSynth[2][iCcIndex] = iCcValue
+    endif
+    turnoff
+    elseif (iEventType == 1) then
+    iNoteNumber = p5
+    iVelocity = p6
+    iOrcInstanceIndex = 2
+    aOut = 0
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    kAmp init 0.333 * (iVelocity / 127)
+    aOut = vco2(kAmp, cpsmidinn(iNoteNumber), 8)
+    iEnvelopeA = 0.01
+    iEnvelopeD = 0.1
+    iEnvelopeS = 0.667
+    iEnvelopeR = 0.1
+    iEnvelopeS_decayTime = 0.333 + 33 * (1 - iNoteNumber / 127)
+    iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
+    aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
+    iEnvelopeS_decayEndTime = iEnvelopeS_decayStartTime + iEnvelopeS_decayTime
+    aEnvelopeS_decayAmount init 1
+    kTime = time_k()
+    if (kTime >= iEnvelopeS_decayStartTime && kTime < iEnvelopeS_decayEndTime) then
+    aEnvelopeS_decayAmount = expon(1, iEnvelopeS_decayTime, iEnvelopeS_decayAmountMinimum)
+    endif
+    aOut *= aEnvelopeS_decayAmount
+    if (gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionEnabled] == 1) then
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionRolloffFactor], iPositionLagTime)
+    kX, kY, kZ dEd_position gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionOpcodeComboBoxIndex]
+    kX *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_Saw1RimSynth[iOrcInstanceIndex][giCc_Saw1RimSynth_positionZOffset], iPositionLagTime)
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    iMeshRow = 0
+    if (iNoteNumber == giSaw1RimSynth_NoteNumber2) then
+    iMeshRow = 1
+    elseif (iNoteNumber == giSaw1RimSynth_NoteNumber3) then
+    iMeshRow = 2
+    else
+    giSaw1RimSynth_RimPositionOffset += 2
+    endif
+    iRimIndexCount = lenarray(giSaw1RimSynth_MeshAudioPositions) / 3
+    iIndex = (((iMeshRow * giSaw1RimSynth_MeshSegmentCount) % iRimIndexCount) * 3) + 1
+    iY = giSaw1RimSynth_MeshAudioPositions[iIndex]
+    kY = iY
+    iRimPositionOffset = giSaw1RimSynth_MeshSegmentCount / giSaw1RimSynth_RimPositionCount
+    kRimPositionIndex = 0
+    kRimPositionIndexWithOffset = 0
+    kPrinted init 0
+    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
+    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * giSaw1RimSynth_MeshSegmentCount) + iMeshRow
+    kIndex = kIndex % iRimIndexCount
+    kIndex *= 3
+    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
+    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
+    if (kPrinted == 0) then
+    endif
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+    aDistance,
+    kPositionReferenceDistance,
+    kPositionRolloffFactor)
+    aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+    kRimPositionIndex += 1
+    kRimPositionIndexWithOffset += iRimPositionOffset
+    od
+    kPrinted = 1
+    else
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    a4 = aOut
+    endif
+    gaInstrumentSignals[11][0] = a1
+    gaInstrumentSignals[11][1] = a2
+    gaInstrumentSignals[11][2] = a3
+    gaInstrumentSignals[11][3] = a4
+    gaInstrumentSignals[11][4] = aOut
+    gaInstrumentSignals[11][5] = aOut
+    #ifdef IS_GENERATING_JSON
+    if (giSaw1RimSynth_NoteIndex[2] == 0) then
+    scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_15"))
+    endif
+    giSaw1RimSynth_NoteIndex[2] = giSaw1RimSynth_NoteIndex[2] + 1
+    SJsonFile = sprintf("json/%s.%d.json",
+    "5006b8ea266f4bf9aba92ff5badfea3e",
+    giSaw1RimSynth_NoteIndex[2])
+    iOnTime = times()
+    SJsonData = sprintf("{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
+    if (lastcycle() == 1) then
+    fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
+    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
+    endif
+    #end
+    endif
+    end:
+    endin
+    instr Preallocate_15
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[11]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 15, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 15))
+    #ifndef ADSR_LINSEGR_UDO_ORC
+    #define ADSR_LINSEGR_UDO_ORC ##
+    opcode adsr_linsegr, a, iiii
+    iA, iD, iS, iR xin
+    iA = max(0.000001, iA)
+    iD = max(0.000001, iD)
+    iR = max(0.000001, iR)
+    aOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+    xout aOut
+    endop
+    opcode adsr_linsegr, k, kkkk
+    iA, iD, iS, iR xin
+    iA = max(0.000001, iA)
+    iD = max(0.000001, iD)
+    iR = max(0.000001, iR)
+    kOut = linsegr(0, iA, 1, iD, iS, 1, iS, iR, 0)
+    xout kOut
+    endop
+    #end
+    gSCcInfo_TriangleUdoTriggerSynth[] = fillarray( \\
+    \\
+    "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced",
+    \\
+    "", "", "", "")
+    #define gSCcInfo_TriangleUdoTriggerSynth_Count #52#
+    #define CC_INFO_CHANNEL #0#
+    #define CC_INFO_TYPE #1#
+    #define CC_INFO_VALUE #2#
+    #define CC_INFO_SYNC_TYPE #3#
+    #define CC_NO_SYNC #0#
+    #define CC_SYNC_TO_CHANNEL #1#
+    #define CC_CHANNEL_NAME(channel) #gSCcInfo_TriangleUdoTriggerSynth[giCc_TriangleUdoTriggerSynth_$channel][$CC_INFO_CHANNEL]#
+    #ifdef gSCcInfo_TriangleUdoTriggerSynth_Count
+    if (lenarray(gSCcInfo_TriangleUdoTriggerSynth) == $gSCcInfo_TriangleUdoTriggerSynth_Count) then
+    giCcCount_TriangleUdoTriggerSynth = (lenarray(gSCcInfo_TriangleUdoTriggerSynth) / 4) - 1
+    reshapearray(gSCcInfo_TriangleUdoTriggerSynth, giCcCount_TriangleUdoTriggerSynth + 1, 4)
+    endif
+    #else
+    giCcCount_TriangleUdoTriggerSynth = (lenarray(gSCcInfo_TriangleUdoTriggerSynth) / 4) - 1
+    reshapearray(gSCcInfo_TriangleUdoTriggerSynth, giCcCount_TriangleUdoTriggerSynth + 1, 4)
+    #end
+    opcode ccIndex_TriangleUdoTriggerSynth, i, S
+    SChannel xin
+    kgoto end
+    iI = 0
+    while (iI < giCcCount_TriangleUdoTriggerSynth) do
+    if (strcmp(gSCcInfo_TriangleUdoTriggerSynth[iI][$CC_INFO_CHANNEL], SChannel) == 0) igoto end
+    iI += 1
+    od
+    iI = -1
+    end:
+    xout iI
+    endop
+    gSCcValueDefaults_TriangleUdoTriggerSynth[] init giCcCount_TriangleUdoTriggerSynth
+    giCcValueDefaults_TriangleUdoTriggerSynth[] init giCcCount_TriangleUdoTriggerSynth
+    gSCcValues_TriangleUdoTriggerSynth[][] init 1, giCcCount_TriangleUdoTriggerSynth
+    giCcValues_TriangleUdoTriggerSynth[][] init 1, giCcCount_TriangleUdoTriggerSynth
+    gkCcValues_TriangleUdoTriggerSynth[][] init 1, giCcCount_TriangleUdoTriggerSynth
+    gkCcSyncTypes_TriangleUdoTriggerSynth[][] init 1, giCcCount_TriangleUdoTriggerSynth
+    instr TriangleUdoTriggerSynth_InitializeCcValues
+    iI = 0
+    while (iI < giCcCount_TriangleUdoTriggerSynth) do
+    SType = gSCcInfo_TriangleUdoTriggerSynth[iI][$CC_INFO_TYPE]
+    SValue = gSCcInfo_TriangleUdoTriggerSynth[iI][$CC_INFO_VALUE]
+    iJ = 0
+    while (iJ < 1) do
+    iValue = -1
+    if (strcmp(SType, "string") == 0) then
+    gSCcValueDefaults_TriangleUdoTriggerSynth[iI] = SValue
+    gSCcValues_TriangleUdoTriggerSynth[iJ][iI] = SValue
+    else
+    if (strcmp(SType, "bool") == 0) then
+    if (strcmp(SValue, "false") == 0) then
+    iValue = 0
+    else
+    iValue = 1
+    endif
+    elseif (strcmp(SType, "number") == 0 && strcmp(SValue, "") != 0) then
+    iValue = strtod(SValue)
+    endif
+    giCcValueDefaults_TriangleUdoTriggerSynth[iI] = iValue
+    giCcValues_TriangleUdoTriggerSynth[iJ][iI] = iValue
+    endif
+    iJ += 1
+    od
+    iI += 1
+    od
+    igoto end
+    kI = 0
+    while (kI < giCcCount_TriangleUdoTriggerSynth) do
+    SType = gSCcInfo_TriangleUdoTriggerSynth[kI][$CC_INFO_TYPE]
+    SValue = gSCcInfo_TriangleUdoTriggerSynth[kI][$CC_INFO_VALUE]
+    SSyncType = gSCcInfo_TriangleUdoTriggerSynth[kI][$CC_INFO_SYNC_TYPE]
+    kJ = 0
+    while (kJ < 1) do
+    kValue = -1
+    if (strcmpk(SType, "bool") == 0) then
+    if (strcmpk(SValue, "false") == 0) then
+    kValue = 0
+    else
+    kValue = 1
+    endif
+    elseif (strcmpk(SType, "number") == 0 && strcmpk(SValue, "") != 0) then
+    kValue = strtodk(SValue)
+    endif
+    gkCcValues_TriangleUdoTriggerSynth[kJ][kI] = kValue
+    gkCcSyncTypes_TriangleUdoTriggerSynth[kJ][kI] = $CC_NO_SYNC
+    if (strcmpk(SSyncType, "synced") == 0) then
+    gkCcSyncTypes_TriangleUdoTriggerSynth[kJ][kI] = $CC_SYNC_TO_CHANNEL
+    endif
+    kJ += 1
+    od
+    kI += 1
+    od
+    turnoff
+    end:
+    endin
+    event_i("i", "TriangleUdoTriggerSynth_InitializeCcValues", 0, -1)
+    instr TriangleUdoTriggerSynth_CreateCcIndexes
+    giCc_TriangleUdoTriggerSynth_positionEnabled init ccIndex_TriangleUdoTriggerSynth("positionEnabled")
+    giCc_TriangleUdoTriggerSynth_positionMaxAmpWhenClose init ccIndex_TriangleUdoTriggerSynth("positionMaxAmpWhenClose")
+    giCc_TriangleUdoTriggerSynth_positionReferenceDistance init ccIndex_TriangleUdoTriggerSynth("positionReferenceDistance")
+    giCc_TriangleUdoTriggerSynth_positionRolloffFactor init ccIndex_TriangleUdoTriggerSynth("positionRolloffFactor")
+    giCc_TriangleUdoTriggerSynth_positionOpcodeComboBoxIndex init ccIndex_TriangleUdoTriggerSynth("positionOpcodeComboBoxIndex")
+    giCc_TriangleUdoTriggerSynth_positionOpcode init ccIndex_TriangleUdoTriggerSynth("positionOpcode")
+    giCc_TriangleUdoTriggerSynth_positionXScale init ccIndex_TriangleUdoTriggerSynth("positionXScale")
+    giCc_TriangleUdoTriggerSynth_positionYScale init ccIndex_TriangleUdoTriggerSynth("positionYScale")
+    giCc_TriangleUdoTriggerSynth_positionZScale init ccIndex_TriangleUdoTriggerSynth("positionZScale")
+    giCc_TriangleUdoTriggerSynth_positionXOffset init ccIndex_TriangleUdoTriggerSynth("positionXOffset")
+    giCc_TriangleUdoTriggerSynth_positionYOffset init ccIndex_TriangleUdoTriggerSynth("positionYOffset")
+    giCc_TriangleUdoTriggerSynth_positionZOffset init ccIndex_TriangleUdoTriggerSynth("positionZOffset")
+    turnoff
+    endin
+    event_i("i", "TriangleUdoTriggerSynth_CreateCcIndexes", 0, -1)
+    giTriangle3MonoSynth_PlaybackVolumeAdjustment = 0.9
+    giTriangle3MonoSynth_PlaybackReverbAdjustment = 1.5
+    giTriangle3MonoSynth_NoteIndex[] init 1
+    gkTriangle3MonoSynth_NoteNumber[] init 1
+    opcode dEd_TriangleUdo1, a, 0
+    xtratim(5)
+    iAmp = 0.4
+    iCps = cpsmidinn:i(60)
+    aOut = vco2(iAmp, iCps, 12)
+    xout aOut
+    endop
+    #ifdef IS_GENERATING_JSON
+    setPluginUuid(12, 0, "f6341a2a81244ea79dd0e1486eb93386")
+    instr Json_16
+    SJsonFile = sprintf("json/%s.0.json", "f6341a2a81244ea79dd0e1486eb93386")
+    fprints(SJsonFile, "{")
+    fprints(SJsonFile, sprintf("\\"instanceName\\":\\"%s\\"", "-"))
+    fprints(SJsonFile, "}")
+    turnoff
+    endin
+    #end
+    instr 16
+    iOrcInstanceIndex = 0
+    iEventType = p4
+    if (iEventType == 4) then
+    iCcIndex = p5
+    iCcValue = p6
+    if (strcmp(gSCcInfo_TriangleUdoTriggerSynth[iCcIndex][$CC_INFO_TYPE], "string") == 0) then
+    gSCcValues_TriangleUdoTriggerSynth[0][iCcIndex] = strget(iCcValue)
+    else
+    giCcValues_TriangleUdoTriggerSynth[0][iCcIndex] = iCcValue
+    gkCcValues_TriangleUdoTriggerSynth[0][iCcIndex] = iCcValue
+    endif
+    turnoff
+    elseif (iEventType == 1) then
+    iNoteNumber = p5
+    iVelocity = p6
+    aOut init 0
+    if (iNoteNumber == 60) then
+    aOut = dEd_TriangleUdo1()
+    endif
+    if (giCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionEnabled] == 1) then
+    iPositionLagTime = 2
+    kPositionMaxAmpWhenClose = lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionMaxAmpWhenClose], iPositionLagTime)
+    kPositionReferenceDistance = lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionReferenceDistance], iPositionLagTime)
+    kPositionRolloffFactor = lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionRolloffFactor], iPositionLagTime)
+    kX, kY, kZ dEd_position gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionOpcodeComboBoxIndex]
+    kX *= lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionXScale], iPositionLagTime)
+    kY *= lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionYScale], iPositionLagTime)
+    kZ *= lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionZScale], iPositionLagTime)
+    kX += lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionXOffset], iPositionLagTime)
+    kY += lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionYOffset], iPositionLagTime)
+    kZ += lag:k(gkCcValues_TriangleUdoTriggerSynth[iOrcInstanceIndex][giCc_TriangleUdoTriggerSynth_positionZOffset], iPositionLagTime)
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
+    aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
+    else
+    a1 = aOut
+    a2 = 0
+    a3 = 0
+    a4 = 0
+    endif
+    gaInstrumentSignals[12][0] = a1
+    gaInstrumentSignals[12][1] = a2
+    gaInstrumentSignals[12][2] = a3
+    gaInstrumentSignals[12][3] = a4
+    gaInstrumentSignals[12][4] = aOut
+    gaInstrumentSignals[12][5] = aOut
+    #ifdef IS_GENERATING_JSON
+    if (giTR_808_NoteIndex[0] == 0) then
+    scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_16"))
+    endif
+    giTR_808_NoteIndex[0] = giTR_808_NoteIndex[0] + 1
+    SJsonFile = sprintf("json/%s.%d.json",
+    "f6341a2a81244ea79dd0e1486eb93386",
+    giTR_808_NoteIndex[0])
+    fprints(SJsonFile, "{\\"noteOn\\":{\\"time\\":%.3f}}", times())
+    ficlose(SJsonFile)
+    #end
+    endif
+    end:
+    endin
+    instr Preallocate_16
+    ii = 0
+    while (ii < giPresetUuidPreallocationCount[12]) do
+    scoreline_i(sprintf("i %d.%.3d 0 .1 %d 63 63", 16, ii, 3))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 16))
     gSCcInfo_Reverb[] = fillarray( \\
     \\
     "enabled", "bool", "false", "synced", \\
@@ -8090,7 +8637,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giCc_Reverb_volume init ccIndex_Reverb("volume")
     endin
     event_i("i", "Reverb_CreateCcIndexes", 0, -1)
-    instr 16
+    instr 19
     #ifdef IS_GENERATING_JSON
     goto end
     #end
@@ -8108,10 +8655,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kI = 0
     kJ = 4
     while (kI < 2) do
-    if (10 < gi_instrumentCount) then
-    aIn[kI] = gaInstrumentSignals[10][kJ]
+    if (13 < gi_instrumentCount) then
+    aIn[kI] = gaInstrumentSignals[13][kJ]
     else
-    iAuxTrackIndex = 10 - gi_instrumentCount
+    iAuxTrackIndex = 13 - gi_instrumentCount
     aIn[kI] = ga_auxSignals[iAuxTrackIndex][kJ]
     endif
     kJ += 1
@@ -8135,7 +8682,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kI = 0
     kJ = 4
     while (kI < 2) do
-    iAuxTrackIndex = 10
+    iAuxTrackIndex = 13
     if (iAuxTrackIndex >= gi_instrumentCount) then
     iAuxTrackIndex -= gi_instrumentCount
     endif
@@ -8146,16 +8693,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     end:
     endin
-    instr Preallocate_16
+    instr Preallocate_19
     ii = 0
     while (ii < 4) do
-    scoreline_i(sprintf("i %d.%.3d 0 .1 0 0 0", 16, ii))
+    scoreline_i(sprintf("i %d.%.3d 0 .1 0 0 0", 19, ii))
     ii += 1
     od
     turnoff
     endin
-    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 16))
-    instr 14
+    scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 19))
+    instr 17
     kAux = 0
     while (kAux < gi_auxCount) do
     kInstrument = 0
@@ -8172,7 +8719,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kAux += 1
     od
     endin
-    instr 15
+    instr 18
     k_aux = p4 - gi_auxIndexOffset
     k_track = p5 - gi_instrumentIndexOffset
     k_channel = p6
@@ -8180,14 +8727,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_auxVolumes[k_aux][k_track][k_channel] = k_volume
     turnoff
     endin
-    instr 17
+    instr 20
     k_track = p4 - gi_instrumentIndexOffset
     k_channel = p5
     k_volume = p6
     ga_masterVolumes[k_track][k_channel] = k_volume
     turnoff
     endin
-    instr 18
+    instr 21
     kChannel = 0
     while (kChannel < $INTERNAL_CHANNEL_COUNT) do
     ga_masterSignals[kChannel] = 0
@@ -8304,810 +8851,959 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef IS_MIXDOWN
     i "SetMixdownListenerPosition" 1 -1
     #end
-    i 2 0 -1 10 0 1 10
-    i 16.1 0 -1 1 0 0
-    i 15 0.004 1 10 0 0 0.51
-    i 15 0.004 1 10 0 1 0.51
-    i 15 0.004 1 10 0 2 0.51
-    i 15 0.004 1 10 0 3 0.51
-    i 15 0.004 1 10 0 4 0.18
-    i 15 0.004 1 10 0 5 0.18
-    i 15 0.004 1 10 1 0 0.32
-    i 15 0.004 1 10 1 1 0.32
-    i 15 0.004 1 10 1 2 0.32
-    i 15 0.004 1 10 1 3 0.32
-    i 15 0.004 1 10 1 4 0.11
-    i 15 0.004 1 10 1 5 0.11
-    i 15 0.004 1 10 2 0 0.32
-    i 15 0.004 1 10 2 1 0.32
-    i 15 0.004 1 10 2 2 0.32
-    i 15 0.004 1 10 2 3 0.32
-    i 15 0.004 1 10 2 4 0.11
-    i 15 0.004 1 10 2 5 0.11
-    i 15 0.004 1 10 3 0 0.10
-    i 15 0.004 1 10 3 1 0.10
-    i 15 0.004 1 10 3 2 0.10
-    i 15 0.004 1 10 3 3 0.10
-    i 15 0.004 1 10 3 4 0.09
-    i 15 0.004 1 10 3 5 0.09
-    i 15 0.004 1 10 4 0 0.42
-    i 15 0.004 1 10 4 1 0.42
-    i 15 0.004 1 10 4 2 0.42
-    i 15 0.004 1 10 4 3 0.42
-    i 15 0.004 1 10 4 4 0.45
-    i 15 0.004 1 10 4 5 0.45
-    i 15 0.004 1 10 5 0 0.23
-    i 15 0.004 1 10 5 1 0.23
-    i 15 0.004 1 10 5 2 0.23
-    i 15 0.004 1 10 5 3 0.23
-    i 15 0.004 1 10 5 4 0.24
-    i 15 0.004 1 10 5 5 0.24
-    i 15 0.004 1 10 6 0 0.19
-    i 15 0.004 1 10 6 1 0.19
-    i 15 0.004 1 10 6 2 0.19
-    i 15 0.004 1 10 6 3 0.19
-    i 15 0.004 1 10 6 4 0.04
-    i 15 0.004 1 10 6 5 0.04
-    i 15 0.004 1 10 7 0 0.50
-    i 15 0.004 1 10 7 1 0.50
-    i 15 0.004 1 10 7 2 0.50
-    i 15 0.004 1 10 7 3 0.50
-    i 15 0.004 1 10 8 0 0.67
-    i 15 0.004 1 10 8 1 0.67
-    i 15 0.004 1 10 8 2 0.67
-    i 15 0.004 1 10 8 3 0.67
-    i 15 0.004 1 10 8 4 0.64
-    i 15 0.004 1 10 8 5 0.64
-    i 15 0.004 1 10 9 0 1.00
-    i 15 0.004 1 10 9 1 1.00
-    i 15 0.004 1 10 9 2 1.00
-    i 15 0.004 1 10 9 3 1.00
-    i 15 0.004 1 10 9 4 1.15
-    i 15 0.004 1 10 9 5 1.15
-    i 17 0.004 1 10 0 0.71
-    i 17 0.004 1 10 1 0.71
-    i 17 0.004 1 10 2 0.71
-    i 17 0.004 1 10 3 0.71
-    i 17 0.004 1 10 4 0.71
-    i 17 0.004 1 10 5 0.71
+    i 2 0 -1 13 0 1 13
+    i 19.1 0 -1 1 0 0
+    i 18 0.004 1 13 0 0 0.51
+    i 18 0.004 1 13 0 1 0.51
+    i 18 0.004 1 13 0 2 0.51
+    i 18 0.004 1 13 0 3 0.51
+    i 18 0.004 1 13 0 4 0.18
+    i 18 0.004 1 13 0 5 0.18
+    i 18 0.004 1 13 1 0 0.32
+    i 18 0.004 1 13 1 1 0.32
+    i 18 0.004 1 13 1 2 0.32
+    i 18 0.004 1 13 1 3 0.32
+    i 18 0.004 1 13 1 4 0.11
+    i 18 0.004 1 13 1 5 0.11
+    i 18 0.004 1 13 2 0 0.32
+    i 18 0.004 1 13 2 1 0.32
+    i 18 0.004 1 13 2 2 0.32
+    i 18 0.004 1 13 2 3 0.32
+    i 18 0.004 1 13 2 4 0.11
+    i 18 0.004 1 13 2 5 0.11
+    i 18 0.004 1 13 3 0 0.10
+    i 18 0.004 1 13 3 1 0.10
+    i 18 0.004 1 13 3 2 0.10
+    i 18 0.004 1 13 3 3 0.10
+    i 18 0.004 1 13 3 4 0.09
+    i 18 0.004 1 13 3 5 0.09
+    i 18 0.004 1 13 4 0 0.42
+    i 18 0.004 1 13 4 1 0.42
+    i 18 0.004 1 13 4 2 0.42
+    i 18 0.004 1 13 4 3 0.42
+    i 18 0.004 1 13 4 4 0.45
+    i 18 0.004 1 13 4 5 0.45
+    i 18 0.004 1 13 5 0 0.12
+    i 18 0.004 1 13 5 1 0.12
+    i 18 0.004 1 13 5 2 0.12
+    i 18 0.004 1 13 5 3 0.12
+    i 18 0.004 1 13 5 4 0.13
+    i 18 0.004 1 13 5 5 0.13
+    i 18 0.004 1 13 6 0 0.13
+    i 18 0.004 1 13 6 1 0.13
+    i 18 0.004 1 13 6 2 0.13
+    i 18 0.004 1 13 6 3 0.13
+    i 18 0.004 1 13 6 4 0.03
+    i 18 0.004 1 13 6 5 0.03
+    i 18 0.004 1 13 7 0 0.50
+    i 18 0.004 1 13 7 1 0.50
+    i 18 0.004 1 13 7 2 0.50
+    i 18 0.004 1 13 7 3 0.50
+    i 18 0.004 1 13 8 0 0.67
+    i 18 0.004 1 13 8 1 0.67
+    i 18 0.004 1 13 8 2 0.67
+    i 18 0.004 1 13 8 3 0.67
+    i 18 0.004 1 13 8 4 0.64
+    i 18 0.004 1 13 8 5 0.64
+    i 18 0.004 1 13 9 0 0.12
+    i 18 0.004 1 13 9 1 0.12
+    i 18 0.004 1 13 9 2 0.12
+    i 18 0.004 1 13 9 3 0.12
+    i 18 0.004 1 13 9 4 0.05
+    i 18 0.004 1 13 9 5 0.05
+    i 18 0.004 1 13 10 0 0.51
+    i 18 0.004 1 13 10 1 0.51
+    i 18 0.004 1 13 10 2 0.51
+    i 18 0.004 1 13 10 3 0.51
+    i 18 0.004 1 13 10 4 0.58
+    i 18 0.004 1 13 10 5 0.58
+    i 18 0.004 1 13 11 0 0.51
+    i 18 0.004 1 13 11 1 0.51
+    i 18 0.004 1 13 11 2 0.51
+    i 18 0.004 1 13 11 3 0.51
+    i 18 0.004 1 13 11 4 0.58
+    i 18 0.004 1 13 11 5 0.58
+    i 18 0.004 1 13 12 0 0.56
+    i 18 0.004 1 13 12 1 0.56
+    i 18 0.004 1 13 12 2 0.56
+    i 18 0.004 1 13 12 3 0.56
+    i 20 0.004 1 13 0 0.71
+    i 20 0.004 1 13 1 0.71
+    i 20 0.004 1 13 2 0.71
+    i 20 0.004 1 13 3 0.71
+    i 20 0.004 1 13 4 0.71
+    i 20 0.004 1 13 5 0.71
     i "EndOfInstrumentAllocations" 3 -1
     i "SendStartupMessage" 0 1
     b $SCORE_START_DELAY
     i "SendStartupMessage" 0 -1
-    i 7 0.01 1 4 2 100.00
-    i 8 0.01 1 4 2 100.00
-    i 7 0.01 1 4 3 1.00
-    i 10 0.01 1 4 2 50.00
-    i 13 0.01 1 4 0 0.00
-    i 5 0.01 1 4 2 50.00
-    i 10 0.01 1 4 3 1.00
-    i 8 0.01 1 4 3 1.00
-    i 6 0.01 1 4 2 50.00
     i 12 0.01 1 4 0 0.00
-    i 13 0.01 1 4 4 1.00
     i 12 0.01 1 4 2 100.00
-    i 5 0.01 1 4 3 1.00
-    i 10 0.01 1 4 4 1.00
-    i 4 0.01 1 4 2 100.00
-    i 7 0.01 1 4 4 1.00
-    i 13 0.01 1 4 5 ""
-    i 6 0.01 1 4 3 1.00
-    i 8 0.01 1 4 4 3.00
-    i 10 0.01 1 4 5 "<none>"
-    i 5 0.01 1 4 4 1.00
     i 12 0.01 1 4 4 1.00
-    i 8 0.01 1 4 5 "random_XZ"
-    i 7 0.01 1 4 5 "<none>"
-    i 4 0.01 1 4 3 1.00
-    i 11 0.01 1 4 2 100.00
-    i 10 0.01 1 4 11 300.00
-    i 6 0.01 1 4 4 1.00
-    i 5 0.01 1 4 5 "<none>"
     i 12 0.01 1 4 5 ""
-    i 11 0.01 1 4 3 0.25
-    i 8 0.01 1 4 10 20.00
-    i 9 0.01 1 4 2 100.00
-    i 11 0.01 1 4 4 1.00
+    i 13 0.01 1 4 4 1.00
+    i 13 0.01 1 4 5 ""
+    i 14 0.01 1 4 0 0.00
+    i 16 0.01 1 4 0 0.00
+    i 15 0.01 1 4 0 0.00
+    i 14 0.01 1 4 4 1.00
+    i 16 0.01 1 4 4 1.00
+    i 14 0.01 1 4 5 ""
+    i 15 0.01 1 4 4 1.00
+    i 6 0.01 1 4 2 50.00
+    i 15 0.01 1 4 5 ""
+    i 7 0.01 1 4 2 100.00
+    i 6 0.01 1 4 3 1.00
+    i 16 0.01 1 4 5 ""
+    i 6 0.01 1 4 4 1.00
+    i 7 0.01 1 4 3 1.00
     i 6 0.01 1 4 5 "<none>"
-    i 9 0.01 1 4 3 1.00
-    i 4 0.01 1 4 4 1.00
-    i 11 0.01 1 4 5 ""
-    i 4 0.01 1 4 5 "<none>"
-    i 9 0.01 1 4 4 3.00
-    i 5 0.01 1 4 9 -92.72
+    i 7 0.01 1 4 4 1.00
+    i 7 0.01 1 4 5 "<none>"
     i 6 0.01 1 4 9 92.72
-    i 4 0.01 1 4 11 -107.09
-    i 9 0.01 1 4 5 "random_XZ"
     i 6 0.01 1 4 11 53.54
+    i 4 0.01 1 4 2 100.00
+    i 4 0.01 1 4 3 1.00
+    i 4 0.01 1 4 4 1.00
+    i 4 0.01 1 4 5 "<none>"
+    i 4 0.01 1 4 11 -107.09
+    i 8 0.01 1 4 2 100.00
+    i 8 0.01 1 4 3 1.00
+    i 8 0.01 1 4 4 3.00
+    i 8 0.01 1 4 5 "random_XZ"
+    i 10 0.01 1 4 2 50.00
+    i 5 0.01 1 4 2 50.00
+    i 9 0.01 1 4 2 100.00
+    i 5 0.01 1 4 3 1.00
+    i 10 0.01 1 4 3 1.00
+    i 9 0.01 1 4 3 1.00
+    i 8 0.01 1 4 10 20.00
+    i 5 0.01 1 4 4 1.00
+    i 11 0.01 1 4 2 100.00
+    i 9 0.01 1 4 4 3.00
+    i 10 0.01 1 4 4 1.00
+    i 11 0.01 1 4 3 0.25
+    i 9 0.01 1 4 5 "random_XZ"
+    i 11 0.01 1 4 4 1.00
     i 9 0.01 1 4 6 50.00
+    i 10 0.01 1 4 5 "<none>"
+    i 5 0.01 1 4 5 "<none>"
     i 9 0.01 1 4 8 50.00
+    i 10 0.01 1 4 11 300.00
+    i 5 0.01 1 4 9 -92.72
     i 9 0.01 1 4 10 60.00
+    i 11 0.01 1 4 5 ""
     i 5 0.01 1 4 11 53.54
-    i 16 0.01 1 4 0 1.00
-    i 16 0.01 1 4 1 0.95
-    i 16 0.01 1 4 2 14160.00
-    i 16 0.01 1 4 5 1.00
-    i 8.078 2.000 0.001 1 49 127
-    i 8.079 2.125 0.001 1 49 127
-    i 8.080 2.249 0.001 1 49 127
-    i 8.081 2.374 0.001 1 49 127
-    i 8.082 2.499 0.001 1 49 127
-    i 8.083 2.624 0.001 1 49 127
-    i 8.084 2.749 0.001 1 49 127
-    i 8.085 2.875 0.001 1 49 127
-    i 10.009 3.000 -1.000 1 72 127
-    i 8.086 3.000 0.001 1 49 127
-    i 10.010 3.000 -1.000 1 76 127
-    i 8.087 3.125 0.001 1 49 127
-    i 8.088 3.249 0.001 1 49 127
-    i 8.089 3.374 0.001 1 49 127
-    i 8.090 3.499 0.001 1 49 127
-    i 8.091 3.624 0.001 1 49 127
-    i 8.092 3.749 0.001 1 49 127
-    i 8.093 3.875 0.001 1 49 113
-    i -10.009 4.000 0
-    i 8.094 4.000 0.001 1 49 127
-    i -10.010 4.000 0
-    i 8.095 4.124 0.001 1 49 127
-    i 8.096 4.249 0.001 1 49 127
-    i 8.097 4.374 0.001 1 49 127
-    i 8.098 4.499 0.001 1 49 127
-    i 8.099 4.624 0.001 1 49 127
-    i 8.100 4.750 0.001 1 49 127
-    i 8.101 4.875 0.001 1 49 127
-    i 8.102 5.000 0.001 1 49 127
-    i 10.011 5.000 -1.000 1 72 127
-    i 10.012 5.000 -1.000 1 76 127
-    i 8.103 5.124 0.001 1 49 127
-    i 8.104 5.249 0.001 1 49 127
-    i 8.105 5.374 0.001 1 49 127
-    i 8.106 5.499 0.001 1 49 127
-    i 8.107 5.624 0.001 1 49 127
-    i 8.108 5.750 0.001 1 49 127
-    i 8.109 5.875 0.001 1 49 113
-    i 8.110 5.999 0.001 1 49 127
-    i -10.011 5.999 0
-    i -10.012 5.999 0
-    i 4.006 5.999 0.001 1 37 127
-    i 8.111 6.124 0.001 1 49 127
-    i 8.112 6.249 0.001 1 49 127
-    i 8.113 6.374 0.001 1 49 127
-    i 7.005 6.499 0.001 1 39 127
-    i 8.114 6.499 0.001 1 49 127
-    i 8.115 6.625 0.001 1 49 127
-    i 8.116 6.750 0.001 1 49 127
-    i 8.117 6.875 0.001 1 49 127
-    i 4.007 6.999 0.001 1 37 127
-    i 8.118 6.999 0.001 1 49 127
-    i 10.013 6.999 -1.000 1 72 127
-    i 10.014 6.999 -1.000 1 76 127
-    i 8.119 7.124 0.001 1 49 127
-    i 8.120 7.249 0.001 1 49 127
-    i 8.121 7.374 0.001 1 49 127
-    i 8.122 7.499 0.001 1 49 127
-    i 7.006 7.499 0.001 1 39 127
-    i 8.123 7.625 0.001 1 49 127
-    i 8.124 7.750 0.001 1 49 127
-    i 8.125 7.874 0.001 1 49 113
-    i -10.013 7.999 0
-    i -10.014 7.999 0
-    i 4.008 7.999 0.001 1 37 127
-    i 8.126 7.999 0.001 1 49 127
-    i 8.127 8.124 0.001 1 49 127
-    i 8.128 8.249 0.001 1 49 127
-    i 8.129 8.374 0.001 1 49 127
-    i 8.130 8.500 0.001 1 49 127
-    i 7.007 8.500 0.001 1 39 127
-    i 8.131 8.625 0.001 1 49 127
-    i 8.132 8.750 0.001 1 49 127
-    i 8.133 8.874 0.001 1 49 127
-    i 4.009 8.999 0.001 1 37 127
-    i 8.134 8.999 0.001 1 49 127
-    i 10.015 8.999 -1.000 1 72 127
-    i 10.016 8.999 -1.000 1 76 127
-    i 8.135 9.124 0.001 1 49 127
-    i 8.136 9.249 0.001 1 49 127
-    i 8.137 9.374 0.001 1 49 127
-    i 7.008 9.500 0.001 1 39 127
-    i 8.138 9.500 0.001 1 49 127
-    i 8.139 9.625 0.001 1 49 127
-    i 8.140 9.749 0.001 1 49 127
-    i 8.141 9.874 0.001 1 49 113
-    i 8.142 9.999 0.001 1 49 127
-    i -10.015 9.999 0
-    i -10.016 9.999 0
-    i 4.010 9.999 0.001 1 37 127
-    i 8.143 10.124 0.001 1 49 127
-    i 8.144 10.249 0.001 1 49 127
-    i 8.145 10.375 0.001 1 49 127
-    i 7.009 10.500 0.001 1 39 127
-    i 8.146 10.500 0.001 1 49 127
-    i 8.147 10.625 0.001 1 49 127
-    i 8.148 10.749 0.001 1 49 127
-    i 8.149 10.874 0.001 1 49 127
-    i 4.011 10.999 0.001 1 37 127
-    i 8.150 10.999 0.001 1 49 127
-    i 10.017 10.999 -1.000 1 72 127
-    i 10.018 10.999 -1.000 1 76 127
-    i 8.151 11.124 0.001 1 49 127
-    i 8.152 11.249 0.001 1 49 127
-    i 8.153 11.375 0.001 1 49 127
-    i 8.154 11.500 0.001 1 49 127
-    i 7.010 11.500 0.001 1 39 127
-    i 8.155 11.624 0.001 1 49 127
-    i 8.156 11.749 0.001 1 49 127
-    i 8.157 11.874 0.001 1 49 113
-    i 4.012 11.999 0.001 1 37 127
-    i 8.158 11.999 0.001 1 49 127
-    i -10.017 11.999 0
-    i -10.018 11.999 0
-    i 8.159 12.124 0.001 1 49 127
-    i 8.160 12.250 0.001 1 49 127
-    i 8.161 12.375 0.001 1 49 127
-    i 7.011 12.500 0.001 1 39 127
-    i 8.162 12.500 0.001 1 49 127
-    i 8.163 12.624 0.001 1 49 127
-    i 8.164 12.749 0.001 1 49 127
-    i 8.165 12.874 0.001 1 49 127
-    i 4.013 12.999 0.001 1 37 127
-    i 8.166 12.999 0.001 1 49 127
-    i 10.019 12.999 -1.000 1 72 127
-    i 10.020 12.999 -1.000 1 76 127
-    i 8.167 13.124 0.001 1 49 127
-    i 8.168 13.250 0.001 1 49 127
-    i 8.169 13.375 0.001 1 49 127
-    i 7.012 13.500 0.001 1 39 127
-    i 8.170 13.500 0.001 1 49 127
-    i 8.171 13.624 0.001 1 49 127
-    i 8.172 13.749 0.001 1 49 127
-    i 8.173 13.874 0.001 1 49 113
-    i 4.014 13.999 0.001 1 37 127
-    i 8.174 13.999 0.001 1 49 127
-    i -10.019 13.999 0
-    i -10.020 13.999 0
+    i 19 0.01 1 4 0 1.00
+    i 19 0.01 1 4 1 0.95
+    i 19 0.01 1 4 2 14160.00
+    i 19 0.01 1 4 5 1.00
+    i 8.037 2.000 0.001 1 49 127
+    i 8.038 2.125 0.001 1 49 127
+    i 8.039 2.249 0.001 1 49 127
+    i 8.040 2.374 0.001 1 49 127
+    i 8.041 2.499 0.001 1 49 127
+    i 8.042 2.624 0.001 1 49 127
+    i 8.043 2.749 0.001 1 49 127
+    i 8.044 2.875 0.001 1 49 127
+    i 8.045 3.000 0.001 1 49 127
+    i 10.005 3.000 -1.000 1 72 127
+    i 10.006 3.000 -1.000 1 76 127
+    i 8.046 3.125 0.001 1 49 127
+    i 8.047 3.249 0.001 1 49 127
+    i 8.048 3.374 0.001 1 49 127
+    i 8.049 3.499 0.001 1 49 127
+    i 8.050 3.624 0.001 1 49 127
+    i 8.051 3.749 0.001 1 49 127
+    i 8.052 3.875 0.001 1 49 113
+    i 8.053 4.000 0.001 1 49 127
+    i -10.005 4.000 0
+    i -10.006 4.000 0
+    i 13.001 4.000 -1.000 1 91 127
+    i 8.054 4.124 0.001 1 49 127
+    i -13.001 4.124 0
+    i 13.002 4.124 -1.000 1 93 127
+    i 8.055 4.249 0.001 1 49 127
+    i -13.002 4.249 0
+    i 13.003 4.249 -1.000 1 89 127
+    i 8.056 4.374 0.001 1 49 127
+    i -13.003 4.374 0
+    i 13.004 4.374 -1.000 1 91 127
+    i -13.004 4.499 0
+    i 13.005 4.499 -1.000 1 93 127
+    i 8.057 4.499 0.001 1 49 127
+    i 8.058 4.624 0.001 1 49 127
+    i -13.005 4.624 0
+    i 13.006 4.624 -1.000 1 89 127
+    i -13.006 4.750 0
+    i 8.059 4.750 0.001 1 49 127
+    i 13.007 4.750 -1.000 1 91 127
+    i 8.060 4.875 0.001 1 49 127
+    i -13.007 4.875 0
+    i 13.008 4.875 -1.000 1 93 127
+    i 8.061 5.000 0.001 1 49 127
+    i -13.008 5.000 0
+    i 13.009 5.000 -1.000 1 89 127
+    i 10.007 5.000 -1.000 1 72 127
+    i 10.008 5.000 -1.000 1 76 127
+    i 8.062 5.124 0.001 1 49 127
+    i -13.009 5.124 0
+    i 13.010 5.124 -1.000 1 91 127
+    i 8.063 5.249 0.001 1 49 127
+    i -13.010 5.249 0
+    i 13.011 5.249 -1.000 1 93 127
+    i -13.011 5.374 0
+    i 13.012 5.374 -1.000 1 89 127
+    i 8.064 5.374 0.001 1 49 127
+    i 8.065 5.499 0.001 1 49 127
+    i -13.012 5.499 0
+    i 13.013 5.499 -1.000 1 91 127
+    i -13.013 5.624 0
+    i 13.014 5.624 -1.000 1 93 127
+    i 8.066 5.624 0.001 1 49 127
+    i -13.014 5.750 0
+    i 8.067 5.750 0.001 1 49 127
+    i 13.015 5.750 -1.000 1 89 127
+    i -13.015 5.875 0
+    i 8.068 5.875 0.001 1 49 113
+    i 13.016 5.875 -1.000 1 91 127
+    i 4.001 5.999 0.001 1 37 127
+    i -13.016 5.999 0
+    i 13.017 5.999 -1.000 1 93 127
+    i 8.069 5.999 0.001 1 49 127
+    i -10.007 5.999 0
+    i -10.008 5.999 0
+    i 8.070 6.124 0.001 1 49 127
+    i -13.017 6.124 0
+    i 8.071 6.249 0.001 1 49 127
+    i 8.072 6.374 0.001 1 49 127
+    i 8.073 6.499 0.001 1 49 127
+    i 7.001 6.499 0.001 1 39 127
+    i 8.074 6.625 0.001 1 49 127
+    i 8.075 6.750 0.001 1 49 127
+    i 8.076 6.875 0.001 1 49 127
+    i 4.002 6.999 0.001 1 37 127
+    i 8.077 6.999 0.001 1 49 127
+    i 10.009 6.999 -1.000 1 72 127
+    i 10.010 6.999 -1.000 1 76 127
+    i 8.078 7.124 0.001 1 49 127
+    i 8.079 7.249 0.001 1 49 127
+    i 8.080 7.374 0.001 1 49 127
+    i 7.002 7.499 0.001 1 39 127
+    i 8.081 7.499 0.001 1 49 127
+    i 8.082 7.625 0.001 1 49 127
+    i 8.083 7.750 0.001 1 49 127
+    i 8.084 7.874 0.001 1 49 113
+    i 4.003 7.999 0.001 1 37 127
+    i 8.085 7.999 0.001 1 49 127
+    i -10.009 7.999 0
+    i -10.010 7.999 0
+    i 8.086 8.124 0.001 1 49 127
+    i 8.087 8.249 0.001 1 49 127
+    i 8.088 8.374 0.001 1 49 127
+    i 8.089 8.500 0.001 1 49 127
+    i 7.003 8.500 0.001 1 39 127
+    i 8.090 8.625 0.001 1 49 127
+    i 8.091 8.750 0.001 1 49 127
+    i 8.092 8.874 0.001 1 49 127
+    i 8.093 8.999 0.001 1 49 127
+    i 4.004 8.999 0.001 1 37 127
+    i 10.011 8.999 -1.000 1 72 127
+    i 10.012 8.999 -1.000 1 76 127
+    i 8.094 9.124 0.001 1 49 127
+    i 8.095 9.249 0.001 1 49 127
+    i 8.096 9.374 0.001 1 49 127
+    i 7.004 9.500 0.001 1 39 127
+    i 8.097 9.500 0.001 1 49 127
+    i 8.098 9.625 0.001 1 49 127
+    i 8.099 9.749 0.001 1 49 127
+    i 8.100 9.874 0.001 1 49 113
+    i 4.005 9.999 0.001 1 37 127
+    i 8.101 9.999 0.001 1 49 127
+    i -10.011 9.999 0
+    i -10.012 9.999 0
+    i 8.102 10.124 0.001 1 49 127
+    i 8.103 10.249 0.001 1 49 127
+    i 8.104 10.375 0.001 1 49 127
+    i 8.105 10.500 0.001 1 49 127
+    i 7.005 10.500 0.001 1 39 127
+    i 8.106 10.625 0.001 1 49 127
+    i 8.107 10.749 0.001 1 49 127
+    i 8.108 10.874 0.001 1 49 127
+    i 8.109 10.999 0.001 1 49 127
+    i 4.006 10.999 0.001 1 37 127
+    i 10.013 10.999 -1.000 1 72 127
+    i 10.014 10.999 -1.000 1 76 127
+    i 8.110 11.124 0.001 1 49 127
+    i 8.111 11.249 0.001 1 49 127
+    i 8.112 11.375 0.001 1 49 127
+    i 7.006 11.500 0.001 1 39 127
+    i 8.113 11.500 0.001 1 49 127
+    i 8.114 11.624 0.001 1 49 127
+    i 8.115 11.749 0.001 1 49 127
+    i 8.116 11.874 0.001 1 49 113
+    i 8.117 11.999 0.001 1 49 127
+    i -10.013 11.999 0
+    i -10.014 11.999 0
+    i 4.007 11.999 0.001 1 37 127
+    i 8.118 12.124 0.001 1 49 127
+    i 8.119 12.250 0.001 1 49 127
+    i 8.120 12.375 0.001 1 49 127
+    i 7.007 12.500 0.001 1 39 127
+    i 8.121 12.500 0.001 1 49 127
+    i 8.122 12.624 0.001 1 49 127
+    i 8.123 12.749 0.001 1 49 127
+    i 8.124 12.874 0.001 1 49 127
+    i 4.008 12.999 0.001 1 37 127
+    i 8.125 12.999 0.001 1 49 127
+    i 10.015 12.999 -1.000 1 72 127
+    i 10.016 12.999 -1.000 1 76 127
+    i 8.126 13.124 0.001 1 49 127
+    i 8.127 13.250 0.001 1 49 127
+    i 8.128 13.375 0.001 1 49 127
+    i 7.008 13.500 0.001 1 39 127
+    i 8.129 13.500 0.001 1 49 127
+    i 8.130 13.624 0.001 1 49 127
+    i 8.131 13.749 0.001 1 49 127
+    i 8.132 13.874 0.001 1 49 113
+    i 4.009 13.999 0.001 1 37 127
+    i 8.133 13.999 0.001 1 49 127
+    i -10.015 13.999 0
     i 11.001 13.999 -1.000 1 38 81
-    i 8.175 14.125 0.001 1 49 127
-    i 8.176 14.250 0.001 1 49 127
-    i 8.177 14.375 0.001 1 49 127
-    i 7.013 14.499 0.001 1 39 127
-    i 8.178 14.499 0.001 1 49 127
-    i 8.179 14.624 0.001 1 49 127
+    i -10.016 13.999 0
+    i 8.134 14.125 0.001 1 49 127
+    i 8.135 14.250 0.001 1 49 127
+    i 8.136 14.375 0.001 1 49 127
+    i 8.137 14.499 0.001 1 49 127
+    i 7.009 14.499 0.001 1 39 127
+    i 8.138 14.624 0.001 1 49 127
     i 11.002 14.737 -1.000 1 41 89
+    i 8.139 14.749 0.001 1 49 127
     i -11.001 14.745 0
-    i 8.180 14.749 0.001 1 49 127
-    i 8.181 14.874 0.001 1 49 127
-    i 8.182 14.999 0.001 1 49 127
-    i 4.015 14.999 0.001 1 37 127
-    i 10.021 14.999 -1.000 1 72 127
-    i 10.022 14.999 -1.000 1 76 127
-    i 8.183 15.125 0.001 1 49 127
-    i 8.184 15.250 0.001 1 49 127
+    i 8.140 14.874 0.001 1 49 127
+    i 10.017 14.999 -1.000 1 72 127
+    i 10.018 14.999 -1.000 1 76 127
+    i 4.010 14.999 0.001 1 37 127
+    i 8.141 14.999 0.001 1 49 127
+    i 8.142 15.125 0.001 1 49 127
+    i 8.143 15.250 0.001 1 49 127
     i 11.003 15.254 -1.000 1 38 68
     i -11.002 15.260 0
-    i 8.185 15.375 0.001 1 49 127
-    i 7.014 15.499 0.001 1 39 127
-    i 8.186 15.499 0.001 1 49 127
+    i 8.144 15.375 0.001 1 49 127
+    i 8.145 15.499 0.001 1 49 127
+    i 7.010 15.499 0.001 1 39 127
     i 11.004 15.501 -1.000 1 41 78
     i -11.003 15.509 0
-    i 8.187 15.624 0.001 1 49 127
-    i 8.188 15.749 0.001 1 49 127
-    i 8.189 15.874 0.001 1 49 113
-    i 8.190 16.000 0.001 1 49 127
-    i 4.016 16.000 0.001 1 37 127
-    i -10.021 16.000 0
-    i -10.022 16.000 0
+    i 8.146 15.624 0.001 1 49 127
+    i 8.147 15.749 0.001 1 49 127
+    i 8.148 15.874 0.001 1 49 113
+    i 4.011 16.000 0.001 1 37 127
+    i 8.149 16.000 0.001 1 49 127
+    i -10.017 16.000 0
+    i -10.018 16.000 0
     i 11.005 16.012 -1.000 1 38 78
     i -11.004 16.030 0
-    i 8.191 16.125 0.001 1 49 127
-    i 8.192 16.250 0.001 1 49 127
-    i 8.193 16.374 0.001 1 49 127
-    i 7.015 16.499 0.001 1 39 127
-    i 8.194 16.499 0.001 1 49 127
-    i 8.195 16.624 0.001 1 49 127
-    i 8.196 16.749 0.001 1 49 127
+    i 8.150 16.125 0.001 1 49 127
+    i 8.151 16.250 0.001 1 49 127
+    i 8.152 16.374 0.001 1 49 127
+    i 8.153 16.499 0.001 1 49 127
+    i 7.011 16.499 0.001 1 39 127
+    i 8.154 16.624 0.001 1 49 127
+    i 8.155 16.749 0.001 1 49 127
     i 11.006 16.760 -1.000 1 36 86
     i -11.005 16.768 0
-    i 8.197 16.874 0.001 1 49 127
-    i 4.017 17.000 0.001 1 37 127
-    i 8.198 17.000 0.001 1 49 127
-    i 10.023 17.000 -1.000 1 72 127
-    i 10.024 17.000 -1.000 1 76 127
-    i 8.199 17.125 0.001 1 49 127
-    i 8.200 17.250 0.001 1 49 127
+    i 8.156 16.874 0.001 1 49 127
+    i 4.012 17.000 0.001 1 37 127
+    i 8.157 17.000 0.001 1 49 127
+    i 10.019 17.000 -1.000 1 72 127
+    i 10.020 17.000 -1.000 1 76 127
+    i 8.158 17.125 0.001 1 49 127
+    i 8.159 17.250 0.001 1 49 127
     i -11.006 17.258 0
     i 11.007 17.258 -1.000 1 33 74
-    i 8.201 17.374 0.001 1 49 127
-    i 8.202 17.499 0.001 1 49 127
-    i 7.016 17.499 0.001 1 39 127
+    i 8.160 17.374 0.001 1 49 127
+    i 8.161 17.499 0.001 1 49 127
+    i 7.012 17.499 0.001 1 39 127
     i 11.008 17.508 -1.000 1 36 91
     i -11.007 17.518 0
-    i 8.203 17.624 0.001 1 49 127
-    i 8.204 17.749 0.001 1 49 127
-    i 8.205 17.875 0.001 1 49 113
-    i 4.018 18.000 0.001 1 37 127
-    i 8.206 18.000 0.001 1 49 127
+    i 8.162 17.624 0.001 1 49 127
+    i 8.163 17.749 0.001 1 49 127
+    i 8.164 17.875 0.001 1 49 113
+    i 4.013 18.000 0.001 1 37 127
     i -11.008 18.000 0
-    i -10.023 18.000 0
+    i -10.019 18.000 0
     i 11.009 18.000 -1.000 1 38 81
-    i -10.024 18.000 0
-    i 8.207 18.125 0.001 1 49 127
-    i 8.208 18.249 0.001 1 49 127
-    i 8.209 18.374 0.001 1 49 127
-    i 7.017 18.499 0.001 1 39 127
-    i 8.210 18.499 0.001 1 49 127
-    i 8.211 18.624 0.001 1 49 127
+    i -10.020 18.000 0
+    i 8.165 18.000 0.001 1 49 127
+    i 8.166 18.125 0.001 1 49 127
+    i 8.167 18.249 0.001 1 49 127
+    i 8.168 18.374 0.001 1 49 127
+    i 7.013 18.499 0.001 1 39 127
+    i 8.169 18.499 0.001 1 49 127
+    i 8.170 18.624 0.001 1 49 127
     i 11.010 18.737 -1.000 1 41 89
     i -11.009 18.744 0
-    i 8.212 18.749 0.001 1 49 127
-    i 8.213 18.875 0.001 1 49 127
-    i 8.214 19.000 0.001 1 49 127
-    i 10.025 19.000 -1.000 1 72 127
-    i 4.019 19.000 0.001 1 37 127
-    i 10.026 19.000 -1.000 1 76 127
-    i 8.215 19.125 0.001 1 49 127
-    i 8.216 19.249 0.001 1 49 127
+    i 8.171 18.749 0.001 1 49 127
+    i 8.172 18.875 0.001 1 49 127
+    i 10.021 19.000 -1.000 1 72 127
+    i 10.022 19.000 -1.000 1 76 127
+    i 4.014 19.000 0.001 1 37 127
+    i 8.173 19.000 0.001 1 49 127
+    i 8.174 19.125 0.001 1 49 127
+    i 8.175 19.249 0.001 1 49 127
     i 11.011 19.254 -1.000 1 38 68
     i -11.010 19.260 0
-    i 8.217 19.374 0.001 1 49 127
-    i 7.018 19.499 0.001 1 39 127
-    i 8.218 19.499 0.001 1 49 127
+    i 8.176 19.374 0.001 1 49 127
+    i 7.014 19.499 0.001 1 39 127
+    i 8.177 19.499 0.001 1 49 127
     i 11.012 19.500 -1.000 1 41 78
     i -11.011 19.509 0
-    i 8.219 19.624 0.001 1 49 127
-    i 8.220 19.749 0.001 1 49 127
-    i 8.221 19.875 0.001 1 49 113
-    i 4.020 20.000 0.001 1 37 127
-    i 8.222 20.000 0.001 1 49 127
-    i -10.025 20.000 0
-    i -10.026 20.000 0
+    i 8.178 19.624 0.001 1 49 127
+    i 8.179 19.749 0.001 1 49 127
+    i 8.180 19.875 0.001 1 49 113
+    i 13.018 20.000 -1.000 1 91 127
+    i 4.015 20.000 0.001 1 37 127
+    i 8.181 20.000 0.001 1 49 127
+    i -10.021 20.000 0
+    i -10.022 20.000 0
     i 11.013 20.011 -1.000 1 38 78
     i -11.012 20.030 0
-    i 8.223 20.124 0.001 1 49 127
-    i 8.224 20.249 0.001 1 49 127
-    i 8.225 20.374 0.001 1 49 127
-    i 8.226 20.499 0.001 1 49 127
-    i 7.019 20.499 0.001 1 39 127
-    i 8.227 20.624 0.001 1 49 127
-    i 8.228 20.750 0.001 1 49 127
+    i 8.182 20.124 0.001 1 49 127
+    i -13.018 20.124 0
+    i 13.019 20.124 -1.000 1 93 127
+    i 8.183 20.249 0.001 1 49 127
+    i -13.019 20.249 0
+    i 13.020 20.249 -1.000 1 89 127
+    i 8.184 20.374 0.001 1 49 127
+    i -13.020 20.374 0
+    i 13.021 20.374 -1.000 1 91 127
+    i 8.185 20.499 0.001 1 49 127
+    i 7.015 20.499 0.001 1 39 127
+    i -13.021 20.499 0
+    i 13.022 20.499 -1.000 1 93 127
+    i -13.022 20.624 0
+    i 8.186 20.624 0.001 1 49 127
+    i 13.023 20.624 -1.000 1 89 127
+    i 8.187 20.750 0.001 1 49 127
+    i -13.023 20.750 0
+    i 13.024 20.750 -1.000 1 91 127
     i 11.014 20.760 -1.000 1 36 86
     i -11.013 20.767 0
-    i 8.229 20.875 0.001 1 49 127
-    i 8.230 21.000 0.001 1 49 127
-    i 10.027 21.000 -1.000 1 72 127
-    i 10.028 21.000 -1.000 1 76 127
-    i 4.021 21.000 0.001 1 37 127
-    i 8.231 21.124 0.001 1 49 127
-    i 8.232 21.249 0.001 1 49 127
+    i 8.188 20.875 0.001 1 49 127
+    i -13.024 20.875 0
+    i 13.025 20.875 -1.000 1 93 127
+    i 4.016 21.000 0.001 1 37 127
+    i -13.025 21.000 0
+    i 10.023 21.000 -1.000 1 72 127
+    i 8.189 21.000 0.001 1 49 127
+    i 13.026 21.000 -1.000 1 89 127
+    i 10.024 21.000 -1.000 1 76 127
+    i 8.190 21.124 0.001 1 49 127
+    i -13.026 21.124 0
+    i 13.027 21.124 -1.000 1 91 127
+    i -13.027 21.249 0
+    i 13.028 21.249 -1.000 1 93 127
+    i 8.191 21.249 0.001 1 49 127
     i -11.014 21.258 0
     i 11.015 21.259 -1.000 1 33 74
-    i 8.233 21.374 0.001 1 49 127
-    i 8.234 21.499 0.001 1 49 127
-    i 7.020 21.499 0.001 1 39 127
+    i 8.192 21.374 0.001 1 49 127
+    i -13.028 21.374 0
+    i 13.029 21.374 -1.000 1 89 127
+    i -13.029 21.499 0
     i 11.016 21.507 -1.000 1 36 91
+    i 13.030 21.499 -1.000 1 91 127
+    i 8.193 21.499 0.001 1 49 127
+    i 7.016 21.499 0.001 1 39 127
     i -11.015 21.518 0
-    i 8.235 21.624 0.001 1 49 127
-    i 8.236 21.750 0.001 1 49 127
-    i 8.237 21.875 0.001 1 49 113
-    i 8.238 21.999 0.001 1 49 127
-    i -10.027 21.999 0
+    i 8.194 21.624 0.001 1 49 127
+    i -13.030 21.624 0
+    i 13.031 21.624 -1.000 1 93 127
+    i 8.195 21.750 0.001 1 49 127
+    i -13.031 21.750 0
+    i 13.032 21.750 -1.000 1 89 127
+    i 8.196 21.875 0.001 1 49 113
+    i -13.032 21.875 0
+    i 13.033 21.875 -1.000 1 91 127
     i -11.016 21.999 0
-    i -10.028 21.999 0
+    i -13.033 21.999 0
+    i -10.023 21.999 0
     i 11.017 21.999 -1.000 1 38 81
-    i 4.022 21.999 0.001 1 37 127
-    i 8.239 22.124 0.001 1 49 127
-    i 8.240 22.249 0.001 1 49 127
-    i 8.241 22.374 0.001 1 49 127
-    i 8.242 22.499 0.001 1 49 127
-    i 7.021 22.499 0.001 1 39 127
-    i 8.243 22.625 0.001 1 49 127
+    i 13.034 21.999 -1.000 1 93 127
+    i 4.017 21.999 0.001 1 37 127
+    i -10.024 21.999 0
+    i 8.197 21.999 0.001 1 49 127
+    i 8.198 22.124 0.001 1 49 127
+    i -13.034 22.124 0
+    i 8.199 22.249 0.001 1 49 127
+    i 8.200 22.374 0.001 1 49 127
+    i 7.017 22.499 0.001 1 39 127
+    i 8.201 22.499 0.001 1 49 127
+    i 8.202 22.625 0.001 1 49 127
     i 11.018 22.737 -1.000 1 41 89
-    i 8.244 22.750 0.001 1 49 127
     i -11.017 22.744 0
-    i 8.245 22.875 0.001 1 49 127
-    i 8.246 22.999 0.001 1 49 127
-    i 4.023 22.999 0.001 1 37 127
-    i 10.029 22.999 -1.000 1 72 127
-    i 10.030 22.999 -1.000 1 76 127
-    i 8.247 23.124 0.001 1 49 127
-    i 8.248 23.249 0.001 1 49 127
+    i 8.203 22.750 0.001 1 49 127
+    i 8.204 22.875 0.001 1 49 127
+    i 8.205 22.999 0.001 1 49 127
+    i 10.025 22.999 -1.000 1 72 127
+    i 10.026 22.999 -1.000 1 76 127
+    i 4.018 22.999 0.001 1 37 127
+    i 8.206 23.124 0.001 1 49 127
+    i 8.207 23.249 0.001 1 49 127
     i 11.019 23.253 -1.000 1 38 68
     i -11.018 23.259 0
-    i 8.249 23.374 0.001 1 49 127
-    i 8.250 23.499 0.001 1 49 127
-    i 7.022 23.499 0.001 1 39 127
+    i 8.208 23.374 0.001 1 49 127
+    i 7.018 23.499 0.001 1 39 127
+    i 8.209 23.499 0.001 1 49 127
     i 11.020 23.501 -1.000 1 41 78
     i -11.019 23.510 0
-    i 8.251 23.625 0.001 1 49 127
-    i 8.252 23.750 0.001 1 49 127
-    i 8.253 23.874 0.001 1 49 113
-    i 8.254 23.999 0.001 1 49 127
-    i -10.029 23.999 0
-    i -10.030 23.999 0
-    i 4.024 23.999 0.001 1 37 127
+    i 8.210 23.625 0.001 1 49 127
+    i 8.211 23.750 0.001 1 49 127
+    i 8.212 23.874 0.001 1 49 113
+    i 4.019 23.999 0.001 1 37 127
+    i 8.213 23.999 0.001 1 49 127
+    i -10.025 23.999 0
+    i -10.026 23.999 0
     i 11.021 24.012 -1.000 1 38 78
     i -11.020 24.030 0
-    i 8.255 24.124 0.001 1 49 127
-    i 8.256 24.249 0.001 1 49 127
-    i 8.257 24.374 0.001 1 49 127
-    i 8.258 24.500 0.001 1 49 127
-    i 7.023 24.500 0.001 1 39 127
-    i 8.259 24.625 0.001 1 49 127
-    i 8.260 24.750 0.001 1 49 127
+    i 8.214 24.124 0.001 1 49 127
+    i 8.215 24.249 0.001 1 49 127
+    i 8.216 24.374 0.001 1 49 127
+    i 8.217 24.500 0.001 1 49 127
+    i 7.019 24.500 0.001 1 39 127
+    i 8.218 24.625 0.001 1 49 127
     i 11.022 24.760 -1.000 1 36 86
+    i 8.219 24.750 0.001 1 49 127
     i -11.021 24.767 0
-    i 8.261 24.874 0.001 1 49 127
-    i 4.025 24.999 0.001 1 37 127
-    i 8.262 24.999 0.001 1 49 127
-    i 10.031 24.999 -1.000 1 72 127
-    i 10.032 24.999 -1.000 1 76 127
-    i 8.263 25.124 0.001 1 49 127
-    i 8.264 25.249 0.001 1 49 127
+    i 8.220 24.874 0.001 1 49 127
+    i 10.027 24.999 -1.000 1 72 127
+    i 10.028 24.999 -1.000 1 76 127
+    i 8.221 24.999 0.001 1 49 127
+    i 4.020 24.999 0.001 1 37 127
+    i 8.222 25.124 0.001 1 49 127
+    i 8.223 25.249 0.001 1 49 127
     i -11.022 25.258 0
     i 11.023 25.259 -1.000 1 33 74
-    i 8.265 25.374 0.001 1 49 127
-    i 8.266 25.500 0.001 1 49 127
-    i 7.024 25.500 0.001 1 39 127
+    i 8.224 25.374 0.001 1 49 127
+    i 8.225 25.500 0.001 1 49 127
+    i 7.020 25.500 0.001 1 39 127
     i 11.024 25.509 -1.000 1 36 91
     i -11.023 25.517 0
-    i 8.267 25.625 0.001 1 49 127
-    i 8.268 25.749 0.001 1 49 127
-    i 8.269 25.874 0.001 1 49 113
+    i 8.226 25.625 0.001 1 49 127
+    i 8.227 25.749 0.001 1 49 127
+    i 8.228 25.874 0.001 1 49 113
+    i 8.229 25.999 0.001 1 49 127
+    i 4.021 25.999 0.001 1 37 127
     i -11.024 25.999 0
-    i 4.026 25.999 0.001 1 37 127
+    i -10.027 25.999 0
     i 11.025 25.999 -1.000 1 38 81
-    i 8.270 25.999 0.001 1 49 127
-    i -10.031 25.999 0
-    i -10.032 25.999 0
-    i 8.271 26.124 0.001 1 49 127
-    i 8.272 26.249 0.001 1 49 127
-    i 8.273 26.375 0.001 1 49 127
-    i 8.274 26.500 0.001 1 49 127
-    i 7.025 26.500 0.001 1 39 127
-    i 8.275 26.625 0.001 1 49 127
+    i -10.028 25.999 0
+    i 8.230 26.124 0.001 1 49 127
+    i 8.231 26.249 0.001 1 49 127
+    i 8.232 26.375 0.001 1 49 127
+    i 7.021 26.500 0.001 1 39 127
+    i 8.233 26.500 0.001 1 49 127
+    i 8.234 26.625 0.001 1 49 127
     i 11.026 26.738 -1.000 1 41 89
     i -11.025 26.744 0
-    i 8.276 26.749 0.001 1 49 127
-    i 8.277 26.874 0.001 1 49 127
-    i 10.033 26.999 -1.000 1 72 127
-    i 4.027 26.999 0.001 1 37 127
-    i 10.034 26.999 -1.000 1 76 127
-    i 8.278 26.999 0.001 1 49 127
-    i 8.279 27.124 0.001 1 49 127
+    i 8.235 26.749 0.001 1 49 127
+    i 8.236 26.874 0.001 1 49 127
+    i 8.237 26.999 0.001 1 49 127
+    i 10.029 26.999 -1.000 1 72 127
+    i 4.022 26.999 0.001 1 37 127
+    i 10.030 26.999 -1.000 1 76 127
+    i 8.238 27.124 0.001 1 49 127
+    i 8.239 27.249 0.001 1 49 127
     i 11.027 27.254 -1.000 1 38 68
-    i 8.280 27.249 0.001 1 49 127
     i -11.026 27.260 0
-    i 8.281 27.375 0.001 1 49 127
-    i 7.026 27.500 0.001 1 39 127
-    i 8.282 27.500 0.001 1 49 127
+    i 8.240 27.375 0.001 1 49 127
+    i 7.022 27.500 0.001 1 39 127
+    i 8.241 27.500 0.001 1 49 127
     i 11.028 27.501 -1.000 1 41 78
     i -11.027 27.510 0
-    i 8.283 27.624 0.001 1 49 127
-    i 8.284 27.749 0.001 1 49 127
-    i 8.285 27.874 0.001 1 49 113
-    i 4.028 27.999 0.001 1 37 127
-    i -10.033 27.999 0
-    i 8.286 27.999 0.001 1 49 127
-    i -10.034 27.999 0
+    i 8.242 27.624 0.001 1 49 127
+    i 8.243 27.749 0.001 1 49 127
+    i 8.244 27.874 0.001 1 49 113
+    i 4.023 27.999 0.001 1 37 127
+    i 8.245 27.999 0.001 1 49 127
+    i -10.029 27.999 0
+    i -10.030 27.999 0
     i 11.029 28.012 -1.000 1 38 78
     i -11.028 28.029 0
-    i 8.287 28.124 0.001 1 49 127
-    i 8.288 28.250 0.001 1 49 127
-    i 8.289 28.375 0.001 1 49 127
-    i 7.027 28.500 0.001 1 39 127
-    i 8.290 28.500 0.001 1 49 127
-    i 8.291 28.624 0.001 1 49 127
-    i 8.292 28.749 0.001 1 49 127
+    i 8.246 28.124 0.001 1 49 127
+    i 8.247 28.250 0.001 1 49 127
+    i 8.248 28.375 0.001 1 49 127
+    i 7.023 28.500 0.001 1 39 127
+    i 8.249 28.500 0.001 1 49 127
+    i 8.250 28.624 0.001 1 49 127
+    i 8.251 28.749 0.001 1 49 127
     i 11.030 28.761 -1.000 1 36 86
     i -11.029 28.768 0
-    i 8.293 28.874 0.001 1 49 127
-    i 4.029 28.999 0.001 1 37 127
-    i 8.294 28.999 0.001 1 49 127
-    i 10.035 28.999 -1.000 1 72 127
-    i 10.036 28.999 -1.000 1 76 127
-    i 8.295 29.124 0.001 1 49 127
-    i 8.296 29.250 0.001 1 49 127
+    i 8.252 28.874 0.001 1 49 127
+    i 8.253 28.999 0.001 1 49 127
+    i 10.031 28.999 -1.000 1 72 127
+    i 4.024 28.999 0.001 1 37 127
+    i 10.032 28.999 -1.000 1 76 127
+    i 8.254 29.124 0.001 1 49 127
+    i 8.255 29.250 0.001 1 49 127
     i -11.030 29.257 0
     i 11.031 29.259 -1.000 1 33 74
-    i 8.297 29.375 0.001 1 49 127
+    i 8.256 29.375 0.001 1 49 127
     i 11.032 29.508 -1.000 1 36 91
-    i 8.298 29.500 0.001 1 49 127
-    i 7.028 29.500 0.001 1 39 127
+    i 7.024 29.500 0.001 1 39 127
+    i 8.257 29.500 0.001 1 49 127
     i -11.031 29.517 0
-    i 8.299 29.624 0.001 1 49 127
-    i 8.300 29.749 0.001 1 49 127
-    i 8.301 29.874 0.001 1 49 113
-    i 4.030 29.999 0.001 1 37 127
-    i 8.302 29.999 0.001 1 49 127
-    i -10.035 29.999 0
+    i 8.258 29.624 0.001 1 49 127
+    i 8.259 29.749 0.001 1 49 127
+    i 8.260 29.874 0.001 1 49 113
+    i 15.001 29.951 -1.000 1 53 74
+    i 4.025 29.999 0.001 1 37 127
+    i 8.261 29.999 0.001 1 49 127
     i -11.032 29.999 0
+    i -10.031 29.999 0
+    i -10.032 29.999 0
     i 11.033 29.999 -1.000 1 38 81
-    i -10.036 29.999 0
-    i 8.303 30.125 0.001 1 49 127
-    i 8.304 30.250 0.001 1 49 127
-    i 8.305 30.375 0.001 1 49 127
-    i 7.029 30.499 0.001 1 39 127
-    i 8.306 30.499 0.001 1 49 127
-    i 8.307 30.624 0.001 1 49 127
+    i 8.262 30.125 0.001 1 49 127
+    i 8.263 30.250 0.001 1 49 127
+    i 8.264 30.375 0.001 1 49 127
+    i 8.265 30.499 0.001 1 49 127
+    i 7.025 30.499 0.001 1 39 127
+    i 8.266 30.624 0.001 1 49 127
     i 11.034 30.737 -1.000 1 41 89
+    i 8.267 30.749 0.001 1 49 127
     i -11.033 30.745 0
-    i 8.308 30.749 0.001 1 49 127
-    i 8.309 30.874 0.001 1 49 127
-    i 10.037 30.999 -1.000 1 72 127
-    i 10.038 30.999 -1.000 1 76 127
-    i 4.031 30.999 0.001 1 37 127
-    i 8.310 30.999 0.001 1 49 127
-    i 8.311 31.125 0.001 1 49 127
-    i 8.312 31.250 0.001 1 49 127
+    i 8.268 30.874 0.001 1 49 127
+    i 10.033 30.999 -1.000 1 72 127
+    i 10.034 30.999 -1.000 1 76 127
+    i 4.026 30.999 0.001 1 37 127
+    i 8.269 30.999 0.001 1 49 127
+    i 8.270 31.125 0.001 1 49 127
+    i 8.271 31.250 0.001 1 49 127
     i 11.035 31.254 -1.000 1 38 68
     i -11.034 31.260 0
-    i 8.313 31.375 0.001 1 49 127
+    i 8.272 31.375 0.001 1 49 127
+    i 7.026 31.499 0.001 1 39 127
     i 11.036 31.501 -1.000 1 41 78
-    i 7.030 31.499 0.001 1 39 127
-    i 8.314 31.499 0.001 1 49 127
+    i 8.273 31.499 0.001 1 49 127
     i -11.035 31.509 0
-    i 8.315 31.624 0.001 1 49 127
-    i 8.316 31.749 0.001 1 49 127
-    i 8.317 31.874 0.001 1 49 113
-    i 4.032 32.000 0.001 1 37 127
-    i 8.318 32.000 0.001 1 49 127
-    i -10.037 32.000 0
-    i -10.038 32.000 0
+    i 8.274 31.624 0.001 1 49 127
+    i 8.275 31.749 0.001 1 49 127
+    i 8.276 31.874 0.001 1 49 113
+    i 15.002 31.939 -1.000 1 55 91
+    i -15.001 31.970 0
+    i 4.027 32.000 0.001 1 37 127
+    i -10.033 32.000 0
+    i -10.034 32.000 0
+    i 8.277 32.000 0.001 1 49 127
     i 11.037 32.012 -1.000 1 38 78
     i -11.036 32.030 0
-    i 8.319 32.125 0.001 1 49 127
-    i 8.320 32.250 0.001 1 49 127
-    i 8.321 32.374 0.001 1 49 127
-    i 8.322 32.499 0.001 1 49 127
-    i 7.031 32.499 0.001 1 39 127
-    i 8.323 32.624 0.001 1 49 127
-    i 8.324 32.749 0.001 1 49 127
+    i 8.278 32.125 0.001 1 49 127
+    i 8.279 32.250 0.001 1 49 127
+    i 8.280 32.374 0.001 1 49 127
+    i 7.027 32.499 0.001 1 39 127
+    i 8.281 32.499 0.001 1 49 127
+    i 8.282 32.624 0.001 1 49 127
+    i 8.283 32.749 0.001 1 49 127
     i 11.038 32.760 -1.000 1 36 86
     i -11.037 32.768 0
-    i 8.325 32.874 0.001 1 49 127
-    i 8.326 33.000 0.001 1 49 127
-    i 4.033 33.000 0.001 1 37 127
-    i 10.039 33.000 -1.000 1 72 127
-    i 10.040 33.000 -1.000 1 76 127
-    i 8.327 33.125 0.001 1 49 127
-    i 8.328 33.250 0.001 1 49 127
+    i 8.284 32.874 0.001 1 49 127
+    i 4.028 33.000 0.001 1 37 127
+    i 8.285 33.000 0.001 1 49 127
+    i 10.035 33.000 -1.000 1 72 127
+    i 10.036 33.000 -1.000 1 76 127
+    i 8.286 33.125 0.001 1 49 127
+    i 8.287 33.250 0.001 1 49 127
     i -11.038 33.258 0
     i 11.039 33.258 -1.000 1 33 74
-    i 8.329 33.374 0.001 1 49 127
-    i 7.032 33.499 0.001 1 39 127
-    i 8.330 33.499 0.001 1 49 127
+    i 8.288 33.374 0.001 1 49 127
+    i 8.289 33.499 0.001 1 49 127
+    i 7.028 33.499 0.001 1 39 127
     i 11.040 33.508 -1.000 1 36 91
     i -11.039 33.518 0
-    i 8.331 33.624 0.001 1 49 127
-    i 8.332 33.749 0.001 1 49 127
-    i 8.333 33.875 0.001 1 49 113
-    i 8.334 34.000 0.001 1 49 127
-    i -10.039 34.000 0
-    i -10.040 34.000 0
+    i 8.290 33.624 0.001 1 49 127
+    i 8.291 33.749 0.001 1 49 127
+    i 8.292 33.875 0.001 1 49 113
+    i 15.003 33.965 -1.000 1 57 101
+    i -15.002 33.971 0
+    i 8.293 34.000 0.001 1 49 127
     i -11.040 34.000 0
+    i -10.035 34.000 0
     i 11.041 34.000 -1.000 1 38 81
-    i 4.034 34.000 0.001 1 37 127
-    i 8.335 34.125 0.001 1 49 127
-    i 8.336 34.249 0.001 1 49 127
-    i 8.337 34.374 0.001 1 49 127
-    i 8.338 34.499 0.001 1 49 127
-    i 7.033 34.499 0.001 1 39 127
-    i 8.339 34.624 0.001 1 49 127
+    i -10.036 34.000 0
+    i 4.029 34.000 0.001 1 37 127
+    i 8.294 34.125 0.001 1 49 127
+    i 8.295 34.249 0.001 1 49 127
+    i 8.296 34.374 0.001 1 49 127
+    i 8.297 34.499 0.001 1 49 127
+    i 7.029 34.499 0.001 1 39 127
+    i 8.298 34.624 0.001 1 49 127
     i 11.042 34.737 -1.000 1 41 89
     i -11.041 34.744 0
-    i 8.340 34.749 0.001 1 49 127
-    i 8.341 34.875 0.001 1 49 127
-    i 8.342 35.000 0.001 1 49 127
-    i 10.041 35.000 -1.000 1 72 127
-    i 4.035 35.000 0.001 1 37 127
-    i 10.042 35.000 -1.000 1 76 127
-    i 8.343 35.125 0.001 1 49 127
+    i 8.299 34.749 0.001 1 49 127
+    i 8.300 34.875 0.001 1 49 127
+    i 10.037 35.000 -1.000 1 72 127
+    i 10.038 35.000 -1.000 1 76 127
+    i 4.030 35.000 0.001 1 37 127
+    i 8.301 35.000 0.001 1 49 127
+    i 8.302 35.125 0.001 1 49 127
     i 11.043 35.254 -1.000 1 38 68
-    i 8.344 35.249 0.001 1 49 127
+    i 8.303 35.249 0.001 1 49 127
     i -11.042 35.260 0
-    i 8.345 35.374 0.001 1 49 127
-    i 7.034 35.499 0.001 1 39 127
-    i 8.346 35.499 0.001 1 49 127
+    i 8.304 35.374 0.001 1 49 127
+    i 7.030 35.499 0.001 1 39 127
+    i 8.305 35.499 0.001 1 49 127
     i 11.044 35.500 -1.000 1 41 78
     i -11.043 35.509 0
-    i 8.347 35.624 0.001 1 49 127
-    i 8.348 35.749 0.001 1 49 127
-    i 8.349 35.875 0.001 1 49 113
-    i 4.036 36.000 0.001 1 37 127
-    i -10.041 36.000 0
-    i 8.350 36.000 0.001 1 49 127
-    i -10.042 36.000 0
+    i 8.306 35.624 0.001 1 49 127
+    i 8.307 35.749 0.001 1 49 127
+    i 8.308 35.875 0.001 1 49 113
+    i 15.004 35.942 -1.000 1 55 75
+    i -15.003 35.981 0
+    i 4.031 36.000 0.001 1 37 127
+    i -10.037 36.000 0
+    i 8.309 36.000 0.001 1 49 127
+    i -10.038 36.000 0
     i 11.045 36.011 -1.000 1 38 78
     i -11.044 36.030 0
-    i 8.351 36.124 0.001 1 49 127
-    i 8.352 36.249 0.001 1 49 127
-    i 8.353 36.374 0.001 1 49 127
-    i 7.035 36.499 0.001 1 39 127
-    i 8.354 36.499 0.001 1 49 127
-    i 8.355 36.624 0.001 1 49 127
-    i 8.356 36.750 0.001 1 49 127
+    i 8.310 36.124 0.001 1 49 127
+    i 8.311 36.249 0.001 1 49 127
+    i 8.312 36.374 0.001 1 49 127
+    i 7.031 36.499 0.001 1 39 127
+    i 8.313 36.499 0.001 1 49 127
+    i 8.314 36.624 0.001 1 49 127
+    i 8.315 36.750 0.001 1 49 127
     i 11.046 36.760 -1.000 1 36 86
     i -11.045 36.767 0
-    i 8.357 36.875 0.001 1 49 127
-    i 4.037 37.000 0.001 1 37 127
-    i 8.358 37.000 0.001 1 49 127
-    i 10.043 37.000 -1.000 1 72 127
-    i 10.044 37.000 -1.000 1 76 127
-    i 8.359 37.124 0.001 1 49 127
-    i 8.360 37.249 0.001 1 49 127
+    i 8.316 36.875 0.001 1 49 127
+    i 15.005 36.960 -1.000 1 52 91
+    i -15.004 36.982 0
+    i 4.032 37.000 0.001 1 37 127
+    i 8.317 37.000 0.001 1 49 127
+    i 10.039 37.000 -1.000 1 72 127
+    i 10.040 37.000 -1.000 1 76 127
+    i 8.318 37.124 0.001 1 49 127
+    i 8.319 37.249 0.001 1 49 127
     i -11.046 37.258 0
     i 11.047 37.259 -1.000 1 33 74
-    i 8.361 37.374 0.001 1 49 127
+    i 8.320 37.374 0.001 1 49 127
+    i 7.032 37.499 0.001 1 39 127
+    i 8.321 37.499 0.001 1 49 127
     i 11.048 37.507 -1.000 1 36 91
-    i 7.036 37.499 0.001 1 39 127
-    i 8.362 37.499 0.001 1 49 127
     i -11.047 37.518 0
-    i 8.363 37.624 0.001 1 49 127
-    i 8.364 37.750 0.001 1 49 127
-    i 8.365 37.875 0.001 1 49 113
-    i 4.038 37.999 0.001 1 37 127
-    i 8.366 37.999 0.001 1 49 127
-    i -10.043 37.999 0
-    i -10.044 37.999 0
+    i 8.322 37.624 0.001 1 49 127
+    i 8.323 37.750 0.001 1 49 127
+    i 8.324 37.875 0.001 1 49 113
+    i 15.006 37.885 -1.000 1 53 84
+    i -15.005 37.902 0
+    i -10.039 37.999 0
+    i -10.040 37.999 0
+    i 4.033 37.999 0.001 1 37 127
     i -11.048 37.999 0
+    i 8.325 37.999 0.001 1 49 127
     i 11.049 37.999 -1.000 1 38 81
-    i 8.367 38.124 0.001 1 49 127
-    i 8.368 38.249 0.001 1 49 127
-    i 8.369 38.374 0.001 1 49 127
-    i 8.370 38.499 0.001 1 49 127
-    i 7.037 38.499 0.001 1 39 127
-    i 8.371 38.625 0.001 1 49 127
+    i 8.326 38.124 0.001 1 49 127
+    i 8.327 38.249 0.001 1 49 127
+    i 8.328 38.374 0.001 1 49 127
+    i 7.033 38.499 0.001 1 39 127
+    i 8.329 38.499 0.001 1 49 127
+    i 8.330 38.625 0.001 1 49 127
     i 11.050 38.737 -1.000 1 41 89
+    i 8.331 38.750 0.001 1 49 127
     i -11.049 38.744 0
-    i 8.372 38.750 0.001 1 49 127
-    i 8.373 38.875 0.001 1 49 127
-    i 4.039 38.999 0.001 1 37 127
-    i 8.374 38.999 0.001 1 49 127
-    i 10.045 38.999 -1.000 1 72 127
-    i 10.046 38.999 -1.000 1 76 127
-    i 8.375 39.124 0.001 1 49 127
-    i 8.376 39.249 0.001 1 49 127
+    i 8.332 38.875 0.001 1 49 127
+    i 4.034 38.999 0.001 1 37 127
+    i 8.333 38.999 0.001 1 49 127
+    i 10.041 38.999 -1.000 1 72 127
+    i 10.042 38.999 -1.000 1 76 127
+    i 8.334 39.124 0.001 1 49 127
+    i 8.335 39.249 0.001 1 49 127
     i 11.051 39.253 -1.000 1 38 68
     i -11.050 39.259 0
-    i 8.377 39.374 0.001 1 49 127
-    i 7.038 39.499 0.001 1 39 127
-    i 8.378 39.499 0.001 1 49 127
+    i 8.336 39.374 0.001 1 49 127
+    i 8.337 39.499 0.001 1 49 127
+    i 7.034 39.499 0.001 1 39 127
     i 11.052 39.501 -1.000 1 41 78
     i -11.051 39.510 0
-    i 8.379 39.625 0.001 1 49 127
-    i 8.380 39.750 0.001 1 49 127
-    i 8.381 39.874 0.001 1 49 113
-    i 4.040 39.999 0.001 1 37 127
-    i 8.382 39.999 0.001 1 49 127
-    i -10.045 39.999 0
-    i -10.046 39.999 0
+    i 8.338 39.625 0.001 1 49 127
+    i 8.339 39.750 0.001 1 49 127
+    i 8.340 39.874 0.001 1 49 113
+    i 4.035 39.999 0.001 1 37 127
+    i 8.341 39.999 0.001 1 49 127
+    i -10.041 39.999 0
+    i -10.042 39.999 0
+    i 13.035 39.999 -1.000 1 91 127
     i 11.053 40.012 -1.000 1 38 78
     i -11.052 40.030 0
-    i 8.383 40.124 0.001 1 49 127
-    i 8.384 40.249 0.001 1 49 127
-    i 8.385 40.374 0.001 1 49 127
-    i 7.039 40.500 0.001 1 39 127
-    i 8.386 40.500 0.001 1 49 127
-    i 8.387 40.625 0.001 1 49 127
-    i 8.388 40.750 0.001 1 49 127
+    i -13.035 40.124 0
+    i 13.036 40.124 -1.000 1 93 127
+    i 8.342 40.124 0.001 1 49 127
+    i 8.343 40.249 0.001 1 49 127
+    i -13.036 40.249 0
+    i 13.037 40.249 -1.000 1 89 127
+    i -13.037 40.374 0
+    i 13.038 40.374 -1.000 1 91 127
+    i 8.344 40.374 0.001 1 49 127
+    i 8.345 40.500 0.001 1 49 127
+    i 7.035 40.500 0.001 1 39 127
+    i -13.038 40.500 0
+    i 13.039 40.500 -1.000 1 93 127
+    i 8.346 40.625 0.001 1 49 127
+    i -13.039 40.625 0
+    i 13.040 40.625 -1.000 1 89 127
+    i 8.347 40.750 0.001 1 49 127
+    i -13.040 40.750 0
+    i 13.041 40.750 -1.000 1 91 127
     i 11.054 40.760 -1.000 1 36 86
     i -11.053 40.767 0
-    i 8.389 40.874 0.001 1 49 127
-    i 4.041 40.999 0.001 1 37 127
-    i 8.390 40.999 0.001 1 49 127
-    i 10.047 40.999 -1.000 1 72 127
-    i 10.048 40.999 -1.000 1 76 127
-    i 8.391 41.124 0.001 1 49 127
-    i 8.392 41.249 0.001 1 49 127
+    i 8.348 40.874 0.001 1 49 127
+    i -13.041 40.874 0
+    i 13.042 40.874 -1.000 1 93 127
+    i 10.043 40.999 -1.000 1 72 127
+    i 10.044 40.999 -1.000 1 76 127
+    i -13.042 40.999 0
+    i 13.043 40.999 -1.000 1 89 127
+    i 4.036 40.999 0.001 1 37 127
+    i 8.349 40.999 0.001 1 49 127
+    i -13.043 41.124 0
+    i 13.044 41.124 -1.000 1 91 127
+    i 8.350 41.124 0.001 1 49 127
+    i -13.044 41.249 0
     i -11.054 41.258 0
+    i 13.045 41.249 -1.000 1 93 127
+    i 8.351 41.249 0.001 1 49 127
     i 11.055 41.259 -1.000 1 33 74
-    i 8.393 41.374 0.001 1 49 127
-    i 7.040 41.500 0.001 1 39 127
-    i 8.394 41.500 0.001 1 49 127
+    i -13.045 41.374 0
+    i 13.046 41.374 -1.000 1 89 127
+    i 8.352 41.374 0.001 1 49 127
+    i -13.046 41.500 0
+    i 8.353 41.500 0.001 1 49 127
+    i 7.036 41.500 0.001 1 39 127
+    i 13.047 41.500 -1.000 1 91 127
     i 11.056 41.509 -1.000 1 36 91
     i -11.055 41.517 0
-    i 8.395 41.625 0.001 1 49 127
-    i 8.396 41.749 0.001 1 49 127
-    i 8.397 41.874 0.001 1 49 113
-    i 4.042 41.999 0.001 1 37 127
+    i 8.354 41.625 0.001 1 49 127
+    i -13.047 41.625 0
+    i 13.048 41.625 -1.000 1 93 127
+    i 8.355 41.749 0.001 1 49 127
+    i -13.048 41.749 0
+    i 13.049 41.749 -1.000 1 89 127
+    i -13.049 41.874 0
+    i 13.050 41.874 -1.000 1 91 127
+    i 8.356 41.874 0.001 1 49 113
+    i 4.037 41.999 0.001 1 37 127
+    i 8.357 41.999 0.001 1 49 127
+    i -10.043 41.999 0
     i -11.056 41.999 0
+    i -10.044 41.999 0
     i 11.057 41.999 -1.000 1 38 81
-    i 8.398 41.999 0.001 1 49 127
-    i -10.047 41.999 0
-    i -10.048 41.999 0
-    i 8.399 42.124 0.001 1 49 127
-    i 8.400 42.249 0.001 1 49 127
-    i 8.401 42.375 0.001 1 49 127
-    i 8.402 42.500 0.001 1 49 127
-    i 7.041 42.500 0.001 1 39 127
-    i 8.403 42.625 0.001 1 49 127
+    i -13.050 41.999 0
+    i 13.051 41.999 -1.000 1 93 127
+    i 8.358 42.124 0.001 1 49 127
+    i -13.051 42.124 0
+    i 8.359 42.249 0.001 1 49 127
+    i 8.360 42.375 0.001 1 49 127
+    i 8.361 42.500 0.001 1 49 127
+    i 7.037 42.500 0.001 1 39 127
+    i 8.362 42.625 0.001 1 49 127
     i 11.058 42.738 -1.000 1 41 89
     i -11.057 42.744 0
-    i 8.404 42.749 0.001 1 49 127
-    i 8.405 42.874 0.001 1 49 127
-    i 10.049 42.999 -1.000 1 72 127
-    i 4.043 42.999 0.001 1 37 127
-    i 8.406 42.999 0.001 1 49 127
-    i 10.050 42.999 -1.000 1 76 127
-    i 8.407 43.124 0.001 1 49 127
+    i 8.363 42.749 0.001 1 49 127
+    i 8.364 42.874 0.001 1 49 127
+    i 4.038 42.999 0.001 1 37 127
+    i 8.365 42.999 0.001 1 49 127
+    i 10.045 42.999 -1.000 1 72 127
+    i 10.046 42.999 -1.000 1 76 127
+    i 8.366 43.124 0.001 1 49 127
     i 11.059 43.254 -1.000 1 38 68
-    i 8.408 43.249 0.001 1 49 127
+    i 8.367 43.249 0.001 1 49 127
     i -11.058 43.260 0
-    i 8.409 43.375 0.001 1 49 127
-    i 8.410 43.500 0.001 1 49 127
-    i 7.042 43.500 0.001 1 39 127
+    i 8.368 43.375 0.001 1 49 127
     i 11.060 43.501 -1.000 1 41 78
     i -11.059 43.510 0
-    i 8.411 43.624 0.001 1 49 127
-    i 8.412 43.749 0.001 1 49 127
-    i 8.413 43.874 0.001 1 49 113
-    i 4.044 43.999 0.001 1 37 127
-    i -10.049 43.999 0
-    i 8.414 43.999 0.001 1 49 127
-    i -10.050 43.999 0
+    i 8.369 43.500 0.001 1 49 127
+    i 7.038 43.500 0.001 1 39 127
+    i 8.370 43.624 0.001 1 49 127
+    i 8.371 43.749 0.001 1 49 127
+    i 8.372 43.874 0.001 1 49 113
+    i 4.039 43.999 0.001 1 37 127
+    i 8.373 43.999 0.001 1 49 127
+    i -10.045 43.999 0
+    i -10.046 43.999 0
     i 11.061 44.012 -1.000 1 38 78
     i -11.060 44.029 0
-    i 8.415 44.124 0.001 1 49 127
-    i 8.416 44.250 0.001 1 49 127
-    i 8.417 44.375 0.001 1 49 127
-    i 7.043 44.500 0.001 1 39 127
-    i 8.418 44.500 0.001 1 49 127
-    i 8.419 44.624 0.001 1 49 127
-    i 8.420 44.749 0.001 1 49 127
+    i 8.374 44.124 0.001 1 49 127
+    i 8.375 44.250 0.001 1 49 127
+    i 8.376 44.375 0.001 1 49 127
+    i 8.377 44.500 0.001 1 49 127
+    i 7.039 44.500 0.001 1 39 127
+    i 8.378 44.624 0.001 1 49 127
+    i 8.379 44.749 0.001 1 49 127
     i 11.062 44.761 -1.000 1 36 86
     i -11.061 44.768 0
-    i 8.421 44.874 0.001 1 49 127
-    i 4.045 44.999 0.001 1 37 127
-    i 8.422 44.999 0.001 1 49 127
-    i 10.051 44.999 -1.000 1 72 127
-    i 10.052 44.999 -1.000 1 76 127
-    i 8.423 45.124 0.001 1 49 127
-    i 8.424 45.250 0.001 1 49 127
+    i 8.380 44.874 0.001 1 49 127
+    i 10.047 44.999 -1.000 1 72 127
+    i 10.048 44.999 -1.000 1 76 127
+    i 4.040 44.999 0.001 1 37 127
+    i 8.381 44.999 0.001 1 49 127
+    i 8.382 45.124 0.001 1 49 127
+    i 8.383 45.250 0.001 1 49 127
     i -11.062 45.257 0
     i 11.063 45.259 -1.000 1 33 74
-    i 8.425 45.375 0.001 1 49 127
-    i 8.426 45.500 0.001 1 49 127
-    i 7.044 45.500 0.001 1 39 127
+    i 8.384 45.375 0.001 1 49 127
+    i 7.040 45.500 0.001 1 39 127
+    i -15.006 45.500 0
+    i 8.385 45.500 0.001 1 49 127
     i 11.064 45.508 -1.000 1 36 91
     i -11.063 45.517 0
-    i 8.427 45.624 0.001 1 49 127
-    i 8.428 45.749 0.001 1 49 127
-    i 8.429 45.874 0.001 1 49 113
+    i 8.386 45.624 0.001 1 49 127
+    i 8.387 45.749 0.001 1 49 127
+    i 8.388 45.874 0.001 1 49 113
     i 6.001 45.999 0.001 1 37 127
-    i -11.064 45.999 0
-    i -10.051 45.999 0
     i 5.001 45.999 0.001 1 37 127
+    i -10.047 45.999 0
+    i -11.064 45.999 0
+    i 14.001 45.997 -1.000 1 62 77
     i 11.065 45.999 -1.000 1 38 83
-    i -10.052 45.999 0
+    i -10.048 45.999 0
     i -11.065 46.312 0
-    i 10.053 46.999 -1.000 1 72 127
-    i 10.054 46.999 -1.000 1 76 127
-    i 5.002 47.749 0.001 1 37 127
+    i 10.049 46.999 -1.000 1 72 127
+    i 10.050 46.999 -1.000 1 76 127
     i 6.002 47.749 0.001 1 37 127
+    i 5.002 47.749 0.001 1 37 127
+    i -10.049 48.000 0
     i 6.003 48.000 0.001 1 37 127
     i 5.003 48.000 0.001 1 37 127
-    i -10.053 48.000 0
-    i -10.054 48.000 0
-    i 10.055 49.000 -1.000 1 72 127
-    i 10.056 49.000 -1.000 1 76 127
+    i -10.050 48.000 0
+    i 14.002 48.007 -1.000 1 64 85
+    i -14.001 48.032 0
+    i 10.051 49.000 -1.000 1 72 127
+    i 10.052 49.000 -1.000 1 76 127
+    i 14.003 49.971 -1.000 1 65 97
+    i -14.002 49.998 0
     i 6.004 50.000 0.001 1 37 127
     i 5.004 50.000 0.001 1 37 127
-    i -10.055 50.000 0
-    i -10.056 50.000 0
-    i 10.057 51.000 -1.000 1 72 127
-    i 10.058 51.000 -1.000 1 76 127
-    i 6.005 51.749 0.001 1 37 127
+    i -10.051 50.000 0
+    i -10.052 50.000 0
+    i 10.053 51.000 -1.000 1 72 127
+    i 10.054 51.000 -1.000 1 76 127
     i 5.005 51.749 0.001 1 37 127
+    i 6.005 51.749 0.001 1 37 127
+    i 14.004 51.963 -1.000 1 64 85
+    i -14.003 51.988 0
     i 5.006 52.000 0.001 1 37 127
+    i -10.053 52.000 0
     i 6.006 52.000 0.001 1 37 127
-    i -10.057 52.000 0
-    i -10.058 52.000 0
-    i 10.059 53.000 -1.000 1 72 127
-    i 10.060 53.000 -1.000 1 76 127
-    i 12.001 53.999 -1.000 1 38 81
+    i -10.054 52.000 0
+    i 14.005 52.960 -1.000 1 60 88
+    i -14.004 52.976 0
+    i 10.055 53.000 -1.000 1 72 127
+    i 10.056 53.000 -1.000 1 76 127
+    i 14.006 53.972 -1.000 1 62 92
+    i -14.005 53.986 0
     i 5.007 53.999 0.001 1 37 127
     i 6.007 53.999 0.001 1 37 127
-    i -10.059 53.999 0
-    i -10.060 53.999 0
+    i -10.055 53.999 0
+    i -10.056 53.999 0
+    i 12.001 53.999 -1.000 1 38 81
     i 9.001 53.999 0.001 1 49 127
     i 9.002 54.062 0.001 1 49 127
     i 9.003 54.124 0.001 1 49 127
@@ -9126,9 +9822,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.014 54.812 0.001 1 49 127
     i 9.015 54.875 0.001 1 49 127
     i 9.016 54.937 0.001 1 49 127
-    i 10.061 54.999 -1.000 1 72 127
     i 9.017 54.999 0.001 1 49 127
-    i 10.062 54.999 -1.000 1 76 127
+    i 10.057 54.999 -1.000 1 72 127
+    i 10.058 54.999 -1.000 1 76 127
     i 9.018 55.062 0.001 1 49 127
     i 9.019 55.124 0.001 1 49 127
     i 9.020 55.187 0.001 1 49 127
@@ -9138,23 +9834,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.022 55.311 0.001 1 49 127
     i 9.023 55.374 0.001 1 49 127
     i 9.024 55.436 0.001 1 49 127
-    i 12.004 55.501 -1.000 1 41 78
     i 9.025 55.499 0.001 1 49 127
+    i 12.004 55.501 -1.000 1 41 78
     i -12.003 55.510 0
     i 9.026 55.562 0.001 1 49 127
     i 9.027 55.625 0.001 1 49 127
     i 9.028 55.687 0.001 1 49 127
-    i 5.008 55.750 0.001 1 37 127
     i 9.029 55.750 0.001 1 49 127
     i 6.008 55.750 0.001 1 37 127
+    i 5.008 55.750 0.001 1 37 127
     i 9.030 55.812 0.001 1 49 127
     i 9.031 55.874 0.001 1 49 127
     i 9.032 55.937 0.001 1 49 127
     i 9.033 55.999 0.001 1 49 127
-    i 6.009 55.999 0.001 1 37 127
-    i -10.061 55.999 0
     i 5.009 55.999 0.001 1 37 127
-    i -10.062 55.999 0
+    i -10.057 55.999 0
+    i 6.009 55.999 0.001 1 37 127
+    i -10.058 55.999 0
     i 12.005 56.012 -1.000 1 38 78
     i -12.004 56.030 0
     i 9.034 56.062 0.001 1 49 127
@@ -9164,8 +9860,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.038 56.311 0.001 1 49 127
     i 9.039 56.374 0.001 1 49 127
     i 9.040 56.436 0.001 1 49 127
-    i -12.005 56.500 0
     i 9.041 56.500 0.001 1 49 127
+    i -12.005 56.500 0
     i 9.042 56.562 0.001 1 49 127
     i 9.043 56.625 0.001 1 49 127
     i 9.044 56.687 0.001 1 49 127
@@ -9173,9 +9869,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.046 56.812 0.001 1 49 127
     i 9.047 56.874 0.001 1 49 127
     i 9.048 56.937 0.001 1 49 127
-    i 10.063 56.999 -1.000 1 72 127
     i 9.049 56.999 0.001 1 49 127
-    i 10.064 56.999 -1.000 1 76 127
+    i 10.059 56.999 -1.000 1 72 127
+    i 10.060 56.999 -1.000 1 76 127
     i 9.050 57.062 0.001 1 49 127
     i 9.051 57.124 0.001 1 49 127
     i 9.052 57.186 0.001 1 49 127
@@ -9191,12 +9887,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.062 57.812 0.001 1 49 127
     i 9.063 57.874 0.001 1 49 127
     i 9.064 57.937 0.001 1 49 127
-    i 9.065 57.999 0.001 1 49 127
+    i 12.006 57.999 -1.000 1 38 81
     i 5.010 57.999 0.001 1 37 127
     i 6.010 57.999 0.001 1 37 127
-    i -10.063 57.999 0
-    i 12.006 57.999 -1.000 1 38 81
-    i -10.064 57.999 0
+    i 9.065 57.999 0.001 1 49 127
+    i -10.059 57.999 0
+    i -10.060 57.999 0
     i 9.066 58.061 0.001 1 49 127
     i 9.067 58.124 0.001 1 49 127
     i 9.068 58.186 0.001 1 49 127
@@ -9215,8 +9911,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.079 58.874 0.001 1 49 127
     i 9.080 58.937 0.001 1 49 127
     i 9.081 58.999 0.001 1 49 127
-    i 10.065 58.999 -1.000 1 72 127
-    i 10.066 58.999 -1.000 1 76 127
+    i 10.061 58.999 -1.000 1 72 127
+    i 10.062 58.999 -1.000 1 76 127
     i 9.082 59.061 0.001 1 49 127
     i 9.083 59.124 0.001 1 49 127
     i 9.084 59.186 0.001 1 49 127
@@ -9232,17 +9928,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.090 59.562 0.001 1 49 127
     i 9.091 59.624 0.001 1 49 127
     i 9.092 59.687 0.001 1 49 127
-    i 5.011 59.749 0.001 1 37 127
-    i 6.011 59.749 0.001 1 37 127
     i 9.093 59.749 0.001 1 49 127
+    i 6.011 59.749 0.001 1 37 127
+    i 5.011 59.749 0.001 1 37 127
     i 9.094 59.812 0.001 1 49 127
     i 9.095 59.874 0.001 1 49 127
     i 9.096 59.937 0.001 1 49 127
-    i 9.097 59.999 0.001 1 49 127
     i 6.012 59.999 0.001 1 37 127
     i 5.012 59.999 0.001 1 37 127
-    i -10.065 59.999 0
-    i -10.066 59.999 0
+    i 9.097 59.999 0.001 1 49 127
+    i -10.061 59.999 0
+    i -10.062 59.999 0
     i 12.010 60.012 -1.000 1 38 78
     i -12.009 60.029 0
     i 9.098 60.061 0.001 1 49 127
@@ -9262,8 +9958,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.111 60.874 0.001 1 49 127
     i 9.112 60.936 0.001 1 49 127
     i 9.113 60.999 0.001 1 49 127
-    i 10.067 60.999 -1.000 1 72 127
-    i 10.068 60.999 -1.000 1 76 127
+    i 10.063 60.999 -1.000 1 72 127
+    i 10.064 60.999 -1.000 1 76 127
     i 9.114 61.061 0.001 1 49 127
     i 9.115 61.124 0.001 1 49 127
     i 9.116 61.187 0.001 1 49 127
@@ -9271,6 +9967,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.118 61.312 0.001 1 49 127
     i 9.119 61.375 0.001 1 49 127
     i 9.120 61.437 0.001 1 49 127
+    i -14.006 61.500 0
     i 9.121 61.500 0.001 1 49 127
     i 9.122 61.562 0.001 1 49 127
     i 9.123 61.624 0.001 1 49 127
@@ -9279,3990 +9976,4619 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.126 61.812 0.001 1 49 127
     i 9.127 61.874 0.001 1 49 127
     i 9.128 61.936 0.001 1 49 127
-    i 5.013 61.999 0.001 1 37 127
-    i 8.430 61.999 0.001 1 49 127
-    i 4.046 61.999 0.001 1 37 127
+    i 15.007 61.951 -1.000 1 53 74
     i 6.013 61.999 0.001 1 37 127
+    i 5.013 61.999 0.001 1 37 127
+    i 4.041 61.999 0.001 1 37 127
+    i 8.389 61.999 0.001 1 49 127
     i 9.129 61.999 0.001 1 49 127
-    i -10.067 61.999 0
+    i 14.007 61.999 -1.000 1 62 80
+    i -10.063 61.999 0
     i 11.066 61.999 -1.000 1 38 81
-    i -10.068 61.999 0
+    i -10.064 61.999 0
     i 9.130 62.061 0.001 1 49 127
+    i 8.390 62.125 0.001 1 49 127
     i 9.131 62.125 0.001 1 49 127
-    i 8.431 62.125 0.001 1 49 127
     i 9.132 62.187 0.001 1 49 127
+    i 8.391 62.250 0.001 1 49 127
     i 9.133 62.250 0.001 1 49 127
-    i 8.432 62.250 0.001 1 49 127
     i 9.134 62.312 0.001 1 49 127
     i 9.135 62.375 0.001 1 49 127
-    i 8.433 62.375 0.001 1 49 127
+    i 8.392 62.375 0.001 1 49 127
     i 9.136 62.437 0.001 1 49 127
-    i 8.434 62.499 0.001 1 49 127
-    i 7.045 62.499 0.001 1 39 127
+    i 8.393 62.499 0.001 1 49 127
+    i 7.041 62.499 0.001 1 39 127
     i 9.137 62.499 0.001 1 49 127
     i 9.138 62.562 0.001 1 49 127
-    i 8.435 62.624 0.001 1 49 127
+    i 8.394 62.624 0.001 1 49 127
     i 9.139 62.624 0.001 1 49 127
     i 9.140 62.687 0.001 1 49 127
     i 11.067 62.737 -1.000 1 41 89
     i -11.066 62.745 0
+    i 8.395 62.749 0.001 1 49 127
     i 9.141 62.749 0.001 1 49 127
-    i 8.436 62.749 0.001 1 49 127
     i 9.142 62.811 0.001 1 49 127
-    i 8.437 62.874 0.001 1 49 127
+    i 8.396 62.874 0.001 1 49 127
     i 9.143 62.874 0.001 1 49 127
     i 9.144 62.936 0.001 1 49 127
-    i 4.047 62.999 0.001 1 37 127
-    i 8.438 62.999 0.001 1 49 127
+    i 8.397 62.999 0.001 1 49 127
+    i 10.065 62.999 -1.000 1 72 127
     i 9.145 62.999 0.001 1 49 127
-    i 10.069 62.999 -1.000 1 72 127
-    i 10.070 62.999 -1.000 1 76 127
+    i 10.066 62.999 -1.000 1 76 127
+    i 4.042 62.999 0.001 1 37 127
     i 9.146 63.062 0.001 1 49 127
     i 9.147 63.125 0.001 1 49 127
-    i 8.439 63.125 0.001 1 49 127
+    i 8.398 63.125 0.001 1 49 127
     i 9.148 63.187 0.001 1 49 127
-    i 9.149 63.250 0.001 1 49 127
     i 11.068 63.254 -1.000 1 38 68
-    i 8.440 63.250 0.001 1 49 127
+    i 9.149 63.250 0.001 1 49 127
+    i 8.399 63.250 0.001 1 49 127
     i -11.067 63.260 0
     i 9.150 63.312 0.001 1 49 127
-    i 8.441 63.375 0.001 1 49 127
     i 9.151 63.375 0.001 1 49 127
+    i 8.400 63.375 0.001 1 49 127
     i 9.152 63.437 0.001 1 49 127
-    i 7.046 63.499 0.001 1 39 127
-    i 8.442 63.499 0.001 1 49 127
+    i 7.042 63.499 0.001 1 39 127
     i 9.153 63.499 0.001 1 49 127
+    i 8.401 63.499 0.001 1 49 127
     i 11.069 63.501 -1.000 1 41 78
     i -11.068 63.509 0
     i 9.154 63.562 0.001 1 49 127
     i 9.155 63.624 0.001 1 49 127
-    i 8.443 63.624 0.001 1 49 127
+    i 8.402 63.624 0.001 1 49 127
     i 9.156 63.687 0.001 1 49 127
-    i 8.444 63.749 0.001 1 49 127
+    i 6.014 63.749 0.001 1 37 127
     i 5.014 63.749 0.001 1 37 127
     i 9.157 63.749 0.001 1 49 127
-    i 6.014 63.749 0.001 1 37 127
+    i 8.403 63.749 0.001 1 49 127
     i 9.158 63.811 0.001 1 49 127
+    i 8.404 63.874 0.001 1 49 113
     i 9.159 63.874 0.001 1 49 127
-    i 8.445 63.874 0.001 1 49 113
     i 9.160 63.936 0.001 1 49 127
-    i 4.048 64.000 0.001 1 37 127
-    i 5.015 64.000 0.001 1 37 127
-    i 6.015 64.000 0.001 1 37 127
-    i 8.446 64.000 0.001 1 49 127
+    i 15.008 63.939 -1.000 1 55 91
+    i -15.007 63.970 0
+    i -14.007 63.971 0
+    i 14.008 63.975 -1.000 1 64 100
+    i 8.405 64.000 0.001 1 49 127
     i 9.161 64.000 0.001 1 49 127
-    i -10.069 64.000 0
-    i -10.070 64.000 0
+    i -10.065 64.000 0
+    i -10.066 64.000 0
+    i 4.043 64.000 0.001 1 37 127
+    i 6.015 64.000 0.001 1 37 127
+    i 5.015 64.000 0.001 1 37 127
     i 11.070 64.012 -1.000 1 38 78
     i -11.069 64.030 0
     i 9.162 64.062 0.001 1 49 127
-    i 8.447 64.125 0.001 1 49 127
     i 9.163 64.125 0.001 1 49 127
+    i 8.406 64.125 0.001 1 49 127
     i 9.164 64.187 0.001 1 49 127
     i 9.165 64.250 0.001 1 49 127
-    i 8.448 64.250 0.001 1 49 127
+    i 8.407 64.250 0.001 1 49 127
     i 9.166 64.312 0.001 1 49 127
     i 9.167 64.374 0.001 1 49 127
-    i 8.449 64.374 0.001 1 49 127
+    i 8.408 64.374 0.001 1 49 127
     i 9.168 64.437 0.001 1 49 127
-    i 7.047 64.499 0.001 1 39 127
+    i 8.409 64.499 0.001 1 49 127
+    i 7.043 64.499 0.001 1 39 127
     i 9.169 64.499 0.001 1 49 127
-    i 8.450 64.499 0.001 1 49 127
     i 9.170 64.562 0.001 1 49 127
     i 9.171 64.624 0.001 1 49 127
-    i 8.451 64.624 0.001 1 49 127
+    i 8.410 64.624 0.001 1 49 127
     i 9.172 64.686 0.001 1 49 127
-    i 8.452 64.749 0.001 1 49 127
+    i 8.411 64.749 0.001 1 49 127
     i 9.173 64.749 0.001 1 49 127
     i 11.071 64.760 -1.000 1 36 86
     i -11.070 64.768 0
     i 9.174 64.811 0.001 1 49 127
-    i 8.453 64.874 0.001 1 49 127
+    i 8.412 64.874 0.001 1 49 127
     i 9.175 64.874 0.001 1 49 127
     i 9.176 64.938 0.001 1 49 127
-    i 4.049 65.000 0.001 1 37 127
+    i 4.044 65.000 0.001 1 37 127
+    i 8.413 65.000 0.001 1 49 127
     i 9.177 65.000 0.001 1 49 127
-    i 10.071 65.000 -1.000 1 72 127
-    i 10.072 65.000 -1.000 1 76 127
-    i 8.454 65.000 0.001 1 49 127
+    i 10.067 65.000 -1.000 1 72 127
+    i 10.068 65.000 -1.000 1 76 127
     i 9.178 65.062 0.001 1 49 127
+    i 8.414 65.125 0.001 1 49 127
     i 9.179 65.125 0.001 1 49 127
-    i 8.455 65.125 0.001 1 49 127
     i 9.180 65.187 0.001 1 49 127
+    i 8.415 65.250 0.001 1 49 127
     i 9.181 65.250 0.001 1 49 127
-    i 8.456 65.250 0.001 1 49 127
     i -11.071 65.258 0
     i 11.072 65.258 -1.000 1 33 74
     i 9.182 65.312 0.001 1 49 127
-    i 8.457 65.374 0.001 1 49 127
+    i 8.416 65.374 0.001 1 49 127
     i 9.183 65.374 0.001 1 49 127
     i 9.184 65.437 0.001 1 49 127
-    i 8.458 65.499 0.001 1 49 127
-    i 7.048 65.499 0.001 1 39 127
     i 9.185 65.499 0.001 1 49 127
+    i 7.044 65.499 0.001 1 39 127
+    i 8.417 65.499 0.001 1 49 127
     i 11.073 65.508 -1.000 1 36 91
     i -11.072 65.518 0
     i 9.186 65.562 0.001 1 49 127
     i 9.187 65.624 0.001 1 49 127
-    i 8.459 65.624 0.001 1 49 127
+    i 8.418 65.624 0.001 1 49 127
     i 9.188 65.686 0.001 1 49 127
+    i 8.419 65.749 0.001 1 49 127
     i 9.189 65.749 0.001 1 49 127
-    i 8.460 65.749 0.001 1 49 127
     i 9.190 65.811 0.001 1 49 127
-    i 8.461 65.875 0.001 1 49 113
+    i 8.420 65.875 0.001 1 49 113
     i 9.191 65.875 0.001 1 49 127
     i 9.192 65.937 0.001 1 49 127
-    i 5.016 66.000 0.001 1 37 127
-    i 4.050 66.000 0.001 1 37 127
-    i 6.016 66.000 0.001 1 37 127
-    i 8.462 66.000 0.001 1 49 127
+    i 14.009 65.955 -1.000 1 65 103
+    i 15.009 65.965 -1.000 1 57 101
+    i -15.008 65.971 0
+    i -14.008 65.981 0
+    i 8.421 66.000 0.001 1 49 127
     i 9.193 66.000 0.001 1 49 127
-    i -10.071 66.000 0
-    i -10.072 66.000 0
+    i -10.067 66.000 0
+    i -10.068 66.000 0
     i -11.073 66.000 0
     i 11.074 66.000 -1.000 1 38 81
+    i 5.016 66.000 0.001 1 37 127
+    i 4.045 66.000 0.001 1 37 127
+    i 6.016 66.000 0.001 1 37 127
     i 9.194 66.062 0.001 1 49 127
-    i 8.463 66.125 0.001 1 49 127
+    i 8.422 66.125 0.001 1 49 127
     i 9.195 66.125 0.001 1 49 127
     i 9.196 66.187 0.001 1 49 127
-    i 8.464 66.249 0.001 1 49 127
+    i 8.423 66.249 0.001 1 49 127
     i 9.197 66.249 0.001 1 49 127
     i 9.198 66.312 0.001 1 49 127
-    i 8.465 66.374 0.001 1 49 127
+    i 8.424 66.374 0.001 1 49 127
     i 9.199 66.374 0.001 1 49 127
     i 9.200 66.437 0.001 1 49 127
-    i 7.049 66.499 0.001 1 39 127
-    i 8.466 66.499 0.001 1 49 127
+    i 7.045 66.499 0.001 1 39 127
     i 9.201 66.499 0.001 1 49 127
+    i 8.425 66.499 0.001 1 49 127
     i 9.202 66.561 0.001 1 49 127
-    i 8.467 66.624 0.001 1 49 127
+    i 8.426 66.624 0.001 1 49 127
     i 9.203 66.624 0.001 1 49 127
     i 9.204 66.686 0.001 1 49 127
     i 11.075 66.737 -1.000 1 41 89
-    i 8.468 66.749 0.001 1 49 127
-    i 9.205 66.749 0.001 1 49 127
     i -11.074 66.744 0
+    i 8.427 66.749 0.001 1 49 127
+    i 9.205 66.749 0.001 1 49 127
     i 9.206 66.811 0.001 1 49 127
+    i 8.428 66.875 0.001 1 49 127
     i 9.207 66.875 0.001 1 49 127
-    i 8.469 66.875 0.001 1 49 127
     i 9.208 66.937 0.001 1 49 127
-    i 10.073 67.000 -1.000 1 72 127
-    i 10.074 67.000 -1.000 1 76 127
+    i 8.429 67.000 0.001 1 49 127
     i 9.209 67.000 0.001 1 49 127
-    i 4.051 67.000 0.001 1 37 127
-    i 8.470 67.000 0.001 1 49 127
+    i 10.069 67.000 -1.000 1 72 127
+    i 10.070 67.000 -1.000 1 76 127
+    i 4.046 67.000 0.001 1 37 127
     i 9.210 67.062 0.001 1 49 127
-    i 8.471 67.125 0.001 1 49 127
+    i 8.430 67.125 0.001 1 49 127
     i 9.211 67.125 0.001 1 49 127
     i 9.212 67.187 0.001 1 49 127
-    i 8.472 67.249 0.001 1 49 127
     i 9.213 67.249 0.001 1 49 127
+    i 8.431 67.249 0.001 1 49 127
     i 11.076 67.254 -1.000 1 38 68
     i -11.075 67.260 0
     i 9.214 67.312 0.001 1 49 127
-    i 8.473 67.374 0.001 1 49 127
+    i 8.432 67.374 0.001 1 49 127
     i 9.215 67.374 0.001 1 49 127
     i 9.216 67.437 0.001 1 49 127
-    i 7.050 67.499 0.001 1 39 127
-    i 8.474 67.499 0.001 1 49 127
     i 11.077 67.500 -1.000 1 41 78
+    i 7.046 67.499 0.001 1 39 127
+    i 8.433 67.499 0.001 1 49 127
     i 9.217 67.499 0.001 1 49 127
     i -11.076 67.509 0
     i 9.218 67.561 0.001 1 49 127
+    i 8.434 67.624 0.001 1 49 127
     i 9.219 67.624 0.001 1 49 127
-    i 8.475 67.624 0.001 1 49 127
     i 9.220 67.686 0.001 1 49 127
+    i 8.435 67.749 0.001 1 49 127
     i 5.017 67.749 0.001 1 37 127
-    i 6.017 67.749 0.001 1 37 127
-    i 8.476 67.749 0.001 1 49 127
     i 9.221 67.749 0.001 1 49 127
+    i 6.017 67.749 0.001 1 37 127
     i 9.222 67.812 0.001 1 49 127
-    i 8.477 67.875 0.001 1 49 113
+    i 8.436 67.875 0.001 1 49 113
     i 9.223 67.875 0.001 1 49 127
     i 9.224 67.937 0.001 1 49 127
-    i 9.225 68.000 0.001 1 49 127
-    i -10.073 68.000 0
-    i -10.074 68.000 0
+    i 15.010 67.942 -1.000 1 55 75
+    i 14.010 67.955 -1.000 1 64 100
+    i -14.009 67.978 0
+    i -15.009 67.981 0
+    i 4.047 68.000 0.001 1 37 127
     i 5.018 68.000 0.001 1 37 127
-    i 4.052 68.000 0.001 1 37 127
-    i 8.478 68.000 0.001 1 49 127
+    i 8.437 68.000 0.001 1 49 127
+    i -10.069 68.000 0
     i 6.018 68.000 0.001 1 37 127
+    i 9.225 68.000 0.001 1 49 127
+    i -10.070 68.000 0
     i 11.078 68.011 -1.000 1 38 78
     i -11.077 68.030 0
     i 9.226 68.062 0.001 1 49 127
-    i 8.479 68.124 0.001 1 49 127
     i 9.227 68.124 0.001 1 49 127
+    i 8.438 68.124 0.001 1 49 127
     i 9.228 68.187 0.001 1 49 127
-    i 8.480 68.249 0.001 1 49 127
+    i 8.439 68.249 0.001 1 49 127
     i 9.229 68.249 0.001 1 49 127
     i 9.230 68.312 0.001 1 49 127
-    i 8.481 68.374 0.001 1 49 127
     i 9.231 68.374 0.001 1 49 127
+    i 8.440 68.374 0.001 1 49 127
     i 9.232 68.436 0.001 1 49 127
+    i 7.047 68.499 0.001 1 39 127
     i 9.233 68.499 0.001 1 49 127
-    i 7.051 68.499 0.001 1 39 127
-    i 8.482 68.499 0.001 1 49 127
+    i 8.441 68.499 0.001 1 49 127
     i 9.234 68.561 0.001 1 49 127
     i 9.235 68.624 0.001 1 49 127
-    i 8.483 68.624 0.001 1 49 127
+    i 8.442 68.624 0.001 1 49 127
     i 9.236 68.686 0.001 1 49 127
-    i 8.484 68.750 0.001 1 49 127
     i 9.237 68.750 0.001 1 49 127
+    i 8.443 68.750 0.001 1 49 127
     i 11.079 68.760 -1.000 1 36 86
     i -11.078 68.767 0
     i 9.238 68.812 0.001 1 49 127
-    i 8.485 68.875 0.001 1 49 127
+    i 8.444 68.875 0.001 1 49 127
     i 9.239 68.875 0.001 1 49 127
     i 9.240 68.937 0.001 1 49 127
+    i 14.011 68.955 -1.000 1 60 90
+    i 15.011 68.960 -1.000 1 52 91
+    i -14.010 68.969 0
+    i -15.010 68.982 0
+    i 8.445 69.000 0.001 1 49 127
     i 9.241 69.000 0.001 1 49 127
-    i 10.075 69.000 -1.000 1 72 127
-    i 10.076 69.000 -1.000 1 76 127
-    i 4.053 69.000 0.001 1 37 127
-    i 8.486 69.000 0.001 1 49 127
+    i 10.071 69.000 -1.000 1 72 127
+    i 4.048 69.000 0.001 1 37 127
+    i 10.072 69.000 -1.000 1 76 127
     i 9.242 69.062 0.001 1 49 127
+    i 8.446 69.124 0.001 1 49 127
     i 9.243 69.124 0.001 1 49 127
-    i 8.487 69.124 0.001 1 49 127
     i 9.244 69.187 0.001 1 49 127
-    i 8.488 69.249 0.001 1 49 127
+    i 8.447 69.249 0.001 1 49 127
     i 9.245 69.249 0.001 1 49 127
     i -11.079 69.258 0
     i 11.080 69.259 -1.000 1 33 74
     i 9.246 69.312 0.001 1 49 127
-    i 8.489 69.374 0.001 1 49 127
+    i 8.448 69.374 0.001 1 49 127
     i 9.247 69.374 0.001 1 49 127
     i 9.248 69.436 0.001 1 49 127
-    i 8.490 69.499 0.001 1 49 127
+    i 8.449 69.499 0.001 1 49 127
     i 9.249 69.499 0.001 1 49 127
-    i 7.052 69.499 0.001 1 39 127
+    i 7.048 69.499 0.001 1 39 127
     i 11.081 69.507 -1.000 1 36 91
     i -11.080 69.518 0
     i 9.250 69.561 0.001 1 49 127
     i 9.251 69.624 0.001 1 49 127
-    i 8.491 69.624 0.001 1 49 127
+    i 8.450 69.624 0.001 1 49 127
     i 9.252 69.687 0.001 1 49 127
-    i 8.492 69.750 0.001 1 49 127
     i 9.253 69.750 0.001 1 49 127
+    i 8.451 69.750 0.001 1 49 127
     i 9.254 69.812 0.001 1 49 127
-    i 8.493 69.875 0.001 1 49 113
     i 9.255 69.875 0.001 1 49 127
+    i 8.452 69.875 0.001 1 49 113
+    i 15.012 69.885 -1.000 1 53 84
+    i -15.011 69.902 0
+    i -14.011 69.914 0
     i 9.256 69.937 0.001 1 49 127
-    i 8.494 69.999 0.001 1 49 127
-    i 9.257 69.999 0.001 1 49 127
-    i -10.075 69.999 0
-    i -10.076 69.999 0
-    i -11.081 69.999 0
+    i 14.012 69.969 -1.000 1 62 92
     i 5.019 69.999 0.001 1 37 127
     i 6.019 69.999 0.001 1 37 127
+    i -11.081 69.999 0
+    i 8.453 69.999 0.001 1 49 127
     i 11.082 69.999 -1.000 1 38 81
-    i 4.054 69.999 0.001 1 37 127
+    i 9.257 69.999 0.001 1 49 127
+    i 4.049 69.999 0.001 1 37 127
+    i -10.071 69.999 0
+    i 13.052 69.999 -1.000 1 91 127
+    i -10.072 69.999 0
     i 9.258 70.062 0.001 1 49 127
-    i 8.495 70.124 0.001 1 49 127
+    i 8.454 70.124 0.001 1 49 127
     i 9.259 70.124 0.001 1 49 127
+    i -13.052 70.124 0
+    i 13.053 70.124 -1.000 1 93 127
     i 9.260 70.187 0.001 1 49 127
-    i 8.496 70.249 0.001 1 49 127
+    i 8.455 70.249 0.001 1 49 127
     i 9.261 70.249 0.001 1 49 127
+    i -13.053 70.249 0
+    i 13.054 70.249 -1.000 1 89 127
     i 9.262 70.311 0.001 1 49 127
-    i 8.497 70.374 0.001 1 49 127
+    i -13.054 70.374 0
+    i 13.055 70.374 -1.000 1 91 127
+    i 8.456 70.374 0.001 1 49 127
     i 9.263 70.374 0.001 1 49 127
     i 9.264 70.436 0.001 1 49 127
+    i -13.055 70.499 0
+    i 13.056 70.499 -1.000 1 93 127
+    i 7.049 70.499 0.001 1 39 127
     i 9.265 70.499 0.001 1 49 127
-    i 7.053 70.499 0.001 1 39 127
-    i 8.498 70.499 0.001 1 49 127
+    i 8.457 70.499 0.001 1 49 127
     i 9.266 70.561 0.001 1 49 127
-    i 8.499 70.625 0.001 1 49 127
+    i 8.458 70.625 0.001 1 49 127
     i 9.267 70.625 0.001 1 49 127
+    i -13.056 70.625 0
+    i 13.057 70.625 -1.000 1 89 127
     i 9.268 70.687 0.001 1 49 127
     i 11.083 70.737 -1.000 1 41 89
     i -11.082 70.744 0
     i 9.269 70.750 0.001 1 49 127
-    i 8.500 70.750 0.001 1 49 127
+    i 8.459 70.750 0.001 1 49 127
+    i -13.057 70.750 0
+    i 13.058 70.750 -1.000 1 91 127
     i 9.270 70.812 0.001 1 49 127
-    i 8.501 70.875 0.001 1 49 127
+    i 8.460 70.875 0.001 1 49 127
     i 9.271 70.875 0.001 1 49 127
+    i -13.058 70.875 0
+    i 13.059 70.875 -1.000 1 93 127
     i 9.272 70.937 0.001 1 49 127
-    i 4.055 70.999 0.001 1 37 127
     i 9.273 70.999 0.001 1 49 127
-    i 8.502 70.999 0.001 1 49 127
-    i 10.077 70.999 -1.000 1 72 127
-    i 10.078 70.999 -1.000 1 76 127
+    i 10.073 70.999 -1.000 1 72 127
+    i 10.074 70.999 -1.000 1 76 127
+    i -13.059 70.999 0
+    i 13.060 70.999 -1.000 1 89 127
+    i 4.050 70.999 0.001 1 37 127
+    i 8.461 70.999 0.001 1 49 127
     i 9.274 71.062 0.001 1 49 127
-    i 8.503 71.124 0.001 1 49 127
+    i -13.060 71.124 0
+    i 13.061 71.124 -1.000 1 91 127
     i 9.275 71.124 0.001 1 49 127
+    i 8.462 71.124 0.001 1 49 127
     i 9.276 71.187 0.001 1 49 127
-    i 8.504 71.249 0.001 1 49 127
     i 9.277 71.249 0.001 1 49 127
+    i 8.463 71.249 0.001 1 49 127
     i 11.084 71.253 -1.000 1 38 68
+    i -13.061 71.249 0
+    i 13.062 71.249 -1.000 1 93 127
     i -11.083 71.259 0
     i 9.278 71.311 0.001 1 49 127
-    i 8.505 71.374 0.001 1 49 127
     i 9.279 71.374 0.001 1 49 127
+    i -13.062 71.374 0
+    i 8.464 71.374 0.001 1 49 127
+    i 13.063 71.374 -1.000 1 89 127
     i 9.280 71.436 0.001 1 49 127
-    i 7.054 71.499 0.001 1 39 127
-    i 11.085 71.501 -1.000 1 41 78
-    i 8.506 71.499 0.001 1 49 127
+    i 7.050 71.499 0.001 1 39 127
     i 9.281 71.499 0.001 1 49 127
+    i 8.465 71.499 0.001 1 49 127
+    i -13.063 71.499 0
+    i 13.064 71.499 -1.000 1 91 127
+    i 11.085 71.501 -1.000 1 41 78
     i -11.084 71.510 0
     i 9.282 71.562 0.001 1 49 127
     i 9.283 71.625 0.001 1 49 127
-    i 8.507 71.625 0.001 1 49 127
+    i -13.064 71.625 0
+    i 13.065 71.625 -1.000 1 93 127
+    i 8.466 71.625 0.001 1 49 127
     i 9.284 71.687 0.001 1 49 127
-    i 5.020 71.750 0.001 1 37 127
-    i 8.508 71.750 0.001 1 49 127
+    i -13.065 71.750 0
     i 9.285 71.750 0.001 1 49 127
     i 6.020 71.750 0.001 1 37 127
+    i 8.467 71.750 0.001 1 49 127
+    i 13.066 71.750 -1.000 1 89 127
+    i 5.020 71.750 0.001 1 37 127
     i 9.286 71.812 0.001 1 49 127
-    i 8.509 71.874 0.001 1 49 113
     i 9.287 71.874 0.001 1 49 127
+    i -13.066 71.874 0
+    i 13.067 71.874 -1.000 1 91 127
+    i 8.468 71.874 0.001 1 49 113
     i 9.288 71.937 0.001 1 49 127
-    i 4.056 71.999 0.001 1 37 127
-    i 5.021 71.999 0.001 1 37 127
     i 6.021 71.999 0.001 1 37 127
+    i 5.021 71.999 0.001 1 37 127
+    i 4.051 71.999 0.001 1 37 127
+    i -10.073 71.999 0
+    i 8.469 71.999 0.001 1 49 127
     i 9.289 71.999 0.001 1 49 127
-    i 8.510 71.999 0.001 1 49 127
-    i -10.077 71.999 0
-    i -10.078 71.999 0
+    i -10.074 71.999 0
+    i -13.067 71.999 0
+    i 13.068 71.999 -1.000 1 93 127
     i 11.086 72.012 -1.000 1 38 78
     i -11.085 72.030 0
     i 9.290 72.062 0.001 1 49 127
-    i 8.511 72.124 0.001 1 49 127
     i 9.291 72.124 0.001 1 49 127
+    i -13.068 72.124 0
+    i 8.470 72.124 0.001 1 49 127
     i 9.292 72.186 0.001 1 49 127
-    i 8.512 72.249 0.001 1 49 127
+    i 8.471 72.249 0.001 1 49 127
     i 9.293 72.249 0.001 1 49 127
     i 9.294 72.311 0.001 1 49 127
-    i 8.513 72.374 0.001 1 49 127
+    i 8.472 72.374 0.001 1 49 127
     i 9.295 72.374 0.001 1 49 127
     i 9.296 72.436 0.001 1 49 127
-    i 7.055 72.500 0.001 1 39 127
-    i 8.514 72.500 0.001 1 49 127
     i 9.297 72.500 0.001 1 49 127
+    i 8.473 72.500 0.001 1 49 127
+    i 7.051 72.500 0.001 1 39 127
     i 9.298 72.562 0.001 1 49 127
-    i 8.515 72.625 0.001 1 49 127
+    i 8.474 72.625 0.001 1 49 127
     i 9.299 72.625 0.001 1 49 127
     i 9.300 72.687 0.001 1 49 127
-    i 8.516 72.750 0.001 1 49 127
+    i 8.475 72.750 0.001 1 49 127
     i 9.301 72.750 0.001 1 49 127
     i 11.087 72.760 -1.000 1 36 86
     i -11.086 72.767 0
     i 9.302 72.812 0.001 1 49 127
     i 9.303 72.874 0.001 1 49 127
-    i 8.517 72.874 0.001 1 49 127
+    i 8.476 72.874 0.001 1 49 127
     i 9.304 72.937 0.001 1 49 127
-    i 4.057 72.999 0.001 1 37 127
+    i 4.052 72.999 0.001 1 37 127
+    i 8.477 72.999 0.001 1 49 127
     i 9.305 72.999 0.001 1 49 127
-    i 8.518 72.999 0.001 1 49 127
-    i 10.079 72.999 -1.000 1 72 127
-    i 10.080 72.999 -1.000 1 76 127
+    i 10.075 72.999 -1.000 1 72 127
+    i 10.076 72.999 -1.000 1 76 127
     i 9.306 73.062 0.001 1 49 127
+    i 8.478 73.124 0.001 1 49 127
     i 9.307 73.124 0.001 1 49 127
-    i 8.519 73.124 0.001 1 49 127
     i 9.308 73.186 0.001 1 49 127
-    i 8.520 73.249 0.001 1 49 127
     i 9.309 73.249 0.001 1 49 127
+    i 8.479 73.249 0.001 1 49 127
     i -11.087 73.258 0
     i 11.088 73.259 -1.000 1 33 74
     i 9.310 73.311 0.001 1 49 127
-    i 8.521 73.374 0.001 1 49 127
     i 9.311 73.374 0.001 1 49 127
+    i 8.480 73.374 0.001 1 49 127
     i 9.312 73.437 0.001 1 49 127
-    i 7.056 73.500 0.001 1 39 127
-    i 8.522 73.500 0.001 1 49 127
+    i 8.481 73.500 0.001 1 49 127
     i 9.313 73.500 0.001 1 49 127
+    i 7.052 73.500 0.001 1 39 127
     i 11.089 73.509 -1.000 1 36 91
     i -11.088 73.517 0
     i 9.314 73.562 0.001 1 49 127
     i 9.315 73.625 0.001 1 49 127
-    i 8.523 73.625 0.001 1 49 127
+    i 8.482 73.625 0.001 1 49 127
     i 9.316 73.687 0.001 1 49 127
-    i 8.524 73.749 0.001 1 49 127
     i 9.317 73.749 0.001 1 49 127
+    i 8.483 73.749 0.001 1 49 127
     i 9.318 73.812 0.001 1 49 127
+    i 8.484 73.874 0.001 1 49 113
     i 9.319 73.874 0.001 1 49 127
-    i 8.525 73.874 0.001 1 49 113
     i 9.320 73.937 0.001 1 49 127
-    i 9.321 73.999 0.001 1 49 127
-    i -10.079 73.999 0
-    i -10.080 73.999 0
-    i 4.058 73.999 0.001 1 37 127
-    i -11.089 73.999 0
-    i 5.022 73.999 0.001 1 37 127
-    i 11.090 73.999 -1.000 1 38 83
+    i 8.485 73.999 0.001 1 49 127
     i 6.022 73.999 0.001 1 37 127
-    i 8.526 73.999 0.001 1 49 127
+    i 4.053 73.999 0.001 1 37 127
+    i 9.321 73.999 0.001 1 49 127
+    i 5.022 73.999 0.001 1 37 127
+    i -11.089 73.999 0
+    i 11.090 73.999 -1.000 1 38 83
+    i -10.075 73.999 0
+    i -10.076 73.999 0
     i 9.322 74.061 0.001 1 49 127
+    i 8.486 74.124 0.001 1 49 127
     i 9.323 74.124 0.001 1 49 127
-    i 8.527 74.124 0.001 1 49 127
     i 9.324 74.186 0.001 1 49 127
-    i 8.528 74.249 0.001 1 49 127
+    i 8.487 74.249 0.001 1 49 127
     i 9.325 74.249 0.001 1 49 127
     i 9.326 74.311 0.001 1 49 127
-    i 8.529 74.375 0.001 1 49 127
+    i 8.488 74.375 0.001 1 49 127
     i 9.327 74.375 0.001 1 49 127
     i 9.328 74.437 0.001 1 49 127
     i 9.329 74.500 0.001 1 49 127
-    i 7.057 74.500 0.001 1 39 127
-    i 8.530 74.500 0.001 1 49 127
+    i 7.053 74.500 0.001 1 39 127
+    i 8.489 74.500 0.001 1 49 127
     i 9.330 74.562 0.001 1 49 127
-    i 8.531 74.625 0.001 1 49 127
+    i 8.490 74.625 0.001 1 49 127
     i 9.331 74.625 0.001 1 49 127
     i 9.332 74.687 0.001 1 49 127
     i 11.091 74.738 -1.000 1 41 103
-    i 8.532 74.749 0.001 1 49 127
     i 9.333 74.749 0.001 1 49 127
+    i 8.491 74.749 0.001 1 49 127
     i -11.090 74.757 0
     i 9.334 74.812 0.001 1 49 127
-    i 8.533 74.874 0.001 1 49 127
     i 9.335 74.874 0.001 1 49 127
+    i 8.492 74.874 0.001 1 49 127
     i 9.336 74.937 0.001 1 49 127
-    i 4.059 74.999 0.001 1 37 127
+    i 10.077 74.999 -1.000 1 72 127
+    i 8.493 74.999 0.001 1 49 127
     i 9.337 74.999 0.001 1 49 127
-    i 10.081 74.999 -1.000 1 72 127
-    i 10.082 74.999 -1.000 1 76 127
-    i 8.534 74.999 0.001 1 49 127
+    i 10.078 74.999 -1.000 1 76 127
+    i 4.054 74.999 0.001 1 37 127
     i 9.338 75.061 0.001 1 49 127
+    i 8.494 75.124 0.001 1 49 127
     i 9.339 75.124 0.001 1 49 127
-    i 8.535 75.124 0.001 1 49 127
     i 9.340 75.186 0.001 1 49 127
     i 11.092 75.224 -1.000 1 44 76
     i -11.091 75.234 0
-    i 8.536 75.249 0.001 1 49 127
+    i 8.495 75.249 0.001 1 49 127
     i 9.341 75.249 0.001 1 49 127
     i 9.342 75.312 0.001 1 49 127
     i 9.343 75.375 0.001 1 49 127
-    i 8.537 75.375 0.001 1 49 127
+    i 8.496 75.375 0.001 1 49 127
     i 9.344 75.437 0.001 1 49 127
-    i 7.058 75.500 0.001 1 39 127
-    i 8.538 75.500 0.001 1 49 127
+    i 7.054 75.500 0.001 1 39 127
     i 9.345 75.500 0.001 1 49 127
+    i 8.497 75.500 0.001 1 49 127
     i -11.092 75.523 0
     i 11.093 75.523 -1.000 1 43 89
     i 9.346 75.562 0.001 1 49 127
+    i 8.498 75.624 0.001 1 49 127
     i 9.347 75.624 0.001 1 49 127
-    i 8.539 75.624 0.001 1 49 127
     i 9.348 75.687 0.001 1 49 127
-    i 5.023 75.749 0.001 1 37 127
-    i 9.349 75.749 0.001 1 49 127
     i 6.023 75.749 0.001 1 37 127
-    i 8.540 75.749 0.001 1 49 127
+    i 5.023 75.749 0.001 1 37 127
+    i 8.499 75.749 0.001 1 49 127
+    i 9.349 75.749 0.001 1 49 127
     i 9.350 75.812 0.001 1 49 127
+    i 8.500 75.874 0.001 1 49 113
     i 9.351 75.874 0.001 1 49 127
-    i 8.541 75.874 0.001 1 49 113
     i 9.352 75.937 0.001 1 49 127
+    i -10.077 75.999 0
+    i 11.094 75.996 -1.000 1 41 97
+    i 4.055 75.999 0.001 1 37 127
+    i -10.078 75.999 0
+    i -11.093 75.997 0
     i 6.024 75.999 0.001 1 37 127
     i 5.024 75.999 0.001 1 37 127
-    i 8.542 75.999 0.001 1 49 127
-    i 11.094 75.996 -1.000 1 41 97
     i 9.353 75.999 0.001 1 49 127
-    i -10.081 75.999 0
-    i -10.082 75.999 0
-    i -11.093 75.997 0
-    i 4.060 75.999 0.001 1 37 127
+    i 8.501 75.999 0.001 1 49 127
     i 9.354 76.061 0.001 1 49 127
+    i 8.502 76.124 0.001 1 49 127
     i 9.355 76.124 0.001 1 49 127
-    i 8.543 76.124 0.001 1 49 127
     i 9.356 76.186 0.001 1 49 127
+    i 8.503 76.250 0.001 1 49 127
     i 9.357 76.250 0.001 1 49 127
-    i 8.544 76.250 0.001 1 49 127
     i 9.358 76.312 0.001 1 49 127
-    i 8.545 76.375 0.001 1 49 127
+    i 8.504 76.375 0.001 1 49 127
     i 9.359 76.375 0.001 1 49 127
     i 9.360 76.437 0.001 1 49 127
-    i 7.059 76.500 0.001 1 39 127
+    i 7.055 76.500 0.001 1 39 127
     i 9.361 76.500 0.001 1 49 127
-    i 8.546 76.500 0.001 1 49 127
+    i 8.505 76.500 0.001 1 49 127
     i 9.362 76.562 0.001 1 49 127
+    i 8.506 76.624 0.001 1 49 127
     i 9.363 76.624 0.001 1 49 127
-    i 8.547 76.624 0.001 1 49 127
     i 9.364 76.687 0.001 1 49 127
+    i 8.507 76.749 0.001 1 49 127
     i 9.365 76.749 0.001 1 49 127
-    i 8.548 76.749 0.001 1 49 127
     i -11.094 76.756 0
     i 11.095 76.759 -1.000 1 38 80
     i 9.366 76.812 0.001 1 49 127
     i 9.367 76.874 0.001 1 49 127
-    i 8.549 76.874 0.001 1 49 127
+    i 8.508 76.874 0.001 1 49 127
     i 9.368 76.936 0.001 1 49 127
-    i 8.550 76.999 0.001 1 49 127
+    i 4.056 76.999 0.001 1 37 127
     i 9.369 76.999 0.001 1 49 127
-    i 4.061 76.999 0.001 1 37 127
-    i 10.083 76.999 -1.000 1 72 127
-    i 10.084 76.999 -1.000 1 76 127
+    i 8.509 76.999 0.001 1 49 127
+    i 10.079 76.999 -1.000 1 72 127
+    i 10.080 76.999 -1.000 1 76 127
     i 9.370 77.061 0.001 1 49 127
+    i 8.510 77.124 0.001 1 49 127
     i 9.371 77.124 0.001 1 49 127
-    i 8.551 77.124 0.001 1 49 127
     i 9.372 77.187 0.001 1 49 127
     i 11.096 77.205 -1.000 1 33 79
     i -11.095 77.230 0
-    i 8.552 77.250 0.001 1 49 127
+    i 8.511 77.250 0.001 1 49 127
     i 9.373 77.250 0.001 1 49 127
     i 9.374 77.312 0.001 1 49 127
-    i 8.553 77.375 0.001 1 49 127
+    i 8.512 77.375 0.001 1 49 127
     i 9.375 77.375 0.001 1 49 127
     i 9.376 77.437 0.001 1 49 127
-    i 7.060 77.500 0.001 1 39 127
-    i 8.554 77.500 0.001 1 49 127
     i 9.377 77.500 0.001 1 49 127
+    i -14.012 77.500 0
+    i -15.012 77.500 0
+    i 7.056 77.500 0.001 1 39 127
+    i 8.513 77.500 0.001 1 49 127
     i 11.097 77.507 -1.000 1 36 89
     i -11.096 77.508 0
     i 9.378 77.562 0.001 1 49 127
-    i 8.555 77.624 0.001 1 49 127
+    i 8.514 77.624 0.001 1 49 127
     i 9.379 77.624 0.001 1 49 127
     i 9.380 77.687 0.001 1 49 127
-    i 8.556 77.749 0.001 1 49 127
     i 9.381 77.749 0.001 1 49 127
+    i 8.515 77.749 0.001 1 49 127
     i 9.382 77.812 0.001 1 49 127
-    i 8.557 77.874 0.001 1 49 113
+    i 8.516 77.874 0.001 1 49 113
     i 9.383 77.874 0.001 1 49 127
     i 9.384 77.936 0.001 1 49 127
-    i 4.062 77.999 0.001 1 37 127
-    i -11.097 77.999 0
-    i 11.098 77.999 -1.000 1 38 81
+    i 14.013 77.986 -1.000 1 62 78
+    i 15.013 77.989 -1.000 1 53 74
     i 6.025 77.999 0.001 1 37 127
-    i 9.385 77.999 0.001 1 49 127
+    i 8.517 77.999 0.001 1 49 127
+    i 4.057 77.999 0.001 1 37 127
     i 5.025 77.999 0.001 1 37 127
-    i 8.558 77.999 0.001 1 49 127
-    i -10.083 77.999 0
-    i -10.084 77.999 0
+    i -10.079 77.999 0
+    i -11.097 77.999 0
+    i -10.080 77.999 0
+    i 11.098 77.999 -1.000 1 38 81
+    i 9.385 77.999 0.001 1 49 127
     i 9.386 78.061 0.001 1 49 127
     i 9.387 78.125 0.001 1 49 127
-    i 8.559 78.125 0.001 1 49 127
+    i 8.518 78.125 0.001 1 49 127
     i 9.388 78.187 0.001 1 49 127
-    i 8.560 78.250 0.001 1 49 127
+    i 8.519 78.250 0.001 1 49 127
     i 9.389 78.250 0.001 1 49 127
     i 9.390 78.312 0.001 1 49 127
+    i 8.520 78.375 0.001 1 49 127
     i 9.391 78.375 0.001 1 49 127
-    i 8.561 78.375 0.001 1 49 127
     i 9.392 78.437 0.001 1 49 127
-    i 7.061 78.499 0.001 1 39 127
+    i 7.057 78.499 0.001 1 39 127
     i 9.393 78.499 0.001 1 49 127
-    i 8.562 78.499 0.001 1 49 127
+    i 8.521 78.499 0.001 1 49 127
     i 9.394 78.562 0.001 1 49 127
-    i 8.563 78.624 0.001 1 49 127
+    i 8.522 78.624 0.001 1 49 127
     i 9.395 78.624 0.001 1 49 127
     i 9.396 78.687 0.001 1 49 127
     i 11.099 78.737 -1.000 1 41 89
     i -11.098 78.745 0
+    i 8.523 78.749 0.001 1 49 127
     i 9.397 78.749 0.001 1 49 127
-    i 8.564 78.749 0.001 1 49 127
     i 9.398 78.811 0.001 1 49 127
+    i 8.524 78.874 0.001 1 49 127
     i 9.399 78.874 0.001 1 49 127
-    i 8.565 78.874 0.001 1 49 127
     i 9.400 78.936 0.001 1 49 127
-    i 4.063 78.999 0.001 1 37 127
+    i 4.058 78.999 0.001 1 37 127
+    i 8.525 78.999 0.001 1 49 127
     i 9.401 78.999 0.001 1 49 127
-    i 8.566 78.999 0.001 1 49 127
-    i 10.085 78.999 -1.000 1 72 127
-    i 10.086 78.999 -1.000 1 76 127
+    i 10.081 78.999 -1.000 1 72 127
+    i 10.082 78.999 -1.000 1 76 127
     i 9.402 79.062 0.001 1 49 127
+    i 8.526 79.125 0.001 1 49 127
     i 9.403 79.125 0.001 1 49 127
-    i 8.567 79.125 0.001 1 49 127
     i 9.404 79.187 0.001 1 49 127
-    i 9.405 79.250 0.001 1 49 127
-    i 8.568 79.250 0.001 1 49 127
     i 11.100 79.254 -1.000 1 38 68
+    i 8.527 79.250 0.001 1 49 127
+    i 9.405 79.250 0.001 1 49 127
     i -11.099 79.260 0
     i 9.406 79.312 0.001 1 49 127
-    i 8.569 79.375 0.001 1 49 127
     i 9.407 79.375 0.001 1 49 127
+    i 8.528 79.375 0.001 1 49 127
     i 9.408 79.437 0.001 1 49 127
-    i 9.409 79.499 0.001 1 49 127
     i 11.101 79.501 -1.000 1 41 78
-    i 8.570 79.499 0.001 1 49 127
-    i 7.062 79.499 0.001 1 39 127
+    i 9.409 79.499 0.001 1 49 127
+    i 8.529 79.499 0.001 1 49 127
+    i 7.058 79.499 0.001 1 39 127
     i -11.100 79.509 0
     i 9.410 79.562 0.001 1 49 127
-    i 8.571 79.624 0.001 1 49 127
+    i 8.530 79.624 0.001 1 49 127
     i 9.411 79.624 0.001 1 49 127
     i 9.412 79.687 0.001 1 49 127
-    i 5.026 79.749 0.001 1 37 127
     i 9.413 79.749 0.001 1 49 127
+    i 5.026 79.749 0.001 1 37 127
     i 6.026 79.749 0.001 1 37 127
-    i 8.572 79.749 0.001 1 49 127
+    i 8.531 79.749 0.001 1 49 127
     i 9.414 79.811 0.001 1 49 127
+    i 8.532 79.874 0.001 1 49 113
     i 9.415 79.874 0.001 1 49 127
-    i 8.573 79.874 0.001 1 49 113
     i 9.416 79.936 0.001 1 49 127
-    i 6.027 80.000 0.001 1 37 127
-    i 5.027 80.000 0.001 1 37 127
+    i 15.014 79.949 -1.000 1 55 101
+    i -15.013 79.962 0
+    i -14.013 79.970 0
+    i 14.014 79.977 -1.000 1 64 81
+    i -10.081 80.000 0
+    i 8.533 80.000 0.001 1 49 127
     i 9.417 80.000 0.001 1 49 127
-    i 4.064 80.000 0.001 1 37 127
-    i 8.574 80.000 0.001 1 49 127
-    i -10.085 80.000 0
-    i -10.086 80.000 0
+    i 5.027 80.000 0.001 1 37 127
+    i 4.059 80.000 0.001 1 37 127
+    i 6.027 80.000 0.001 1 37 127
+    i -10.082 80.000 0
     i 11.102 80.012 -1.000 1 38 78
     i -11.101 80.030 0
     i 9.418 80.062 0.001 1 49 127
+    i 8.534 80.125 0.001 1 49 127
     i 9.419 80.125 0.001 1 49 127
-    i 8.575 80.125 0.001 1 49 127
     i 9.420 80.187 0.001 1 49 127
     i 9.421 80.250 0.001 1 49 127
-    i 8.576 80.250 0.001 1 49 127
+    i 8.535 80.250 0.001 1 49 127
     i 9.422 80.312 0.001 1 49 127
+    i 8.536 80.374 0.001 1 49 127
     i 9.423 80.374 0.001 1 49 127
-    i 8.577 80.374 0.001 1 49 127
     i 9.424 80.437 0.001 1 49 127
+    i 7.059 80.499 0.001 1 39 127
     i 9.425 80.499 0.001 1 49 127
-    i 7.063 80.499 0.001 1 39 127
-    i 8.578 80.499 0.001 1 49 127
+    i 8.537 80.499 0.001 1 49 127
     i 9.426 80.562 0.001 1 49 127
+    i 8.538 80.624 0.001 1 49 127
     i 9.427 80.624 0.001 1 49 127
-    i 8.579 80.624 0.001 1 49 127
     i 9.428 80.686 0.001 1 49 127
-    i 8.580 80.749 0.001 1 49 127
+    i 8.539 80.749 0.001 1 49 127
     i 9.429 80.749 0.001 1 49 127
     i 11.103 80.760 -1.000 1 36 86
     i -11.102 80.768 0
     i 9.430 80.811 0.001 1 49 127
+    i 8.540 80.874 0.001 1 49 127
     i 9.431 80.874 0.001 1 49 127
-    i 8.581 80.874 0.001 1 49 127
     i 9.432 80.938 0.001 1 49 127
-    i 4.065 81.000 0.001 1 37 127
-    i 10.087 81.000 -1.000 1 72 127
+    i 4.060 81.000 0.001 1 37 127
     i 9.433 81.000 0.001 1 49 127
-    i 8.582 81.000 0.001 1 49 127
-    i 10.088 81.000 -1.000 1 76 127
+    i 8.541 81.000 0.001 1 49 127
+    i 10.083 81.000 -1.000 1 72 127
+    i 10.084 81.000 -1.000 1 76 127
     i 9.434 81.062 0.001 1 49 127
+    i 8.542 81.125 0.001 1 49 127
     i 9.435 81.125 0.001 1 49 127
-    i 8.583 81.125 0.001 1 49 127
     i 9.436 81.187 0.001 1 49 127
+    i 8.543 81.250 0.001 1 49 127
     i 9.437 81.250 0.001 1 49 127
-    i 8.584 81.250 0.001 1 49 127
     i -11.103 81.258 0
     i 11.104 81.258 -1.000 1 33 74
     i 9.438 81.312 0.001 1 49 127
-    i 8.585 81.374 0.001 1 49 127
     i 9.439 81.374 0.001 1 49 127
+    i 8.544 81.374 0.001 1 49 127
     i 9.440 81.437 0.001 1 49 127
+    i 8.545 81.499 0.001 1 49 127
+    i 7.060 81.499 0.001 1 39 127
     i 11.105 81.508 -1.000 1 36 91
-    i 8.586 81.499 0.001 1 49 127
-    i 7.064 81.499 0.001 1 39 127
     i 9.441 81.499 0.001 1 49 127
     i -11.104 81.518 0
     i 9.442 81.562 0.001 1 49 127
-    i 8.587 81.624 0.001 1 49 127
+    i 8.546 81.624 0.001 1 49 127
     i 9.443 81.624 0.001 1 49 127
     i 9.444 81.686 0.001 1 49 127
     i 9.445 81.749 0.001 1 49 127
-    i 8.588 81.749 0.001 1 49 127
+    i 8.547 81.749 0.001 1 49 127
     i 9.446 81.811 0.001 1 49 127
     i 9.447 81.875 0.001 1 49 127
-    i 8.589 81.875 0.001 1 49 113
+    i 8.548 81.875 0.001 1 49 113
     i 9.448 81.937 0.001 1 49 127
-    i 9.449 82.000 0.001 1 49 127
-    i 8.590 82.000 0.001 1 49 127
-    i 6.028 82.000 0.001 1 37 127
-    i 5.028 82.000 0.001 1 37 127
-    i 4.066 82.000 0.001 1 37 127
+    i 14.015 81.964 -1.000 1 65 98
+    i 15.015 81.984 -1.000 1 57 100
+    i -14.014 81.987 0
+    i -15.014 81.995 0
+    i -10.083 82.000 0
+    i 4.061 82.000 0.001 1 37 127
     i -11.105 82.000 0
-    i -10.087 82.000 0
     i 11.106 82.000 -1.000 1 38 81
-    i -10.088 82.000 0
+    i -10.084 82.000 0
+    i 5.028 82.000 0.001 1 37 127
+    i 8.549 82.000 0.001 1 49 127
+    i 6.028 82.000 0.001 1 37 127
+    i 9.449 82.000 0.001 1 49 127
     i 9.450 82.062 0.001 1 49 127
-    i 8.591 82.125 0.001 1 49 127
+    i 8.550 82.125 0.001 1 49 127
     i 9.451 82.125 0.001 1 49 127
     i 9.452 82.187 0.001 1 49 127
+    i 8.551 82.249 0.001 1 49 127
     i 9.453 82.249 0.001 1 49 127
-    i 8.592 82.249 0.001 1 49 127
     i 9.454 82.312 0.001 1 49 127
+    i 8.552 82.374 0.001 1 49 127
     i 9.455 82.374 0.001 1 49 127
-    i 8.593 82.374 0.001 1 49 127
     i 9.456 82.437 0.001 1 49 127
-    i 8.594 82.499 0.001 1 49 127
-    i 7.065 82.499 0.001 1 39 127
+    i 7.061 82.499 0.001 1 39 127
     i 9.457 82.499 0.001 1 49 127
+    i 8.553 82.499 0.001 1 49 127
     i 9.458 82.561 0.001 1 49 127
+    i 8.554 82.624 0.001 1 49 127
     i 9.459 82.624 0.001 1 49 127
-    i 8.595 82.624 0.001 1 49 127
     i 9.460 82.686 0.001 1 49 127
     i 11.107 82.737 -1.000 1 41 89
+    i 8.555 82.749 0.001 1 49 127
     i -11.106 82.744 0
-    i 8.596 82.749 0.001 1 49 127
     i 9.461 82.749 0.001 1 49 127
     i 9.462 82.811 0.001 1 49 127
     i 9.463 82.875 0.001 1 49 127
-    i 8.597 82.875 0.001 1 49 127
+    i 8.556 82.875 0.001 1 49 127
     i 9.464 82.937 0.001 1 49 127
+    i 8.557 83.000 0.001 1 49 127
     i 9.465 83.000 0.001 1 49 127
-    i 8.598 83.000 0.001 1 49 127
-    i 4.067 83.000 0.001 1 37 127
-    i 10.089 83.000 -1.000 1 72 127
-    i 10.090 83.000 -1.000 1 76 127
+    i 10.085 83.000 -1.000 1 72 127
+    i 10.086 83.000 -1.000 1 76 127
+    i 4.062 83.000 0.001 1 37 127
     i 9.466 83.062 0.001 1 49 127
+    i 8.558 83.125 0.001 1 49 127
     i 9.467 83.125 0.001 1 49 127
-    i 8.599 83.125 0.001 1 49 127
     i 9.468 83.187 0.001 1 49 127
+    i 8.559 83.249 0.001 1 49 127
     i 9.469 83.249 0.001 1 49 127
-    i 8.600 83.249 0.001 1 49 127
     i 11.108 83.254 -1.000 1 38 68
     i -11.107 83.260 0
     i 9.470 83.312 0.001 1 49 127
+    i 8.560 83.374 0.001 1 49 127
     i 9.471 83.374 0.001 1 49 127
-    i 8.601 83.374 0.001 1 49 127
     i 9.472 83.437 0.001 1 49 127
-    i 11.109 83.500 -1.000 1 41 78
     i 9.473 83.499 0.001 1 49 127
-    i 7.066 83.499 0.001 1 39 127
-    i 8.602 83.499 0.001 1 49 127
+    i 7.062 83.499 0.001 1 39 127
+    i 11.109 83.500 -1.000 1 41 78
+    i 8.561 83.499 0.001 1 49 127
     i -11.108 83.509 0
     i 9.474 83.561 0.001 1 49 127
-    i 8.603 83.624 0.001 1 49 127
+    i 8.562 83.624 0.001 1 49 127
     i 9.475 83.624 0.001 1 49 127
     i 9.476 83.686 0.001 1 49 127
-    i 6.029 83.749 0.001 1 37 127
-    i 5.029 83.749 0.001 1 37 127
-    i 8.604 83.749 0.001 1 49 127
     i 9.477 83.749 0.001 1 49 127
+    i 8.563 83.749 0.001 1 49 127
+    i 5.029 83.749 0.001 1 37 127
+    i 6.029 83.749 0.001 1 37 127
     i 9.478 83.812 0.001 1 49 127
+    i 8.564 83.875 0.001 1 49 113
     i 9.479 83.875 0.001 1 49 127
-    i 8.605 83.875 0.001 1 49 113
+    i 15.016 83.923 -1.000 1 55 78
     i 9.480 83.937 0.001 1 49 127
+    i -15.015 83.939 0
+    i -14.015 83.950 0
+    i 14.016 83.976 -1.000 1 64 90
     i 9.481 84.000 0.001 1 49 127
-    i 8.606 84.000 0.001 1 49 127
-    i 6.030 84.000 0.001 1 37 127
+    i 8.565 84.000 0.001 1 49 127
+    i -10.085 84.000 0
+    i -10.086 84.000 0
     i 5.030 84.000 0.001 1 37 127
-    i -10.089 84.000 0
-    i 4.068 84.000 0.001 1 37 127
-    i -10.090 84.000 0
+    i 4.063 84.000 0.001 1 37 127
+    i 6.030 84.000 0.001 1 37 127
     i 11.110 84.011 -1.000 1 38 78
     i -11.109 84.030 0
     i 9.482 84.062 0.001 1 49 127
-    i 8.607 84.124 0.001 1 49 127
     i 9.483 84.124 0.001 1 49 127
+    i 8.566 84.124 0.001 1 49 127
     i 9.484 84.187 0.001 1 49 127
     i 9.485 84.249 0.001 1 49 127
-    i 8.608 84.249 0.001 1 49 127
+    i 8.567 84.249 0.001 1 49 127
     i 9.486 84.312 0.001 1 49 127
+    i 8.568 84.374 0.001 1 49 127
     i 9.487 84.374 0.001 1 49 127
-    i 8.609 84.374 0.001 1 49 127
     i 9.488 84.436 0.001 1 49 127
+    i 8.569 84.499 0.001 1 49 127
+    i 7.063 84.499 0.001 1 39 127
     i 9.489 84.499 0.001 1 49 127
-    i 7.067 84.499 0.001 1 39 127
-    i 8.610 84.499 0.001 1 49 127
     i 9.490 84.561 0.001 1 49 127
     i 9.491 84.624 0.001 1 49 127
-    i 8.611 84.624 0.001 1 49 127
+    i 8.570 84.624 0.001 1 49 127
     i 9.492 84.686 0.001 1 49 127
-    i 8.612 84.750 0.001 1 49 127
-    i 9.493 84.750 0.001 1 49 127
     i 11.111 84.760 -1.000 1 36 86
+    i 9.493 84.750 0.001 1 49 127
+    i 8.571 84.750 0.001 1 49 127
     i -11.110 84.767 0
     i 9.494 84.812 0.001 1 49 127
     i 9.495 84.875 0.001 1 49 127
-    i 8.613 84.875 0.001 1 49 127
+    i 15.017 84.875 -1.000 1 52 79
+    i 8.572 84.875 0.001 1 49 127
+    i -14.016 84.898 0
+    i -15.016 84.897 0
     i 9.496 84.937 0.001 1 49 127
-    i 4.069 85.000 0.001 1 37 127
-    i 8.614 85.000 0.001 1 49 127
+    i 14.017 84.976 -1.000 1 60 84
     i 9.497 85.000 0.001 1 49 127
-    i 10.091 85.000 -1.000 1 72 127
-    i 10.092 85.000 -1.000 1 76 127
+    i 4.064 85.000 0.001 1 37 127
+    i 10.087 85.000 -1.000 1 72 127
+    i 10.088 85.000 -1.000 1 76 127
+    i 8.573 85.000 0.001 1 49 127
     i 9.498 85.062 0.001 1 49 127
     i 9.499 85.124 0.001 1 49 127
-    i 8.615 85.124 0.001 1 49 127
+    i 8.574 85.124 0.001 1 49 127
     i 9.500 85.187 0.001 1 49 127
-    i 8.616 85.249 0.001 1 49 127
+    i 8.575 85.249 0.001 1 49 127
     i 9.501 85.249 0.001 1 49 127
     i -11.111 85.258 0
     i 11.112 85.259 -1.000 1 33 74
     i 9.502 85.312 0.001 1 49 127
-    i 8.617 85.374 0.001 1 49 127
     i 9.503 85.374 0.001 1 49 127
+    i 8.576 85.374 0.001 1 49 127
     i 9.504 85.436 0.001 1 49 127
+    i 8.577 85.499 0.001 1 49 127
     i 9.505 85.499 0.001 1 49 127
-    i 8.618 85.499 0.001 1 49 127
-    i 7.068 85.499 0.001 1 39 127
+    i 7.064 85.499 0.001 1 39 127
     i 11.113 85.507 -1.000 1 36 91
     i -11.112 85.518 0
     i 9.506 85.561 0.001 1 49 127
     i 9.507 85.624 0.001 1 49 127
-    i 8.619 85.624 0.001 1 49 127
+    i 8.578 85.624 0.001 1 49 127
     i 9.508 85.687 0.001 1 49 127
-    i 8.620 85.750 0.001 1 49 127
     i 9.509 85.750 0.001 1 49 127
+    i 8.579 85.750 0.001 1 49 127
     i 9.510 85.812 0.001 1 49 127
-    i 8.621 85.875 0.001 1 49 113
+    i 8.580 85.875 0.001 1 49 113
     i 9.511 85.875 0.001 1 49 127
+    i 15.018 85.930 -1.000 1 53 82
     i 9.512 85.937 0.001 1 49 127
-    i 6.031 85.999 0.001 1 37 127
-    i 8.622 85.999 0.001 1 49 127
-    i 5.031 85.999 0.001 1 37 127
+    i -14.017 85.956 0
+    i -15.017 85.975 0
+    i 14.018 85.983 -1.000 1 62 89
     i 9.513 85.999 0.001 1 49 127
-    i 4.070 85.999 0.001 1 37 127
-    i -10.091 85.999 0
-    i -10.092 85.999 0
+    i 13.069 85.999 -1.000 1 91 127
     i -11.113 85.999 0
+    i -10.087 85.999 0
     i 11.114 85.999 -1.000 1 38 81
+    i -10.088 85.999 0
+    i 4.065 85.999 0.001 1 37 127
+    i 6.031 85.999 0.001 1 37 127
+    i 5.031 85.999 0.001 1 37 127
+    i 8.581 85.999 0.001 1 49 127
     i 9.514 86.062 0.001 1 49 127
-    i 8.623 86.124 0.001 1 49 127
+    i -13.069 86.124 0
+    i 13.070 86.124 -1.000 1 93 127
+    i 8.582 86.124 0.001 1 49 127
     i 9.515 86.124 0.001 1 49 127
     i 9.516 86.187 0.001 1 49 127
     i 9.517 86.249 0.001 1 49 127
-    i 8.624 86.249 0.001 1 49 127
+    i 8.583 86.249 0.001 1 49 127
+    i -13.070 86.249 0
+    i 13.071 86.249 -1.000 1 89 127
     i 9.518 86.311 0.001 1 49 127
-    i 8.625 86.374 0.001 1 49 127
     i 9.519 86.374 0.001 1 49 127
+    i 8.584 86.374 0.001 1 49 127
+    i -13.071 86.374 0
+    i 13.072 86.374 -1.000 1 91 127
     i 9.520 86.436 0.001 1 49 127
-    i 7.069 86.499 0.001 1 39 127
-    i 8.626 86.499 0.001 1 49 127
+    i -13.072 86.499 0
+    i 13.073 86.499 -1.000 1 93 127
+    i 7.065 86.499 0.001 1 39 127
     i 9.521 86.499 0.001 1 49 127
+    i 8.585 86.499 0.001 1 49 127
     i 9.522 86.561 0.001 1 49 127
-    i 8.627 86.625 0.001 1 49 127
+    i -13.073 86.625 0
+    i 13.074 86.625 -1.000 1 89 127
+    i 8.586 86.625 0.001 1 49 127
     i 9.523 86.625 0.001 1 49 127
     i 9.524 86.687 0.001 1 49 127
     i 11.115 86.737 -1.000 1 41 89
     i -11.114 86.744 0
-    i 8.628 86.750 0.001 1 49 127
+    i -13.074 86.750 0
     i 9.525 86.750 0.001 1 49 127
+    i 13.075 86.750 -1.000 1 91 127
+    i 8.587 86.750 0.001 1 49 127
     i 9.526 86.812 0.001 1 49 127
-    i 8.629 86.875 0.001 1 49 127
+    i 8.588 86.875 0.001 1 49 127
     i 9.527 86.875 0.001 1 49 127
+    i -13.075 86.875 0
+    i 13.076 86.875 -1.000 1 93 127
     i 9.528 86.937 0.001 1 49 127
-    i 4.071 86.999 0.001 1 37 127
+    i 8.589 86.999 0.001 1 49 127
     i 9.529 86.999 0.001 1 49 127
-    i 8.630 86.999 0.001 1 49 127
-    i 10.093 86.999 -1.000 1 72 127
-    i 10.094 86.999 -1.000 1 76 127
+    i 10.089 86.999 -1.000 1 72 127
+    i 10.090 86.999 -1.000 1 76 127
+    i 4.066 86.999 0.001 1 37 127
+    i -13.076 86.999 0
+    i 13.077 86.999 -1.000 1 89 127
     i 9.530 87.062 0.001 1 49 127
-    i 8.631 87.124 0.001 1 49 127
+    i 8.590 87.124 0.001 1 49 127
     i 9.531 87.124 0.001 1 49 127
+    i -13.077 87.124 0
+    i 13.078 87.124 -1.000 1 91 127
     i 9.532 87.187 0.001 1 49 127
-    i 8.632 87.249 0.001 1 49 127
-    i 9.533 87.249 0.001 1 49 127
+    i 8.591 87.249 0.001 1 49 127
     i 11.116 87.253 -1.000 1 38 68
+    i 9.533 87.249 0.001 1 49 127
+    i -13.078 87.249 0
+    i 13.079 87.249 -1.000 1 93 127
     i -11.115 87.259 0
     i 9.534 87.311 0.001 1 49 127
-    i 8.633 87.374 0.001 1 49 127
+    i -13.079 87.374 0
+    i 13.080 87.374 -1.000 1 89 127
     i 9.535 87.374 0.001 1 49 127
+    i 8.592 87.374 0.001 1 49 127
     i 9.536 87.436 0.001 1 49 127
-    i 8.634 87.499 0.001 1 49 127
-    i 7.070 87.499 0.001 1 39 127
+    i 7.066 87.499 0.001 1 39 127
+    i 8.593 87.499 0.001 1 49 127
     i 9.537 87.499 0.001 1 49 127
+    i -13.080 87.499 0
+    i 13.081 87.499 -1.000 1 91 127
     i 11.117 87.501 -1.000 1 41 78
     i -11.116 87.510 0
     i 9.538 87.562 0.001 1 49 127
+    i -13.081 87.625 0
+    i 8.594 87.625 0.001 1 49 127
+    i 13.082 87.625 -1.000 1 93 127
     i 9.539 87.625 0.001 1 49 127
-    i 8.635 87.625 0.001 1 49 127
     i 9.540 87.687 0.001 1 49 127
-    i 6.032 87.750 0.001 1 37 127
+    i -13.082 87.750 0
+    i 13.083 87.750 -1.000 1 89 127
+    i 8.595 87.750 0.001 1 49 127
     i 5.032 87.750 0.001 1 37 127
+    i 6.032 87.750 0.001 1 37 127
     i 9.541 87.750 0.001 1 49 127
-    i 8.636 87.750 0.001 1 49 127
     i 9.542 87.812 0.001 1 49 127
-    i 8.637 87.874 0.001 1 49 113
     i 9.543 87.874 0.001 1 49 127
+    i 8.596 87.874 0.001 1 49 113
+    i -13.083 87.874 0
+    i 13.084 87.874 -1.000 1 91 127
     i 9.544 87.937 0.001 1 49 127
-    i 4.072 87.999 0.001 1 37 127
     i 9.545 87.999 0.001 1 49 127
+    i -10.089 87.999 0
+    i -10.090 87.999 0
+    i -13.084 87.999 0
+    i 13.085 87.999 -1.000 1 93 127
+    i 4.067 87.999 0.001 1 37 127
     i 5.033 87.999 0.001 1 37 127
+    i 8.597 87.999 0.001 1 49 127
     i 6.033 87.999 0.001 1 37 127
-    i 8.638 87.999 0.001 1 49 127
-    i -10.093 87.999 0
-    i -10.094 87.999 0
     i 11.118 88.012 -1.000 1 38 78
     i -11.117 88.030 0
     i 9.546 88.062 0.001 1 49 127
+    i 8.598 88.124 0.001 1 49 127
+    i -13.085 88.124 0
     i 9.547 88.124 0.001 1 49 127
-    i 8.639 88.124 0.001 1 49 127
     i 9.548 88.186 0.001 1 49 127
     i 9.549 88.249 0.001 1 49 127
-    i 8.640 88.249 0.001 1 49 127
+    i 8.599 88.249 0.001 1 49 127
     i 9.550 88.311 0.001 1 49 127
-    i 8.641 88.374 0.001 1 49 127
     i 9.551 88.374 0.001 1 49 127
+    i 8.600 88.374 0.001 1 49 127
     i 9.552 88.436 0.001 1 49 127
+    i 7.067 88.500 0.001 1 39 127
     i 9.553 88.500 0.001 1 49 127
-    i 7.071 88.500 0.001 1 39 127
-    i 8.642 88.500 0.001 1 49 127
+    i 8.601 88.500 0.001 1 49 127
     i 9.554 88.562 0.001 1 49 127
-    i 8.643 88.625 0.001 1 49 127
+    i 8.602 88.625 0.001 1 49 127
     i 9.555 88.625 0.001 1 49 127
     i 9.556 88.687 0.001 1 49 127
-    i 8.644 88.750 0.001 1 49 127
+    i 8.603 88.750 0.001 1 49 127
     i 9.557 88.750 0.001 1 49 127
     i 11.119 88.760 -1.000 1 36 86
     i -11.118 88.767 0
     i 9.558 88.812 0.001 1 49 127
     i 9.559 88.874 0.001 1 49 127
-    i 8.645 88.874 0.001 1 49 127
+    i 8.604 88.874 0.001 1 49 127
     i 9.560 88.937 0.001 1 49 127
-    i 4.073 88.999 0.001 1 37 127
-    i 8.646 88.999 0.001 1 49 127
-    i 10.095 88.999 -1.000 1 72 127
-    i 10.096 88.999 -1.000 1 76 127
     i 9.561 88.999 0.001 1 49 127
+    i 10.091 88.999 -1.000 1 72 127
+    i 10.092 88.999 -1.000 1 76 127
+    i 4.068 88.999 0.001 1 37 127
+    i 8.605 88.999 0.001 1 49 127
     i 9.562 89.062 0.001 1 49 127
+    i 8.606 89.124 0.001 1 49 127
     i 9.563 89.124 0.001 1 49 127
-    i 8.647 89.124 0.001 1 49 127
     i 9.564 89.186 0.001 1 49 127
-    i 8.648 89.249 0.001 1 49 127
     i 9.565 89.249 0.001 1 49 127
+    i 8.607 89.249 0.001 1 49 127
     i -11.119 89.258 0
     i 11.120 89.259 -1.000 1 33 74
     i 9.566 89.311 0.001 1 49 127
+    i 8.608 89.374 0.001 1 49 127
     i 9.567 89.374 0.001 1 49 127
-    i 8.649 89.374 0.001 1 49 127
     i 9.568 89.437 0.001 1 49 127
-    i 11.121 89.509 -1.000 1 36 91
-    i 8.650 89.500 0.001 1 49 127
+    i 7.068 89.500 0.001 1 39 127
     i 9.569 89.500 0.001 1 49 127
-    i 7.072 89.500 0.001 1 39 127
+    i 8.609 89.500 0.001 1 49 127
+    i 11.121 89.509 -1.000 1 36 91
     i -11.120 89.517 0
     i 9.570 89.562 0.001 1 49 127
     i 9.571 89.625 0.001 1 49 127
-    i 8.651 89.625 0.001 1 49 127
+    i 8.610 89.625 0.001 1 49 127
     i 9.572 89.687 0.001 1 49 127
+    i 8.611 89.749 0.001 1 49 127
     i 9.573 89.749 0.001 1 49 127
-    i 8.652 89.749 0.001 1 49 127
     i 9.574 89.812 0.001 1 49 127
     i 9.575 89.874 0.001 1 49 127
-    i 8.653 89.874 0.001 1 49 113
+    i 8.612 89.874 0.001 1 49 113
     i 9.576 89.937 0.001 1 49 127
-    i 4.074 89.999 0.001 1 37 127
+    i 6.034 89.999 0.001 1 37 127
+    i 4.069 89.999 0.001 1 37 127
+    i 8.613 89.999 0.001 1 49 127
     i 5.034 89.999 0.001 1 37 127
     i 9.577 89.999 0.001 1 49 127
-    i 6.034 89.999 0.001 1 37 127
-    i 8.654 89.999 0.001 1 49 127
-    i -10.095 89.999 0
+    i -10.091 89.999 0
     i -11.121 89.999 0
-    i -10.096 89.999 0
     i 11.122 89.999 -1.000 1 38 83
+    i -10.092 89.999 0
     i 9.578 90.061 0.001 1 49 127
-    i 8.655 90.124 0.001 1 49 127
+    i 8.614 90.124 0.001 1 49 127
     i 9.579 90.124 0.001 1 49 127
     i 9.580 90.186 0.001 1 49 127
-    i 8.656 90.249 0.001 1 49 127
     i 9.581 90.249 0.001 1 49 127
+    i 8.615 90.249 0.001 1 49 127
     i 9.582 90.311 0.001 1 49 127
+    i 8.616 90.375 0.001 1 49 127
     i 9.583 90.375 0.001 1 49 127
-    i 8.657 90.375 0.001 1 49 127
     i 9.584 90.437 0.001 1 49 127
+    i 7.069 90.500 0.001 1 39 127
     i 9.585 90.500 0.001 1 49 127
-    i 7.073 90.500 0.001 1 39 127
-    i 8.658 90.500 0.001 1 49 127
+    i 8.617 90.500 0.001 1 49 127
     i 9.586 90.562 0.001 1 49 127
-    i 8.659 90.625 0.001 1 49 127
     i 9.587 90.625 0.001 1 49 127
+    i 8.618 90.625 0.001 1 49 127
     i 9.588 90.687 0.001 1 49 127
     i 11.123 90.738 -1.000 1 41 103
+    i 8.619 90.749 0.001 1 49 127
     i 9.589 90.749 0.001 1 49 127
-    i 8.660 90.749 0.001 1 49 127
     i -11.122 90.757 0
     i 9.590 90.812 0.001 1 49 127
     i 9.591 90.874 0.001 1 49 127
-    i 8.661 90.874 0.001 1 49 127
+    i 8.620 90.874 0.001 1 49 127
     i 9.592 90.937 0.001 1 49 127
+    i 4.070 90.999 0.001 1 37 127
     i 9.593 90.999 0.001 1 49 127
-    i 8.662 90.999 0.001 1 49 127
-    i 10.097 90.999 -1.000 1 72 127
-    i 10.098 90.999 -1.000 1 76 127
-    i 4.075 90.999 0.001 1 37 127
+    i 8.621 90.999 0.001 1 49 127
+    i 10.093 90.999 -1.000 1 72 127
+    i 10.094 90.999 -1.000 1 76 127
     i 9.594 91.061 0.001 1 49 127
-    i 8.663 91.124 0.001 1 49 127
     i 9.595 91.124 0.001 1 49 127
+    i 8.622 91.124 0.001 1 49 127
     i 9.596 91.186 0.001 1 49 127
     i 11.124 91.224 -1.000 1 44 76
     i -11.123 91.234 0
-    i 8.664 91.249 0.001 1 49 127
+    i 8.623 91.249 0.001 1 49 127
     i 9.597 91.249 0.001 1 49 127
     i 9.598 91.312 0.001 1 49 127
+    i 8.624 91.375 0.001 1 49 127
     i 9.599 91.375 0.001 1 49 127
-    i 8.665 91.375 0.001 1 49 127
     i 9.600 91.437 0.001 1 49 127
-    i 7.074 91.500 0.001 1 39 127
-    i 8.666 91.500 0.001 1 49 127
+    i 8.625 91.500 0.001 1 49 127
+    i 7.070 91.500 0.001 1 39 127
     i 9.601 91.500 0.001 1 49 127
     i -11.124 91.523 0
     i 11.125 91.523 -1.000 1 43 89
     i 9.602 91.562 0.001 1 49 127
     i 9.603 91.624 0.001 1 49 127
-    i 8.667 91.624 0.001 1 49 127
+    i 8.626 91.624 0.001 1 49 127
     i 9.604 91.687 0.001 1 49 127
-    i 8.668 91.749 0.001 1 49 127
+    i 8.627 91.749 0.001 1 49 127
     i 9.605 91.749 0.001 1 49 127
     i 5.035 91.749 0.001 1 37 127
     i 6.035 91.749 0.001 1 37 127
     i 9.606 91.812 0.001 1 49 127
+    i 8.628 91.874 0.001 1 49 113
     i 9.607 91.874 0.001 1 49 127
-    i 8.669 91.874 0.001 1 49 113
     i 9.608 91.937 0.001 1 49 127
-    i 5.036 91.999 0.001 1 37 127
-    i 4.076 91.999 0.001 1 37 127
-    i 6.036 91.999 0.001 1 37 127
-    i 9.609 91.999 0.001 1 49 127
-    i 8.670 91.999 0.001 1 49 127
+    i -10.093 91.999 0
+    i -10.094 91.999 0
     i 11.126 91.996 -1.000 1 41 97
-    i -10.097 91.999 0
+    i 8.629 91.999 0.001 1 49 127
     i -11.125 91.997 0
-    i -10.098 91.999 0
+    i 6.036 91.999 0.001 1 37 127
+    i 5.036 91.999 0.001 1 37 127
+    i 9.609 91.999 0.001 1 49 127
+    i 4.071 91.999 0.001 1 37 127
     i 9.610 92.061 0.001 1 49 127
-    i 8.671 92.124 0.001 1 49 127
+    i 8.630 92.124 0.001 1 49 127
     i 9.611 92.124 0.001 1 49 127
     i 9.612 92.186 0.001 1 49 127
+    i 8.631 92.250 0.001 1 49 127
     i 9.613 92.250 0.001 1 49 127
-    i 8.672 92.250 0.001 1 49 127
     i 9.614 92.312 0.001 1 49 127
-    i 8.673 92.375 0.001 1 49 127
+    i 8.632 92.375 0.001 1 49 127
     i 9.615 92.375 0.001 1 49 127
     i 9.616 92.437 0.001 1 49 127
-    i 8.674 92.500 0.001 1 49 127
-    i 7.075 92.500 0.001 1 39 127
     i 9.617 92.500 0.001 1 49 127
+    i 8.633 92.500 0.001 1 49 127
+    i 7.071 92.500 0.001 1 39 127
     i 9.618 92.562 0.001 1 49 127
-    i 8.675 92.624 0.001 1 49 127
+    i 8.634 92.624 0.001 1 49 127
     i 9.619 92.624 0.001 1 49 127
     i 9.620 92.687 0.001 1 49 127
     i 9.621 92.749 0.001 1 49 127
-    i 8.676 92.749 0.001 1 49 127
+    i 8.635 92.749 0.001 1 49 127
     i -11.126 92.756 0
     i 11.127 92.759 -1.000 1 38 80
     i 9.622 92.812 0.001 1 49 127
-    i 8.677 92.874 0.001 1 49 127
     i 9.623 92.874 0.001 1 49 127
+    i 8.636 92.874 0.001 1 49 127
     i 9.624 92.936 0.001 1 49 127
-    i 4.077 92.999 0.001 1 37 127
-    i 8.678 92.999 0.001 1 49 127
     i 9.625 92.999 0.001 1 49 127
-    i 10.099 92.999 -1.000 1 72 127
-    i 10.100 92.999 -1.000 1 76 127
+    i 8.637 92.999 0.001 1 49 127
+    i 10.095 92.999 -1.000 1 72 127
+    i 10.096 92.999 -1.000 1 76 127
+    i 4.072 92.999 0.001 1 37 127
     i 9.626 93.061 0.001 1 49 127
-    i 8.679 93.124 0.001 1 49 127
+    i 8.638 93.124 0.001 1 49 127
     i 9.627 93.124 0.001 1 49 127
     i 9.628 93.187 0.001 1 49 127
     i 11.128 93.205 -1.000 1 33 79
     i -11.127 93.230 0
+    i 8.639 93.250 0.001 1 49 127
     i 9.629 93.250 0.001 1 49 127
-    i 8.680 93.250 0.001 1 49 127
     i 9.630 93.312 0.001 1 49 127
-    i 8.681 93.375 0.001 1 49 127
     i 9.631 93.375 0.001 1 49 127
+    i 8.640 93.375 0.001 1 49 127
     i 9.632 93.437 0.001 1 49 127
-    i 7.076 93.500 0.001 1 39 127
-    i 8.682 93.500 0.001 1 49 127
+    i -15.018 93.500 0
+    i -14.018 93.500 0
+    i 7.072 93.500 0.001 1 39 127
+    i 8.641 93.500 0.001 1 49 127
     i 9.633 93.500 0.001 1 49 127
     i 11.129 93.507 -1.000 1 36 89
     i -11.128 93.508 0
     i 9.634 93.562 0.001 1 49 127
     i 9.635 93.624 0.001 1 49 127
-    i 8.683 93.624 0.001 1 49 127
+    i 8.642 93.624 0.001 1 49 127
     i 9.636 93.687 0.001 1 49 127
-    i 8.684 93.749 0.001 1 49 127
     i 9.637 93.749 0.001 1 49 127
+    i 8.643 93.749 0.001 1 49 127
     i 9.638 93.812 0.001 1 49 127
-    i 8.685 93.874 0.001 1 49 113
     i 9.639 93.874 0.001 1 49 127
+    i 8.644 93.874 0.001 1 49 113
     i 9.640 93.936 0.001 1 49 127
-    i 5.037 93.999 0.001 1 37 127
-    i 8.686 93.999 0.001 1 49 127
-    i 4.078 93.999 0.001 1 37 127
-    i 6.037 93.999 0.001 1 37 127
-    i 9.641 93.999 0.001 1 49 127
+    i 14.019 93.967 -1.000 1 62 84
+    i 15.019 93.976 -1.000 1 53 80
     i -11.129 93.999 0
     i 11.130 93.999 -1.000 1 38 81
-    i -10.099 93.999 0
-    i -10.100 93.999 0
+    i 4.073 93.999 0.001 1 37 127
+    i 5.037 93.999 0.001 1 37 127
+    i 6.037 93.999 0.001 1 37 127
+    i 8.645 93.999 0.001 1 49 127
+    i 9.641 93.999 0.001 1 49 127
+    i -10.095 93.999 0
+    i -10.096 93.999 0
     i 9.642 94.061 0.001 1 49 127
     i 9.643 94.125 0.001 1 49 127
-    i 8.687 94.125 0.001 1 49 127
+    i 8.646 94.125 0.001 1 49 127
     i 9.644 94.187 0.001 1 49 127
-    i 8.688 94.250 0.001 1 49 127
     i 9.645 94.250 0.001 1 49 127
+    i 8.647 94.250 0.001 1 49 127
     i 9.646 94.312 0.001 1 49 127
     i 9.647 94.375 0.001 1 49 127
-    i 8.689 94.375 0.001 1 49 127
+    i 8.648 94.375 0.001 1 49 127
     i 9.648 94.437 0.001 1 49 127
-    i 8.690 94.499 0.001 1 49 127
     i 9.649 94.499 0.001 1 49 127
-    i 7.077 94.499 0.001 1 39 127
+    i 7.073 94.499 0.001 1 39 127
+    i 8.649 94.499 0.001 1 49 127
     i 9.650 94.562 0.001 1 49 127
-    i 8.691 94.624 0.001 1 49 127
+    i 8.650 94.624 0.001 1 49 127
     i 9.651 94.624 0.001 1 49 127
     i 9.652 94.687 0.001 1 49 127
     i 11.131 94.737 -1.000 1 41 89
     i -11.130 94.745 0
-    i 8.692 94.749 0.001 1 49 127
+    i 8.651 94.749 0.001 1 49 127
     i 9.653 94.749 0.001 1 49 127
     i 9.654 94.811 0.001 1 49 127
     i 9.655 94.874 0.001 1 49 127
-    i 8.693 94.874 0.001 1 49 127
+    i 8.652 94.874 0.001 1 49 127
     i 9.656 94.936 0.001 1 49 127
+    i 4.074 94.999 0.001 1 37 127
     i 9.657 94.999 0.001 1 49 127
-    i 8.694 94.999 0.001 1 49 127
-    i 10.101 94.999 -1.000 1 72 127
-    i 10.102 94.999 -1.000 1 76 127
-    i 4.079 94.999 0.001 1 37 127
+    i 8.653 94.999 0.001 1 49 127
+    i 10.097 94.999 -1.000 1 72 127
+    i 10.098 94.999 -1.000 1 76 127
     i 9.658 95.062 0.001 1 49 127
-    i 8.695 95.125 0.001 1 49 127
     i 9.659 95.125 0.001 1 49 127
+    i 8.654 95.125 0.001 1 49 127
     i 9.660 95.187 0.001 1 49 127
-    i 8.696 95.250 0.001 1 49 127
     i 9.661 95.250 0.001 1 49 127
+    i 8.655 95.250 0.001 1 49 127
     i 11.132 95.254 -1.000 1 38 68
     i -11.131 95.260 0
     i 9.662 95.312 0.001 1 49 127
-    i 8.697 95.375 0.001 1 49 127
     i 9.663 95.375 0.001 1 49 127
+    i 8.656 95.375 0.001 1 49 127
     i 9.664 95.437 0.001 1 49 127
-    i 8.698 95.499 0.001 1 49 127
+    i 7.074 95.499 0.001 1 39 127
+    i 8.657 95.499 0.001 1 49 127
     i 9.665 95.499 0.001 1 49 127
-    i 7.078 95.499 0.001 1 39 127
     i 11.133 95.501 -1.000 1 41 78
     i -11.132 95.509 0
     i 9.666 95.562 0.001 1 49 127
+    i 8.658 95.624 0.001 1 49 127
     i 9.667 95.624 0.001 1 49 127
-    i 8.699 95.624 0.001 1 49 127
     i 9.668 95.687 0.001 1 49 127
     i 6.038 95.749 0.001 1 37 127
-    i 9.669 95.749 0.001 1 49 127
     i 5.038 95.749 0.001 1 37 127
-    i 8.700 95.749 0.001 1 49 127
+    i 8.659 95.749 0.001 1 49 127
+    i 9.669 95.749 0.001 1 49 127
     i 9.670 95.811 0.001 1 49 127
+    i 8.660 95.874 0.001 1 49 113
     i 9.671 95.874 0.001 1 49 127
-    i 8.701 95.874 0.001 1 49 113
     i 9.672 95.936 0.001 1 49 127
+    i 14.020 95.954 -1.000 1 64 89
+    i 15.020 95.961 -1.000 1 55 103
+    i -15.019 95.981 0
+    i -14.019 95.983 0
+    i 4.075 96.000 0.001 1 37 127
     i 6.039 96.000 0.001 1 37 127
-    i 5.039 96.000 0.001 1 37 127
+    i 8.661 96.000 0.001 1 49 127
     i 9.673 96.000 0.001 1 49 127
-    i 8.702 96.000 0.001 1 49 127
-    i -10.101 96.000 0
-    i -10.102 96.000 0
-    i 4.080 96.000 0.001 1 37 127
+    i 5.039 96.000 0.001 1 37 127
+    i -10.097 96.000 0
+    i -10.098 96.000 0
     i 11.134 96.012 -1.000 1 38 78
     i -11.133 96.030 0
     i 9.674 96.062 0.001 1 49 127
     i 9.675 96.125 0.001 1 49 127
-    i 8.703 96.125 0.001 1 49 127
+    i 8.662 96.125 0.001 1 49 127
     i 9.676 96.187 0.001 1 49 127
+    i 8.663 96.250 0.001 1 49 127
     i 9.677 96.250 0.001 1 49 127
-    i 8.704 96.250 0.001 1 49 127
     i 9.678 96.312 0.001 1 49 127
+    i 8.664 96.374 0.001 1 49 127
     i 9.679 96.374 0.001 1 49 127
-    i 8.705 96.374 0.001 1 49 127
     i 9.680 96.437 0.001 1 49 127
+    i 7.075 96.499 0.001 1 39 127
+    i 8.665 96.499 0.001 1 49 127
     i 9.681 96.499 0.001 1 49 127
-    i 8.706 96.499 0.001 1 49 127
-    i 7.079 96.499 0.001 1 39 127
     i 9.682 96.562 0.001 1 49 127
-    i 8.707 96.624 0.001 1 49 127
     i 9.683 96.624 0.001 1 49 127
+    i 8.666 96.624 0.001 1 49 127
     i 9.684 96.686 0.001 1 49 127
-    i 8.708 96.749 0.001 1 49 127
+    i 8.667 96.749 0.001 1 49 127
     i 9.685 96.749 0.001 1 49 127
     i 11.135 96.760 -1.000 1 36 86
     i -11.134 96.768 0
     i 9.686 96.811 0.001 1 49 127
     i 9.687 96.874 0.001 1 49 127
-    i 8.709 96.874 0.001 1 49 127
+    i 8.668 96.874 0.001 1 49 127
     i 9.688 96.938 0.001 1 49 127
+    i 4.076 97.000 0.001 1 37 127
     i 9.689 97.000 0.001 1 49 127
-    i 10.103 97.000 -1.000 1 72 127
-    i 10.104 97.000 -1.000 1 76 127
-    i 4.081 97.000 0.001 1 37 127
-    i 8.710 97.000 0.001 1 49 127
+    i 8.669 97.000 0.001 1 49 127
+    i 10.099 97.000 -1.000 1 72 127
+    i 10.100 97.000 -1.000 1 76 127
     i 9.690 97.062 0.001 1 49 127
     i 9.691 97.125 0.001 1 49 127
-    i 8.711 97.125 0.001 1 49 127
+    i 8.670 97.125 0.001 1 49 127
     i 9.692 97.187 0.001 1 49 127
-    i 8.712 97.250 0.001 1 49 127
     i 9.693 97.250 0.001 1 49 127
+    i 8.671 97.250 0.001 1 49 127
     i -11.135 97.258 0
     i 11.136 97.258 -1.000 1 33 74
     i 9.694 97.312 0.001 1 49 127
+    i 8.672 97.374 0.001 1 49 127
     i 9.695 97.374 0.001 1 49 127
-    i 8.713 97.374 0.001 1 49 127
     i 9.696 97.437 0.001 1 49 127
-    i 7.080 97.499 0.001 1 39 127
+    i 8.673 97.499 0.001 1 49 127
     i 9.697 97.499 0.001 1 49 127
-    i 8.714 97.499 0.001 1 49 127
+    i 7.076 97.499 0.001 1 39 127
     i 11.137 97.508 -1.000 1 36 91
     i -11.136 97.518 0
     i 9.698 97.562 0.001 1 49 127
     i 9.699 97.624 0.001 1 49 127
-    i 8.715 97.624 0.001 1 49 127
+    i 8.674 97.624 0.001 1 49 127
     i 9.700 97.686 0.001 1 49 127
     i 9.701 97.749 0.001 1 49 127
-    i 8.716 97.749 0.001 1 49 127
+    i 8.675 97.749 0.001 1 49 127
     i 9.702 97.811 0.001 1 49 127
+    i 8.676 97.875 0.001 1 49 113
     i 9.703 97.875 0.001 1 49 127
-    i 8.717 97.875 0.001 1 49 113
     i 9.704 97.937 0.001 1 49 127
-    i 4.082 98.000 0.001 1 37 127
-    i 5.040 98.000 0.001 1 37 127
-    i 9.705 98.000 0.001 1 49 127
-    i 8.718 98.000 0.001 1 49 127
+    i 15.021 97.949 -1.000 1 57 99
+    i -15.020 97.964 0
+    i -14.020 97.971 0
+    i 14.021 97.975 -1.000 1 65 94
+    i 8.677 98.000 0.001 1 49 127
+    i 4.077 98.000 0.001 1 37 127
     i 6.040 98.000 0.001 1 37 127
-    i -10.103 98.000 0
-    i -10.104 98.000 0
+    i 5.040 98.000 0.001 1 37 127
+    i -10.099 98.000 0
+    i 9.705 98.000 0.001 1 49 127
     i -11.137 98.000 0
+    i -10.100 98.000 0
     i 11.138 98.000 -1.000 1 38 81
     i 9.706 98.062 0.001 1 49 127
-    i 8.719 98.125 0.001 1 49 127
+    i 8.678 98.125 0.001 1 49 127
     i 9.707 98.125 0.001 1 49 127
     i 9.708 98.187 0.001 1 49 127
+    i 8.679 98.249 0.001 1 49 127
     i 9.709 98.249 0.001 1 49 127
-    i 8.720 98.249 0.001 1 49 127
     i 9.710 98.312 0.001 1 49 127
-    i 8.721 98.374 0.001 1 49 127
     i 9.711 98.374 0.001 1 49 127
+    i 8.680 98.374 0.001 1 49 127
     i 9.712 98.437 0.001 1 49 127
-    i 7.081 98.499 0.001 1 39 127
-    i 8.722 98.499 0.001 1 49 127
+    i 7.077 98.499 0.001 1 39 127
+    i 8.681 98.499 0.001 1 49 127
     i 9.713 98.499 0.001 1 49 127
     i 9.714 98.561 0.001 1 49 127
-    i 8.723 98.624 0.001 1 49 127
+    i 8.682 98.624 0.001 1 49 127
     i 9.715 98.624 0.001 1 49 127
     i 9.716 98.686 0.001 1 49 127
     i 11.139 98.737 -1.000 1 41 89
     i -11.138 98.744 0
-    i 8.724 98.749 0.001 1 49 127
+    i 8.683 98.749 0.001 1 49 127
     i 9.717 98.749 0.001 1 49 127
     i 9.718 98.811 0.001 1 49 127
-    i 8.725 98.875 0.001 1 49 127
+    i 8.684 98.875 0.001 1 49 127
     i 9.719 98.875 0.001 1 49 127
     i 9.720 98.937 0.001 1 49 127
-    i 4.083 99.000 0.001 1 37 127
+    i 4.078 99.000 0.001 1 37 127
     i 9.721 99.000 0.001 1 49 127
-    i 8.726 99.000 0.001 1 49 127
-    i 10.105 99.000 -1.000 1 72 127
-    i 10.106 99.000 -1.000 1 76 127
+    i 8.685 99.000 0.001 1 49 127
+    i 10.101 99.000 -1.000 1 72 127
+    i 10.102 99.000 -1.000 1 76 127
     i 9.722 99.062 0.001 1 49 127
-    i 8.727 99.125 0.001 1 49 127
+    i 8.686 99.125 0.001 1 49 127
     i 9.723 99.125 0.001 1 49 127
     i 9.724 99.187 0.001 1 49 127
-    i 8.728 99.249 0.001 1 49 127
+    i 8.687 99.249 0.001 1 49 127
     i 9.725 99.249 0.001 1 49 127
     i 11.140 99.254 -1.000 1 38 68
     i -11.139 99.260 0
     i 9.726 99.312 0.001 1 49 127
     i 9.727 99.374 0.001 1 49 127
-    i 8.729 99.374 0.001 1 49 127
+    i 8.688 99.374 0.001 1 49 127
     i 9.728 99.437 0.001 1 49 127
-    i 7.082 99.499 0.001 1 39 127
-    i 8.730 99.499 0.001 1 49 127
     i 9.729 99.499 0.001 1 49 127
+    i 8.689 99.499 0.001 1 49 127
+    i 7.078 99.499 0.001 1 39 127
     i 11.141 99.500 -1.000 1 41 78
     i -11.140 99.509 0
     i 9.730 99.561 0.001 1 49 127
     i 9.731 99.624 0.001 1 49 127
-    i 8.731 99.624 0.001 1 49 127
+    i 8.690 99.624 0.001 1 49 127
     i 9.732 99.686 0.001 1 49 127
     i 5.041 99.749 0.001 1 37 127
     i 6.041 99.749 0.001 1 37 127
-    i 8.732 99.749 0.001 1 49 127
     i 9.733 99.749 0.001 1 49 127
+    i 8.691 99.749 0.001 1 49 127
     i 9.734 99.812 0.001 1 49 127
-    i 8.733 99.875 0.001 1 49 113
     i 9.735 99.875 0.001 1 49 127
+    i 8.692 99.875 0.001 1 49 113
     i 9.736 99.937 0.001 1 49 127
+    i -14.021 99.949 0
+    i 15.022 99.950 -1.000 1 60 78
+    i -15.021 99.959 0
+    i 14.022 99.978 -1.000 1 69 79
+    i -10.101 100.000 0
+    i -10.102 100.000 0
     i 6.042 100.000 0.001 1 37 127
     i 5.042 100.000 0.001 1 37 127
-    i 8.734 100.000 0.001 1 49 127
+    i 8.693 100.000 0.001 1 49 127
     i 9.737 100.000 0.001 1 49 127
-    i -10.105 100.000 0
-    i -10.106 100.000 0
-    i 4.084 100.000 0.001 1 37 127
+    i 4.079 100.000 0.001 1 37 127
     i 11.142 100.011 -1.000 1 38 78
     i -11.141 100.030 0
     i 9.738 100.062 0.001 1 49 127
-    i 8.735 100.124 0.001 1 49 127
+    i 8.694 100.124 0.001 1 49 127
     i 9.739 100.124 0.001 1 49 127
     i 9.740 100.187 0.001 1 49 127
-    i 8.736 100.249 0.001 1 49 127
+    i 8.695 100.249 0.001 1 49 127
     i 9.741 100.249 0.001 1 49 127
     i 9.742 100.312 0.001 1 49 127
-    i 8.737 100.374 0.001 1 49 127
+    i 8.696 100.374 0.001 1 49 127
     i 9.743 100.374 0.001 1 49 127
     i 9.744 100.436 0.001 1 49 127
     i 9.745 100.499 0.001 1 49 127
-    i 8.738 100.499 0.001 1 49 127
-    i 7.083 100.499 0.001 1 39 127
+    i 8.697 100.499 0.001 1 49 127
+    i 7.079 100.499 0.001 1 39 127
     i 9.746 100.561 0.001 1 49 127
-    i 8.739 100.624 0.001 1 49 127
     i 9.747 100.624 0.001 1 49 127
+    i 8.698 100.624 0.001 1 49 127
     i 9.748 100.686 0.001 1 49 127
-    i 8.740 100.750 0.001 1 49 127
+    i 8.699 100.750 0.001 1 49 127
     i 9.749 100.750 0.001 1 49 127
     i 11.143 100.760 -1.000 1 36 86
     i -11.142 100.767 0
     i 9.750 100.812 0.001 1 49 127
+    i 8.700 100.875 0.001 1 49 127
     i 9.751 100.875 0.001 1 49 127
-    i 8.741 100.875 0.001 1 49 127
+    i -15.022 100.879 0
+    i 15.023 100.928 -1.000 1 55 79
     i 9.752 100.937 0.001 1 49 127
+    i 14.023 100.976 -1.000 1 64 80
+    i 4.080 101.000 0.001 1 37 127
+    i 8.701 101.000 0.001 1 49 127
     i 9.753 101.000 0.001 1 49 127
-    i 8.742 101.000 0.001 1 49 127
-    i 10.107 101.000 -1.000 1 72 127
-    i 4.085 101.000 0.001 1 37 127
-    i 10.108 101.000 -1.000 1 76 127
+    i 10.103 101.000 -1.000 1 72 127
+    i 10.104 101.000 -1.000 1 76 127
     i 9.754 101.062 0.001 1 49 127
-    i 8.743 101.124 0.001 1 49 127
+    i 8.702 101.124 0.001 1 49 127
     i 9.755 101.124 0.001 1 49 127
     i 9.756 101.187 0.001 1 49 127
-    i -11.143 101.258 0
-    i 8.744 101.249 0.001 1 49 127
+    i 8.703 101.249 0.001 1 49 127
     i 9.757 101.249 0.001 1 49 127
+    i -11.143 101.258 0
     i 11.144 101.259 -1.000 1 33 74
     i 9.758 101.312 0.001 1 49 127
-    i 8.745 101.374 0.001 1 49 127
+    i -14.022 101.312 0
     i 9.759 101.374 0.001 1 49 127
+    i 8.704 101.374 0.001 1 49 127
     i 9.760 101.436 0.001 1 49 127
+    i 8.705 101.499 0.001 1 49 127
+    i 7.080 101.499 0.001 1 39 127
     i 9.761 101.499 0.001 1 49 127
-    i 7.084 101.499 0.001 1 39 127
-    i 8.746 101.499 0.001 1 49 127
     i 11.145 101.507 -1.000 1 36 91
     i -11.144 101.518 0
     i 9.762 101.561 0.001 1 49 127
+    i 8.706 101.624 0.001 1 49 127
     i 9.763 101.624 0.001 1 49 127
-    i 8.747 101.624 0.001 1 49 127
     i 9.764 101.687 0.001 1 49 127
     i 9.765 101.750 0.001 1 49 127
-    i 8.748 101.750 0.001 1 49 127
+    i 8.707 101.750 0.001 1 49 127
     i 9.766 101.812 0.001 1 49 127
-    i 8.749 101.875 0.001 1 49 113
+    i 8.708 101.875 0.001 1 49 113
     i 9.767 101.875 0.001 1 49 127
+    i 15.024 101.898 -1.000 1 57 84
+    i -14.023 101.909 0
     i 9.768 101.937 0.001 1 49 127
-    i 5.043 101.999 0.001 1 37 127
-    i 6.043 101.999 0.001 1 37 127
-    i 8.750 101.999 0.001 1 49 127
-    i 9.769 101.999 0.001 1 49 127
-    i -10.107 101.999 0
-    i -10.108 101.999 0
+    i 14.024 101.965 -1.000 1 65 94
+    i -15.023 101.982 0
+    i -10.103 101.999 0
+    i -10.104 101.999 0
     i -11.145 101.999 0
     i 11.146 101.999 -1.000 1 38 81
-    i 4.086 101.999 0.001 1 37 127
+    i 4.081 101.999 0.001 1 37 127
+    i 13.086 101.999 -1.000 1 91 127
+    i 5.043 101.999 0.001 1 37 127
+    i 8.709 101.999 0.001 1 49 127
+    i 6.043 101.999 0.001 1 37 127
+    i 9.769 101.999 0.001 1 49 127
     i 9.770 102.062 0.001 1 49 127
+    i 8.710 102.124 0.001 1 49 127
     i 9.771 102.124 0.001 1 49 127
-    i 8.751 102.124 0.001 1 49 127
+    i -13.086 102.124 0
+    i 13.087 102.124 -1.000 1 93 127
     i 9.772 102.187 0.001 1 49 127
-    i 8.752 102.249 0.001 1 49 127
+    i 8.711 102.249 0.001 1 49 127
+    i -13.087 102.249 0
+    i 13.088 102.249 -1.000 1 89 127
     i 9.773 102.249 0.001 1 49 127
     i 9.774 102.311 0.001 1 49 127
+    i -13.088 102.374 0
+    i 13.089 102.374 -1.000 1 91 127
     i 9.775 102.374 0.001 1 49 127
-    i 8.753 102.374 0.001 1 49 127
+    i 8.712 102.374 0.001 1 49 127
     i 9.776 102.436 0.001 1 49 127
-    i 7.085 102.499 0.001 1 39 127
-    i 8.754 102.499 0.001 1 49 127
+    i 7.081 102.499 0.001 1 39 127
+    i 8.713 102.499 0.001 1 49 127
     i 9.777 102.499 0.001 1 49 127
+    i -13.089 102.499 0
+    i 13.090 102.499 -1.000 1 93 127
     i 9.778 102.561 0.001 1 49 127
+    i -13.090 102.625 0
+    i 13.091 102.625 -1.000 1 89 127
+    i 8.714 102.625 0.001 1 49 127
     i 9.779 102.625 0.001 1 49 127
-    i 8.755 102.625 0.001 1 49 127
     i 9.780 102.687 0.001 1 49 127
     i 11.147 102.737 -1.000 1 41 89
     i -11.146 102.744 0
+    i -13.091 102.750 0
+    i 13.092 102.750 -1.000 1 91 127
+    i 8.715 102.750 0.001 1 49 127
     i 9.781 102.750 0.001 1 49 127
-    i 8.756 102.750 0.001 1 49 127
     i 9.782 102.812 0.001 1 49 127
+    i -13.092 102.875 0
+    i 13.093 102.875 -1.000 1 93 127
+    i 8.716 102.875 0.001 1 49 127
     i 9.783 102.875 0.001 1 49 127
-    i 8.757 102.875 0.001 1 49 127
     i 9.784 102.937 0.001 1 49 127
-    i 4.087 102.999 0.001 1 37 127
-    i 8.758 102.999 0.001 1 49 127
+    i -13.093 102.999 0
+    i 4.082 102.999 0.001 1 37 127
+    i 13.094 102.999 -1.000 1 89 127
+    i 8.717 102.999 0.001 1 49 127
     i 9.785 102.999 0.001 1 49 127
-    i 10.109 102.999 -1.000 1 72 127
-    i 10.110 102.999 -1.000 1 76 127
+    i 10.105 102.999 -1.000 1 72 127
+    i 10.106 102.999 -1.000 1 76 127
     i 9.786 103.062 0.001 1 49 127
-    i 8.759 103.124 0.001 1 49 127
     i 9.787 103.124 0.001 1 49 127
+    i 8.718 103.124 0.001 1 49 127
+    i -13.094 103.124 0
+    i 13.095 103.124 -1.000 1 91 127
     i 9.788 103.187 0.001 1 49 127
-    i 9.789 103.249 0.001 1 49 127
+    i -13.095 103.249 0
     i 11.148 103.253 -1.000 1 38 68
-    i 8.760 103.249 0.001 1 49 127
+    i 13.096 103.249 -1.000 1 93 127
+    i 8.719 103.249 0.001 1 49 127
+    i 9.789 103.249 0.001 1 49 127
     i -11.147 103.259 0
     i 9.790 103.311 0.001 1 49 127
-    i 8.761 103.374 0.001 1 49 127
+    i 8.720 103.374 0.001 1 49 127
     i 9.791 103.374 0.001 1 49 127
+    i -13.096 103.374 0
+    i 13.097 103.374 -1.000 1 89 127
     i 9.792 103.436 0.001 1 49 127
-    i 7.086 103.499 0.001 1 39 127
-    i 8.762 103.499 0.001 1 49 127
+    i -13.097 103.499 0
     i 9.793 103.499 0.001 1 49 127
+    i 8.721 103.499 0.001 1 49 127
+    i 7.082 103.499 0.001 1 39 127
+    i 13.098 103.499 -1.000 1 91 127
     i 11.149 103.501 -1.000 1 41 78
     i -11.148 103.510 0
     i 9.794 103.562 0.001 1 49 127
-    i 8.763 103.625 0.001 1 49 127
     i 9.795 103.625 0.001 1 49 127
+    i 8.722 103.625 0.001 1 49 127
+    i -13.098 103.625 0
+    i 13.099 103.625 -1.000 1 93 127
     i 9.796 103.687 0.001 1 49 127
-    i 9.797 103.750 0.001 1 49 127
-    i 6.044 103.750 0.001 1 37 127
-    i 8.764 103.750 0.001 1 49 127
     i 5.044 103.750 0.001 1 37 127
+    i 6.044 103.750 0.001 1 37 127
+    i 8.723 103.750 0.001 1 49 127
+    i 9.797 103.750 0.001 1 49 127
+    i -13.099 103.750 0
+    i 13.100 103.750 -1.000 1 89 127
     i 9.798 103.812 0.001 1 49 127
+    i -13.100 103.874 0
+    i 13.101 103.874 -1.000 1 91 127
+    i 8.724 103.874 0.001 1 49 113
     i 9.799 103.874 0.001 1 49 127
-    i 8.765 103.874 0.001 1 49 113
     i 9.800 103.937 0.001 1 49 127
-    i 9.801 103.999 0.001 1 49 127
-    i 8.766 103.999 0.001 1 49 127
-    i 5.045 103.999 0.001 1 37 127
-    i -10.109 103.999 0
-    i -10.110 103.999 0
-    i 4.088 103.999 0.001 1 37 127
+    i 4.083 103.999 0.001 1 37 127
+    i -13.101 103.999 0
     i 6.045 103.999 0.001 1 37 127
+    i 5.045 103.999 0.001 1 37 127
+    i 8.725 103.999 0.001 1 49 127
+    i 13.102 103.999 -1.000 1 93 127
+    i 9.801 103.999 0.001 1 49 127
+    i -10.105 103.999 0
+    i -10.106 103.999 0
     i 11.150 104.012 -1.000 1 38 78
     i -11.149 104.030 0
     i 9.802 104.062 0.001 1 49 127
+    i 8.726 104.124 0.001 1 49 127
+    i -13.102 104.124 0
     i 9.803 104.124 0.001 1 49 127
-    i 8.767 104.124 0.001 1 49 127
     i 9.804 104.186 0.001 1 49 127
-    i 8.768 104.249 0.001 1 49 127
     i 9.805 104.249 0.001 1 49 127
+    i 8.727 104.249 0.001 1 49 127
     i 9.806 104.311 0.001 1 49 127
     i 9.807 104.374 0.001 1 49 127
-    i 8.769 104.374 0.001 1 49 127
+    i 8.728 104.374 0.001 1 49 127
     i 9.808 104.436 0.001 1 49 127
-    i 8.770 104.500 0.001 1 49 127
+    i 7.083 104.500 0.001 1 39 127
+    i 8.729 104.500 0.001 1 49 127
     i 9.809 104.500 0.001 1 49 127
-    i 7.087 104.500 0.001 1 39 127
     i 9.810 104.562 0.001 1 49 127
-    i 8.771 104.625 0.001 1 49 127
+    i 8.730 104.625 0.001 1 49 127
     i 9.811 104.625 0.001 1 49 127
     i 9.812 104.687 0.001 1 49 127
-    i 8.772 104.750 0.001 1 49 127
+    i 8.731 104.750 0.001 1 49 127
     i 9.813 104.750 0.001 1 49 127
     i 11.151 104.760 -1.000 1 36 86
     i -11.150 104.767 0
     i 9.814 104.812 0.001 1 49 127
     i 9.815 104.874 0.001 1 49 127
-    i 8.773 104.874 0.001 1 49 127
+    i 8.732 104.874 0.001 1 49 127
     i 9.816 104.937 0.001 1 49 127
-    i 8.774 104.999 0.001 1 49 127
+    i 4.084 104.999 0.001 1 37 127
+    i 8.733 104.999 0.001 1 49 127
+    i 10.107 104.999 -1.000 1 72 127
     i 9.817 104.999 0.001 1 49 127
-    i 4.089 104.999 0.001 1 37 127
-    i 10.111 104.999 -1.000 1 72 127
-    i 10.112 104.999 -1.000 1 76 127
+    i 10.108 104.999 -1.000 1 76 127
     i 9.818 105.062 0.001 1 49 127
-    i 8.775 105.124 0.001 1 49 127
     i 9.819 105.124 0.001 1 49 127
+    i 8.734 105.124 0.001 1 49 127
     i 9.820 105.186 0.001 1 49 127
+    i 8.735 105.249 0.001 1 49 127
     i 9.821 105.249 0.001 1 49 127
-    i 8.776 105.249 0.001 1 49 127
     i -11.151 105.258 0
     i 11.152 105.259 -1.000 1 33 74
     i 9.822 105.311 0.001 1 49 127
     i 9.823 105.374 0.001 1 49 127
-    i 8.777 105.374 0.001 1 49 127
+    i 8.736 105.374 0.001 1 49 127
     i 9.824 105.437 0.001 1 49 127
+    i 8.737 105.500 0.001 1 49 127
+    i 7.084 105.500 0.001 1 39 127
     i 9.825 105.500 0.001 1 49 127
-    i 8.778 105.500 0.001 1 49 127
-    i 7.088 105.500 0.001 1 39 127
     i 11.153 105.509 -1.000 1 36 91
     i -11.152 105.517 0
     i 9.826 105.562 0.001 1 49 127
-    i 8.779 105.625 0.001 1 49 127
     i 9.827 105.625 0.001 1 49 127
+    i 8.738 105.625 0.001 1 49 127
     i 9.828 105.687 0.001 1 49 127
     i 9.829 105.749 0.001 1 49 127
-    i 8.780 105.749 0.001 1 49 127
+    i 8.739 105.749 0.001 1 49 127
     i 9.830 105.812 0.001 1 49 127
-    i 8.781 105.874 0.001 1 49 113
+    i 8.740 105.874 0.001 1 49 113
     i 9.831 105.874 0.001 1 49 127
     i 9.832 105.937 0.001 1 49 127
+    i 4.085 105.999 0.001 1 37 127
     i 5.046 105.999 0.001 1 37 127
-    i 8.782 105.999 0.001 1 49 127
-    i -10.111 105.999 0
-    i -11.153 105.999 0
     i 6.046 105.999 0.001 1 37 127
+    i 8.741 105.999 0.001 1 49 127
     i 9.833 105.999 0.001 1 49 127
-    i 4.090 105.999 0.001 1 37 127
-    i -10.112 105.999 0
+    i -10.107 105.999 0
+    i -10.108 105.999 0
+    i -11.153 105.999 0
     i 11.154 105.999 -1.000 1 38 83
     i 9.834 106.061 0.001 1 49 127
+    i 8.742 106.124 0.001 1 49 127
     i 9.835 106.124 0.001 1 49 127
-    i 8.783 106.124 0.001 1 49 127
     i 9.836 106.186 0.001 1 49 127
+    i 8.743 106.249 0.001 1 49 127
     i 9.837 106.249 0.001 1 49 127
-    i 8.784 106.249 0.001 1 49 127
     i 9.838 106.311 0.001 1 49 127
     i 9.839 106.375 0.001 1 49 127
-    i 8.785 106.375 0.001 1 49 127
+    i 8.744 106.375 0.001 1 49 127
     i 9.840 106.437 0.001 1 49 127
+    i 8.745 106.500 0.001 1 49 127
+    i 7.085 106.500 0.001 1 39 127
     i 9.841 106.500 0.001 1 49 127
-    i 7.089 106.500 0.001 1 39 127
-    i 8.786 106.500 0.001 1 49 127
     i 9.842 106.562 0.001 1 49 127
-    i 8.787 106.625 0.001 1 49 127
     i 9.843 106.625 0.001 1 49 127
+    i 8.746 106.625 0.001 1 49 127
     i 9.844 106.687 0.001 1 49 127
     i 11.155 106.738 -1.000 1 41 103
     i 9.845 106.749 0.001 1 49 127
-    i 8.788 106.749 0.001 1 49 127
+    i 8.747 106.749 0.001 1 49 127
     i -11.154 106.757 0
     i 9.846 106.812 0.001 1 49 127
+    i 8.748 106.874 0.001 1 49 127
     i 9.847 106.874 0.001 1 49 127
-    i 8.789 106.874 0.001 1 49 127
     i 9.848 106.937 0.001 1 49 127
-    i 4.091 106.999 0.001 1 37 127
-    i 10.113 106.999 -1.000 1 72 127
+    i 4.086 106.999 0.001 1 37 127
+    i 8.749 106.999 0.001 1 49 127
     i 9.849 106.999 0.001 1 49 127
-    i 8.790 106.999 0.001 1 49 127
-    i 10.114 106.999 -1.000 1 76 127
+    i 10.109 106.999 -1.000 1 72 127
+    i 10.110 106.999 -1.000 1 76 127
     i 9.850 107.061 0.001 1 49 127
-    i 8.791 107.124 0.001 1 49 127
+    i 8.750 107.124 0.001 1 49 127
     i 9.851 107.124 0.001 1 49 127
     i 9.852 107.186 0.001 1 49 127
     i 11.156 107.224 -1.000 1 44 76
     i -11.155 107.234 0
     i 9.853 107.249 0.001 1 49 127
-    i 8.792 107.249 0.001 1 49 127
+    i 8.751 107.249 0.001 1 49 127
     i 9.854 107.312 0.001 1 49 127
+    i 8.752 107.375 0.001 1 49 127
     i 9.855 107.375 0.001 1 49 127
-    i 8.793 107.375 0.001 1 49 127
     i 9.856 107.437 0.001 1 49 127
+    i 7.086 107.500 0.001 1 39 127
+    i 8.753 107.500 0.001 1 49 127
     i 9.857 107.500 0.001 1 49 127
-    i 8.794 107.500 0.001 1 49 127
-    i 7.090 107.500 0.001 1 39 127
     i -11.156 107.523 0
     i 11.157 107.523 -1.000 1 43 89
     i 9.858 107.562 0.001 1 49 127
     i 9.859 107.624 0.001 1 49 127
-    i 8.795 107.624 0.001 1 49 127
+    i 8.754 107.624 0.001 1 49 127
     i 9.860 107.687 0.001 1 49 127
-    i 9.861 107.749 0.001 1 49 127
-    i 8.796 107.749 0.001 1 49 127
-    i 5.047 107.749 0.001 1 37 127
     i 6.047 107.749 0.001 1 37 127
+    i 9.861 107.749 0.001 1 49 127
+    i 8.755 107.749 0.001 1 49 127
+    i 5.047 107.749 0.001 1 37 127
     i 9.862 107.812 0.001 1 49 127
+    i 8.756 107.874 0.001 1 49 113
     i 9.863 107.874 0.001 1 49 127
-    i 8.797 107.874 0.001 1 49 113
     i 9.864 107.937 0.001 1 49 127
-    i 4.092 107.999 0.001 1 37 127
-    i 11.158 107.996 -1.000 1 41 97
-    i -11.157 107.997 0
     i 5.048 107.999 0.001 1 37 127
     i 6.048 107.999 0.001 1 37 127
+    i 4.087 107.999 0.001 1 37 127
     i 9.865 107.999 0.001 1 49 127
-    i 8.798 107.999 0.001 1 49 127
-    i -10.113 107.999 0
-    i -10.114 107.999 0
+    i 11.158 107.996 -1.000 1 41 97
+    i -10.109 107.999 0
+    i -10.110 107.999 0
+    i -11.157 107.997 0
+    i 8.757 107.999 0.001 1 49 127
     i 9.866 108.061 0.001 1 49 127
-    i 8.799 108.124 0.001 1 49 127
+    i 8.758 108.124 0.001 1 49 127
     i 9.867 108.124 0.001 1 49 127
     i 9.868 108.186 0.001 1 49 127
     i 9.869 108.250 0.001 1 49 127
-    i 8.800 108.250 0.001 1 49 127
+    i 8.759 108.250 0.001 1 49 127
     i 9.870 108.312 0.001 1 49 127
+    i 8.760 108.375 0.001 1 49 127
     i 9.871 108.375 0.001 1 49 127
-    i 8.801 108.375 0.001 1 49 127
     i 9.872 108.437 0.001 1 49 127
     i 9.873 108.500 0.001 1 49 127
-    i 8.802 108.500 0.001 1 49 127
-    i 7.091 108.500 0.001 1 39 127
+    i 7.087 108.500 0.001 1 39 127
+    i 8.761 108.500 0.001 1 49 127
     i 9.874 108.562 0.001 1 49 127
+    i 8.762 108.624 0.001 1 49 127
     i 9.875 108.624 0.001 1 49 127
-    i 8.803 108.624 0.001 1 49 127
     i 9.876 108.687 0.001 1 49 127
-    i 8.804 108.749 0.001 1 49 127
-    i -11.158 108.756 0
+    i 8.763 108.749 0.001 1 49 127
     i 9.877 108.749 0.001 1 49 127
+    i -11.158 108.756 0
     i 11.159 108.759 -1.000 1 38 80
     i 9.878 108.812 0.001 1 49 127
-    i 8.805 108.874 0.001 1 49 127
     i 9.879 108.874 0.001 1 49 127
+    i 8.764 108.874 0.001 1 49 127
     i 9.880 108.936 0.001 1 49 127
-    i 4.093 108.999 0.001 1 37 127
-    i 8.806 108.999 0.001 1 49 127
+    i 10.111 108.999 -1.000 1 72 127
+    i 10.112 108.999 -1.000 1 76 127
+    i 4.088 108.999 0.001 1 37 127
+    i 8.765 108.999 0.001 1 49 127
     i 9.881 108.999 0.001 1 49 127
-    i 10.115 108.999 -1.000 1 72 127
-    i 10.116 108.999 -1.000 1 76 127
     i 9.882 109.061 0.001 1 49 127
-    i 8.807 109.124 0.001 1 49 127
     i 9.883 109.124 0.001 1 49 127
+    i 8.766 109.124 0.001 1 49 127
     i 9.884 109.187 0.001 1 49 127
     i 11.160 109.205 -1.000 1 33 79
     i -11.159 109.230 0
+    i 8.767 109.250 0.001 1 49 127
     i 9.885 109.250 0.001 1 49 127
-    i 8.808 109.250 0.001 1 49 127
     i 9.886 109.312 0.001 1 49 127
-    i 8.809 109.375 0.001 1 49 127
     i 9.887 109.375 0.001 1 49 127
+    i 8.768 109.375 0.001 1 49 127
     i 9.888 109.437 0.001 1 49 127
-    i 7.092 109.500 0.001 1 39 127
+    i 8.769 109.500 0.001 1 49 127
     i 9.889 109.500 0.001 1 49 127
-    i 8.810 109.500 0.001 1 49 127
+    i 7.088 109.500 0.001 1 39 127
+    i -15.024 109.500 0
+    i -14.024 109.500 0
     i 11.161 109.507 -1.000 1 36 89
     i -11.160 109.508 0
     i 9.890 109.562 0.001 1 49 127
     i 9.891 109.624 0.001 1 49 127
-    i 8.811 109.624 0.001 1 49 127
+    i 8.770 109.624 0.001 1 49 127
     i 9.892 109.687 0.001 1 49 127
     i 9.893 109.749 0.001 1 49 127
-    i 8.812 109.749 0.001 1 49 127
+    i 8.771 109.749 0.001 1 49 127
     i 9.894 109.812 0.001 1 49 127
-    i 8.813 109.874 0.001 1 49 113
+    i 8.772 109.874 0.001 1 49 113
     i 9.895 109.874 0.001 1 49 127
     i 9.896 109.936 0.001 1 49 127
-    i 5.049 109.999 0.001 1 37 127
     i 6.049 109.999 0.001 1 37 127
+    i 5.049 109.999 0.001 1 37 127
+    i -10.111 109.999 0
+    i -10.112 109.999 0
     i -11.161 109.999 0
-    i -10.115 109.999 0
-    i -10.116 109.999 0
     i 11.162 109.999 -1.000 1 38 83
     i -11.162 110.312 0
-    i 10.117 110.999 -1.000 1 72 127
-    i 10.118 110.999 -1.000 1 76 127
-    i 6.050 111.749 0.001 1 37 127
+    i 10.113 110.999 -1.000 1 72 127
+    i 10.114 110.999 -1.000 1 76 127
     i 5.050 111.749 0.001 1 37 127
-    i 5.051 112.000 0.001 1 37 127
-    i -10.117 112.000 0
+    i 6.050 111.749 0.001 1 37 127
     i 6.051 112.000 0.001 1 37 127
-    i -10.118 112.000 0
-    i 10.119 113.000 -1.000 1 72 127
-    i 10.120 113.000 -1.000 1 76 127
+    i -10.113 112.000 0
+    i 5.051 112.000 0.001 1 37 127
+    i -10.114 112.000 0
+    i 10.115 113.000 -1.000 1 72 127
+    i 10.116 113.000 -1.000 1 76 127
+    i 12.011 114.000 -1.000 1 38 81
     i 5.052 114.000 0.001 1 37 127
     i 6.052 114.000 0.001 1 37 127
-    i -10.119 114.000 0
-    i 12.011 114.000 -1.000 1 38 81
-    i -10.120 114.000 0
+    i -10.115 114.000 0
+    i -10.116 114.000 0
     i 12.012 114.737 -1.000 1 41 89
     i -12.011 114.744 0
-    i 10.121 115.000 -1.000 1 72 127
-    i 10.122 115.000 -1.000 1 76 127
+    i 10.117 115.000 -1.000 1 72 127
+    i 10.118 115.000 -1.000 1 76 127
     i 12.013 115.254 -1.000 1 38 68
     i -12.012 115.260 0
     i 12.014 115.500 -1.000 1 41 78
     i -12.013 115.509 0
-    i 5.053 115.749 0.001 1 37 127
     i 6.053 115.749 0.001 1 37 127
-    i -10.121 116.000 0
+    i 5.053 115.749 0.001 1 37 127
+    i -10.117 116.000 0
+    i -10.118 116.000 0
     i 5.054 116.000 0.001 1 37 127
-    i -10.122 116.000 0
     i 6.054 116.000 0.001 1 37 127
     i 12.015 116.011 -1.000 1 38 78
     i -12.014 116.030 0
     i -12.015 116.499 0
-    i 10.123 117.000 -1.000 1 72 127
-    i 10.124 117.000 -1.000 1 76 127
+    i 10.119 117.000 -1.000 1 72 127
+    i 10.120 117.000 -1.000 1 76 127
     i 6.055 117.750 0.001 1 37 127
     i 5.055 117.750 0.001 1 37 127
-    i 5.056 117.999 0.001 1 37 127
-    i 6.056 117.999 0.001 1 37 127
-    i -10.123 117.999 0
     i 12.016 117.999 -1.000 1 38 81
-    i -10.124 117.999 0
+    i -10.119 117.999 0
+    i -10.120 117.999 0
+    i 6.056 117.999 0.001 1 37 127
+    i 5.056 117.999 0.001 1 37 127
     i 12.017 118.737 -1.000 1 41 89
     i -12.016 118.744 0
-    i 10.125 118.999 -1.000 1 72 127
-    i 10.126 118.999 -1.000 1 76 127
+    i 10.121 118.999 -1.000 1 72 127
+    i 10.122 118.999 -1.000 1 76 127
     i 12.018 119.253 -1.000 1 38 68
     i -12.017 119.259 0
     i 12.019 119.501 -1.000 1 41 78
     i -12.018 119.510 0
     i 5.057 119.750 0.001 1 37 127
     i 6.057 119.750 0.001 1 37 127
-    i 6.058 119.999 0.001 1 37 127
     i 5.058 119.999 0.001 1 37 127
-    i -10.125 119.999 0
-    i -10.126 119.999 0
+    i 6.058 119.999 0.001 1 37 127
+    i -10.121 119.999 0
+    i -10.122 119.999 0
     i 12.020 120.012 -1.000 1 38 78
     i -12.019 120.030 0
     i -12.020 120.500 0
-    i 10.127 120.999 -1.000 1 72 127
-    i 10.128 120.999 -1.000 1 76 127
-    i 6.059 121.749 0.001 1 37 127
+    i 10.123 120.999 -1.000 1 72 127
+    i 10.124 120.999 -1.000 1 76 127
     i 5.059 121.749 0.001 1 37 127
-    i 6.060 121.999 0.001 1 37 127
+    i 6.059 121.749 0.001 1 37 127
     i 5.060 121.999 0.001 1 37 127
-    i -10.127 121.999 0
-    i -10.128 121.999 0
-    i 4.094 122.999 0.001 1 37 127
-    i 10.129 122.999 -1.000 1 72 127
-    i 10.130 122.999 -1.000 1 76 127
+    i 6.060 121.999 0.001 1 37 127
+    i -10.123 121.999 0
+    i -10.124 121.999 0
+    i 4.089 122.999 0.001 1 37 127
+    i 10.125 122.999 -1.000 1 72 127
+    i 10.126 122.999 -1.000 1 76 127
     i 5.061 123.749 0.001 1 37 127
     i 6.061 123.749 0.001 1 37 127
-    i -10.129 123.999 0
-    i 6.062 123.999 0.001 1 37 127
     i 5.062 123.999 0.001 1 37 127
-    i -10.130 123.999 0
-    i 4.095 124.999 0.001 1 37 127
-    i 10.131 124.999 -1.000 1 72 127
-    i 10.132 124.999 -1.000 1 76 127
-    i 7.093 125.500 0.001 1 39 127
+    i 6.062 123.999 0.001 1 37 127
+    i -10.125 123.999 0
+    i -10.126 123.999 0
+    i 4.090 124.999 0.001 1 37 127
+    i 10.127 124.999 -1.000 1 72 127
+    i 10.128 124.999 -1.000 1 76 127
+    i 7.089 125.500 0.001 1 39 127
     i 6.063 125.749 0.001 1 37 127
     i 5.063 125.749 0.001 1 37 127
+    i 15.025 125.951 -1.000 1 53 74
+    i 14.025 125.968 -1.000 1 65 101
+    i 14.026 125.976 -1.000 1 62 78
     i 11.163 125.999 -1.000 1 38 81
+    i -10.127 125.999 0
     i 9.897 125.999 0.001 1 49 127
+    i -10.128 125.999 0
+    i 13.103 125.999 -1.000 1 91 127
+    i 4.091 125.999 0.001 1 37 127
     i 5.064 125.999 0.001 1 37 127
-    i 4.096 125.999 0.001 1 37 127
     i 6.064 125.999 0.001 1 37 127
-    i -10.131 125.999 0
-    i 8.814 125.999 0.001 1 49 127
-    i -10.132 125.999 0
+    i 8.773 125.999 0.001 1 49 127
     i 9.898 126.061 0.001 1 49 127
     i 9.899 126.125 0.001 1 49 127
-    i 8.815 126.125 0.001 1 49 127
+    i 8.774 126.125 0.001 1 49 127
+    i -13.103 126.125 0
+    i 13.104 126.125 -1.000 1 93 127
     i 9.900 126.187 0.001 1 49 127
-    i 8.816 126.250 0.001 1 49 127
+    i 8.775 126.250 0.001 1 49 127
     i 9.901 126.250 0.001 1 49 127
+    i -13.104 126.250 0
+    i 13.105 126.250 -1.000 1 89 127
     i 9.902 126.312 0.001 1 49 127
-    i 8.817 126.375 0.001 1 49 127
+    i 8.776 126.375 0.001 1 49 127
     i 9.903 126.375 0.001 1 49 127
+    i -13.105 126.375 0
+    i 13.106 126.375 -1.000 1 91 127
     i 9.904 126.437 0.001 1 49 127
-    i 8.818 126.499 0.001 1 49 127
-    i 4.097 126.499 0.001 1 37 127
-    i 7.094 126.499 0.001 1 39 127
+    i 4.092 126.499 0.001 1 37 127
+    i 7.090 126.499 0.001 1 39 127
+    i 8.777 126.499 0.001 1 49 127
+    i -13.106 126.499 0
+    i 13.107 126.499 -1.000 1 93 127
     i 9.905 126.499 0.001 1 49 127
     i 9.906 126.562 0.001 1 49 127
-    i 8.819 126.624 0.001 1 49 127
     i 9.907 126.624 0.001 1 49 127
+    i -13.107 126.624 0
+    i 8.778 126.624 0.001 1 49 127
+    i 13.108 126.624 -1.000 1 89 127
     i 9.908 126.687 0.001 1 49 127
     i 11.164 126.737 -1.000 1 41 89
     i -11.163 126.745 0
+    i -13.108 126.749 0
+    i 13.109 126.749 -1.000 1 91 127
+    i 8.779 126.749 0.001 1 49 127
     i 9.909 126.749 0.001 1 49 127
-    i 8.820 126.749 0.001 1 49 127
     i 9.910 126.811 0.001 1 49 127
-    i 8.821 126.874 0.001 1 49 127
+    i 8.780 126.874 0.001 1 49 127
     i 9.911 126.874 0.001 1 49 127
+    i -13.109 126.874 0
+    i 13.110 126.874 -1.000 1 93 127
     i 9.912 126.936 0.001 1 49 127
-    i 4.098 126.999 0.001 1 37 127
+    i 8.781 126.999 0.001 1 49 127
     i 9.913 126.999 0.001 1 49 127
-    i 8.822 126.999 0.001 1 49 127
-    i 10.133 126.999 -1.000 1 72 127
-    i 10.134 126.999 -1.000 1 76 127
+    i -13.110 126.999 0
+    i 10.129 126.999 -1.000 1 72 127
+    i 13.111 126.999 -1.000 1 89 127
+    i 10.130 126.999 -1.000 1 76 127
+    i 4.093 126.999 0.001 1 37 127
     i 9.914 127.062 0.001 1 49 127
-    i 8.823 127.125 0.001 1 49 127
+    i 8.782 127.125 0.001 1 49 127
+    i -13.111 127.125 0
     i 9.915 127.125 0.001 1 49 127
+    i 13.112 127.125 -1.000 1 91 127
     i 9.916 127.187 0.001 1 49 127
+    i 8.783 127.250 0.001 1 49 127
+    i -13.112 127.250 0
     i 9.917 127.250 0.001 1 49 127
-    i 8.824 127.250 0.001 1 49 127
+    i 13.113 127.250 -1.000 1 93 127
     i 11.165 127.254 -1.000 1 38 68
     i -11.164 127.260 0
     i 9.918 127.312 0.001 1 49 127
-    i 8.825 127.375 0.001 1 49 127
+    i 8.784 127.375 0.001 1 49 127
     i 9.919 127.375 0.001 1 49 127
+    i -13.113 127.375 0
+    i 13.114 127.375 -1.000 1 89 127
     i 9.920 127.437 0.001 1 49 127
     i 9.921 127.499 0.001 1 49 127
-    i 8.826 127.499 0.001 1 49 127
+    i 8.785 127.499 0.001 1 49 127
     i 11.166 127.501 -1.000 1 41 78
-    i 4.099 127.499 0.001 1 37 127
-    i 7.095 127.499 0.001 1 39 127
+    i 7.091 127.499 0.001 1 39 127
+    i -13.114 127.499 0
+    i 13.115 127.499 -1.000 1 91 127
+    i 4.094 127.499 0.001 1 37 127
     i -11.165 127.509 0
     i 9.922 127.562 0.001 1 49 127
-    i 8.827 127.624 0.001 1 49 127
+    i 8.786 127.624 0.001 1 49 127
     i 9.923 127.624 0.001 1 49 127
+    i -13.115 127.624 0
+    i 13.116 127.624 -1.000 1 93 127
     i 9.924 127.687 0.001 1 49 127
     i 5.065 127.749 0.001 1 37 127
-    i 8.828 127.749 0.001 1 49 127
+    i 8.787 127.749 0.001 1 49 127
     i 6.065 127.749 0.001 1 37 127
     i 9.925 127.749 0.001 1 49 127
+    i -13.116 127.749 0
+    i 13.117 127.749 -1.000 1 89 127
     i 9.926 127.811 0.001 1 49 127
     i 9.927 127.874 0.001 1 49 127
-    i 8.829 127.874 0.001 1 49 113
+    i 8.788 127.874 0.001 1 49 113
+    i -13.117 127.874 0
+    i 13.118 127.874 -1.000 1 91 127
     i 9.928 127.936 0.001 1 49 127
-    i 4.100 128.000 0.001 1 37 127
+    i 15.026 127.939 -1.000 1 55 91
+    i -15.025 127.970 0
+    i 14.027 127.974 -1.000 1 64 94
+    i 14.028 127.975 -1.000 1 67 78
+    i 5.066 128.000 0.001 1 37 127
+    i 8.789 128.000 0.001 1 49 127
     i 6.066 128.000 0.001 1 37 127
     i 9.929 128.000 0.001 1 49 127
-    i 8.830 128.000 0.001 1 49 127
-    i 5.066 128.000 0.001 1 37 127
-    i -10.133 127.999 0
-    i -10.134 127.999 0
+    i -10.129 127.999 0
+    i -10.130 127.999 0
+    i -13.118 128.000 0
+    i 13.119 128.000 -1.000 1 93 127
+    i 4.095 128.000 0.001 1 37 127
     i 11.167 128.012 -1.000 1 38 78
     i -11.166 128.030 0
     i 9.930 128.062 0.001 1 49 127
+    i -14.025 128.058 0
+    i -14.026 128.058 0
     i 9.931 128.125 0.001 1 49 127
-    i 8.831 128.125 0.001 1 49 127
+    i 8.790 128.125 0.001 1 49 127
+    i -13.119 128.125 0
     i 9.932 128.187 0.001 1 49 127
     i 9.933 128.250 0.001 1 49 127
-    i 8.832 128.250 0.001 1 49 127
+    i 8.791 128.250 0.001 1 49 127
     i 9.934 128.312 0.001 1 49 127
     i 9.935 128.374 0.001 1 49 127
-    i 8.833 128.374 0.001 1 49 127
+    i 8.792 128.374 0.001 1 49 127
     i 9.936 128.437 0.001 1 49 127
-    i 4.101 128.499 0.001 1 37 127
+    i 7.092 128.499 0.001 1 39 127
     i 9.937 128.499 0.001 1 49 127
-    i 8.834 128.499 0.001 1 49 127
-    i 7.096 128.499 0.001 1 39 127
+    i 8.793 128.499 0.001 1 49 127
+    i 4.096 128.499 0.001 1 37 127
     i 9.938 128.562 0.001 1 49 127
-    i 8.835 128.624 0.001 1 49 127
     i 9.939 128.624 0.001 1 49 127
+    i 8.794 128.624 0.001 1 49 127
     i 9.940 128.686 0.001 1 49 127
-    i 8.836 128.749 0.001 1 49 127
+    i 8.795 128.749 0.001 1 49 127
     i 9.941 128.749 0.001 1 49 127
     i 11.168 128.760 -1.000 1 36 86
     i -11.167 128.768 0
     i 9.942 128.811 0.001 1 49 127
-    i 8.837 128.874 0.001 1 49 127
+    i 8.796 128.874 0.001 1 49 127
     i 9.943 128.874 0.001 1 49 127
     i 9.944 128.938 0.001 1 49 127
-    i 4.102 129.000 0.001 1 37 127
-    i 8.838 129.000 0.001 1 49 127
+    i 4.097 129.000 0.001 1 37 127
+    i 10.131 129.000 -1.000 1 72 127
+    i 10.132 129.000 -1.000 1 76 127
     i 9.945 129.000 0.001 1 49 127
-    i 10.135 129.000 -1.000 1 72 127
-    i 10.136 129.000 -1.000 1 76 127
+    i 8.797 129.000 0.001 1 49 127
     i 9.946 129.062 0.001 1 49 127
-    i 8.839 129.125 0.001 1 49 127
+    i 8.798 129.125 0.001 1 49 127
     i 9.947 129.125 0.001 1 49 127
     i 9.948 129.187 0.001 1 49 127
-    i 8.840 129.250 0.001 1 49 127
     i 9.949 129.250 0.001 1 49 127
+    i 8.799 129.250 0.001 1 49 127
     i -11.168 129.258 0
     i 11.169 129.258 -1.000 1 33 74
     i 9.950 129.312 0.001 1 49 127
-    i 8.841 129.374 0.001 1 49 127
     i 9.951 129.374 0.001 1 49 127
+    i 8.800 129.374 0.001 1 49 127
     i 9.952 129.437 0.001 1 49 127
-    i 4.103 129.499 0.001 1 37 127
-    i 8.842 129.499 0.001 1 49 127
-    i 7.097 129.499 0.001 1 39 127
+    i 8.801 129.499 0.001 1 49 127
+    i 7.093 129.499 0.001 1 39 127
     i 9.953 129.499 0.001 1 49 127
+    i 4.098 129.499 0.001 1 37 127
     i 11.170 129.508 -1.000 1 36 91
     i -11.169 129.518 0
     i 9.954 129.562 0.001 1 49 127
-    i 8.843 129.624 0.001 1 49 127
+    i 8.802 129.624 0.001 1 49 127
     i 9.955 129.624 0.001 1 49 127
     i 9.956 129.686 0.001 1 49 127
     i 9.957 129.749 0.001 1 49 127
-    i 5.067 129.749 0.001 1 37 127
+    i 8.803 129.749 0.001 1 49 127
     i 6.067 129.749 0.001 1 37 127
-    i 8.844 129.749 0.001 1 49 127
+    i 5.067 129.749 0.001 1 37 127
     i 9.958 129.811 0.001 1 49 127
+    i 8.804 129.875 0.001 1 49 113
     i 9.959 129.875 0.001 1 49 127
-    i 8.845 129.875 0.001 1 49 113
     i 9.960 129.937 0.001 1 49 127
-    i 4.104 130.000 0.001 1 37 127
-    i 8.846 130.000 0.001 1 49 127
+    i 15.027 129.965 -1.000 1 57 101
+    i -15.026 129.971 0
+    i 14.029 129.977 -1.000 1 69 84
+    i 14.030 129.981 -1.000 1 65 92
     i 9.961 130.000 0.001 1 49 127
-    i 6.068 130.000 0.001 1 37 127
+    i 8.805 130.000 0.001 1 49 127
     i 5.068 130.000 0.001 1 37 127
+    i 6.068 130.000 0.001 1 37 127
+    i -10.131 130.000 0
     i -11.170 130.000 0
-    i -10.135 130.000 0
+    i -10.132 130.000 0
     i 11.171 130.000 -1.000 1 38 81
-    i -10.136 130.000 0
+    i 4.099 130.000 0.001 1 37 127
+    i -14.027 130.036 0
+    i -14.028 130.036 0
     i 9.962 130.062 0.001 1 49 127
+    i 8.806 130.125 0.001 1 49 127
     i 9.963 130.125 0.001 1 49 127
-    i 8.847 130.125 0.001 1 49 127
     i 9.964 130.187 0.001 1 49 127
     i 9.965 130.249 0.001 1 49 127
-    i 8.848 130.249 0.001 1 49 127
+    i 8.807 130.249 0.001 1 49 127
     i 9.966 130.312 0.001 1 49 127
-    i 8.849 130.374 0.001 1 49 127
     i 9.967 130.374 0.001 1 49 127
+    i 8.808 130.374 0.001 1 49 127
     i 9.968 130.437 0.001 1 49 127
+    i 4.100 130.499 0.001 1 37 127
+    i 7.094 130.499 0.001 1 39 127
     i 9.969 130.499 0.001 1 49 127
-    i 4.105 130.499 0.001 1 37 127
-    i 8.850 130.499 0.001 1 49 127
-    i 7.098 130.499 0.001 1 39 127
+    i 8.809 130.499 0.001 1 49 127
     i 9.970 130.561 0.001 1 49 127
+    i 8.810 130.624 0.001 1 49 127
     i 9.971 130.624 0.001 1 49 127
-    i 8.851 130.624 0.001 1 49 127
     i 9.972 130.686 0.001 1 49 127
     i 11.172 130.737 -1.000 1 41 89
     i -11.171 130.744 0
     i 9.973 130.749 0.001 1 49 127
-    i 8.852 130.749 0.001 1 49 127
+    i 8.811 130.749 0.001 1 49 127
     i 9.974 130.811 0.001 1 49 127
     i 9.975 130.875 0.001 1 49 127
-    i 8.853 130.875 0.001 1 49 127
+    i 8.812 130.875 0.001 1 49 127
     i 9.976 130.937 0.001 1 49 127
-    i 8.854 131.000 0.001 1 49 127
-    i 4.106 131.000 0.001 1 37 127
+    i 8.813 131.000 0.001 1 49 127
     i 9.977 131.000 0.001 1 49 127
-    i 10.137 131.000 -1.000 1 72 127
-    i 10.138 131.000 -1.000 1 76 127
+    i 10.133 131.000 -1.000 1 72 127
+    i 10.134 131.000 -1.000 1 76 127
+    i 4.101 131.000 0.001 1 37 127
     i 9.978 131.062 0.001 1 49 127
+    i 8.814 131.125 0.001 1 49 127
     i 9.979 131.125 0.001 1 49 127
-    i 8.855 131.125 0.001 1 49 127
     i 9.980 131.187 0.001 1 49 127
-    i 11.173 131.254 -1.000 1 38 68
+    i 8.815 131.249 0.001 1 49 127
     i 9.981 131.249 0.001 1 49 127
-    i 8.856 131.249 0.001 1 49 127
+    i 11.173 131.254 -1.000 1 38 68
     i -11.172 131.260 0
     i 9.982 131.312 0.001 1 49 127
-    i 8.857 131.374 0.001 1 49 127
+    i 8.816 131.374 0.001 1 49 127
     i 9.983 131.374 0.001 1 49 127
     i 9.984 131.437 0.001 1 49 127
     i 11.174 131.500 -1.000 1 41 78
-    i 4.107 131.499 0.001 1 37 127
-    i 8.858 131.499 0.001 1 49 127
+    i 8.817 131.499 0.001 1 49 127
     i 9.985 131.499 0.001 1 49 127
-    i 7.099 131.499 0.001 1 39 127
+    i 4.102 131.499 0.001 1 37 127
+    i 7.095 131.499 0.001 1 39 127
     i -11.173 131.509 0
     i 9.986 131.561 0.001 1 49 127
+    i 8.818 131.624 0.001 1 49 127
     i 9.987 131.624 0.001 1 49 127
-    i 8.859 131.624 0.001 1 49 127
     i 9.988 131.686 0.001 1 49 127
-    i 9.989 131.749 0.001 1 49 127
     i 5.069 131.749 0.001 1 37 127
-    i 8.860 131.749 0.001 1 49 127
     i 6.069 131.749 0.001 1 37 127
+    i 9.989 131.749 0.001 1 49 127
+    i 8.819 131.749 0.001 1 49 127
     i 9.990 131.812 0.001 1 49 127
-    i 8.861 131.875 0.001 1 49 113
+    i 8.820 131.875 0.001 1 49 113
     i 9.991 131.875 0.001 1 49 127
     i 9.992 131.937 0.001 1 49 127
-    i 6.070 132.000 0.001 1 37 127
+    i 15.028 131.942 -1.000 1 55 75
+    i 14.031 131.976 -1.000 1 64 93
+    i 14.032 131.981 -1.000 1 67 85
+    i -15.027 131.981 0
+    i 4.103 132.000 0.001 1 37 127
     i 5.070 132.000 0.001 1 37 127
-    i 8.862 132.000 0.001 1 49 127
+    i 8.821 132.000 0.001 1 49 127
+    i 6.070 132.000 0.001 1 37 127
+    i -10.133 132.000 0
     i 9.993 132.000 0.001 1 49 127
-    i -10.137 132.000 0
-    i -10.138 132.000 0
-    i 4.108 132.000 0.001 1 37 127
+    i -10.134 132.000 0
+    i -14.029 132.010 0
+    i -14.030 132.010 0
     i 11.175 132.011 -1.000 1 38 78
     i -11.174 132.030 0
     i 9.994 132.062 0.001 1 49 127
+    i 8.822 132.124 0.001 1 49 127
     i 9.995 132.124 0.001 1 49 127
-    i 8.863 132.124 0.001 1 49 127
     i 9.996 132.187 0.001 1 49 127
+    i 8.823 132.249 0.001 1 49 127
     i 9.997 132.249 0.001 1 49 127
-    i 8.864 132.249 0.001 1 49 127
     i 9.998 132.312 0.001 1 49 127
+    i 8.824 132.374 0.001 1 49 127
     i 9.999 132.374 0.001 1 49 127
-    i 8.865 132.374 0.001 1 49 127
     i 9.001 132.436 0.001 1 49 127
-    i 4.109 132.499 0.001 1 37 127
-    i 8.866 132.499 0.001 1 49 127
-    i 7.100 132.499 0.001 1 39 127
+    i 4.104 132.499 0.001 1 37 127
+    i 7.096 132.499 0.001 1 39 127
+    i 8.825 132.499 0.001 1 49 127
     i 9.002 132.499 0.001 1 49 127
     i 9.003 132.561 0.001 1 49 127
+    i 8.826 132.624 0.001 1 49 127
     i 9.004 132.624 0.001 1 49 127
-    i 8.867 132.624 0.001 1 49 127
     i 9.005 132.686 0.001 1 49 127
+    i 8.827 132.750 0.001 1 49 127
     i 9.006 132.750 0.001 1 49 127
-    i 8.868 132.750 0.001 1 49 127
     i 11.176 132.760 -1.000 1 36 86
     i -11.175 132.767 0
     i 9.007 132.812 0.001 1 49 127
+    i 8.828 132.875 0.001 1 49 127
     i 9.008 132.875 0.001 1 49 127
-    i 8.869 132.875 0.001 1 49 127
     i 9.009 132.937 0.001 1 49 127
-    i 4.110 133.000 0.001 1 37 127
-    i 8.870 133.000 0.001 1 49 127
+    i 14.033 132.943 -1.000 1 64 97
+    i 14.034 132.949 -1.000 1 60 79
+    i 15.029 132.960 -1.000 1 52 91
+    i -15.028 132.982 0
+    i -14.031 132.998 0
+    i -14.032 132.998 0
+    i 4.105 133.000 0.001 1 37 127
+    i 8.829 133.000 0.001 1 49 127
     i 9.010 133.000 0.001 1 49 127
-    i 10.139 133.000 -1.000 1 72 127
-    i 10.140 133.000 -1.000 1 76 127
+    i 10.135 133.000 -1.000 1 72 127
+    i 10.136 133.000 -1.000 1 76 127
     i 9.011 133.062 0.001 1 49 127
+    i 8.830 133.124 0.001 1 49 127
     i 9.012 133.124 0.001 1 49 127
-    i 8.871 133.124 0.001 1 49 127
     i 9.013 133.187 0.001 1 49 127
+    i 8.831 133.249 0.001 1 49 127
     i 9.014 133.249 0.001 1 49 127
-    i 8.872 133.249 0.001 1 49 127
     i -11.176 133.258 0
     i 11.177 133.259 -1.000 1 33 74
     i 9.015 133.312 0.001 1 49 127
-    i 8.873 133.374 0.001 1 49 127
+    i 8.832 133.374 0.001 1 49 127
     i 9.016 133.374 0.001 1 49 127
     i 9.017 133.436 0.001 1 49 127
-    i 4.111 133.499 0.001 1 37 127
+    i 4.106 133.499 0.001 1 37 127
+    i 7.097 133.499 0.001 1 39 127
+    i 8.833 133.499 0.001 1 49 127
     i 9.018 133.499 0.001 1 49 127
-    i 7.101 133.499 0.001 1 39 127
-    i 8.874 133.499 0.001 1 49 127
     i 11.178 133.507 -1.000 1 36 91
     i -11.177 133.518 0
     i 9.019 133.561 0.001 1 49 127
-    i 8.875 133.624 0.001 1 49 127
+    i 8.834 133.624 0.001 1 49 127
     i 9.020 133.624 0.001 1 49 127
     i 9.021 133.687 0.001 1 49 127
-    i 8.876 133.750 0.001 1 49 127
-    i 9.022 133.750 0.001 1 49 127
     i 5.071 133.750 0.001 1 37 127
     i 6.071 133.750 0.001 1 37 127
+    i 9.022 133.750 0.001 1 49 127
+    i 8.835 133.750 0.001 1 49 127
     i 9.023 133.812 0.001 1 49 127
+    i 8.836 133.875 0.001 1 49 113
     i 9.024 133.875 0.001 1 49 127
-    i 8.877 133.875 0.001 1 49 113
+    i 15.030 133.885 -1.000 1 53 84
+    i -15.029 133.902 0
     i 9.025 133.937 0.001 1 49 127
-    i 5.072 133.999 0.001 1 37 127
-    i 4.112 133.999 0.001 1 37 127
+    i 14.035 133.947 -1.000 1 62 91
+    i 14.036 133.954 -1.000 1 65 81
+    i -14.033 133.985 0
+    i -14.034 133.985 0
+    i 4.107 133.999 0.001 1 37 127
+    i 8.837 133.999 0.001 1 49 127
     i 6.072 133.999 0.001 1 37 127
-    i 8.878 133.999 0.001 1 49 127
     i 9.026 133.999 0.001 1 49 127
-    i -10.139 133.999 0
-    i -10.140 133.999 0
+    i 5.072 133.999 0.001 1 37 127
+    i -10.135 133.999 0
+    i 13.120 133.999 -1.000 1 91 127
+    i -10.136 133.999 0
     i -11.178 133.999 0
     i 11.179 133.999 -1.000 1 38 81
     i 9.027 134.062 0.001 1 49 127
-    i 8.879 134.124 0.001 1 49 127
     i 9.028 134.124 0.001 1 49 127
+    i 8.838 134.124 0.001 1 49 127
+    i -13.120 134.124 0
+    i 13.121 134.124 -1.000 1 93 127
     i 9.029 134.187 0.001 1 49 127
-    i 8.880 134.249 0.001 1 49 127
+    i -13.121 134.249 0
     i 9.030 134.249 0.001 1 49 127
+    i 13.122 134.249 -1.000 1 89 127
+    i 8.839 134.249 0.001 1 49 127
     i 9.031 134.311 0.001 1 49 127
-    i 8.881 134.374 0.001 1 49 127
+    i 8.840 134.374 0.001 1 49 127
     i 9.032 134.374 0.001 1 49 127
+    i -13.122 134.374 0
+    i 13.123 134.374 -1.000 1 91 127
     i 9.033 134.436 0.001 1 49 127
+    i -13.123 134.499 0
+    i 13.124 134.499 -1.000 1 93 127
+    i 4.108 134.499 0.001 1 37 127
+    i 7.098 134.499 0.001 1 39 127
     i 9.034 134.499 0.001 1 49 127
-    i 8.882 134.499 0.001 1 49 127
-    i 4.113 134.499 0.001 1 37 127
-    i 7.102 134.499 0.001 1 39 127
+    i 8.841 134.499 0.001 1 49 127
     i 9.035 134.561 0.001 1 49 127
-    i 8.883 134.625 0.001 1 49 127
+    i -13.124 134.625 0
+    i 13.125 134.625 -1.000 1 89 127
+    i 8.842 134.625 0.001 1 49 127
     i 9.036 134.625 0.001 1 49 127
     i 9.037 134.687 0.001 1 49 127
     i 11.180 134.737 -1.000 1 41 89
-    i 8.884 134.750 0.001 1 49 127
     i -11.179 134.744 0
+    i -13.125 134.750 0
+    i 13.126 134.750 -1.000 1 91 127
     i 9.038 134.750 0.001 1 49 127
+    i 8.843 134.750 0.001 1 49 127
     i 9.039 134.812 0.001 1 49 127
+    i -13.126 134.875 0
+    i 13.127 134.875 -1.000 1 93 127
     i 9.040 134.875 0.001 1 49 127
-    i 8.885 134.875 0.001 1 49 127
+    i 8.844 134.875 0.001 1 49 127
     i 9.041 134.937 0.001 1 49 127
-    i 8.886 134.999 0.001 1 49 127
-    i 4.114 134.999 0.001 1 37 127
+    i 10.137 134.999 -1.000 1 72 127
     i 9.042 134.999 0.001 1 49 127
-    i 10.141 134.999 -1.000 1 72 127
-    i 10.142 134.999 -1.000 1 76 127
+    i 8.845 134.999 0.001 1 49 127
+    i 10.138 134.999 -1.000 1 76 127
+    i 4.109 134.999 0.001 1 37 127
+    i -13.127 134.999 0
+    i 13.128 134.999 -1.000 1 89 127
     i 9.043 135.062 0.001 1 49 127
-    i 8.887 135.124 0.001 1 49 127
+    i 8.846 135.124 0.001 1 49 127
     i 9.044 135.124 0.001 1 49 127
+    i -13.128 135.124 0
+    i 13.129 135.124 -1.000 1 91 127
     i 9.045 135.187 0.001 1 49 127
-    i 8.888 135.249 0.001 1 49 127
     i 9.046 135.249 0.001 1 49 127
+    i 8.847 135.249 0.001 1 49 127
+    i -13.129 135.249 0
+    i 13.130 135.249 -1.000 1 93 127
     i 11.181 135.253 -1.000 1 38 68
     i -11.180 135.259 0
     i 9.047 135.311 0.001 1 49 127
-    i 8.889 135.374 0.001 1 49 127
     i 9.048 135.374 0.001 1 49 127
+    i -13.130 135.374 0
+    i 8.848 135.374 0.001 1 49 127
+    i 13.131 135.374 -1.000 1 89 127
     i 9.049 135.436 0.001 1 49 127
-    i 9.050 135.499 0.001 1 49 127
+    i 4.110 135.499 0.001 1 37 127
     i 11.182 135.501 -1.000 1 41 78
-    i 4.115 135.499 0.001 1 37 127
-    i 8.890 135.499 0.001 1 49 127
-    i 7.103 135.499 0.001 1 39 127
+    i -13.131 135.499 0
+    i 13.132 135.499 -1.000 1 91 127
+    i 8.849 135.499 0.001 1 49 127
+    i 7.099 135.499 0.001 1 39 127
+    i 9.050 135.499 0.001 1 49 127
     i -11.181 135.510 0
     i 9.051 135.562 0.001 1 49 127
-    i 8.891 135.625 0.001 1 49 127
     i 9.052 135.625 0.001 1 49 127
+    i -13.132 135.625 0
+    i 13.133 135.625 -1.000 1 93 127
+    i 8.850 135.625 0.001 1 49 127
     i 9.053 135.687 0.001 1 49 127
-    i 8.892 135.750 0.001 1 49 127
-    i 9.054 135.750 0.001 1 49 127
-    i 6.073 135.750 0.001 1 37 127
     i 5.073 135.750 0.001 1 37 127
+    i 6.073 135.750 0.001 1 37 127
+    i -13.133 135.750 0
+    i 9.054 135.750 0.001 1 49 127
+    i 8.851 135.750 0.001 1 49 127
+    i 13.134 135.750 -1.000 1 89 127
     i 9.055 135.812 0.001 1 49 127
+    i -13.134 135.874 0
+    i 13.135 135.874 -1.000 1 91 127
     i 9.056 135.874 0.001 1 49 127
-    i 8.893 135.874 0.001 1 49 113
+    i 8.852 135.874 0.001 1 49 113
     i 9.057 135.937 0.001 1 49 127
     i 9.058 135.999 0.001 1 49 127
-    i -10.141 135.999 0
-    i -10.142 135.999 0
-    i 4.116 135.999 0.001 1 37 127
-    i 5.074 135.999 0.001 1 37 127
-    i 8.894 135.999 0.001 1 49 127
     i 6.074 135.999 0.001 1 37 127
+    i -10.137 135.999 0
+    i 8.853 135.999 0.001 1 49 127
+    i -10.138 135.999 0
+    i 5.074 135.999 0.001 1 37 127
+    i 4.111 135.999 0.001 1 37 127
+    i -13.135 135.999 0
+    i 13.136 135.999 -1.000 1 93 127
     i 11.183 136.012 -1.000 1 38 78
     i -11.182 136.030 0
     i 9.059 136.062 0.001 1 49 127
-    i 8.895 136.124 0.001 1 49 127
+    i 8.854 136.124 0.001 1 49 127
     i 9.060 136.124 0.001 1 49 127
+    i -13.136 136.124 0
     i 9.061 136.186 0.001 1 49 127
+    i 8.855 136.249 0.001 1 49 127
     i 9.062 136.249 0.001 1 49 127
-    i 8.896 136.249 0.001 1 49 127
     i 9.063 136.311 0.001 1 49 127
-    i 8.897 136.374 0.001 1 49 127
     i 9.064 136.374 0.001 1 49 127
+    i 8.856 136.374 0.001 1 49 127
     i 9.065 136.436 0.001 1 49 127
-    i 4.117 136.500 0.001 1 37 127
     i 9.066 136.500 0.001 1 49 127
-    i 7.104 136.500 0.001 1 39 127
-    i 8.898 136.500 0.001 1 49 127
+    i 8.857 136.500 0.001 1 49 127
+    i 7.100 136.500 0.001 1 39 127
+    i 4.112 136.500 0.001 1 37 127
     i 9.067 136.562 0.001 1 49 127
-    i 8.899 136.625 0.001 1 49 127
     i 9.068 136.625 0.001 1 49 127
+    i 8.858 136.625 0.001 1 49 127
     i 9.069 136.687 0.001 1 49 127
     i 9.070 136.750 0.001 1 49 127
-    i 8.900 136.750 0.001 1 49 127
+    i 8.859 136.750 0.001 1 49 127
     i 11.184 136.760 -1.000 1 36 86
     i -11.183 136.767 0
     i 9.071 136.812 0.001 1 49 127
     i 9.072 136.874 0.001 1 49 127
-    i 8.901 136.874 0.001 1 49 127
+    i 8.860 136.874 0.001 1 49 127
     i 9.073 136.937 0.001 1 49 127
-    i 4.118 136.999 0.001 1 37 127
     i 9.074 136.999 0.001 1 49 127
-    i 8.902 136.999 0.001 1 49 127
-    i 10.143 136.999 -1.000 1 72 127
-    i 10.144 136.999 -1.000 1 76 127
+    i 8.861 136.999 0.001 1 49 127
+    i 10.139 136.999 -1.000 1 72 127
+    i 10.140 136.999 -1.000 1 76 127
+    i 4.113 136.999 0.001 1 37 127
     i 9.075 137.062 0.001 1 49 127
-    i 8.903 137.124 0.001 1 49 127
+    i 8.862 137.124 0.001 1 49 127
     i 9.076 137.124 0.001 1 49 127
     i 9.077 137.186 0.001 1 49 127
-    i 8.904 137.249 0.001 1 49 127
     i 9.078 137.249 0.001 1 49 127
+    i 8.863 137.249 0.001 1 49 127
     i -11.184 137.258 0
     i 11.185 137.259 -1.000 1 33 74
     i 9.079 137.311 0.001 1 49 127
     i 9.080 137.374 0.001 1 49 127
-    i 8.905 137.374 0.001 1 49 127
+    i 8.864 137.374 0.001 1 49 127
     i 9.081 137.437 0.001 1 49 127
-    i 8.906 137.500 0.001 1 49 127
-    i 7.105 137.500 0.001 1 39 127
-    i 4.119 137.500 0.001 1 37 127
+    i 7.101 137.500 0.001 1 39 127
+    i 8.865 137.500 0.001 1 49 127
     i 9.082 137.500 0.001 1 49 127
+    i 4.114 137.500 0.001 1 37 127
     i 11.186 137.509 -1.000 1 36 91
     i -11.185 137.517 0
     i 9.083 137.562 0.001 1 49 127
+    i 8.866 137.625 0.001 1 49 127
     i 9.084 137.625 0.001 1 49 127
-    i 8.907 137.625 0.001 1 49 127
     i 9.085 137.687 0.001 1 49 127
-    i 5.075 137.749 0.001 1 37 127
     i 9.086 137.749 0.001 1 49 127
+    i 5.075 137.749 0.001 1 37 127
     i 6.075 137.749 0.001 1 37 127
-    i 8.908 137.749 0.001 1 49 127
+    i 8.867 137.749 0.001 1 49 127
     i 9.087 137.812 0.001 1 49 127
-    i 8.909 137.874 0.001 1 49 113
     i 9.088 137.874 0.001 1 49 127
+    i 8.868 137.874 0.001 1 49 113
     i 9.089 137.937 0.001 1 49 127
-    i 9.090 137.999 0.001 1 49 127
-    i -10.143 137.999 0
-    i -10.144 137.999 0
+    i -10.139 137.999 0
+    i -10.140 137.999 0
     i -11.186 137.999 0
     i 11.187 137.999 -1.000 1 38 83
-    i 4.120 137.999 0.001 1 37 127
-    i 6.076 137.999 0.001 1 37 127
+    i 4.115 137.999 0.001 1 37 127
     i 5.076 137.999 0.001 1 37 127
-    i 8.910 137.999 0.001 1 49 127
+    i 6.076 137.999 0.001 1 37 127
+    i 8.869 137.999 0.001 1 49 127
+    i 9.090 137.999 0.001 1 49 127
     i 9.091 138.061 0.001 1 49 127
     i 9.092 138.124 0.001 1 49 127
-    i 8.911 138.124 0.001 1 49 127
+    i 8.870 138.124 0.001 1 49 127
     i 9.093 138.186 0.001 1 49 127
-    i 8.912 138.249 0.001 1 49 127
+    i 8.871 138.249 0.001 1 49 127
     i 9.094 138.249 0.001 1 49 127
     i 9.095 138.311 0.001 1 49 127
-    i 8.913 138.375 0.001 1 49 127
     i 9.096 138.375 0.001 1 49 127
+    i 8.872 138.375 0.001 1 49 127
     i 9.097 138.437 0.001 1 49 127
     i 9.098 138.500 0.001 1 49 127
-    i 4.121 138.500 0.001 1 37 127
-    i 8.914 138.500 0.001 1 49 127
-    i 7.106 138.500 0.001 1 39 127
+    i 4.116 138.500 0.001 1 37 127
+    i 8.873 138.500 0.001 1 49 127
+    i 7.102 138.500 0.001 1 39 127
     i 9.099 138.562 0.001 1 49 127
     i 9.100 138.625 0.001 1 49 127
-    i 8.915 138.625 0.001 1 49 127
+    i 8.874 138.625 0.001 1 49 127
     i 9.101 138.687 0.001 1 49 127
     i 11.188 138.738 -1.000 1 41 103
-    i -11.187 138.757 0
+    i 8.875 138.749 0.001 1 49 127
     i 9.102 138.749 0.001 1 49 127
-    i 8.916 138.749 0.001 1 49 127
+    i -11.187 138.757 0
     i 9.103 138.812 0.001 1 49 127
-    i 8.917 138.874 0.001 1 49 127
+    i 8.876 138.874 0.001 1 49 127
     i 9.104 138.874 0.001 1 49 127
     i 9.105 138.937 0.001 1 49 127
+    i 10.141 138.999 -1.000 1 72 127
     i 9.106 138.999 0.001 1 49 127
-    i 8.918 138.999 0.001 1 49 127
-    i 10.145 138.999 -1.000 1 72 127
-    i 10.146 138.999 -1.000 1 76 127
-    i 4.122 138.999 0.001 1 37 127
+    i 10.142 138.999 -1.000 1 76 127
+    i 8.877 138.999 0.001 1 49 127
+    i 4.117 138.999 0.001 1 37 127
     i 9.107 139.061 0.001 1 49 127
-    i 8.919 139.124 0.001 1 49 127
+    i 8.878 139.124 0.001 1 49 127
     i 9.108 139.124 0.001 1 49 127
     i 9.109 139.186 0.001 1 49 127
     i 11.189 139.224 -1.000 1 44 76
     i -11.188 139.234 0
+    i 8.879 139.249 0.001 1 49 127
     i 9.110 139.249 0.001 1 49 127
-    i 8.920 139.249 0.001 1 49 127
     i 9.111 139.312 0.001 1 49 127
-    i 8.921 139.375 0.001 1 49 127
     i 9.112 139.375 0.001 1 49 127
+    i 8.880 139.375 0.001 1 49 127
     i 9.113 139.437 0.001 1 49 127
-    i 8.922 139.500 0.001 1 49 127
-    i 7.107 139.500 0.001 1 39 127
+    i 4.118 139.500 0.001 1 37 127
     i 9.114 139.500 0.001 1 49 127
-    i 4.123 139.500 0.001 1 37 127
+    i 8.881 139.500 0.001 1 49 127
+    i 7.103 139.500 0.001 1 39 127
     i -11.189 139.523 0
     i 11.190 139.523 -1.000 1 43 89
     i 9.115 139.562 0.001 1 49 127
-    i 8.923 139.624 0.001 1 49 127
+    i 8.882 139.624 0.001 1 49 127
     i 9.116 139.624 0.001 1 49 127
     i 9.117 139.687 0.001 1 49 127
-    i 5.077 139.749 0.001 1 37 127
-    i 8.924 139.749 0.001 1 49 127
-    i 9.118 139.749 0.001 1 49 127
     i 6.077 139.749 0.001 1 37 127
+    i 9.118 139.749 0.001 1 49 127
+    i 5.077 139.749 0.001 1 37 127
+    i 8.883 139.749 0.001 1 49 127
     i 9.119 139.812 0.001 1 49 127
+    i 8.884 139.874 0.001 1 49 113
     i 9.120 139.874 0.001 1 49 127
-    i 8.925 139.874 0.001 1 49 113
     i 9.121 139.937 0.001 1 49 127
-    i 9.122 139.999 0.001 1 49 127
-    i 11.191 139.996 -1.000 1 41 97
-    i 4.124 139.999 0.001 1 37 127
-    i -10.145 139.999 0
-    i -10.146 139.999 0
-    i -11.190 139.997 0
-    i 5.078 139.999 0.001 1 37 127
     i 6.078 139.999 0.001 1 37 127
-    i 8.926 139.999 0.001 1 49 127
+    i 5.078 139.999 0.001 1 37 127
+    i 8.885 139.999 0.001 1 49 127
+    i 9.122 139.999 0.001 1 49 127
+    i -10.141 139.999 0
+    i 4.119 139.999 0.001 1 37 127
+    i 11.191 139.996 -1.000 1 41 97
+    i -10.142 139.999 0
+    i -11.190 139.997 0
     i 9.123 140.061 0.001 1 49 127
-    i 8.927 140.124 0.001 1 49 127
+    i 8.886 140.124 0.001 1 49 127
     i 9.124 140.124 0.001 1 49 127
     i 9.125 140.186 0.001 1 49 127
+    i 8.887 140.250 0.001 1 49 127
     i 9.126 140.250 0.001 1 49 127
-    i 8.928 140.250 0.001 1 49 127
     i 9.127 140.312 0.001 1 49 127
-    i 8.929 140.375 0.001 1 49 127
+    i 8.888 140.375 0.001 1 49 127
     i 9.128 140.375 0.001 1 49 127
     i 9.129 140.437 0.001 1 49 127
-    i 4.125 140.500 0.001 1 37 127
-    i 7.108 140.500 0.001 1 39 127
-    i 8.930 140.500 0.001 1 49 127
+    i 4.120 140.500 0.001 1 37 127
     i 9.130 140.500 0.001 1 49 127
+    i 8.889 140.500 0.001 1 49 127
+    i 7.104 140.500 0.001 1 39 127
     i 9.131 140.562 0.001 1 49 127
-    i 8.931 140.624 0.001 1 49 127
+    i 8.890 140.624 0.001 1 49 127
     i 9.132 140.624 0.001 1 49 127
     i 9.133 140.687 0.001 1 49 127
-    i 8.932 140.749 0.001 1 49 127
     i 9.134 140.749 0.001 1 49 127
+    i 8.891 140.749 0.001 1 49 127
     i -11.191 140.756 0
     i 11.192 140.759 -1.000 1 38 80
     i 9.135 140.812 0.001 1 49 127
-    i 8.933 140.874 0.001 1 49 127
+    i 8.892 140.874 0.001 1 49 127
     i 9.136 140.874 0.001 1 49 127
     i 9.137 140.936 0.001 1 49 127
-    i 8.934 140.999 0.001 1 49 127
-    i 4.126 140.999 0.001 1 37 127
     i 9.138 140.999 0.001 1 49 127
-    i 10.147 140.999 -1.000 1 72 127
-    i 10.148 140.999 -1.000 1 76 127
+    i 10.143 140.999 -1.000 1 72 127
+    i 10.144 140.999 -1.000 1 76 127
+    i 4.121 140.999 0.001 1 37 127
+    i 8.893 140.999 0.001 1 49 127
     i 9.139 141.061 0.001 1 49 127
-    i 8.935 141.124 0.001 1 49 127
+    i 8.894 141.124 0.001 1 49 127
     i 9.140 141.124 0.001 1 49 127
     i 9.141 141.187 0.001 1 49 127
     i 11.193 141.205 -1.000 1 33 79
     i -11.192 141.230 0
-    i 8.936 141.250 0.001 1 49 127
     i 9.142 141.250 0.001 1 49 127
+    i 8.895 141.250 0.001 1 49 127
     i 9.143 141.312 0.001 1 49 127
     i 9.144 141.375 0.001 1 49 127
-    i 8.937 141.375 0.001 1 49 127
+    i 8.896 141.375 0.001 1 49 127
     i 9.145 141.437 0.001 1 49 127
-    i 4.127 141.500 0.001 1 37 127
-    i 7.109 141.500 0.001 1 39 127
+    i 4.122 141.500 0.001 1 37 127
+    i 7.105 141.500 0.001 1 39 127
+    i 8.897 141.500 0.001 1 49 127
     i 9.146 141.500 0.001 1 49 127
-    i 8.938 141.500 0.001 1 49 127
     i 11.194 141.507 -1.000 1 36 89
+    i -15.030 141.500 0
     i -11.193 141.508 0
     i 9.147 141.562 0.001 1 49 127
-    i 8.939 141.624 0.001 1 49 127
+    i 8.898 141.624 0.001 1 49 127
     i 9.148 141.624 0.001 1 49 127
     i 9.149 141.687 0.001 1 49 127
-    i 6.079 141.749 0.001 1 37 127
     i 5.079 141.749 0.001 1 37 127
-    i 8.940 141.749 0.001 1 49 127
+    i 6.079 141.749 0.001 1 37 127
+    i 8.899 141.749 0.001 1 49 127
     i 9.150 141.749 0.001 1 49 127
     i 9.151 141.812 0.001 1 49 127
     i 9.152 141.874 0.001 1 49 127
-    i 8.941 141.874 0.001 1 49 113
+    i 8.900 141.874 0.001 1 49 113
     i 9.153 141.936 0.001 1 49 127
-    i 4.128 141.999 0.001 1 37 127
-    i 9.154 141.999 0.001 1 49 127
-    i -10.147 141.999 0
-    i 5.080 141.999 0.001 1 37 127
-    i 8.942 141.999 0.001 1 49 127
+    i 15.031 141.989 -1.000 1 53 74
+    i 14.037 141.996 -1.000 1 65 96
     i 6.080 141.999 0.001 1 37 127
-    i -10.148 141.999 0
+    i 8.901 141.999 0.001 1 49 127
+    i 5.080 141.999 0.001 1 37 127
+    i 4.123 141.999 0.001 1 37 127
+    i 9.154 141.999 0.001 1 49 127
+    i -10.143 141.999 0
+    i -10.144 141.999 0
+    i 13.137 141.999 -1.000 1 91 127
     i -11.194 141.999 0
     i 11.195 141.999 -1.000 1 38 81
+    i 14.038 142.005 -1.000 1 62 77
     i 9.155 142.061 0.001 1 49 127
+    i -14.035 142.077 0
+    i -14.036 142.077 0
+    i -13.137 142.125 0
+    i 8.902 142.125 0.001 1 49 127
+    i 13.138 142.125 -1.000 1 93 127
     i 9.156 142.125 0.001 1 49 127
-    i 8.943 142.125 0.001 1 49 127
     i 9.157 142.187 0.001 1 49 127
-    i 8.944 142.250 0.001 1 49 127
+    i -13.138 142.250 0
+    i 13.139 142.250 -1.000 1 89 127
+    i 8.903 142.250 0.001 1 49 127
     i 9.158 142.250 0.001 1 49 127
     i 9.159 142.312 0.001 1 49 127
+    i 8.904 142.375 0.001 1 49 127
     i 9.160 142.375 0.001 1 49 127
-    i 8.945 142.375 0.001 1 49 127
+    i -13.139 142.375 0
+    i 13.140 142.375 -1.000 1 91 127
     i 9.161 142.437 0.001 1 49 127
-    i 4.129 142.499 0.001 1 37 127
-    i 7.110 142.499 0.001 1 39 127
-    i 8.946 142.499 0.001 1 49 127
+    i 8.905 142.499 0.001 1 49 127
+    i 7.106 142.499 0.001 1 39 127
     i 9.162 142.499 0.001 1 49 127
+    i -13.140 142.499 0
+    i 4.124 142.499 0.001 1 37 127
+    i 13.141 142.499 -1.000 1 93 127
     i 9.163 142.562 0.001 1 49 127
     i 9.164 142.624 0.001 1 49 127
-    i 8.947 142.624 0.001 1 49 127
+    i 8.906 142.624 0.001 1 49 127
+    i -13.141 142.624 0
+    i 13.142 142.624 -1.000 1 89 127
     i 9.165 142.687 0.001 1 49 127
     i 11.196 142.737 -1.000 1 41 89
+    i 8.907 142.749 0.001 1 49 127
     i -11.195 142.745 0
     i 9.166 142.749 0.001 1 49 127
-    i 8.948 142.749 0.001 1 49 127
+    i -13.142 142.749 0
+    i 13.143 142.749 -1.000 1 91 127
     i 9.167 142.811 0.001 1 49 127
+    i 8.908 142.874 0.001 1 49 127
     i 9.168 142.874 0.001 1 49 127
-    i 8.949 142.874 0.001 1 49 127
+    i -13.143 142.874 0
+    i 13.144 142.874 -1.000 1 93 127
     i 9.169 142.936 0.001 1 49 127
-    i 4.130 142.999 0.001 1 37 127
+    i 4.125 142.999 0.001 1 37 127
+    i 8.909 142.999 0.001 1 49 127
+    i 10.145 142.999 -1.000 1 72 127
     i 9.170 142.999 0.001 1 49 127
-    i 10.149 142.999 -1.000 1 72 127
-    i 10.150 142.999 -1.000 1 76 127
-    i 8.950 142.999 0.001 1 49 127
+    i -13.144 142.999 0
+    i 10.146 142.999 -1.000 1 76 127
+    i 13.145 142.999 -1.000 1 89 127
     i 9.171 143.062 0.001 1 49 127
-    i 8.951 143.125 0.001 1 49 127
+    i 8.910 143.125 0.001 1 49 127
     i 9.172 143.125 0.001 1 49 127
+    i -13.145 143.125 0
+    i 13.146 143.125 -1.000 1 91 127
     i 9.173 143.187 0.001 1 49 127
-    i 8.952 143.250 0.001 1 49 127
+    i -13.146 143.250 0
     i 9.174 143.250 0.001 1 49 127
+    i 13.147 143.250 -1.000 1 93 127
+    i 8.911 143.250 0.001 1 49 127
     i 11.197 143.254 -1.000 1 38 68
     i -11.196 143.260 0
     i 9.175 143.312 0.001 1 49 127
-    i 8.953 143.375 0.001 1 49 127
+    i -13.147 143.375 0
+    i 13.148 143.375 -1.000 1 89 127
+    i 8.912 143.375 0.001 1 49 127
     i 9.176 143.375 0.001 1 49 127
     i 9.177 143.437 0.001 1 49 127
-    i 4.131 143.499 0.001 1 37 127
+    i 8.913 143.499 0.001 1 49 127
     i 9.178 143.499 0.001 1 49 127
-    i 7.111 143.499 0.001 1 39 127
     i 11.198 143.501 -1.000 1 41 78
-    i 8.954 143.499 0.001 1 49 127
+    i 7.107 143.499 0.001 1 39 127
+    i -13.148 143.499 0
+    i 4.126 143.499 0.001 1 37 127
+    i 13.149 143.499 -1.000 1 91 127
     i -11.197 143.509 0
     i 9.179 143.562 0.001 1 49 127
     i 9.180 143.624 0.001 1 49 127
-    i 8.955 143.624 0.001 1 49 127
+    i -13.149 143.624 0
+    i 8.914 143.624 0.001 1 49 127
+    i 13.150 143.624 -1.000 1 93 127
     i 9.181 143.687 0.001 1 49 127
-    i 8.956 143.749 0.001 1 49 127
-    i 5.081 143.749 0.001 1 37 127
+    i 8.915 143.749 0.001 1 49 127
     i 9.182 143.749 0.001 1 49 127
+    i 5.081 143.749 0.001 1 37 127
+    i -13.150 143.749 0
     i 6.081 143.749 0.001 1 37 127
+    i 13.151 143.749 -1.000 1 89 127
     i 9.183 143.811 0.001 1 49 127
-    i 8.957 143.874 0.001 1 49 113
+    i -13.151 143.874 0
+    i 13.152 143.874 -1.000 1 91 127
     i 9.184 143.874 0.001 1 49 127
+    i 8.916 143.874 0.001 1 49 113
     i 9.185 143.936 0.001 1 49 127
-    i 9.186 144.000 0.001 1 49 127
-    i -10.149 144.000 0
-    i -10.150 144.000 0
-    i 5.082 144.000 0.001 1 37 127
+    i 15.032 143.949 -1.000 1 55 101
+    i -15.031 143.962 0
+    i 14.039 143.997 -1.000 1 64 84
+    i 4.127 144.000 0.001 1 37 127
     i 6.082 144.000 0.001 1 37 127
-    i 8.958 144.000 0.001 1 49 127
-    i 4.132 144.000 0.001 1 37 127
+    i 8.917 144.000 0.001 1 49 127
+    i -10.145 144.000 0
+    i 5.082 144.000 0.001 1 37 127
+    i 14.040 143.999 -1.000 1 67 78
+    i -13.152 144.000 0
+    i 13.153 144.000 -1.000 1 93 127
+    i -10.146 144.000 0
+    i 9.186 144.000 0.001 1 49 127
     i 11.199 144.012 -1.000 1 38 78
     i -11.198 144.030 0
     i 9.187 144.062 0.001 1 49 127
-    i 8.959 144.125 0.001 1 49 127
+    i -14.037 144.068 0
+    i -14.038 144.068 0
+    i 8.918 144.125 0.001 1 49 127
+    i -13.153 144.125 0
     i 9.188 144.125 0.001 1 49 127
     i 9.189 144.187 0.001 1 49 127
-    i 8.960 144.250 0.001 1 49 127
+    i 8.919 144.250 0.001 1 49 127
     i 9.190 144.250 0.001 1 49 127
     i 9.191 144.312 0.001 1 49 127
+    i 8.920 144.374 0.001 1 49 127
     i 9.192 144.374 0.001 1 49 127
-    i 8.961 144.374 0.001 1 49 127
     i 9.193 144.437 0.001 1 49 127
-    i 8.962 144.499 0.001 1 49 127
-    i 4.133 144.499 0.001 1 37 127
-    i 7.112 144.499 0.001 1 39 127
     i 9.194 144.499 0.001 1 49 127
+    i 8.921 144.499 0.001 1 49 127
+    i 4.128 144.499 0.001 1 37 127
+    i 7.108 144.499 0.001 1 39 127
     i 9.195 144.562 0.001 1 49 127
+    i 8.922 144.624 0.001 1 49 127
     i 9.196 144.624 0.001 1 49 127
-    i 8.963 144.624 0.001 1 49 127
     i 9.197 144.686 0.001 1 49 127
-    i 8.964 144.749 0.001 1 49 127
+    i 8.923 144.749 0.001 1 49 127
     i 9.198 144.749 0.001 1 49 127
     i 11.200 144.760 -1.000 1 36 86
     i -11.199 144.768 0
     i 9.199 144.811 0.001 1 49 127
-    i 8.965 144.874 0.001 1 49 127
+    i 8.924 144.874 0.001 1 49 127
     i 9.200 144.874 0.001 1 49 127
     i 9.201 144.938 0.001 1 49 127
-    i 4.134 145.000 0.001 1 37 127
-    i 10.151 145.000 -1.000 1 72 127
     i 9.202 145.000 0.001 1 49 127
-    i 10.152 145.000 -1.000 1 76 127
-    i 8.966 145.000 0.001 1 49 127
+    i 8.925 145.000 0.001 1 49 127
+    i 4.129 145.000 0.001 1 37 127
+    i 10.147 145.000 -1.000 1 72 127
+    i 10.148 145.000 -1.000 1 76 127
     i 9.203 145.062 0.001 1 49 127
     i 9.204 145.125 0.001 1 49 127
-    i 8.967 145.125 0.001 1 49 127
+    i 8.926 145.125 0.001 1 49 127
     i 9.205 145.187 0.001 1 49 127
-    i 8.968 145.250 0.001 1 49 127
     i 9.206 145.250 0.001 1 49 127
+    i 8.927 145.250 0.001 1 49 127
     i -11.200 145.258 0
     i 11.201 145.258 -1.000 1 33 74
     i 9.207 145.312 0.001 1 49 127
+    i 8.928 145.374 0.001 1 49 127
     i 9.208 145.374 0.001 1 49 127
-    i 8.969 145.374 0.001 1 49 127
     i 9.209 145.437 0.001 1 49 127
-    i 7.113 145.499 0.001 1 39 127
-    i 8.970 145.499 0.001 1 49 127
+    i 4.130 145.499 0.001 1 37 127
+    i 7.109 145.499 0.001 1 39 127
+    i 8.929 145.499 0.001 1 49 127
     i 9.210 145.499 0.001 1 49 127
-    i 4.135 145.499 0.001 1 37 127
     i 11.202 145.508 -1.000 1 36 91
     i -11.201 145.518 0
     i 9.211 145.562 0.001 1 49 127
+    i 8.930 145.624 0.001 1 49 127
     i 9.212 145.624 0.001 1 49 127
-    i 8.971 145.624 0.001 1 49 127
     i 9.213 145.686 0.001 1 49 127
     i 5.083 145.749 0.001 1 37 127
-    i 6.083 145.749 0.001 1 37 127
-    i 8.972 145.749 0.001 1 49 127
+    i 8.931 145.749 0.001 1 49 127
     i 9.214 145.749 0.001 1 49 127
+    i 6.083 145.749 0.001 1 37 127
     i 9.215 145.811 0.001 1 49 127
-    i 8.973 145.875 0.001 1 49 113
+    i 8.932 145.875 0.001 1 49 113
     i 9.216 145.875 0.001 1 49 127
     i 9.217 145.937 0.001 1 49 127
-    i 4.136 146.000 0.001 1 37 127
-    i 6.084 146.000 0.001 1 37 127
+    i 14.041 145.980 -1.000 1 65 92
+    i 14.042 145.981 -1.000 1 69 76
+    i 15.033 145.984 -1.000 1 57 100
+    i -15.032 145.995 0
+    i 4.131 146.000 0.001 1 37 127
     i 5.084 146.000 0.001 1 37 127
+    i 6.084 146.000 0.001 1 37 127
+    i 8.933 146.000 0.001 1 49 127
+    i -10.147 146.000 0
+    i -10.148 146.000 0
     i 9.218 146.000 0.001 1 49 127
-    i 8.974 146.000 0.001 1 49 127
-    i -10.151 146.000 0
     i -11.202 146.000 0
-    i -10.152 146.000 0
     i 11.203 146.000 -1.000 1 38 81
     i 9.219 146.062 0.001 1 49 127
-    i 8.975 146.125 0.001 1 49 127
+    i -14.039 146.072 0
+    i -14.040 146.072 0
     i 9.220 146.125 0.001 1 49 127
+    i 8.934 146.125 0.001 1 49 127
     i 9.221 146.187 0.001 1 49 127
+    i 8.935 146.249 0.001 1 49 127
     i 9.222 146.249 0.001 1 49 127
-    i 8.976 146.249 0.001 1 49 127
     i 9.223 146.312 0.001 1 49 127
+    i 8.936 146.374 0.001 1 49 127
     i 9.224 146.374 0.001 1 49 127
-    i 8.977 146.374 0.001 1 49 127
     i 9.225 146.437 0.001 1 49 127
-    i 4.137 146.499 0.001 1 37 127
-    i 8.978 146.499 0.001 1 49 127
+    i 4.132 146.499 0.001 1 37 127
+    i 8.937 146.499 0.001 1 49 127
+    i 7.110 146.499 0.001 1 39 127
     i 9.226 146.499 0.001 1 49 127
-    i 7.114 146.499 0.001 1 39 127
     i 9.227 146.561 0.001 1 49 127
-    i 8.979 146.624 0.001 1 49 127
+    i 8.938 146.624 0.001 1 49 127
     i 9.228 146.624 0.001 1 49 127
     i 9.229 146.686 0.001 1 49 127
     i 11.204 146.737 -1.000 1 41 89
     i -11.203 146.744 0
-    i 8.980 146.749 0.001 1 49 127
+    i 8.939 146.749 0.001 1 49 127
     i 9.230 146.749 0.001 1 49 127
     i 9.231 146.811 0.001 1 49 127
-    i 8.981 146.875 0.001 1 49 127
+    i 8.940 146.875 0.001 1 49 127
     i 9.232 146.875 0.001 1 49 127
     i 9.233 146.937 0.001 1 49 127
     i 9.234 147.000 0.001 1 49 127
-    i 4.138 147.000 0.001 1 37 127
-    i 8.982 147.000 0.001 1 49 127
-    i 10.153 147.000 -1.000 1 72 127
-    i 10.154 147.000 -1.000 1 76 127
+    i 10.149 147.000 -1.000 1 72 127
+    i 10.150 147.000 -1.000 1 76 127
+    i 8.941 147.000 0.001 1 49 127
+    i 4.133 147.000 0.001 1 37 127
     i 9.235 147.062 0.001 1 49 127
+    i 8.942 147.125 0.001 1 49 127
     i 9.236 147.125 0.001 1 49 127
-    i 8.983 147.125 0.001 1 49 127
     i 9.237 147.187 0.001 1 49 127
     i 9.238 147.249 0.001 1 49 127
+    i 8.943 147.249 0.001 1 49 127
     i 11.205 147.254 -1.000 1 38 68
-    i 8.984 147.249 0.001 1 49 127
     i -11.204 147.260 0
     i 9.239 147.312 0.001 1 49 127
+    i 8.944 147.374 0.001 1 49 127
     i 9.240 147.374 0.001 1 49 127
-    i 8.985 147.374 0.001 1 49 127
     i 9.241 147.437 0.001 1 49 127
-    i 7.115 147.499 0.001 1 39 127
-    i 4.139 147.499 0.001 1 37 127
-    i 8.986 147.499 0.001 1 49 127
-    i 9.242 147.499 0.001 1 49 127
+    i 7.111 147.499 0.001 1 39 127
+    i 8.945 147.499 0.001 1 49 127
     i 11.206 147.500 -1.000 1 41 78
+    i 9.242 147.499 0.001 1 49 127
+    i 4.134 147.499 0.001 1 37 127
     i -11.205 147.509 0
     i 9.243 147.561 0.001 1 49 127
+    i 8.946 147.624 0.001 1 49 127
     i 9.244 147.624 0.001 1 49 127
-    i 8.987 147.624 0.001 1 49 127
     i 9.245 147.686 0.001 1 49 127
-    i 9.246 147.749 0.001 1 49 127
-    i 8.988 147.749 0.001 1 49 127
     i 6.085 147.749 0.001 1 37 127
+    i 8.947 147.749 0.001 1 49 127
+    i 9.246 147.749 0.001 1 49 127
     i 5.085 147.749 0.001 1 37 127
     i 9.247 147.812 0.001 1 49 127
+    i 8.948 147.875 0.001 1 49 113
     i 9.248 147.875 0.001 1 49 127
-    i 8.989 147.875 0.001 1 49 113
+    i 15.034 147.923 -1.000 1 55 78
+    i -15.033 147.939 0
     i 9.249 147.937 0.001 1 49 127
-    i 4.140 148.000 0.001 1 37 127
-    i 8.990 148.000 0.001 1 49 127
-    i 6.086 148.000 0.001 1 37 127
-    i 5.086 148.000 0.001 1 37 127
+    i 14.043 147.991 -1.000 1 64 78
+    i -10.149 148.000 0
     i 9.250 148.000 0.001 1 49 127
-    i -10.153 148.000 0
-    i -10.154 148.000 0
+    i 4.135 148.000 0.001 1 37 127
+    i 5.086 148.000 0.001 1 37 127
+    i -10.150 148.000 0
+    i 8.949 148.000 0.001 1 49 127
+    i 6.086 148.000 0.001 1 37 127
+    i 14.044 147.997 -1.000 1 67 75
     i 11.207 148.011 -1.000 1 38 78
     i -11.206 148.030 0
+    i -14.041 148.066 0
     i 9.251 148.062 0.001 1 49 127
-    i 8.991 148.124 0.001 1 49 127
+    i -14.042 148.066 0
     i 9.252 148.124 0.001 1 49 127
+    i 8.950 148.124 0.001 1 49 127
     i 9.253 148.187 0.001 1 49 127
     i 9.254 148.249 0.001 1 49 127
-    i 8.992 148.249 0.001 1 49 127
+    i 8.951 148.249 0.001 1 49 127
     i 9.255 148.312 0.001 1 49 127
-    i 8.993 148.374 0.001 1 49 127
     i 9.256 148.374 0.001 1 49 127
+    i 8.952 148.374 0.001 1 49 127
     i 9.257 148.436 0.001 1 49 127
-    i 4.141 148.499 0.001 1 37 127
-    i 7.116 148.499 0.001 1 39 127
-    i 8.994 148.499 0.001 1 49 127
     i 9.258 148.499 0.001 1 49 127
+    i 4.136 148.499 0.001 1 37 127
+    i 7.112 148.499 0.001 1 39 127
+    i 8.953 148.499 0.001 1 49 127
     i 9.259 148.561 0.001 1 49 127
-    i 8.995 148.624 0.001 1 49 127
+    i 8.954 148.624 0.001 1 49 127
     i 9.260 148.624 0.001 1 49 127
     i 9.261 148.686 0.001 1 49 127
-    i 8.996 148.750 0.001 1 49 127
     i 9.262 148.750 0.001 1 49 127
+    i 8.955 148.750 0.001 1 49 127
     i 11.208 148.760 -1.000 1 36 86
     i -11.207 148.767 0
     i 9.263 148.812 0.001 1 49 127
-    i 8.997 148.875 0.001 1 49 127
     i 9.264 148.875 0.001 1 49 127
+    i 8.956 148.875 0.001 1 49 127
+    i 15.035 148.875 -1.000 1 52 79
+    i -15.034 148.897 0
     i 9.265 148.937 0.001 1 49 127
-    i 4.142 149.000 0.001 1 37 127
-    i 10.155 149.000 -1.000 1 72 127
+    i 14.045 148.944 -1.000 1 64 84
+    i 14.046 148.956 -1.000 1 60 77
+    i 10.151 149.000 -1.000 1 72 127
+    i 4.137 149.000 0.001 1 37 127
+    i 10.152 149.000 -1.000 1 76 127
+    i 8.957 149.000 0.001 1 49 127
     i 9.266 149.000 0.001 1 49 127
-    i 10.156 149.000 -1.000 1 76 127
-    i 8.998 149.000 0.001 1 49 127
+    i -14.043 149.011 0
+    i -14.044 149.011 0
     i 9.267 149.062 0.001 1 49 127
-    i 8.999 149.124 0.001 1 49 127
+    i 8.958 149.124 0.001 1 49 127
     i 9.268 149.124 0.001 1 49 127
     i 9.269 149.187 0.001 1 49 127
-    i 8.001 149.249 0.001 1 49 127
+    i 8.959 149.249 0.001 1 49 127
     i 9.270 149.249 0.001 1 49 127
     i -11.208 149.258 0
     i 11.209 149.259 -1.000 1 33 74
     i 9.271 149.312 0.001 1 49 127
+    i 8.960 149.374 0.001 1 49 127
     i 9.272 149.374 0.001 1 49 127
-    i 8.002 149.374 0.001 1 49 127
     i 9.273 149.436 0.001 1 49 127
-    i 8.003 149.499 0.001 1 49 127
     i 9.274 149.499 0.001 1 49 127
-    i 7.117 149.499 0.001 1 39 127
-    i 4.143 149.499 0.001 1 37 127
+    i 7.113 149.499 0.001 1 39 127
+    i 8.961 149.499 0.001 1 49 127
+    i 4.138 149.499 0.001 1 37 127
     i 11.210 149.507 -1.000 1 36 91
     i -11.209 149.518 0
     i 9.275 149.561 0.001 1 49 127
+    i 8.962 149.624 0.001 1 49 127
     i 9.276 149.624 0.001 1 49 127
-    i 8.004 149.624 0.001 1 49 127
     i 9.277 149.687 0.001 1 49 127
-    i 6.087 149.750 0.001 1 37 127
+    i 8.963 149.750 0.001 1 49 127
     i 9.278 149.750 0.001 1 49 127
-    i 8.005 149.750 0.001 1 49 127
+    i 6.087 149.750 0.001 1 37 127
     i 5.087 149.750 0.001 1 37 127
     i 9.279 149.812 0.001 1 49 127
+    i 8.964 149.875 0.001 1 49 113
     i 9.280 149.875 0.001 1 49 127
-    i 8.006 149.875 0.001 1 49 113
     i 9.281 149.937 0.001 1 49 127
-    i 4.144 149.999 0.001 1 37 127
-    i 6.088 149.999 0.001 1 37 127
-    i 5.088 149.999 0.001 1 37 127
-    i 8.007 149.999 0.001 1 49 127
+    i 15.036 149.930 -1.000 1 53 82
+    i 14.047 149.947 -1.000 1 62 92
+    i 14.048 149.947 -1.000 1 65 78
+    i -15.035 149.975 0
+    i 13.154 149.999 -1.000 1 91 127
+    i 8.965 149.999 0.001 1 49 127
     i 9.282 149.999 0.001 1 49 127
-    i -10.155 149.999 0
+    i 4.139 149.999 0.001 1 37 127
     i -11.210 149.999 0
     i 11.211 149.999 -1.000 1 38 81
-    i -10.156 149.999 0
+    i 5.088 149.999 0.001 1 37 127
+    i 6.088 149.999 0.001 1 37 127
+    i -10.151 149.999 0
+    i -10.152 149.999 0
     i 9.283 150.062 0.001 1 49 127
+    i -14.045 150.097 0
+    i -14.046 150.097 0
+    i -13.154 150.124 0
+    i 13.155 150.124 -1.000 1 93 127
+    i 8.966 150.124 0.001 1 49 127
     i 9.284 150.124 0.001 1 49 127
-    i 8.008 150.124 0.001 1 49 127
     i 9.285 150.187 0.001 1 49 127
-    i 8.009 150.249 0.001 1 49 127
     i 9.286 150.249 0.001 1 49 127
+    i -13.155 150.249 0
+    i 8.967 150.249 0.001 1 49 127
+    i 13.156 150.249 -1.000 1 89 127
     i 9.287 150.311 0.001 1 49 127
-    i 8.010 150.374 0.001 1 49 127
+    i -13.156 150.374 0
+    i 13.157 150.374 -1.000 1 91 127
     i 9.288 150.374 0.001 1 49 127
+    i 8.968 150.374 0.001 1 49 127
     i 9.289 150.436 0.001 1 49 127
+    i 4.140 150.499 0.001 1 37 127
+    i -13.157 150.499 0
     i 9.290 150.499 0.001 1 49 127
-    i 4.145 150.499 0.001 1 37 127
-    i 8.011 150.499 0.001 1 49 127
-    i 7.118 150.499 0.001 1 39 127
+    i 13.158 150.499 -1.000 1 93 127
+    i 7.114 150.499 0.001 1 39 127
+    i 8.969 150.499 0.001 1 49 127
     i 9.291 150.561 0.001 1 49 127
+    i 8.970 150.625 0.001 1 49 127
+    i -13.158 150.625 0
+    i 13.159 150.625 -1.000 1 89 127
     i 9.292 150.625 0.001 1 49 127
-    i 8.012 150.625 0.001 1 49 127
     i 9.293 150.687 0.001 1 49 127
     i 11.212 150.737 -1.000 1 41 89
-    i 8.013 150.750 0.001 1 49 127
     i -11.211 150.744 0
+    i -13.159 150.750 0
+    i 13.160 150.750 -1.000 1 91 127
+    i 8.971 150.750 0.001 1 49 127
     i 9.294 150.750 0.001 1 49 127
     i 9.295 150.812 0.001 1 49 127
-    i 8.014 150.875 0.001 1 49 127
+    i -13.160 150.875 0
+    i 13.161 150.875 -1.000 1 93 127
+    i 8.972 150.875 0.001 1 49 127
     i 9.296 150.875 0.001 1 49 127
     i 9.297 150.937 0.001 1 49 127
-    i 8.015 150.999 0.001 1 49 127
-    i 10.157 150.999 -1.000 1 72 127
+    i 4.141 150.999 0.001 1 37 127
+    i -13.161 150.999 0
     i 9.298 150.999 0.001 1 49 127
-    i 10.158 150.999 -1.000 1 76 127
-    i 4.146 150.999 0.001 1 37 127
+    i 13.162 150.999 -1.000 1 89 127
+    i 8.973 150.999 0.001 1 49 127
+    i 10.153 150.999 -1.000 1 72 127
+    i 10.154 150.999 -1.000 1 76 127
     i 9.299 151.062 0.001 1 49 127
-    i 8.016 151.124 0.001 1 49 127
+    i -13.162 151.124 0
+    i 13.163 151.124 -1.000 1 91 127
+    i 8.974 151.124 0.001 1 49 127
     i 9.300 151.124 0.001 1 49 127
     i 9.301 151.187 0.001 1 49 127
     i 9.302 151.249 0.001 1 49 127
-    i 8.017 151.249 0.001 1 49 127
+    i 8.975 151.249 0.001 1 49 127
+    i -13.163 151.249 0
+    i 13.164 151.249 -1.000 1 93 127
     i 11.213 151.253 -1.000 1 38 68
     i -11.212 151.259 0
     i 9.303 151.311 0.001 1 49 127
+    i 8.976 151.374 0.001 1 49 127
     i 9.304 151.374 0.001 1 49 127
-    i 8.018 151.374 0.001 1 49 127
+    i -13.164 151.374 0
+    i 13.165 151.374 -1.000 1 89 127
     i 9.305 151.436 0.001 1 49 127
-    i 9.306 151.499 0.001 1 49 127
+    i 8.977 151.499 0.001 1 49 127
+    i 7.115 151.499 0.001 1 39 127
+    i -13.165 151.499 0
     i 11.214 151.501 -1.000 1 41 78
-    i 4.147 151.499 0.001 1 37 127
-    i 7.119 151.499 0.001 1 39 127
-    i 8.019 151.499 0.001 1 49 127
+    i 9.306 151.499 0.001 1 49 127
+    i 13.166 151.499 -1.000 1 91 127
+    i 4.142 151.499 0.001 1 37 127
     i -11.213 151.510 0
     i 9.307 151.562 0.001 1 49 127
+    i 8.978 151.625 0.001 1 49 127
+    i -13.166 151.625 0
+    i 13.167 151.625 -1.000 1 93 127
     i 9.308 151.625 0.001 1 49 127
-    i 8.020 151.625 0.001 1 49 127
     i 9.309 151.687 0.001 1 49 127
-    i 8.021 151.750 0.001 1 49 127
+    i -13.167 151.750 0
+    i 13.168 151.750 -1.000 1 89 127
     i 5.089 151.750 0.001 1 37 127
     i 6.089 151.750 0.001 1 37 127
+    i 8.979 151.750 0.001 1 49 127
     i 9.310 151.750 0.001 1 49 127
     i 9.311 151.812 0.001 1 49 127
-    i 8.022 151.874 0.001 1 49 113
+    i 8.980 151.874 0.001 1 49 113
     i 9.312 151.874 0.001 1 49 127
+    i -13.168 151.874 0
+    i 13.169 151.874 -1.000 1 91 127
     i 9.313 151.937 0.001 1 49 127
-    i 4.148 151.999 0.001 1 37 127
-    i 5.090 151.999 0.001 1 37 127
+    i -13.169 151.999 0
+    i -10.153 151.999 0
     i 6.090 151.999 0.001 1 37 127
-    i 8.023 151.999 0.001 1 49 127
+    i 5.090 151.999 0.001 1 37 127
+    i -10.154 151.999 0
     i 9.314 151.999 0.001 1 49 127
-    i -10.157 151.999 0
-    i -10.158 151.999 0
+    i 13.170 151.999 -1.000 1 93 127
+    i 8.981 151.999 0.001 1 49 127
+    i 4.143 151.999 0.001 1 37 127
     i 11.215 152.012 -1.000 1 38 78
     i -11.214 152.030 0
     i 9.315 152.062 0.001 1 49 127
-    i 8.024 152.124 0.001 1 49 127
+    i -13.170 152.124 0
+    i 8.982 152.124 0.001 1 49 127
     i 9.316 152.124 0.001 1 49 127
     i 9.317 152.186 0.001 1 49 127
-    i 8.025 152.249 0.001 1 49 127
     i 9.318 152.249 0.001 1 49 127
+    i 8.983 152.249 0.001 1 49 127
     i 9.319 152.311 0.001 1 49 127
     i 9.320 152.374 0.001 1 49 127
-    i 8.026 152.374 0.001 1 49 127
+    i 8.984 152.374 0.001 1 49 127
     i 9.321 152.436 0.001 1 49 127
+    i 7.116 152.500 0.001 1 39 127
+    i 8.985 152.500 0.001 1 49 127
+    i 4.144 152.500 0.001 1 37 127
     i 9.322 152.500 0.001 1 49 127
-    i 4.149 152.500 0.001 1 37 127
-    i 7.120 152.500 0.001 1 39 127
-    i 8.027 152.500 0.001 1 49 127
     i 9.323 152.562 0.001 1 49 127
+    i 8.986 152.625 0.001 1 49 127
     i 9.324 152.625 0.001 1 49 127
-    i 8.028 152.625 0.001 1 49 127
     i 9.325 152.687 0.001 1 49 127
-    i 11.216 152.760 -1.000 1 36 86
+    i 8.987 152.750 0.001 1 49 127
     i 9.326 152.750 0.001 1 49 127
-    i 8.029 152.750 0.001 1 49 127
+    i 11.216 152.760 -1.000 1 36 86
     i -11.215 152.767 0
     i 9.327 152.812 0.001 1 49 127
-    i 8.030 152.874 0.001 1 49 127
     i 9.328 152.874 0.001 1 49 127
+    i 8.988 152.874 0.001 1 49 127
     i 9.329 152.937 0.001 1 49 127
-    i 8.031 152.999 0.001 1 49 127
-    i 4.150 152.999 0.001 1 37 127
+    i 8.989 152.999 0.001 1 49 127
+    i 10.155 152.999 -1.000 1 72 127
+    i 4.145 152.999 0.001 1 37 127
+    i 10.156 152.999 -1.000 1 76 127
     i 9.330 152.999 0.001 1 49 127
-    i 10.159 152.999 -1.000 1 72 127
-    i 10.160 152.999 -1.000 1 76 127
     i 9.331 153.062 0.001 1 49 127
+    i 8.990 153.124 0.001 1 49 127
     i 9.332 153.124 0.001 1 49 127
-    i 8.032 153.124 0.001 1 49 127
     i 9.333 153.186 0.001 1 49 127
-    i 8.033 153.249 0.001 1 49 127
     i 9.334 153.249 0.001 1 49 127
+    i 8.991 153.249 0.001 1 49 127
     i -11.216 153.258 0
     i 11.217 153.259 -1.000 1 33 74
     i 9.335 153.311 0.001 1 49 127
+    i 8.992 153.374 0.001 1 49 127
     i 9.336 153.374 0.001 1 49 127
-    i 8.034 153.374 0.001 1 49 127
     i 9.337 153.437 0.001 1 49 127
-    i 7.121 153.500 0.001 1 39 127
+    i 4.146 153.500 0.001 1 37 127
+    i 8.993 153.500 0.001 1 49 127
     i 9.338 153.500 0.001 1 49 127
-    i 8.035 153.500 0.001 1 49 127
-    i 4.151 153.500 0.001 1 37 127
+    i 7.117 153.500 0.001 1 39 127
     i 11.218 153.509 -1.000 1 36 91
     i -11.217 153.517 0
     i 9.339 153.562 0.001 1 49 127
     i 9.340 153.625 0.001 1 49 127
-    i 8.036 153.625 0.001 1 49 127
+    i 8.994 153.625 0.001 1 49 127
     i 9.341 153.687 0.001 1 49 127
-    i 9.342 153.749 0.001 1 49 127
     i 5.091 153.749 0.001 1 37 127
-    i 8.037 153.749 0.001 1 49 127
+    i 8.995 153.749 0.001 1 49 127
+    i 9.342 153.749 0.001 1 49 127
     i 6.091 153.749 0.001 1 37 127
     i 9.343 153.812 0.001 1 49 127
-    i 8.038 153.874 0.001 1 49 113
+    i 8.996 153.874 0.001 1 49 113
     i 9.344 153.874 0.001 1 49 127
     i 9.345 153.937 0.001 1 49 127
-    i 5.092 153.999 0.001 1 37 127
-    i 9.346 153.999 0.001 1 49 127
+    i 4.147 153.999 0.001 1 37 127
     i 6.092 153.999 0.001 1 37 127
-    i -10.159 153.999 0
+    i 8.997 153.999 0.001 1 49 127
+    i 9.346 153.999 0.001 1 49 127
+    i -10.155 153.999 0
+    i -10.156 153.999 0
+    i 5.092 153.999 0.001 1 37 127
     i -11.218 153.999 0
-    i 8.039 153.999 0.001 1 49 127
-    i -10.160 153.999 0
     i 11.219 153.999 -1.000 1 38 83
-    i 4.152 153.999 0.001 1 37 127
     i 9.347 154.061 0.001 1 49 127
+    i 8.998 154.124 0.001 1 49 127
     i 9.348 154.124 0.001 1 49 127
-    i 8.040 154.124 0.001 1 49 127
     i 9.349 154.186 0.001 1 49 127
+    i 8.999 154.249 0.001 1 49 127
     i 9.350 154.249 0.001 1 49 127
-    i 8.041 154.249 0.001 1 49 127
     i 9.351 154.311 0.001 1 49 127
     i 9.352 154.375 0.001 1 49 127
-    i 8.042 154.375 0.001 1 49 127
+    i 8.001 154.375 0.001 1 49 127
     i 9.353 154.437 0.001 1 49 127
-    i 7.122 154.500 0.001 1 39 127
-    i 8.043 154.500 0.001 1 49 127
+    i 4.148 154.500 0.001 1 37 127
+    i 7.118 154.500 0.001 1 39 127
+    i 8.002 154.500 0.001 1 49 127
     i 9.354 154.500 0.001 1 49 127
-    i 4.153 154.500 0.001 1 37 127
     i 9.355 154.562 0.001 1 49 127
-    i 8.044 154.625 0.001 1 49 127
+    i 8.003 154.625 0.001 1 49 127
     i 9.356 154.625 0.001 1 49 127
     i 9.357 154.687 0.001 1 49 127
     i 11.220 154.738 -1.000 1 41 103
-    i 8.045 154.749 0.001 1 49 127
     i 9.358 154.749 0.001 1 49 127
+    i 8.004 154.749 0.001 1 49 127
     i -11.219 154.757 0
     i 9.359 154.812 0.001 1 49 127
     i 9.360 154.874 0.001 1 49 127
-    i 8.046 154.874 0.001 1 49 127
+    i 8.005 154.874 0.001 1 49 127
     i 9.361 154.937 0.001 1 49 127
-    i 8.047 154.999 0.001 1 49 127
+    i 4.149 154.999 0.001 1 37 127
+    i 8.006 154.999 0.001 1 49 127
     i 9.362 154.999 0.001 1 49 127
-    i 4.154 154.999 0.001 1 37 127
-    i 10.161 154.999 -1.000 1 72 127
-    i 10.162 154.999 -1.000 1 76 127
+    i 10.157 154.999 -1.000 1 72 127
+    i 10.158 154.999 -1.000 1 76 127
     i 9.363 155.061 0.001 1 49 127
     i 9.364 155.124 0.001 1 49 127
-    i 8.048 155.124 0.001 1 49 127
+    i 8.007 155.124 0.001 1 49 127
     i 9.365 155.186 0.001 1 49 127
     i 11.221 155.224 -1.000 1 44 76
     i -11.220 155.234 0
+    i 8.008 155.249 0.001 1 49 127
     i 9.366 155.249 0.001 1 49 127
-    i 8.049 155.249 0.001 1 49 127
     i 9.367 155.312 0.001 1 49 127
     i 9.368 155.375 0.001 1 49 127
-    i 8.050 155.375 0.001 1 49 127
+    i 8.009 155.375 0.001 1 49 127
     i 9.369 155.437 0.001 1 49 127
-    i 4.155 155.500 0.001 1 37 127
-    i 8.051 155.500 0.001 1 49 127
-    i 7.123 155.500 0.001 1 39 127
+    i 7.119 155.500 0.001 1 39 127
+    i 8.010 155.500 0.001 1 49 127
+    i 4.150 155.500 0.001 1 37 127
     i 9.370 155.500 0.001 1 49 127
     i -11.221 155.523 0
     i 11.222 155.523 -1.000 1 43 89
     i 9.371 155.562 0.001 1 49 127
     i 9.372 155.624 0.001 1 49 127
-    i 8.052 155.624 0.001 1 49 127
+    i 8.011 155.624 0.001 1 49 127
     i 9.373 155.687 0.001 1 49 127
-    i 5.093 155.749 0.001 1 37 127
     i 6.093 155.749 0.001 1 37 127
     i 9.374 155.749 0.001 1 49 127
-    i 8.053 155.749 0.001 1 49 127
+    i 5.093 155.749 0.001 1 37 127
+    i 8.012 155.749 0.001 1 49 127
     i 9.375 155.812 0.001 1 49 127
-    i 8.054 155.874 0.001 1 49 113
+    i 8.013 155.874 0.001 1 49 113
     i 9.376 155.874 0.001 1 49 127
     i 9.377 155.937 0.001 1 49 127
-    i 6.094 155.999 0.001 1 37 127
-    i 8.055 155.999 0.001 1 49 127
-    i 5.094 155.999 0.001 1 37 127
-    i 4.156 155.999 0.001 1 37 127
     i 11.223 155.996 -1.000 1 41 97
+    i 8.014 155.999 0.001 1 49 127
     i 9.378 155.999 0.001 1 49 127
-    i -10.161 155.999 0
     i -11.222 155.997 0
-    i -10.162 155.999 0
+    i -10.157 155.999 0
+    i 4.151 155.999 0.001 1 37 127
+    i -10.158 155.999 0
+    i 5.094 155.999 0.001 1 37 127
+    i 6.094 155.999 0.001 1 37 127
     i 9.379 156.061 0.001 1 49 127
-    i 8.056 156.124 0.001 1 49 127
+    i 8.015 156.124 0.001 1 49 127
     i 9.380 156.124 0.001 1 49 127
     i 9.381 156.186 0.001 1 49 127
     i 9.382 156.250 0.001 1 49 127
-    i 8.057 156.250 0.001 1 49 127
+    i 8.016 156.250 0.001 1 49 127
     i 9.383 156.312 0.001 1 49 127
     i 9.384 156.375 0.001 1 49 127
-    i 8.058 156.375 0.001 1 49 127
+    i 8.017 156.375 0.001 1 49 127
     i 9.385 156.437 0.001 1 49 127
-    i 8.059 156.500 0.001 1 49 127
+    i 7.120 156.500 0.001 1 39 127
+    i 4.152 156.500 0.001 1 37 127
+    i 8.018 156.500 0.001 1 49 127
     i 9.386 156.500 0.001 1 49 127
-    i 7.124 156.500 0.001 1 39 127
-    i 4.157 156.500 0.001 1 37 127
     i 9.387 156.562 0.001 1 49 127
-    i 8.060 156.624 0.001 1 49 127
+    i 8.019 156.624 0.001 1 49 127
     i 9.388 156.624 0.001 1 49 127
     i 9.389 156.687 0.001 1 49 127
-    i 8.061 156.749 0.001 1 49 127
+    i 8.020 156.749 0.001 1 49 127
     i 9.390 156.749 0.001 1 49 127
     i -11.223 156.756 0
     i 11.224 156.759 -1.000 1 38 80
     i 9.391 156.812 0.001 1 49 127
-    i 8.062 156.874 0.001 1 49 127
+    i 8.021 156.874 0.001 1 49 127
     i 9.392 156.874 0.001 1 49 127
     i 9.393 156.936 0.001 1 49 127
-    i 4.158 156.999 0.001 1 37 127
-    i 8.063 156.999 0.001 1 49 127
     i 9.394 156.999 0.001 1 49 127
-    i 10.163 156.999 -1.000 1 72 127
-    i 10.164 156.999 -1.000 1 76 127
+    i 8.022 156.999 0.001 1 49 127
+    i 10.159 156.999 -1.000 1 72 127
+    i 10.160 156.999 -1.000 1 76 127
+    i 4.153 156.999 0.001 1 37 127
     i 9.395 157.061 0.001 1 49 127
+    i 8.023 157.124 0.001 1 49 127
     i 9.396 157.124 0.001 1 49 127
-    i 8.064 157.124 0.001 1 49 127
     i 9.397 157.187 0.001 1 49 127
     i 11.225 157.205 -1.000 1 33 79
     i -11.224 157.230 0
     i 9.398 157.250 0.001 1 49 127
-    i 8.065 157.250 0.001 1 49 127
+    i 8.024 157.250 0.001 1 49 127
     i 9.399 157.312 0.001 1 49 127
-    i 8.066 157.375 0.001 1 49 127
     i 9.400 157.375 0.001 1 49 127
+    i 8.025 157.375 0.001 1 49 127
     i 9.401 157.437 0.001 1 49 127
     i 9.402 157.500 0.001 1 49 127
+    i 4.154 157.500 0.001 1 37 127
+    i 8.026 157.500 0.001 1 49 127
+    i 7.121 157.500 0.001 1 39 127
+    i -15.036 157.500 0
     i 11.226 157.507 -1.000 1 36 89
-    i 4.159 157.500 0.001 1 37 127
-    i 7.125 157.500 0.001 1 39 127
-    i 8.067 157.500 0.001 1 49 127
     i -11.225 157.508 0
     i 9.403 157.562 0.001 1 49 127
-    i 8.068 157.624 0.001 1 49 127
     i 9.404 157.624 0.001 1 49 127
+    i 8.027 157.624 0.001 1 49 127
     i 9.405 157.687 0.001 1 49 127
-    i 9.406 157.749 0.001 1 49 127
     i 5.095 157.749 0.001 1 37 127
-    i 8.069 157.749 0.001 1 49 127
     i 6.095 157.749 0.001 1 37 127
+    i 8.028 157.749 0.001 1 49 127
+    i 9.406 157.749 0.001 1 49 127
     i 9.407 157.812 0.001 1 49 127
+    i 8.029 157.874 0.001 1 49 113
     i 9.408 157.874 0.001 1 49 127
-    i 8.070 157.874 0.001 1 49 113
     i 9.409 157.936 0.001 1 49 127
-    i 5.096 157.999 0.001 1 37 127
-    i 8.071 157.999 0.001 1 49 127
-    i 6.096 157.999 0.001 1 37 127
+    i 15.037 157.989 -1.000 1 53 74
+    i 14.049 157.989 -1.000 1 65 94
+    i 14.050 157.993 -1.000 1 62 76
+    i 4.155 157.999 0.001 1 37 127
+    i 13.171 157.999 -1.000 1 91 127
     i 9.410 157.999 0.001 1 49 127
-    i -10.163 157.999 0
-    i -10.164 157.999 0
+    i 8.030 157.999 0.001 1 49 127
+    i 5.096 157.999 0.001 1 37 127
+    i -10.159 157.999 0
     i -11.226 157.999 0
+    i -10.160 157.999 0
+    i 6.096 157.999 0.001 1 37 127
     i 11.227 157.999 -1.000 1 38 81
-    i 4.160 157.999 0.001 1 37 127
     i 9.411 158.061 0.001 1 49 127
-    i 8.072 158.125 0.001 1 49 127
+    i -14.047 158.058 0
+    i -14.048 158.058 0
+    i -13.171 158.125 0
+    i 13.172 158.125 -1.000 1 93 127
+    i 8.031 158.125 0.001 1 49 127
     i 9.412 158.125 0.001 1 49 127
     i 9.413 158.187 0.001 1 49 127
-    i 8.073 158.250 0.001 1 49 127
+    i -13.172 158.250 0
+    i 13.173 158.250 -1.000 1 89 127
+    i 8.032 158.250 0.001 1 49 127
     i 9.414 158.250 0.001 1 49 127
     i 9.415 158.312 0.001 1 49 127
     i 9.416 158.375 0.001 1 49 127
-    i 8.074 158.375 0.001 1 49 127
+    i -13.173 158.375 0
+    i 8.033 158.375 0.001 1 49 127
+    i 13.174 158.375 -1.000 1 91 127
     i 9.417 158.437 0.001 1 49 127
-    i 8.075 158.499 0.001 1 49 127
-    i 4.161 158.499 0.001 1 37 127
+    i 4.156 158.499 0.001 1 37 127
+    i -13.174 158.499 0
+    i 13.175 158.499 -1.000 1 93 127
     i 9.418 158.499 0.001 1 49 127
-    i 7.126 158.499 0.001 1 39 127
+    i 8.034 158.499 0.001 1 49 127
+    i 7.122 158.499 0.001 1 39 127
     i 9.419 158.562 0.001 1 49 127
+    i -13.175 158.624 0
+    i 13.176 158.624 -1.000 1 89 127
     i 9.420 158.624 0.001 1 49 127
-    i 8.076 158.624 0.001 1 49 127
+    i 8.035 158.624 0.001 1 49 127
     i 9.421 158.687 0.001 1 49 127
     i 11.228 158.737 -1.000 1 41 89
-    i -11.227 158.745 0
+    i 8.036 158.749 0.001 1 49 127
     i 9.422 158.749 0.001 1 49 127
-    i 8.077 158.749 0.001 1 49 127
+    i -13.176 158.749 0
+    i 13.177 158.749 -1.000 1 91 127
+    i -11.227 158.745 0
     i 9.423 158.811 0.001 1 49 127
+    i 8.037 158.874 0.001 1 49 127
     i 9.424 158.874 0.001 1 49 127
-    i 8.078 158.874 0.001 1 49 127
+    i -13.177 158.874 0
+    i 13.178 158.874 -1.000 1 93 127
     i 9.425 158.936 0.001 1 49 127
-    i 4.162 158.999 0.001 1 37 127
-    i 8.079 158.999 0.001 1 49 127
+    i -13.178 158.999 0
+    i 13.179 158.999 -1.000 1 89 127
+    i 4.157 158.999 0.001 1 37 127
+    i 8.038 158.999 0.001 1 49 127
     i 9.426 158.999 0.001 1 49 127
-    i 10.165 158.999 -1.000 1 72 127
-    i 10.166 158.999 -1.000 1 76 127
+    i 10.161 158.999 -1.000 1 72 127
+    i 10.162 158.999 -1.000 1 76 127
     i 9.427 159.062 0.001 1 49 127
+    i 8.039 159.125 0.001 1 49 127
     i 9.428 159.125 0.001 1 49 127
-    i 8.080 159.125 0.001 1 49 127
+    i -13.179 159.125 0
+    i 13.180 159.125 -1.000 1 91 127
     i 9.429 159.187 0.001 1 49 127
-    i 8.081 159.250 0.001 1 49 127
+    i -13.180 159.250 0
+    i 13.181 159.250 -1.000 1 93 127
     i 9.430 159.250 0.001 1 49 127
+    i 8.040 159.250 0.001 1 49 127
     i 11.229 159.254 -1.000 1 38 68
     i -11.228 159.260 0
     i 9.431 159.312 0.001 1 49 127
+    i 8.041 159.375 0.001 1 49 127
     i 9.432 159.375 0.001 1 49 127
-    i 8.082 159.375 0.001 1 49 127
+    i -13.181 159.375 0
+    i 13.182 159.375 -1.000 1 89 127
     i 9.433 159.437 0.001 1 49 127
-    i 8.083 159.499 0.001 1 49 127
+    i 8.042 159.499 0.001 1 49 127
+    i 7.123 159.499 0.001 1 39 127
     i 9.434 159.499 0.001 1 49 127
-    i 7.127 159.499 0.001 1 39 127
     i 11.230 159.501 -1.000 1 41 78
-    i 4.163 159.499 0.001 1 37 127
+    i 4.158 159.499 0.001 1 37 127
+    i -13.182 159.499 0
+    i 13.183 159.499 -1.000 1 91 127
     i -11.229 159.509 0
     i 9.435 159.562 0.001 1 49 127
-    i 8.084 159.624 0.001 1 49 127
+    i -13.183 159.624 0
+    i 13.184 159.624 -1.000 1 93 127
+    i 8.043 159.624 0.001 1 49 127
     i 9.436 159.624 0.001 1 49 127
     i 9.437 159.687 0.001 1 49 127
-    i 8.085 159.749 0.001 1 49 127
     i 6.097 159.749 0.001 1 37 127
-    i 9.438 159.749 0.001 1 49 127
     i 5.097 159.749 0.001 1 37 127
+    i 8.044 159.749 0.001 1 49 127
+    i -13.184 159.749 0
+    i 9.438 159.749 0.001 1 49 127
+    i 13.185 159.749 -1.000 1 89 127
     i 9.439 159.811 0.001 1 49 127
+    i 8.045 159.874 0.001 1 49 113
     i 9.440 159.874 0.001 1 49 127
-    i 8.086 159.874 0.001 1 49 113
+    i -13.185 159.874 0
+    i 13.186 159.874 -1.000 1 91 127
     i 9.441 159.936 0.001 1 49 127
-    i 4.164 160.000 0.001 1 37 127
+    i 15.038 159.949 -1.000 1 55 101
+    i -15.037 159.962 0
+    i 14.051 159.981 -1.000 1 64 89
+    i 14.052 159.985 -1.000 1 67 78
+    i 4.159 160.000 0.001 1 37 127
     i 5.098 160.000 0.001 1 37 127
     i 6.098 160.000 0.001 1 37 127
-    i 8.087 160.000 0.001 1 49 127
     i 9.442 160.000 0.001 1 49 127
-    i -10.165 160.000 0
-    i -10.166 160.000 0
+    i 8.046 160.000 0.001 1 49 127
+    i -13.186 160.000 0
+    i 13.187 160.000 -1.000 1 93 127
+    i -10.161 160.000 0
+    i -10.162 160.000 0
     i 11.231 160.012 -1.000 1 38 78
     i -11.230 160.030 0
     i 9.443 160.062 0.001 1 49 127
+    i -14.049 160.065 0
+    i -14.050 160.065 0
+    i -13.187 160.125 0
+    i 8.047 160.125 0.001 1 49 127
     i 9.444 160.125 0.001 1 49 127
-    i 8.088 160.125 0.001 1 49 127
     i 9.445 160.187 0.001 1 49 127
+    i 8.048 160.250 0.001 1 49 127
     i 9.446 160.250 0.001 1 49 127
-    i 8.089 160.250 0.001 1 49 127
     i 9.447 160.312 0.001 1 49 127
+    i 8.049 160.374 0.001 1 49 127
     i 9.448 160.374 0.001 1 49 127
-    i 8.090 160.374 0.001 1 49 127
     i 9.449 160.437 0.001 1 49 127
-    i 4.165 160.499 0.001 1 37 127
-    i 8.091 160.499 0.001 1 49 127
+    i 8.050 160.499 0.001 1 49 127
+    i 7.124 160.499 0.001 1 39 127
     i 9.450 160.499 0.001 1 49 127
-    i 7.128 160.499 0.001 1 39 127
+    i 4.160 160.499 0.001 1 37 127
     i 9.451 160.562 0.001 1 49 127
-    i 8.092 160.624 0.001 1 49 127
     i 9.452 160.624 0.001 1 49 127
+    i 8.051 160.624 0.001 1 49 127
     i 9.453 160.686 0.001 1 49 127
-    i 8.093 160.749 0.001 1 49 127
+    i 8.052 160.749 0.001 1 49 127
     i 9.454 160.749 0.001 1 49 127
     i 11.232 160.760 -1.000 1 36 86
     i -11.231 160.768 0
     i 9.455 160.811 0.001 1 49 127
-    i 8.094 160.874 0.001 1 49 127
+    i 8.053 160.874 0.001 1 49 127
     i 9.456 160.874 0.001 1 49 127
     i 9.457 160.938 0.001 1 49 127
-    i 4.166 161.000 0.001 1 37 127
-    i 8.095 161.000 0.001 1 49 127
+    i 8.054 161.000 0.001 1 49 127
     i 9.458 161.000 0.001 1 49 127
-    i 10.167 161.000 -1.000 1 72 127
-    i 10.168 161.000 -1.000 1 76 127
+    i 10.163 161.000 -1.000 1 72 127
+    i 10.164 161.000 -1.000 1 76 127
+    i 4.161 161.000 0.001 1 37 127
     i 9.459 161.062 0.001 1 49 127
     i 9.460 161.125 0.001 1 49 127
-    i 8.096 161.125 0.001 1 49 127
+    i 8.055 161.125 0.001 1 49 127
     i 9.461 161.187 0.001 1 49 127
-    i 8.097 161.250 0.001 1 49 127
+    i 8.056 161.250 0.001 1 49 127
     i 9.462 161.250 0.001 1 49 127
     i -11.232 161.258 0
     i 11.233 161.258 -1.000 1 33 74
     i 9.463 161.312 0.001 1 49 127
-    i 8.098 161.374 0.001 1 49 127
+    i 8.057 161.374 0.001 1 49 127
     i 9.464 161.374 0.001 1 49 127
     i 9.465 161.437 0.001 1 49 127
+    i 7.125 161.499 0.001 1 39 127
+    i 4.162 161.499 0.001 1 37 127
+    i 8.058 161.499 0.001 1 49 127
     i 9.466 161.499 0.001 1 49 127
-    i 4.167 161.499 0.001 1 37 127
-    i 8.099 161.499 0.001 1 49 127
-    i 7.129 161.499 0.001 1 39 127
     i 11.234 161.508 -1.000 1 36 91
     i -11.233 161.518 0
     i 9.467 161.562 0.001 1 49 127
     i 9.468 161.624 0.001 1 49 127
-    i 8.100 161.624 0.001 1 49 127
+    i 8.059 161.624 0.001 1 49 127
     i 9.469 161.686 0.001 1 49 127
+    i 8.060 161.749 0.001 1 49 127
     i 9.470 161.749 0.001 1 49 127
-    i 5.099 161.749 0.001 1 37 127
     i 6.099 161.749 0.001 1 37 127
-    i 8.101 161.749 0.001 1 49 127
+    i 5.099 161.749 0.001 1 37 127
     i 9.471 161.811 0.001 1 49 127
-    i 8.102 161.875 0.001 1 49 113
+    i 8.061 161.875 0.001 1 49 113
     i 9.472 161.875 0.001 1 49 127
     i 9.473 161.937 0.001 1 49 127
-    i 5.100 162.000 0.001 1 37 127
-    i 4.168 162.000 0.001 1 37 127
+    i 14.053 161.985 -1.000 1 65 83
+    i 14.054 161.987 -1.000 1 69 76
+    i 15.039 161.984 -1.000 1 57 100
+    i -15.038 161.995 0
+    i 4.163 162.000 0.001 1 37 127
     i 6.100 162.000 0.001 1 37 127
-    i 8.103 162.000 0.001 1 49 127
+    i 8.062 162.000 0.001 1 49 127
     i 9.474 162.000 0.001 1 49 127
-    i -10.167 162.000 0
-    i -10.168 162.000 0
     i -11.234 162.000 0
+    i -10.163 162.000 0
+    i 5.100 162.000 0.001 1 37 127
+    i -10.164 162.000 0
     i 11.235 162.000 -1.000 1 38 83
     i 9.475 162.062 0.001 1 49 127
-    i 8.104 162.125 0.001 1 49 127
+    i -14.051 162.091 0
+    i -14.052 162.091 0
+    i 8.063 162.125 0.001 1 49 127
     i 9.476 162.125 0.001 1 49 127
     i 9.477 162.187 0.001 1 49 127
-    i 8.105 162.249 0.001 1 49 127
+    i 8.064 162.249 0.001 1 49 127
     i 9.478 162.249 0.001 1 49 127
     i 9.479 162.312 0.001 1 49 127
-    i 8.106 162.374 0.001 1 49 127
     i 9.480 162.374 0.001 1 49 127
+    i 8.065 162.374 0.001 1 49 127
     i 9.481 162.437 0.001 1 49 127
-    i 4.169 162.499 0.001 1 37 127
+    i 4.164 162.499 0.001 1 37 127
+    i 7.126 162.499 0.001 1 39 127
+    i 8.066 162.499 0.001 1 49 127
     i 9.482 162.499 0.001 1 49 127
-    i 7.130 162.499 0.001 1 39 127
-    i 8.107 162.499 0.001 1 49 127
     i 9.483 162.561 0.001 1 49 127
+    i 8.067 162.624 0.001 1 49 127
     i 9.484 162.624 0.001 1 49 127
-    i 8.108 162.624 0.001 1 49 127
     i 9.485 162.686 0.001 1 49 127
     i 11.236 162.739 -1.000 1 41 103
     i -11.235 162.756 0
-    i 8.109 162.749 0.001 1 49 127
+    i 8.068 162.749 0.001 1 49 127
     i 9.486 162.749 0.001 1 49 127
     i 9.487 162.811 0.001 1 49 127
-    i 8.110 162.875 0.001 1 49 127
     i 9.488 162.875 0.001 1 49 127
+    i 8.069 162.875 0.001 1 49 127
     i 9.489 162.937 0.001 1 49 127
-    i 4.170 163.000 0.001 1 37 127
-    i 8.111 163.000 0.001 1 49 127
+    i 8.070 163.000 0.001 1 49 127
     i 9.490 163.000 0.001 1 49 127
-    i 10.169 163.000 -1.000 1 72 127
-    i 10.170 163.000 -1.000 1 76 127
+    i 10.165 163.000 -1.000 1 72 127
+    i 10.166 163.000 -1.000 1 76 127
+    i 4.165 163.000 0.001 1 37 127
     i 9.491 163.062 0.001 1 49 127
+    i 8.071 163.125 0.001 1 49 127
     i 9.492 163.125 0.001 1 49 127
-    i 8.112 163.125 0.001 1 49 127
     i 9.493 163.187 0.001 1 49 127
     i 11.237 163.223 -1.000 1 44 76
     i -11.236 163.235 0
-    i 8.113 163.249 0.001 1 49 127
+    i 8.072 163.249 0.001 1 49 127
     i 9.494 163.249 0.001 1 49 127
     i 9.495 163.312 0.001 1 49 127
+    i 8.073 163.374 0.001 1 49 127
     i 9.496 163.374 0.001 1 49 127
-    i 8.114 163.374 0.001 1 49 127
     i 9.497 163.437 0.001 1 49 127
-    i 4.171 163.499 0.001 1 37 127
+    i 4.166 163.499 0.001 1 37 127
+    i 7.127 163.499 0.001 1 39 127
+    i 8.074 163.499 0.001 1 49 127
     i 9.498 163.499 0.001 1 49 127
-    i 7.131 163.499 0.001 1 39 127
-    i 8.115 163.499 0.001 1 49 127
     i -11.237 163.522 0
     i 11.238 163.524 -1.000 1 43 89
     i 9.499 163.561 0.001 1 49 127
     i 9.500 163.624 0.001 1 49 127
-    i 8.116 163.624 0.001 1 49 127
+    i 8.075 163.624 0.001 1 49 127
     i 9.501 163.686 0.001 1 49 127
-    i 9.502 163.749 0.001 1 49 127
-    i 5.101 163.749 0.001 1 37 127
     i 6.101 163.749 0.001 1 37 127
-    i 8.117 163.749 0.001 1 49 127
+    i 5.101 163.749 0.001 1 37 127
+    i 9.502 163.749 0.001 1 49 127
+    i 8.076 163.749 0.001 1 49 127
     i 9.503 163.812 0.001 1 49 127
     i 9.504 163.875 0.001 1 49 127
-    i 8.118 163.875 0.001 1 49 113
+    i 8.077 163.875 0.001 1 49 113
+    i 15.040 163.923 -1.000 1 55 78
+    i -15.039 163.939 0
     i 9.505 163.937 0.001 1 49 127
+    i 14.055 163.979 -1.000 1 69 78
+    i 14.056 163.985 -1.000 1 64 85
     i 11.239 163.997 -1.000 1 41 97
     i -11.238 163.998 0
-    i 9.506 164.000 0.001 1 49 127
-    i 5.102 164.000 0.001 1 37 127
+    i 4.167 164.000 0.001 1 37 127
     i 6.102 164.000 0.001 1 37 127
-    i 8.119 164.000 0.001 1 49 127
-    i 4.172 164.000 0.001 1 37 127
-    i -10.169 164.000 0
-    i -10.170 164.000 0
+    i 5.102 164.000 0.001 1 37 127
+    i -10.165 164.000 0
+    i 9.506 164.000 0.001 1 49 127
+    i -10.166 164.000 0
+    i 8.078 164.000 0.001 1 49 127
+    i -14.053 164.010 0
+    i -14.054 164.010 0
     i 9.507 164.062 0.001 1 49 127
-    i 8.120 164.124 0.001 1 49 127
     i 9.508 164.124 0.001 1 49 127
+    i 8.079 164.124 0.001 1 49 127
     i 9.509 164.187 0.001 1 49 127
-    i 8.121 164.249 0.001 1 49 127
+    i 8.080 164.249 0.001 1 49 127
     i 9.510 164.249 0.001 1 49 127
     i 9.511 164.312 0.001 1 49 127
+    i 8.081 164.374 0.001 1 49 127
     i 9.512 164.374 0.001 1 49 127
-    i 8.122 164.374 0.001 1 49 127
     i 9.513 164.436 0.001 1 49 127
-    i 7.132 164.499 0.001 1 39 127
-    i 4.173 164.499 0.001 1 37 127
-    i 8.123 164.499 0.001 1 49 127
+    i 4.168 164.499 0.001 1 37 127
+    i 7.128 164.499 0.001 1 39 127
+    i 8.082 164.499 0.001 1 49 127
     i 9.514 164.499 0.001 1 49 127
     i 9.515 164.561 0.001 1 49 127
     i 9.516 164.624 0.001 1 49 127
-    i 8.124 164.624 0.001 1 49 127
+    i 8.083 164.624 0.001 1 49 127
     i 9.517 164.686 0.001 1 49 127
+    i 8.084 164.750 0.001 1 49 127
     i 9.518 164.750 0.001 1 49 127
-    i 8.125 164.750 0.001 1 49 127
     i -11.239 164.756 0
     i 11.240 164.759 -1.000 1 38 80
     i 9.519 164.812 0.001 1 49 127
+    i 8.085 164.875 0.001 1 49 127
     i 9.520 164.875 0.001 1 49 127
-    i 8.126 164.875 0.001 1 49 127
+    i 15.041 164.875 -1.000 1 57 79
+    i -15.040 164.897 0
     i 9.521 164.937 0.001 1 49 127
-    i 8.127 165.000 0.001 1 49 127
+    i 14.057 164.995 -1.000 1 65 86
     i 9.522 165.000 0.001 1 49 127
-    i 4.174 165.000 0.001 1 37 127
-    i 10.171 165.000 -1.000 1 72 127
-    i 10.172 165.000 -1.000 1 76 127
+    i 8.086 165.000 0.001 1 49 127
+    i 14.058 165.001 -1.000 1 60 75
+    i 10.167 165.000 -1.000 1 72 127
+    i 10.168 165.000 -1.000 1 76 127
+    i 4.169 165.000 0.001 1 37 127
     i 9.523 165.062 0.001 1 49 127
-    i 8.128 165.124 0.001 1 49 127
+    i -14.055 165.066 0
+    i -14.056 165.066 0
+    i 8.087 165.124 0.001 1 49 127
     i 9.524 165.124 0.001 1 49 127
     i 9.525 165.187 0.001 1 49 127
     i 11.241 165.206 -1.000 1 33 79
     i -11.240 165.229 0
     i 9.526 165.249 0.001 1 49 127
-    i 8.129 165.249 0.001 1 49 127
+    i 8.088 165.249 0.001 1 49 127
     i 9.527 165.312 0.001 1 49 127
+    i 8.089 165.374 0.001 1 49 127
     i 9.528 165.374 0.001 1 49 127
-    i 8.130 165.374 0.001 1 49 127
     i 9.529 165.436 0.001 1 49 127
-    i 4.175 165.499 0.001 1 37 127
-    i 8.131 165.499 0.001 1 49 127
-    i 7.133 165.499 0.001 1 39 127
-    i 9.530 165.499 0.001 1 49 127
+    i 4.170 165.499 0.001 1 37 127
     i 11.242 165.506 -1.000 1 36 89
+    i 7.129 165.499 0.001 1 39 127
     i -11.241 165.507 0
+    i 8.090 165.499 0.001 1 49 127
+    i 9.530 165.499 0.001 1 49 127
     i 9.531 165.561 0.001 1 49 127
-    i 8.132 165.624 0.001 1 49 127
     i 9.532 165.624 0.001 1 49 127
+    i 8.091 165.624 0.001 1 49 127
     i 9.533 165.687 0.001 1 49 127
-    i 6.103 165.750 0.001 1 37 127
     i 5.103 165.750 0.001 1 37 127
+    i 6.103 165.750 0.001 1 37 127
+    i 8.092 165.750 0.001 1 49 127
     i 9.534 165.750 0.001 1 49 127
-    i 8.133 165.750 0.001 1 49 127
     i 9.535 165.812 0.001 1 49 127
-    i 8.134 165.875 0.001 1 49 113
+    i 8.093 165.875 0.001 1 49 113
     i 9.536 165.875 0.001 1 49 127
     i 9.537 165.937 0.001 1 49 127
+    i 15.042 165.930 -1.000 1 55 82
+    i -15.041 165.975 0
+    i 14.059 165.982 -1.000 1 67 88
+    i 14.060 165.986 -1.000 1 62 78
+    i 4.171 165.999 0.001 1 37 127
     i 5.104 165.999 0.001 1 37 127
-    i 4.176 165.999 0.001 1 37 127
-    i 8.135 165.999 0.001 1 49 127
-    i 9.538 165.999 0.001 1 49 127
-    i -11.242 165.999 0
-    i -10.171 165.999 0
     i 6.104 165.999 0.001 1 37 127
+    i 9.538 165.999 0.001 1 49 127
+    i -10.167 165.999 0
+    i -11.242 165.999 0
+    i 8.094 165.999 0.001 1 49 127
+    i -10.168 165.999 0
     i 11.243 165.999 -1.000 1 38 81
-    i -10.172 165.999 0
+    i 13.188 165.999 -1.000 1 91 127
+    i -14.057 166.026 0
+    i -14.058 166.026 0
     i 9.539 166.062 0.001 1 49 127
-    i 8.136 166.124 0.001 1 49 127
+    i -13.188 166.124 0
+    i 13.189 166.124 -1.000 1 93 127
     i 9.540 166.124 0.001 1 49 127
+    i 8.095 166.124 0.001 1 49 127
     i 9.541 166.187 0.001 1 49 127
-    i 8.137 166.249 0.001 1 49 127
+    i 8.096 166.249 0.001 1 49 127
     i 9.542 166.249 0.001 1 49 127
+    i -13.189 166.249 0
+    i 13.190 166.249 -1.000 1 89 127
     i 9.543 166.311 0.001 1 49 127
-    i 8.138 166.374 0.001 1 49 127
+    i -13.190 166.374 0
+    i 13.191 166.374 -1.000 1 91 127
+    i 8.097 166.374 0.001 1 49 127
     i 9.544 166.374 0.001 1 49 127
     i 9.545 166.436 0.001 1 49 127
-    i 8.139 166.499 0.001 1 49 127
-    i 7.134 166.499 0.001 1 39 127
+    i -13.191 166.499 0
+    i 4.172 166.499 0.001 1 37 127
+    i 7.130 166.499 0.001 1 39 127
+    i 8.098 166.499 0.001 1 49 127
     i 9.546 166.499 0.001 1 49 127
-    i 4.177 166.499 0.001 1 37 127
+    i 13.192 166.499 -1.000 1 93 127
     i 9.547 166.561 0.001 1 49 127
     i 9.548 166.625 0.001 1 49 127
-    i 8.140 166.625 0.001 1 49 127
+    i -13.192 166.625 0
+    i 13.193 166.625 -1.000 1 89 127
+    i 8.099 166.625 0.001 1 49 127
     i 9.549 166.687 0.001 1 49 127
     i 11.244 166.737 -1.000 1 41 89
     i -11.243 166.744 0
-    i 8.141 166.750 0.001 1 49 127
     i 9.550 166.750 0.001 1 49 127
+    i 8.100 166.750 0.001 1 49 127
+    i -13.193 166.750 0
+    i 13.194 166.750 -1.000 1 91 127
     i 9.551 166.812 0.001 1 49 127
+    i 8.101 166.875 0.001 1 49 127
+    i -13.194 166.875 0
+    i 13.195 166.875 -1.000 1 93 127
     i 9.552 166.875 0.001 1 49 127
-    i 8.142 166.875 0.001 1 49 127
     i 9.553 166.937 0.001 1 49 127
-    i 4.178 166.999 0.001 1 37 127
+    i 8.102 166.999 0.001 1 49 127
     i 9.554 166.999 0.001 1 49 127
-    i 8.143 166.999 0.001 1 49 127
-    i 10.173 166.999 -1.000 1 72 127
-    i 10.174 166.999 -1.000 1 76 127
+    i 10.169 166.999 -1.000 1 72 127
+    i 10.170 166.999 -1.000 1 76 127
+    i -13.195 166.999 0
+    i 4.173 166.999 0.001 1 37 127
+    i 13.196 166.999 -1.000 1 89 127
     i 9.555 167.062 0.001 1 49 127
+    i -13.196 167.124 0
+    i 13.197 167.124 -1.000 1 91 127
+    i 8.103 167.124 0.001 1 49 127
     i 9.556 167.124 0.001 1 49 127
-    i 8.144 167.124 0.001 1 49 127
     i 9.557 167.187 0.001 1 49 127
-    i 8.145 167.249 0.001 1 49 127
+    i -13.197 167.249 0
+    i 13.198 167.249 -1.000 1 93 127
     i 9.558 167.249 0.001 1 49 127
+    i 8.104 167.249 0.001 1 49 127
     i 11.245 167.253 -1.000 1 38 68
     i -11.244 167.259 0
     i 9.559 167.311 0.001 1 49 127
+    i 8.105 167.374 0.001 1 49 127
     i 9.560 167.374 0.001 1 49 127
-    i 8.146 167.374 0.001 1 49 127
+    i -13.198 167.374 0
+    i 13.199 167.374 -1.000 1 89 127
     i 9.561 167.436 0.001 1 49 127
-    i 4.179 167.499 0.001 1 37 127
-    i 7.135 167.499 0.001 1 39 127
-    i 9.562 167.499 0.001 1 49 127
-    i 8.147 167.499 0.001 1 49 127
     i 11.246 167.501 -1.000 1 41 78
+    i 4.174 167.499 0.001 1 37 127
+    i 8.106 167.499 0.001 1 49 127
+    i -13.199 167.499 0
+    i 7.131 167.499 0.001 1 39 127
+    i 9.562 167.499 0.001 1 49 127
+    i 13.200 167.499 -1.000 1 91 127
     i -11.245 167.510 0
     i 9.563 167.562 0.001 1 49 127
+    i -13.200 167.625 0
     i 9.564 167.625 0.001 1 49 127
-    i 8.148 167.625 0.001 1 49 127
+    i 13.201 167.625 -1.000 1 93 127
+    i 8.107 167.625 0.001 1 49 127
     i 9.565 167.687 0.001 1 49 127
+    i -13.201 167.750 0
     i 9.566 167.750 0.001 1 49 127
-    i 5.105 167.750 0.001 1 37 127
+    i 13.202 167.750 -1.000 1 89 127
     i 6.105 167.750 0.001 1 37 127
-    i 8.149 167.750 0.001 1 49 127
+    i 8.108 167.750 0.001 1 49 127
+    i 5.105 167.750 0.001 1 37 127
     i 9.567 167.812 0.001 1 49 127
+    i 8.109 167.874 0.001 1 49 113
+    i -13.202 167.874 0
     i 9.568 167.874 0.001 1 49 127
-    i 8.150 167.874 0.001 1 49 113
+    i 13.203 167.874 -1.000 1 91 127
     i 9.569 167.937 0.001 1 49 127
-    i 4.180 167.999 0.001 1 37 127
+    i -13.203 167.999 0
+    i 4.175 167.999 0.001 1 37 127
+    i 13.204 167.999 -1.000 1 93 127
     i 5.106 167.999 0.001 1 37 127
     i 6.106 167.999 0.001 1 37 127
+    i 8.110 167.999 0.001 1 49 127
     i 9.570 167.999 0.001 1 49 127
-    i 8.151 167.999 0.001 1 49 127
-    i -10.173 167.999 0
-    i -10.174 167.999 0
+    i -10.169 167.999 0
+    i -10.170 167.999 0
     i 11.247 168.012 -1.000 1 38 78
     i -11.246 168.030 0
     i 9.571 168.062 0.001 1 49 127
-    i 8.152 168.124 0.001 1 49 127
+    i -13.204 168.124 0
+    i 8.111 168.124 0.001 1 49 127
     i 9.572 168.124 0.001 1 49 127
     i 9.573 168.186 0.001 1 49 127
+    i 8.112 168.249 0.001 1 49 127
     i 9.574 168.249 0.001 1 49 127
-    i 8.153 168.249 0.001 1 49 127
     i 9.575 168.311 0.001 1 49 127
-    i 8.154 168.374 0.001 1 49 127
     i 9.576 168.374 0.001 1 49 127
+    i 8.113 168.374 0.001 1 49 127
     i 9.577 168.436 0.001 1 49 127
-    i 4.181 168.500 0.001 1 37 127
-    i 8.155 168.500 0.001 1 49 127
+    i 8.114 168.500 0.001 1 49 127
+    i 7.132 168.500 0.001 1 39 127
     i 9.578 168.500 0.001 1 49 127
-    i 7.136 168.500 0.001 1 39 127
+    i 4.176 168.500 0.001 1 37 127
     i 9.579 168.562 0.001 1 49 127
+    i 8.115 168.625 0.001 1 49 127
     i 9.580 168.625 0.001 1 49 127
-    i 8.156 168.625 0.001 1 49 127
     i 9.581 168.687 0.001 1 49 127
     i 9.582 168.750 0.001 1 49 127
-    i 8.157 168.750 0.001 1 49 127
+    i 8.116 168.750 0.001 1 49 127
     i 11.248 168.760 -1.000 1 36 86
     i -11.247 168.767 0
     i 9.583 168.812 0.001 1 49 127
+    i 8.117 168.874 0.001 1 49 127
     i 9.584 168.874 0.001 1 49 127
-    i 8.158 168.874 0.001 1 49 127
     i 9.585 168.937 0.001 1 49 127
-    i 10.175 168.999 -1.000 1 72 127
-    i 10.176 168.999 -1.000 1 76 127
+    i 4.177 168.999 0.001 1 37 127
+    i 8.118 168.999 0.001 1 49 127
     i 9.586 168.999 0.001 1 49 127
-    i 4.182 168.999 0.001 1 37 127
-    i 8.159 168.999 0.001 1 49 127
+    i 10.171 168.999 -1.000 1 72 127
+    i 10.172 168.999 -1.000 1 76 127
     i 9.587 169.062 0.001 1 49 127
-    i 8.160 169.124 0.001 1 49 127
+    i 8.119 169.124 0.001 1 49 127
     i 9.588 169.124 0.001 1 49 127
     i 9.589 169.186 0.001 1 49 127
-    i 9.590 169.249 0.001 1 49 127
     i -11.248 169.258 0
-    i 8.161 169.249 0.001 1 49 127
+    i 8.120 169.249 0.001 1 49 127
+    i 9.590 169.249 0.001 1 49 127
     i 11.249 169.259 -1.000 1 33 74
     i 9.591 169.311 0.001 1 49 127
+    i 8.121 169.374 0.001 1 49 127
     i 9.592 169.374 0.001 1 49 127
-    i 8.162 169.374 0.001 1 49 127
     i 9.593 169.437 0.001 1 49 127
-    i 4.183 169.500 0.001 1 37 127
-    i 7.137 169.500 0.001 1 39 127
     i 9.594 169.500 0.001 1 49 127
-    i 8.163 169.500 0.001 1 49 127
+    i 4.178 169.500 0.001 1 37 127
+    i 7.133 169.500 0.001 1 39 127
+    i 8.122 169.500 0.001 1 49 127
     i 11.250 169.509 -1.000 1 36 91
     i -11.249 169.517 0
     i 9.595 169.562 0.001 1 49 127
     i 9.596 169.625 0.001 1 49 127
-    i 8.164 169.625 0.001 1 49 127
+    i 8.123 169.625 0.001 1 49 127
     i 9.597 169.687 0.001 1 49 127
-    i 5.107 169.749 0.001 1 37 127
-    i 8.165 169.749 0.001 1 49 127
-    i 6.107 169.749 0.001 1 37 127
+    i 8.124 169.749 0.001 1 49 127
     i 9.598 169.749 0.001 1 49 127
+    i 5.107 169.749 0.001 1 37 127
+    i 6.107 169.749 0.001 1 37 127
     i 9.599 169.812 0.001 1 49 127
     i 9.600 169.874 0.001 1 49 127
-    i 8.166 169.874 0.001 1 49 113
+    i 8.125 169.874 0.001 1 49 113
     i 9.601 169.937 0.001 1 49 127
-    i 4.184 169.999 0.001 1 37 127
-    i -11.250 169.999 0
-    i 11.251 169.999 -1.000 1 38 83
+    i 4.179 169.999 0.001 1 37 127
     i 5.108 169.999 0.001 1 37 127
-    i 8.167 169.999 0.001 1 49 127
     i 9.602 169.999 0.001 1 49 127
     i 6.108 169.999 0.001 1 37 127
-    i -10.175 169.999 0
-    i -10.176 169.999 0
+    i -10.171 169.999 0
+    i 8.126 169.999 0.001 1 49 127
+    i -10.172 169.999 0
+    i -11.250 169.999 0
+    i 11.251 169.999 -1.000 1 38 83
     i 9.603 170.061 0.001 1 49 127
-    i 8.168 170.124 0.001 1 49 127
     i 9.604 170.124 0.001 1 49 127
+    i 8.127 170.124 0.001 1 49 127
     i 9.605 170.186 0.001 1 49 127
-    i 8.169 170.249 0.001 1 49 127
     i 9.606 170.249 0.001 1 49 127
+    i 8.128 170.249 0.001 1 49 127
     i 9.607 170.311 0.001 1 49 127
+    i 8.129 170.375 0.001 1 49 127
     i 9.608 170.375 0.001 1 49 127
-    i 8.170 170.375 0.001 1 49 127
     i 9.609 170.437 0.001 1 49 127
-    i 8.171 170.500 0.001 1 49 127
-    i 7.138 170.500 0.001 1 39 127
+    i 8.130 170.500 0.001 1 49 127
     i 9.610 170.500 0.001 1 49 127
-    i 4.185 170.500 0.001 1 37 127
+    i 4.180 170.500 0.001 1 37 127
+    i 7.134 170.500 0.001 1 39 127
     i 9.611 170.562 0.001 1 49 127
-    i 8.172 170.625 0.001 1 49 127
     i 9.612 170.625 0.001 1 49 127
+    i 8.131 170.625 0.001 1 49 127
     i 9.613 170.687 0.001 1 49 127
     i 11.252 170.738 -1.000 1 41 103
+    i 8.132 170.749 0.001 1 49 127
     i 9.614 170.749 0.001 1 49 127
-    i 8.173 170.749 0.001 1 49 127
     i -11.251 170.757 0
     i 9.615 170.812 0.001 1 49 127
-    i 8.174 170.874 0.001 1 49 127
     i 9.616 170.874 0.001 1 49 127
+    i 8.133 170.874 0.001 1 49 127
     i 9.617 170.937 0.001 1 49 127
-    i 4.186 170.999 0.001 1 37 127
-    i 8.175 170.999 0.001 1 49 127
-    i 10.177 170.999 -1.000 1 72 127
+    i 4.181 170.999 0.001 1 37 127
+    i 8.134 170.999 0.001 1 49 127
     i 9.618 170.999 0.001 1 49 127
-    i 10.178 170.999 -1.000 1 76 127
+    i 10.173 170.999 -1.000 1 72 127
+    i 10.174 170.999 -1.000 1 76 127
     i 9.619 171.061 0.001 1 49 127
     i 9.620 171.124 0.001 1 49 127
-    i 8.176 171.124 0.001 1 49 127
+    i 8.135 171.124 0.001 1 49 127
     i 9.621 171.186 0.001 1 49 127
     i 11.253 171.224 -1.000 1 44 76
     i -11.252 171.234 0
-    i 8.177 171.249 0.001 1 49 127
+    i 8.136 171.249 0.001 1 49 127
     i 9.622 171.249 0.001 1 49 127
     i 9.623 171.312 0.001 1 49 127
     i 9.624 171.375 0.001 1 49 127
-    i 8.178 171.375 0.001 1 49 127
+    i 8.137 171.375 0.001 1 49 127
     i 9.625 171.437 0.001 1 49 127
-    i 4.187 171.500 0.001 1 37 127
-    i 7.139 171.500 0.001 1 39 127
+    i 4.182 171.500 0.001 1 37 127
+    i 8.138 171.500 0.001 1 49 127
     i 9.626 171.500 0.001 1 49 127
-    i 8.179 171.500 0.001 1 49 127
+    i 7.135 171.500 0.001 1 39 127
     i -11.253 171.523 0
     i 11.254 171.523 -1.000 1 43 89
     i 9.627 171.562 0.001 1 49 127
+    i 8.139 171.624 0.001 1 49 127
     i 9.628 171.624 0.001 1 49 127
-    i 8.180 171.624 0.001 1 49 127
     i 9.629 171.687 0.001 1 49 127
     i 9.630 171.749 0.001 1 49 127
-    i 5.109 171.749 0.001 1 37 127
-    i 8.181 171.749 0.001 1 49 127
+    i 8.140 171.749 0.001 1 49 127
     i 6.109 171.749 0.001 1 37 127
+    i 5.109 171.749 0.001 1 37 127
     i 9.631 171.812 0.001 1 49 127
+    i 8.141 171.874 0.001 1 49 113
     i 9.632 171.874 0.001 1 49 127
-    i 8.182 171.874 0.001 1 49 113
     i 9.633 171.937 0.001 1 49 127
     i 11.255 171.996 -1.000 1 41 97
     i -11.254 171.997 0
-    i 9.634 171.999 0.001 1 49 127
-    i 8.183 171.999 0.001 1 49 127
-    i -10.177 171.999 0
-    i -10.178 171.999 0
-    i 4.188 171.999 0.001 1 37 127
-    i 5.110 171.999 0.001 1 37 127
+    i 4.183 171.999 0.001 1 37 127
     i 6.110 171.999 0.001 1 37 127
+    i 8.142 171.999 0.001 1 49 127
+    i -10.173 171.999 0
+    i -10.174 171.999 0
+    i 9.634 171.999 0.001 1 49 127
+    i 5.110 171.999 0.001 1 37 127
     i 9.635 172.061 0.001 1 49 127
-    i 8.184 172.124 0.001 1 49 127
     i 9.636 172.124 0.001 1 49 127
+    i 8.143 172.124 0.001 1 49 127
     i 9.637 172.186 0.001 1 49 127
+    i 8.144 172.250 0.001 1 49 127
     i 9.638 172.250 0.001 1 49 127
-    i 8.185 172.250 0.001 1 49 127
     i 9.639 172.312 0.001 1 49 127
+    i 8.145 172.375 0.001 1 49 127
     i 9.640 172.375 0.001 1 49 127
-    i 8.186 172.375 0.001 1 49 127
     i 9.641 172.437 0.001 1 49 127
-    i 4.189 172.500 0.001 1 37 127
+    i 4.184 172.500 0.001 1 37 127
+    i 7.136 172.500 0.001 1 39 127
+    i 8.146 172.500 0.001 1 49 127
     i 9.642 172.500 0.001 1 49 127
-    i 7.140 172.500 0.001 1 39 127
-    i 8.187 172.500 0.001 1 49 127
     i 9.643 172.562 0.001 1 49 127
-    i 8.188 172.624 0.001 1 49 127
+    i 8.147 172.624 0.001 1 49 127
     i 9.644 172.624 0.001 1 49 127
     i 9.645 172.687 0.001 1 49 127
-    i 8.189 172.749 0.001 1 49 127
+    i 8.148 172.749 0.001 1 49 127
     i 9.646 172.749 0.001 1 49 127
     i -11.255 172.756 0
     i 11.256 172.759 -1.000 1 38 80
     i 9.647 172.812 0.001 1 49 127
+    i 8.149 172.874 0.001 1 49 127
     i 9.648 172.874 0.001 1 49 127
-    i 8.190 172.874 0.001 1 49 127
     i 9.649 172.936 0.001 1 49 127
-    i 4.190 172.999 0.001 1 37 127
-    i 8.191 172.999 0.001 1 49 127
+    i 4.185 172.999 0.001 1 37 127
+    i 8.150 172.999 0.001 1 49 127
+    i 10.175 172.999 -1.000 1 72 127
+    i 10.176 172.999 -1.000 1 76 127
     i 9.650 172.999 0.001 1 49 127
-    i 10.179 172.999 -1.000 1 72 127
-    i 10.180 172.999 -1.000 1 76 127
     i 9.651 173.061 0.001 1 49 127
+    i 8.151 173.124 0.001 1 49 127
     i 9.652 173.124 0.001 1 49 127
-    i 8.192 173.124 0.001 1 49 127
     i 9.653 173.187 0.001 1 49 127
     i 11.257 173.205 -1.000 1 33 79
     i -11.256 173.230 0
+    i 8.152 173.250 0.001 1 49 127
     i 9.654 173.250 0.001 1 49 127
-    i 8.193 173.250 0.001 1 49 127
     i 9.655 173.312 0.001 1 49 127
-    i 8.194 173.375 0.001 1 49 127
+    i 8.153 173.375 0.001 1 49 127
     i 9.656 173.375 0.001 1 49 127
     i 9.657 173.437 0.001 1 49 127
-    i 7.141 173.500 0.001 1 39 127
-    i 8.195 173.500 0.001 1 49 127
     i 9.658 173.500 0.001 1 49 127
-    i 4.191 173.500 0.001 1 37 127
+    i 8.154 173.500 0.001 1 49 127
     i 11.258 173.507 -1.000 1 36 89
+    i 4.186 173.500 0.001 1 37 127
+    i -15.042 173.500 0
+    i 7.137 173.500 0.001 1 39 127
     i -11.257 173.508 0
     i 9.659 173.562 0.001 1 49 127
     i 9.660 173.624 0.001 1 49 127
-    i 8.196 173.624 0.001 1 49 127
+    i 8.155 173.624 0.001 1 49 127
     i 9.661 173.687 0.001 1 49 127
     i 5.111 173.749 0.001 1 37 127
     i 6.111 173.749 0.001 1 37 127
     i 9.662 173.749 0.001 1 49 127
-    i 8.197 173.749 0.001 1 49 127
+    i 8.156 173.749 0.001 1 49 127
     i 9.663 173.812 0.001 1 49 127
+    i 8.157 173.874 0.001 1 49 113
     i 9.664 173.874 0.001 1 49 127
-    i 8.198 173.874 0.001 1 49 113
     i 9.665 173.936 0.001 1 49 127
+    i 15.043 173.976 -1.000 1 53 80
+    i 14.061 173.984 -1.000 1 65 94
+    i 14.062 173.990 -1.000 1 62 78
+    i 9.666 173.999 0.001 1 49 127
+    i -10.175 173.999 0
+    i -10.176 173.999 0
+    i 13.205 173.999 -1.000 1 91 127
+    i -11.258 173.999 0
+    i 4.187 173.999 0.001 1 37 127
+    i 11.259 173.999 -1.000 1 38 81
     i 6.112 173.999 0.001 1 37 127
     i 5.112 173.999 0.001 1 37 127
-    i 8.199 173.999 0.001 1 49 127
-    i -10.179 173.999 0
-    i 4.192 173.999 0.001 1 37 127
-    i -10.180 173.999 0
-    i -11.258 173.999 0
-    i 11.259 173.999 -1.000 1 38 81
-    i 9.666 173.999 0.001 1 49 127
+    i 8.158 173.999 0.001 1 49 127
+    i -14.059 174.044 0
+    i -14.060 174.044 0
     i 9.667 174.061 0.001 1 49 127
-    i 8.200 174.125 0.001 1 49 127
+    i -13.205 174.125 0
+    i 13.206 174.125 -1.000 1 93 127
     i 9.668 174.125 0.001 1 49 127
+    i 8.159 174.125 0.001 1 49 127
     i 9.669 174.187 0.001 1 49 127
+    i -13.206 174.250 0
+    i 8.160 174.250 0.001 1 49 127
+    i 13.207 174.250 -1.000 1 89 127
     i 9.670 174.250 0.001 1 49 127
-    i 8.201 174.250 0.001 1 49 127
     i 9.671 174.312 0.001 1 49 127
-    i 8.202 174.375 0.001 1 49 127
+    i 8.161 174.375 0.001 1 49 127
     i 9.672 174.375 0.001 1 49 127
+    i -13.207 174.375 0
+    i 13.208 174.375 -1.000 1 91 127
     i 9.673 174.437 0.001 1 49 127
-    i 7.142 174.499 0.001 1 39 127
+    i 4.188 174.499 0.001 1 37 127
+    i 7.138 174.499 0.001 1 39 127
     i 9.674 174.499 0.001 1 49 127
-    i 4.193 174.499 0.001 1 37 127
-    i 8.203 174.499 0.001 1 49 127
+    i -13.208 174.499 0
+    i 13.209 174.499 -1.000 1 93 127
+    i 8.162 174.499 0.001 1 49 127
     i 9.675 174.562 0.001 1 49 127
-    i 8.204 174.624 0.001 1 49 127
+    i 8.163 174.624 0.001 1 49 127
     i 9.676 174.624 0.001 1 49 127
+    i -13.209 174.624 0
+    i 13.210 174.624 -1.000 1 89 127
     i 9.677 174.687 0.001 1 49 127
     i 11.260 174.737 -1.000 1 41 89
+    i -13.210 174.749 0
+    i 13.211 174.749 -1.000 1 91 127
     i 9.678 174.749 0.001 1 49 127
-    i 8.205 174.749 0.001 1 49 127
     i -11.259 174.745 0
+    i 8.164 174.749 0.001 1 49 127
     i 9.679 174.811 0.001 1 49 127
+    i -13.211 174.874 0
     i 9.680 174.874 0.001 1 49 127
-    i 8.206 174.874 0.001 1 49 127
+    i 8.165 174.874 0.001 1 49 127
+    i 13.212 174.874 -1.000 1 93 127
     i 9.681 174.936 0.001 1 49 127
+    i 10.177 174.999 -1.000 1 72 127
     i 9.682 174.999 0.001 1 49 127
-    i 8.207 174.999 0.001 1 49 127
-    i 10.181 174.999 -1.000 1 72 127
-    i 4.194 174.999 0.001 1 37 127
-    i 10.182 174.999 -1.000 1 76 127
+    i -13.212 174.999 0
+    i 13.213 174.999 -1.000 1 89 127
+    i 4.189 174.999 0.001 1 37 127
+    i 10.178 174.999 -1.000 1 76 127
+    i 8.166 174.999 0.001 1 49 127
     i 9.683 175.062 0.001 1 49 127
+    i -13.213 175.125 0
+    i 13.214 175.125 -1.000 1 91 127
     i 9.684 175.125 0.001 1 49 127
-    i 8.208 175.125 0.001 1 49 127
+    i 8.167 175.125 0.001 1 49 127
     i 9.685 175.187 0.001 1 49 127
-    i 8.209 175.250 0.001 1 49 127
-    i 9.686 175.250 0.001 1 49 127
+    i 8.168 175.250 0.001 1 49 127
     i 11.261 175.254 -1.000 1 38 68
+    i -13.214 175.250 0
+    i 13.215 175.250 -1.000 1 93 127
+    i 9.686 175.250 0.001 1 49 127
     i -11.260 175.260 0
     i 9.687 175.312 0.001 1 49 127
-    i 8.210 175.375 0.001 1 49 127
+    i 8.169 175.375 0.001 1 49 127
     i 9.688 175.375 0.001 1 49 127
+    i -13.215 175.375 0
+    i 13.216 175.375 -1.000 1 89 127
     i 9.689 175.437 0.001 1 49 127
-    i 7.143 175.499 0.001 1 39 127
-    i 8.211 175.499 0.001 1 49 127
+    i 4.190 175.499 0.001 1 37 127
+    i 8.170 175.499 0.001 1 49 127
     i 9.690 175.499 0.001 1 49 127
-    i 4.195 175.499 0.001 1 37 127
     i 11.262 175.501 -1.000 1 41 78
+    i 7.139 175.499 0.001 1 39 127
+    i -13.216 175.499 0
+    i 13.217 175.499 -1.000 1 91 127
     i -11.261 175.509 0
     i 9.691 175.562 0.001 1 49 127
+    i -13.217 175.624 0
     i 9.692 175.624 0.001 1 49 127
-    i 8.212 175.624 0.001 1 49 127
+    i 8.171 175.624 0.001 1 49 127
+    i 13.218 175.624 -1.000 1 93 127
     i 9.693 175.687 0.001 1 49 127
-    i 9.694 175.749 0.001 1 49 127
     i 5.113 175.749 0.001 1 37 127
-    i 8.213 175.749 0.001 1 49 127
     i 6.113 175.749 0.001 1 37 127
+    i 8.172 175.749 0.001 1 49 127
+    i 9.694 175.749 0.001 1 49 127
+    i -13.218 175.749 0
+    i 13.219 175.749 -1.000 1 89 127
     i 9.695 175.811 0.001 1 49 127
-    i 8.214 175.874 0.001 1 49 113
+    i 8.173 175.874 0.001 1 49 113
     i 9.696 175.874 0.001 1 49 127
+    i -13.219 175.874 0
+    i 13.220 175.874 -1.000 1 91 127
     i 9.697 175.936 0.001 1 49 127
-    i 4.196 176.000 0.001 1 37 127
-    i 6.114 176.000 0.001 1 37 127
-    i 5.114 176.000 0.001 1 37 127
+    i 15.044 175.961 -1.000 1 55 103
+    i -15.043 175.981 0
+    i 14.063 175.983 -1.000 1 64 85
+    i 14.064 175.984 -1.000 1 67 78
     i 9.698 176.000 0.001 1 49 127
-    i -10.181 176.000 0
-    i 8.215 176.000 0.001 1 49 127
-    i -10.182 176.000 0
+    i 8.174 176.000 0.001 1 49 127
+    i -10.177 176.000 0
+    i -10.178 176.000 0
+    i -13.220 176.000 0
+    i 13.221 176.000 -1.000 1 93 127
+    i 5.114 176.000 0.001 1 37 127
+    i 4.191 176.000 0.001 1 37 127
+    i 6.114 176.000 0.001 1 37 127
     i 11.263 176.012 -1.000 1 38 78
     i -11.262 176.030 0
+    i -14.061 176.045 0
+    i -14.062 176.045 0
     i 9.699 176.062 0.001 1 49 127
-    i 8.216 176.125 0.001 1 49 127
+    i 8.175 176.125 0.001 1 49 127
+    i -13.221 176.125 0
     i 9.700 176.125 0.001 1 49 127
     i 9.701 176.187 0.001 1 49 127
     i 9.702 176.250 0.001 1 49 127
-    i 8.217 176.250 0.001 1 49 127
+    i 8.176 176.250 0.001 1 49 127
     i 9.703 176.312 0.001 1 49 127
-    i 8.218 176.374 0.001 1 49 127
     i 9.704 176.374 0.001 1 49 127
+    i 8.177 176.374 0.001 1 49 127
     i 9.705 176.437 0.001 1 49 127
-    i 4.197 176.499 0.001 1 37 127
-    i 7.144 176.499 0.001 1 39 127
+    i 4.192 176.499 0.001 1 37 127
+    i 7.140 176.499 0.001 1 39 127
+    i 8.178 176.499 0.001 1 49 127
     i 9.706 176.499 0.001 1 49 127
-    i 8.219 176.499 0.001 1 49 127
     i 9.707 176.562 0.001 1 49 127
-    i 8.220 176.624 0.001 1 49 127
+    i 8.179 176.624 0.001 1 49 127
     i 9.708 176.624 0.001 1 49 127
     i 9.709 176.686 0.001 1 49 127
+    i 8.180 176.749 0.001 1 49 127
     i 9.710 176.749 0.001 1 49 127
-    i 8.221 176.749 0.001 1 49 127
     i 11.264 176.760 -1.000 1 36 86
     i -11.263 176.768 0
     i 9.711 176.811 0.001 1 49 127
+    i 8.181 176.874 0.001 1 49 127
     i 9.712 176.874 0.001 1 49 127
-    i 8.222 176.874 0.001 1 49 127
     i 9.713 176.938 0.001 1 49 127
-    i 4.198 177.000 0.001 1 37 127
-    i 8.223 177.000 0.001 1 49 127
+    i 10.179 177.000 -1.000 1 72 127
+    i 4.193 177.000 0.001 1 37 127
+    i 10.180 177.000 -1.000 1 76 127
+    i 8.182 177.000 0.001 1 49 127
     i 9.714 177.000 0.001 1 49 127
-    i 10.183 177.000 -1.000 1 72 127
-    i 10.184 177.000 -1.000 1 76 127
     i 9.715 177.062 0.001 1 49 127
-    i 8.224 177.125 0.001 1 49 127
     i 9.716 177.125 0.001 1 49 127
+    i 8.183 177.125 0.001 1 49 127
     i 9.717 177.187 0.001 1 49 127
+    i 8.184 177.250 0.001 1 49 127
     i 9.718 177.250 0.001 1 49 127
-    i 8.225 177.250 0.001 1 49 127
     i -11.264 177.258 0
     i 11.265 177.258 -1.000 1 33 74
     i 9.719 177.312 0.001 1 49 127
     i 9.720 177.374 0.001 1 49 127
-    i 8.226 177.374 0.001 1 49 127
+    i 8.185 177.374 0.001 1 49 127
     i 9.721 177.437 0.001 1 49 127
-    i 8.227 177.499 0.001 1 49 127
-    i 7.145 177.499 0.001 1 39 127
-    i 4.199 177.499 0.001 1 37 127
+    i 7.141 177.499 0.001 1 39 127
+    i 8.186 177.499 0.001 1 49 127
     i 9.722 177.499 0.001 1 49 127
+    i 4.194 177.499 0.001 1 37 127
     i 11.266 177.508 -1.000 1 36 91
     i -11.265 177.518 0
     i 9.723 177.562 0.001 1 49 127
-    i 8.228 177.624 0.001 1 49 127
+    i 8.187 177.624 0.001 1 49 127
     i 9.724 177.624 0.001 1 49 127
     i 9.725 177.686 0.001 1 49 127
-    i 9.726 177.749 0.001 1 49 127
-    i 6.115 177.749 0.001 1 37 127
+    i 8.188 177.749 0.001 1 49 127
     i 5.115 177.749 0.001 1 37 127
-    i 8.229 177.749 0.001 1 49 127
+    i 6.115 177.749 0.001 1 37 127
+    i 9.726 177.749 0.001 1 49 127
     i 9.727 177.811 0.001 1 49 127
     i 9.728 177.875 0.001 1 49 127
-    i 8.230 177.875 0.001 1 49 113
+    i 8.189 177.875 0.001 1 49 113
     i 9.729 177.937 0.001 1 49 127
-    i 9.730 178.000 0.001 1 49 127
-    i -10.183 178.000 0
-    i -11.266 178.000 0
-    i -10.184 178.000 0
-    i 11.267 178.000 -1.000 1 38 83
-    i 4.200 178.000 0.001 1 37 127
+    i 15.045 177.949 -1.000 1 57 99
+    i -15.044 177.964 0
+    i 14.065 177.974 -1.000 1 69 79
+    i 14.066 177.975 -1.000 1 65 90
+    i 4.195 178.000 0.001 1 37 127
+    i 8.190 178.000 0.001 1 49 127
     i 6.116 178.000 0.001 1 37 127
-    i 8.231 178.000 0.001 1 49 127
     i 5.116 178.000 0.001 1 37 127
+    i 9.730 178.000 0.001 1 49 127
+    i -11.266 178.000 0
+    i 11.267 178.000 -1.000 1 38 83
+    i -10.179 178.000 0
+    i -10.180 178.000 0
+    i -14.063 178.017 0
+    i -14.064 178.017 0
     i 9.731 178.062 0.001 1 49 127
     i 9.732 178.125 0.001 1 49 127
-    i 8.232 178.125 0.001 1 49 127
+    i 8.191 178.125 0.001 1 49 127
     i 9.733 178.187 0.001 1 49 127
-    i 8.233 178.249 0.001 1 49 127
     i 9.734 178.249 0.001 1 49 127
+    i 8.192 178.249 0.001 1 49 127
     i 9.735 178.312 0.001 1 49 127
-    i 8.234 178.374 0.001 1 49 127
+    i 8.193 178.374 0.001 1 49 127
     i 9.736 178.374 0.001 1 49 127
     i 9.737 178.437 0.001 1 49 127
-    i 4.201 178.499 0.001 1 37 127
+    i 4.196 178.499 0.001 1 37 127
     i 9.738 178.499 0.001 1 49 127
-    i 8.235 178.499 0.001 1 49 127
-    i 7.146 178.499 0.001 1 39 127
+    i 8.194 178.499 0.001 1 49 127
+    i 7.142 178.499 0.001 1 39 127
     i 9.739 178.561 0.001 1 49 127
-    i 8.236 178.624 0.001 1 49 127
     i 9.740 178.624 0.001 1 49 127
+    i 8.195 178.624 0.001 1 49 127
     i 9.741 178.686 0.001 1 49 127
     i 11.268 178.739 -1.000 1 41 103
     i 9.742 178.749 0.001 1 49 127
-    i 8.237 178.749 0.001 1 49 127
+    i 8.196 178.749 0.001 1 49 127
     i -11.267 178.756 0
     i 9.743 178.811 0.001 1 49 127
+    i 8.197 178.875 0.001 1 49 127
     i 9.744 178.875 0.001 1 49 127
-    i 8.238 178.875 0.001 1 49 127
     i 9.745 178.937 0.001 1 49 127
+    i 8.198 179.000 0.001 1 49 127
     i 9.746 179.000 0.001 1 49 127
-    i 4.202 179.000 0.001 1 37 127
-    i 8.239 179.000 0.001 1 49 127
-    i 10.185 179.000 -1.000 1 72 127
-    i 10.186 179.000 -1.000 1 76 127
+    i 10.181 179.000 -1.000 1 72 127
+    i 10.182 179.000 -1.000 1 76 127
+    i 4.197 179.000 0.001 1 37 127
     i 9.747 179.062 0.001 1 49 127
+    i 8.199 179.125 0.001 1 49 127
     i 9.748 179.125 0.001 1 49 127
-    i 8.240 179.125 0.001 1 49 127
     i 9.749 179.187 0.001 1 49 127
     i 11.269 179.223 -1.000 1 44 76
     i -11.268 179.235 0
+    i 8.200 179.249 0.001 1 49 127
     i 9.750 179.249 0.001 1 49 127
-    i 8.241 179.249 0.001 1 49 127
     i 9.751 179.312 0.001 1 49 127
     i 9.752 179.374 0.001 1 49 127
-    i 8.242 179.374 0.001 1 49 127
+    i 8.201 179.374 0.001 1 49 127
     i 9.753 179.437 0.001 1 49 127
     i 9.754 179.499 0.001 1 49 127
-    i 7.147 179.499 0.001 1 39 127
-    i 4.203 179.499 0.001 1 37 127
-    i 8.243 179.499 0.001 1 49 127
+    i 8.202 179.499 0.001 1 49 127
+    i 7.143 179.499 0.001 1 39 127
+    i 4.198 179.499 0.001 1 37 127
     i -11.269 179.522 0
     i 11.270 179.524 -1.000 1 43 89
     i 9.755 179.561 0.001 1 49 127
-    i 8.244 179.624 0.001 1 49 127
+    i 8.203 179.624 0.001 1 49 127
     i 9.756 179.624 0.001 1 49 127
     i 9.757 179.686 0.001 1 49 127
-    i 5.117 179.749 0.001 1 37 127
-    i 8.245 179.749 0.001 1 49 127
-    i 6.117 179.749 0.001 1 37 127
     i 9.758 179.749 0.001 1 49 127
+    i 5.117 179.749 0.001 1 37 127
+    i 6.117 179.749 0.001 1 37 127
+    i 8.204 179.749 0.001 1 49 127
     i 9.759 179.812 0.001 1 49 127
-    i 8.246 179.875 0.001 1 49 113
+    i 8.205 179.875 0.001 1 49 113
     i 9.760 179.875 0.001 1 49 127
     i 9.761 179.937 0.001 1 49 127
+    i 15.046 179.950 -1.000 1 60 78
+    i -15.045 179.959 0
+    i 14.067 179.984 -1.000 1 69 92
+    i 14.068 179.985 -1.000 1 72 81
+    i -14.065 179.991 0
+    i -14.066 179.991 0
     i 11.271 179.997 -1.000 1 41 97
-    i -11.270 179.998 0
-    i 4.204 180.000 0.001 1 37 127
-    i 5.118 180.000 0.001 1 37 127
-    i 8.247 180.000 0.001 1 49 127
+    i 4.199 180.000 0.001 1 37 127
     i 6.118 180.000 0.001 1 37 127
+    i 5.118 180.000 0.001 1 37 127
+    i 8.206 180.000 0.001 1 49 127
     i 9.762 180.000 0.001 1 49 127
-    i -10.185 180.000 0
-    i -10.186 180.000 0
+    i -11.270 179.998 0
+    i -10.181 180.000 0
+    i -10.182 180.000 0
     i 9.763 180.062 0.001 1 49 127
     i 9.764 180.124 0.001 1 49 127
-    i 8.248 180.124 0.001 1 49 127
+    i 8.207 180.124 0.001 1 49 127
     i 9.765 180.187 0.001 1 49 127
-    i 8.249 180.249 0.001 1 49 127
+    i 8.208 180.249 0.001 1 49 127
     i 9.766 180.249 0.001 1 49 127
     i 9.767 180.312 0.001 1 49 127
     i 9.768 180.374 0.001 1 49 127
-    i 8.250 180.374 0.001 1 49 127
+    i 8.209 180.374 0.001 1 49 127
     i 9.769 180.436 0.001 1 49 127
+    i 7.144 180.499 0.001 1 39 127
+    i 8.210 180.499 0.001 1 49 127
     i 9.770 180.499 0.001 1 49 127
-    i 7.148 180.499 0.001 1 39 127
-    i 8.251 180.499 0.001 1 49 127
-    i 4.205 180.499 0.001 1 37 127
+    i 4.200 180.499 0.001 1 37 127
     i 9.771 180.561 0.001 1 49 127
+    i 8.211 180.624 0.001 1 49 127
     i 9.772 180.624 0.001 1 49 127
-    i 8.252 180.624 0.001 1 49 127
     i 9.773 180.686 0.001 1 49 127
-    i 8.253 180.750 0.001 1 49 127
+    i 8.212 180.750 0.001 1 49 127
     i 9.774 180.750 0.001 1 49 127
     i -11.271 180.756 0
     i 11.272 180.759 -1.000 1 38 80
     i 9.775 180.812 0.001 1 49 127
+    i -15.046 180.879 0
     i 9.776 180.875 0.001 1 49 127
-    i 8.254 180.875 0.001 1 49 127
+    i 8.213 180.875 0.001 1 49 127
+    i 15.047 180.928 -1.000 1 55 79
     i 9.777 180.937 0.001 1 49 127
-    i 4.206 181.000 0.001 1 37 127
-    i 8.255 181.000 0.001 1 49 127
+    i 14.069 180.988 -1.000 1 64 78
+    i 14.070 180.989 -1.000 1 60 74
+    i 4.201 181.000 0.001 1 37 127
     i 9.778 181.000 0.001 1 49 127
-    i 10.187 181.000 -1.000 1 72 127
-    i 10.188 181.000 -1.000 1 76 127
+    i 8.214 181.000 0.001 1 49 127
+    i 10.183 181.000 -1.000 1 72 127
+    i 10.184 181.000 -1.000 1 76 127
     i 9.779 181.062 0.001 1 49 127
-    i 8.256 181.124 0.001 1 49 127
+    i 8.215 181.124 0.001 1 49 127
     i 9.780 181.124 0.001 1 49 127
     i 9.781 181.187 0.001 1 49 127
     i 11.273 181.206 -1.000 1 33 79
     i -11.272 181.229 0
-    i 8.257 181.249 0.001 1 49 127
     i 9.782 181.249 0.001 1 49 127
+    i 8.216 181.249 0.001 1 49 127
     i 9.783 181.312 0.001 1 49 127
-    i 8.258 181.374 0.001 1 49 127
+    i 8.217 181.374 0.001 1 49 127
     i 9.784 181.374 0.001 1 49 127
     i 9.785 181.436 0.001 1 49 127
-    i 7.149 181.499 0.001 1 39 127
-    i 4.207 181.499 0.001 1 37 127
-    i 8.259 181.499 0.001 1 49 127
     i 9.786 181.499 0.001 1 49 127
     i 11.274 181.506 -1.000 1 36 89
+    i 4.202 181.499 0.001 1 37 127
+    i 7.145 181.499 0.001 1 39 127
+    i 8.218 181.499 0.001 1 49 127
     i -11.273 181.507 0
     i 9.787 181.561 0.001 1 49 127
-    i 8.260 181.624 0.001 1 49 127
     i 9.788 181.624 0.001 1 49 127
+    i 8.219 181.624 0.001 1 49 127
     i 9.789 181.687 0.001 1 49 127
-    i 8.261 181.750 0.001 1 49 127
+    i 8.220 181.750 0.001 1 49 127
     i 9.790 181.750 0.001 1 49 127
     i 6.119 181.750 0.001 1 37 127
     i 5.119 181.750 0.001 1 37 127
     i 9.791 181.812 0.001 1 49 127
-    i 8.262 181.875 0.001 1 49 113
     i 9.792 181.875 0.001 1 49 127
+    i 8.221 181.875 0.001 1 49 113
+    i 15.048 181.898 -1.000 1 57 84
     i 9.793 181.937 0.001 1 49 127
-    i 5.120 181.999 0.001 1 37 127
+    i -15.047 181.982 0
+    i 14.071 181.989 -1.000 1 65 76
+    i 14.072 181.991 -1.000 1 62 78
+    i 8.222 181.999 0.001 1 49 127
     i 9.794 181.999 0.001 1 49 127
-    i 6.120 181.999 0.001 1 37 127
-    i 4.208 181.999 0.001 1 37 127
-    i 8.263 181.999 0.001 1 49 127
-    i -10.187 181.999 0
-    i -10.188 181.999 0
+    i -10.183 181.999 0
     i -11.274 181.999 0
+    i -10.184 181.999 0
+    i 13.222 181.999 -1.000 1 91 127
     i 11.275 181.999 -1.000 1 38 81
+    i 4.203 181.999 0.001 1 37 127
+    i 5.120 181.999 0.001 1 37 127
+    i 6.120 181.999 0.001 1 37 127
     i 9.795 182.062 0.001 1 49 127
+    i -13.222 182.124 0
+    i 13.223 182.124 -1.000 1 93 127
+    i -14.067 182.132 0
+    i 8.223 182.124 0.001 1 49 127
+    i -14.068 182.132 0
+    i -14.069 182.132 0
+    i -14.070 182.132 0
     i 9.796 182.124 0.001 1 49 127
-    i 8.264 182.124 0.001 1 49 127
     i 9.797 182.187 0.001 1 49 127
+    i -13.223 182.249 0
+    i 13.224 182.249 -1.000 1 89 127
     i 9.798 182.249 0.001 1 49 127
-    i 8.265 182.249 0.001 1 49 127
+    i 8.224 182.249 0.001 1 49 127
     i 9.799 182.311 0.001 1 49 127
-    i 8.266 182.374 0.001 1 49 127
+    i -13.224 182.374 0
+    i 13.225 182.374 -1.000 1 91 127
     i 9.800 182.374 0.001 1 49 127
+    i 8.225 182.374 0.001 1 49 127
     i 9.801 182.436 0.001 1 49 127
-    i 8.267 182.499 0.001 1 49 127
-    i 7.150 182.499 0.001 1 39 127
+    i 4.204 182.499 0.001 1 37 127
     i 9.802 182.499 0.001 1 49 127
-    i 4.209 182.499 0.001 1 37 127
+    i 7.146 182.499 0.001 1 39 127
+    i 8.226 182.499 0.001 1 49 127
+    i -13.225 182.499 0
+    i 13.226 182.499 -1.000 1 93 127
     i 9.803 182.561 0.001 1 49 127
-    i 8.268 182.625 0.001 1 49 127
     i 9.804 182.625 0.001 1 49 127
+    i 8.227 182.625 0.001 1 49 127
+    i -13.226 182.625 0
+    i 13.227 182.625 -1.000 1 89 127
     i 9.805 182.687 0.001 1 49 127
     i 11.276 182.737 -1.000 1 41 89
     i -11.275 182.744 0
+    i 8.228 182.750 0.001 1 49 127
     i 9.806 182.750 0.001 1 49 127
-    i 8.269 182.750 0.001 1 49 127
+    i -13.227 182.750 0
+    i 13.228 182.750 -1.000 1 91 127
     i 9.807 182.812 0.001 1 49 127
+    i -13.228 182.875 0
+    i 13.229 182.875 -1.000 1 93 127
+    i 8.229 182.875 0.001 1 49 127
     i 9.808 182.875 0.001 1 49 127
-    i 8.270 182.875 0.001 1 49 127
     i 9.809 182.937 0.001 1 49 127
-    i 4.210 182.999 0.001 1 37 127
+    i 4.205 182.999 0.001 1 37 127
+    i 8.230 182.999 0.001 1 49 127
     i 9.810 182.999 0.001 1 49 127
-    i 8.271 182.999 0.001 1 49 127
-    i 10.189 182.999 -1.000 1 72 127
-    i 10.190 182.999 -1.000 1 76 127
+    i 10.185 182.999 -1.000 1 72 127
+    i 10.186 182.999 -1.000 1 76 127
+    i -13.229 182.999 0
+    i 13.230 182.999 -1.000 1 89 127
     i 9.811 183.062 0.001 1 49 127
-    i 8.272 183.124 0.001 1 49 127
+    i 8.231 183.124 0.001 1 49 127
     i 9.812 183.124 0.001 1 49 127
+    i -13.230 183.124 0
+    i 13.231 183.124 -1.000 1 91 127
     i 9.813 183.187 0.001 1 49 127
-    i 8.273 183.249 0.001 1 49 127
-    i 9.814 183.249 0.001 1 49 127
+    i 8.232 183.249 0.001 1 49 127
+    i -13.231 183.249 0
     i 11.277 183.253 -1.000 1 38 68
+    i 13.232 183.249 -1.000 1 93 127
+    i 9.814 183.249 0.001 1 49 127
     i -11.276 183.259 0
     i 9.815 183.311 0.001 1 49 127
-    i 8.274 183.374 0.001 1 49 127
+    i 8.233 183.374 0.001 1 49 127
+    i -13.232 183.374 0
     i 9.816 183.374 0.001 1 49 127
+    i 13.233 183.374 -1.000 1 89 127
     i 9.817 183.436 0.001 1 49 127
-    i 7.151 183.499 0.001 1 39 127
-    i 8.275 183.499 0.001 1 49 127
-    i 4.211 183.499 0.001 1 37 127
+    i 8.234 183.499 0.001 1 49 127
     i 9.818 183.499 0.001 1 49 127
+    i 7.147 183.499 0.001 1 39 127
     i 11.278 183.501 -1.000 1 41 78
+    i -13.233 183.499 0
+    i 13.234 183.499 -1.000 1 91 127
+    i 4.206 183.499 0.001 1 37 127
     i -11.277 183.510 0
     i 9.819 183.562 0.001 1 49 127
-    i 8.276 183.625 0.001 1 49 127
+    i 8.235 183.625 0.001 1 49 127
     i 9.820 183.625 0.001 1 49 127
+    i -13.234 183.625 0
+    i 13.235 183.625 -1.000 1 93 127
     i 9.821 183.687 0.001 1 49 127
-    i 5.121 183.750 0.001 1 37 127
-    i 8.277 183.750 0.001 1 49 127
     i 9.822 183.750 0.001 1 49 127
+    i -13.235 183.750 0
     i 6.121 183.750 0.001 1 37 127
+    i 13.236 183.750 -1.000 1 89 127
+    i 5.121 183.750 0.001 1 37 127
+    i 8.236 183.750 0.001 1 49 127
     i 9.823 183.812 0.001 1 49 127
-    i 8.278 183.874 0.001 1 49 113
+    i -13.236 183.874 0
+    i 13.237 183.874 -1.000 1 91 127
+    i 8.237 183.874 0.001 1 49 113
     i 9.824 183.874 0.001 1 49 127
     i 9.825 183.937 0.001 1 49 127
+    i -13.237 183.999 0
+    i 13.238 183.999 -1.000 1 93 127
+    i -10.185 183.999 0
+    i 4.207 183.999 0.001 1 37 127
+    i -10.186 183.999 0
+    i 8.238 183.999 0.001 1 49 127
+    i 6.122 183.999 0.001 1 37 127
     i 5.122 183.999 0.001 1 37 127
     i 9.826 183.999 0.001 1 49 127
-    i 6.122 183.999 0.001 1 37 127
-    i -10.189 183.999 0
-    i 8.279 183.999 0.001 1 49 127
-    i 4.212 183.999 0.001 1 37 127
-    i -10.190 183.999 0
     i 11.279 184.012 -1.000 1 38 78
     i -11.278 184.030 0
     i 9.827 184.062 0.001 1 49 127
+    i -13.238 184.124 0
+    i 8.239 184.124 0.001 1 49 127
     i 9.828 184.124 0.001 1 49 127
-    i 8.280 184.124 0.001 1 49 127
     i 9.829 184.186 0.001 1 49 127
-    i 8.281 184.249 0.001 1 49 127
+    i 8.240 184.249 0.001 1 49 127
     i 9.830 184.249 0.001 1 49 127
     i 9.831 184.311 0.001 1 49 127
     i 9.832 184.374 0.001 1 49 127
-    i 8.282 184.374 0.001 1 49 127
+    i 8.241 184.374 0.001 1 49 127
     i 9.833 184.436 0.001 1 49 127
+    i 7.148 184.500 0.001 1 39 127
     i 9.834 184.500 0.001 1 49 127
-    i 4.213 184.500 0.001 1 37 127
-    i 8.283 184.500 0.001 1 49 127
-    i 7.152 184.500 0.001 1 39 127
+    i 8.242 184.500 0.001 1 49 127
+    i 4.208 184.500 0.001 1 37 127
     i 9.835 184.562 0.001 1 49 127
     i 9.836 184.625 0.001 1 49 127
-    i 8.284 184.625 0.001 1 49 127
+    i 8.243 184.625 0.001 1 49 127
     i 9.837 184.687 0.001 1 49 127
+    i 8.244 184.750 0.001 1 49 127
     i 9.838 184.750 0.001 1 49 127
-    i 8.285 184.750 0.001 1 49 127
     i 11.280 184.760 -1.000 1 36 86
     i -11.279 184.767 0
     i 9.839 184.812 0.001 1 49 127
-    i 8.286 184.874 0.001 1 49 127
     i 9.840 184.874 0.001 1 49 127
+    i 8.245 184.874 0.001 1 49 127
     i 9.841 184.937 0.001 1 49 127
-    i 8.287 184.999 0.001 1 49 127
     i 9.842 184.999 0.001 1 49 127
-    i 10.191 184.999 -1.000 1 72 127
-    i 10.192 184.999 -1.000 1 76 127
-    i 4.214 184.999 0.001 1 37 127
+    i 8.246 184.999 0.001 1 49 127
+    i 10.187 184.999 -1.000 1 72 127
+    i 4.209 184.999 0.001 1 37 127
+    i 10.188 184.999 -1.000 1 76 127
     i 9.843 185.062 0.001 1 49 127
-    i 8.288 185.124 0.001 1 49 127
+    i 8.247 185.124 0.001 1 49 127
     i 9.844 185.124 0.001 1 49 127
     i 9.845 185.186 0.001 1 49 127
+    i 8.248 185.249 0.001 1 49 127
     i 9.846 185.249 0.001 1 49 127
-    i 8.289 185.249 0.001 1 49 127
     i -11.280 185.258 0
     i 11.281 185.259 -1.000 1 33 74
     i 9.847 185.311 0.001 1 49 127
+    i 8.249 185.374 0.001 1 49 127
     i 9.848 185.374 0.001 1 49 127
-    i 8.290 185.374 0.001 1 49 127
     i 9.849 185.437 0.001 1 49 127
-    i 4.215 185.500 0.001 1 37 127
+    i 7.149 185.500 0.001 1 39 127
     i 9.850 185.500 0.001 1 49 127
-    i 8.291 185.500 0.001 1 49 127
-    i 7.153 185.500 0.001 1 39 127
+    i 8.250 185.500 0.001 1 49 127
+    i 4.210 185.500 0.001 1 37 127
     i 11.282 185.509 -1.000 1 36 91
     i -11.281 185.517 0
     i 9.851 185.562 0.001 1 49 127
-    i 8.292 185.625 0.001 1 49 127
+    i 8.251 185.625 0.001 1 49 127
     i 9.852 185.625 0.001 1 49 127
     i 9.853 185.687 0.001 1 49 127
-    i 9.854 185.749 0.001 1 49 127
     i 6.123 185.749 0.001 1 37 127
     i 5.123 185.749 0.001 1 37 127
-    i 8.293 185.749 0.001 1 49 127
+    i 9.854 185.749 0.001 1 49 127
+    i 8.252 185.749 0.001 1 49 127
     i 9.855 185.812 0.001 1 49 127
-    i 8.294 185.874 0.001 1 49 113
+    i 8.253 185.874 0.001 1 49 113
     i 9.856 185.874 0.001 1 49 127
     i 9.857 185.937 0.001 1 49 127
-    i 6.124 185.999 0.001 1 37 127
-    i 8.295 185.999 0.001 1 49 127
-    i 9.858 185.999 0.001 1 49 127
-    i 4.216 185.999 0.001 1 37 127
-    i -10.191 185.999 0
-    i -11.282 185.999 0
+    i 14.073 185.979 -1.000 1 62 66
+    i 14.074 185.980 -1.000 1 65 72
+    i 4.211 185.999 0.001 1 37 127
     i 5.124 185.999 0.001 1 37 127
-    i -10.192 185.999 0
+    i 6.124 185.999 0.001 1 37 127
+    i 8.254 185.999 0.001 1 49 127
+    i 9.858 185.999 0.001 1 49 127
+    i -11.282 185.999 0
+    i -10.187 185.999 0
     i 11.283 185.999 -1.000 1 38 83
+    i -10.188 185.999 0
+    i -14.071 186.056 0
+    i -14.072 186.056 0
     i 9.859 186.061 0.001 1 49 127
     i 9.860 186.124 0.001 1 49 127
-    i 8.296 186.124 0.001 1 49 127
+    i 8.255 186.124 0.001 1 49 127
     i 9.861 186.186 0.001 1 49 127
+    i 8.256 186.249 0.001 1 49 127
     i 9.862 186.249 0.001 1 49 127
-    i 8.297 186.249 0.001 1 49 127
     i 9.863 186.311 0.001 1 49 127
     i 9.864 186.375 0.001 1 49 127
-    i 8.298 186.375 0.001 1 49 127
+    i 8.257 186.375 0.001 1 49 127
     i 9.865 186.437 0.001 1 49 127
+    i 8.258 186.500 0.001 1 49 127
+    i 7.150 186.500 0.001 1 39 127
     i 9.866 186.500 0.001 1 49 127
-    i 7.154 186.500 0.001 1 39 127
-    i 8.299 186.500 0.001 1 49 127
-    i 4.217 186.500 0.001 1 37 127
+    i 4.212 186.500 0.001 1 37 127
     i 9.867 186.562 0.001 1 49 127
     i 9.868 186.625 0.001 1 49 127
-    i 8.300 186.625 0.001 1 49 127
+    i 8.259 186.625 0.001 1 49 127
     i 9.869 186.687 0.001 1 49 127
     i 11.284 186.738 -1.000 1 41 103
-    i 8.301 186.749 0.001 1 49 127
+    i 8.260 186.749 0.001 1 49 127
     i 9.870 186.749 0.001 1 49 127
     i -11.283 186.757 0
     i 9.871 186.812 0.001 1 49 127
+    i 8.261 186.874 0.001 1 49 127
     i 9.872 186.874 0.001 1 49 127
-    i 8.302 186.874 0.001 1 49 127
     i 9.873 186.937 0.001 1 49 127
-    i 8.303 186.999 0.001 1 49 127
+    i 4.213 186.999 0.001 1 37 127
+    i 8.262 186.999 0.001 1 49 127
     i 9.874 186.999 0.001 1 49 127
-    i 10.193 186.999 -1.000 1 72 127
-    i 10.194 186.999 -1.000 1 76 127
-    i 4.218 186.999 0.001 1 37 127
+    i 10.189 186.999 -1.000 1 72 127
+    i 10.190 186.999 -1.000 1 76 127
     i 9.875 187.061 0.001 1 49 127
     i 9.876 187.124 0.001 1 49 127
-    i 8.304 187.124 0.001 1 49 127
+    i 8.263 187.124 0.001 1 49 127
     i 9.877 187.186 0.001 1 49 127
     i 11.285 187.224 -1.000 1 44 76
     i -11.284 187.234 0
-    i 8.305 187.249 0.001 1 49 127
+    i 8.264 187.249 0.001 1 49 127
     i 9.878 187.249 0.001 1 49 127
     i 9.879 187.312 0.001 1 49 127
-    i 8.306 187.375 0.001 1 49 127
+    i 8.265 187.375 0.001 1 49 127
     i 9.880 187.375 0.001 1 49 127
     i 9.881 187.437 0.001 1 49 127
+    i 7.151 187.500 0.001 1 39 127
     i 9.882 187.500 0.001 1 49 127
-    i 4.219 187.500 0.001 1 37 127
-    i 7.155 187.500 0.001 1 39 127
-    i 8.307 187.500 0.001 1 49 127
+    i 4.214 187.500 0.001 1 37 127
+    i 8.266 187.500 0.001 1 49 127
     i -11.285 187.523 0
     i 11.286 187.523 -1.000 1 43 89
     i 9.883 187.562 0.001 1 49 127
-    i 8.308 187.624 0.001 1 49 127
+    i 8.267 187.624 0.001 1 49 127
     i 9.884 187.624 0.001 1 49 127
     i 9.885 187.687 0.001 1 49 127
+    i 8.268 187.749 0.001 1 49 127
     i 9.886 187.749 0.001 1 49 127
     i 5.125 187.749 0.001 1 37 127
     i 6.125 187.749 0.001 1 37 127
-    i 8.309 187.749 0.001 1 49 127
     i 9.887 187.812 0.001 1 49 127
+    i 8.269 187.874 0.001 1 49 113
     i 9.888 187.874 0.001 1 49 127
-    i 8.310 187.874 0.001 1 49 113
     i 9.889 187.937 0.001 1 49 127
     i 11.287 187.996 -1.000 1 41 97
     i 5.126 187.999 0.001 1 37 127
     i 6.126 187.999 0.001 1 37 127
-    i -11.286 187.997 0
-    i 8.311 187.999 0.001 1 49 127
+    i 4.215 187.999 0.001 1 37 127
     i 9.890 187.999 0.001 1 49 127
-    i -10.193 187.999 0
-    i 4.220 187.999 0.001 1 37 127
-    i -10.194 187.999 0
+    i 8.270 187.999 0.001 1 49 127
+    i -10.189 187.999 0
+    i -11.286 187.997 0
+    i -10.190 187.999 0
     i 9.891 188.061 0.001 1 49 127
     i 9.892 188.124 0.001 1 49 127
-    i 8.312 188.124 0.001 1 49 127
+    i 8.271 188.124 0.001 1 49 127
     i 9.893 188.186 0.001 1 49 127
+    i 8.272 188.250 0.001 1 49 127
     i 9.894 188.250 0.001 1 49 127
-    i 8.313 188.250 0.001 1 49 127
     i 9.895 188.312 0.001 1 49 127
+    i 8.273 188.375 0.001 1 49 127
     i 9.896 188.375 0.001 1 49 127
-    i 8.314 188.375 0.001 1 49 127
     i 9.897 188.437 0.001 1 49 127
+    i 8.274 188.500 0.001 1 49 127
+    i 7.152 188.500 0.001 1 39 127
     i 9.898 188.500 0.001 1 49 127
-    i 4.221 188.500 0.001 1 37 127
-    i 8.315 188.500 0.001 1 49 127
-    i 7.156 188.500 0.001 1 39 127
+    i 4.216 188.500 0.001 1 37 127
     i 9.899 188.562 0.001 1 49 127
-    i 8.316 188.624 0.001 1 49 127
+    i 8.275 188.624 0.001 1 49 127
     i 9.900 188.624 0.001 1 49 127
     i 9.901 188.687 0.001 1 49 127
+    i 8.276 188.749 0.001 1 49 127
     i 9.902 188.749 0.001 1 49 127
-    i 8.317 188.749 0.001 1 49 127
     i -11.287 188.756 0
     i 11.288 188.759 -1.000 1 38 80
     i 9.903 188.812 0.001 1 49 127
     i 9.904 188.874 0.001 1 49 127
-    i 8.318 188.874 0.001 1 49 127
+    i 8.277 188.874 0.001 1 49 127
     i 9.905 188.936 0.001 1 49 127
-    i 4.222 188.999 0.001 1 37 127
+    i 10.191 188.999 -1.000 1 72 127
+    i 8.278 188.999 0.001 1 49 127
     i 9.906 188.999 0.001 1 49 127
-    i 10.195 188.999 -1.000 1 72 127
-    i 10.196 188.999 -1.000 1 76 127
-    i 8.319 188.999 0.001 1 49 127
+    i 10.192 188.999 -1.000 1 76 127
+    i 4.217 188.999 0.001 1 37 127
     i 9.907 189.061 0.001 1 49 127
+    i 8.279 189.124 0.001 1 49 127
     i 9.908 189.124 0.001 1 49 127
-    i 8.320 189.124 0.001 1 49 127
     i 9.909 189.187 0.001 1 49 127
     i 11.289 189.205 -1.000 1 33 79
     i -11.288 189.230 0
-    i 8.321 189.250 0.001 1 49 127
     i 9.910 189.250 0.001 1 49 127
+    i 8.280 189.250 0.001 1 49 127
     i 9.911 189.312 0.001 1 49 127
-    i 8.322 189.375 0.001 1 49 127
+    i 8.281 189.375 0.001 1 49 127
     i 9.912 189.375 0.001 1 49 127
     i 9.913 189.437 0.001 1 49 127
-    i 4.223 189.500 0.001 1 37 127
-    i 7.157 189.500 0.001 1 39 127
-    i 8.323 189.500 0.001 1 49 127
+    i 4.218 189.500 0.001 1 37 127
+    i 7.153 189.500 0.001 1 39 127
+    i 8.282 189.500 0.001 1 49 127
     i 9.914 189.500 0.001 1 49 127
     i 11.290 189.507 -1.000 1 36 89
     i -11.289 189.508 0
     i 9.915 189.562 0.001 1 49 127
-    i 8.324 189.624 0.001 1 49 127
+    i 8.283 189.624 0.001 1 49 127
     i 9.916 189.624 0.001 1 49 127
     i 9.917 189.687 0.001 1 49 127
     i 5.127 189.749 0.001 1 37 127
     i 6.127 189.749 0.001 1 37 127
-    i 8.325 189.749 0.001 1 49 127
+    i 8.284 189.749 0.001 1 49 127
     i 9.918 189.749 0.001 1 49 127
     i 9.919 189.812 0.001 1 49 127
-    i 8.326 189.874 0.001 1 49 113
+    i 8.285 189.874 0.001 1 49 113
     i 9.920 189.874 0.001 1 49 127
     i 9.921 189.936 0.001 1 49 127
-    i 6.128 189.999 0.001 1 37 127
+    i 14.075 189.960 -1.000 1 62 70
+    i 14.076 189.971 -1.000 1 65 72
     i 5.128 189.999 0.001 1 37 127
-    i 9.922 189.999 0.001 1 49 127
-    i -10.195 189.999 0
-    i -10.196 189.999 0
+    i 6.128 189.999 0.001 1 37 127
     i -11.290 189.999 0
     i 11.291 189.999 -1.000 1 38 83
+    i -10.191 189.999 0
+    i -10.192 189.999 0
+    i 13.239 189.999 -1.000 1 91 127
+    i 9.922 189.999 0.001 1 49 127
+    i -14.073 190.012 0
+    i -14.074 190.012 0
     i 9.923 190.061 0.001 1 49 127
     i 9.924 190.125 0.001 1 49 127
+    i -13.239 190.125 0
+    i 13.240 190.125 -1.000 1 93 127
     i 9.925 190.187 0.001 1 49 127
     i 9.926 190.250 0.001 1 49 127
-    i -11.291 190.312 0
+    i -13.240 190.250 0
+    i 13.241 190.250 -1.000 1 89 127
     i 9.927 190.312 0.001 1 49 127
+    i -11.291 190.312 0
+    i -13.241 190.375 0
+    i 13.242 190.375 -1.000 1 91 127
     i 9.928 190.375 0.001 1 49 127
     i 9.929 190.437 0.001 1 49 127
     i 9.930 190.499 0.001 1 49 127
+    i -13.242 190.499 0
+    i 13.243 190.499 -1.000 1 93 127
     i 9.931 190.562 0.001 1 49 127
     i 9.932 190.624 0.001 1 49 127
+    i -13.243 190.624 0
+    i 13.244 190.624 -1.000 1 89 127
     i 9.933 190.687 0.001 1 49 127
     i 9.934 190.749 0.001 1 49 127
+    i -13.244 190.749 0
+    i 13.245 190.749 -1.000 1 91 127
     i 9.935 190.811 0.001 1 49 127
+    i -13.245 190.874 0
     i 9.936 190.874 0.001 1 49 127
+    i 13.246 190.874 -1.000 1 93 127
     i 9.937 190.936 0.001 1 49 127
     i 9.938 190.999 0.001 1 49 127
-    i 10.197 190.999 -1.000 1 72 127
-    i 10.198 190.999 -1.000 1 76 127
+    i 10.193 190.999 -1.000 1 72 127
+    i 10.194 190.999 -1.000 1 76 127
+    i -13.246 190.999 0
+    i 13.247 190.999 -1.000 1 89 127
     i 9.939 191.062 0.001 1 49 127
     i 9.940 191.125 0.001 1 49 127
+    i -13.247 191.125 0
+    i 13.248 191.125 -1.000 1 91 127
     i 9.941 191.187 0.001 1 49 127
     i 9.942 191.250 0.001 1 49 127
+    i -13.248 191.250 0
+    i 13.249 191.250 -1.000 1 93 127
     i 9.943 191.312 0.001 1 49 127
+    i -13.249 191.375 0
+    i 13.250 191.375 -1.000 1 89 127
     i 9.944 191.375 0.001 1 49 127
     i 9.945 191.437 0.001 1 49 127
+    i -13.250 191.499 0
+    i 13.251 191.499 -1.000 1 91 127
     i 9.946 191.499 0.001 1 49 127
     i 9.947 191.562 0.001 1 49 127
+    i -13.251 191.624 0
+    i 13.252 191.624 -1.000 1 93 127
     i 9.948 191.624 0.001 1 49 127
     i 9.949 191.687 0.001 1 49 127
-    i 6.129 191.749 0.001 1 37 127
-    i 9.950 191.749 0.001 1 49 127
     i 5.129 191.749 0.001 1 37 127
+    i 6.129 191.749 0.001 1 37 127
+    i -13.252 191.749 0
+    i 9.950 191.749 0.001 1 49 127
+    i 13.253 191.749 -1.000 1 89 127
     i 9.951 191.811 0.001 1 49 127
     i 9.952 191.874 0.001 1 49 127
+    i -13.253 191.874 0
+    i 13.254 191.874 -1.000 1 91 127
     i 9.953 191.936 0.001 1 49 127
+    i -13.254 192.000 0
+    i 13.255 192.000 -1.000 1 93 127
     i 5.130 192.000 0.001 1 37 127
-    i 6.130 192.000 0.001 1 37 127
     i 9.954 192.000 0.001 1 49 127
-    i -10.197 192.000 0
-    i -10.198 192.000 0
+    i -10.193 192.000 0
+    i 6.130 192.000 0.001 1 37 127
+    i -10.194 192.000 0
     i 9.955 192.062 0.001 1 49 127
     i 9.956 192.125 0.001 1 49 127
+    i -13.255 192.125 0
     i 9.957 192.187 0.001 1 49 127
     i 9.958 192.250 0.001 1 49 127
     i 9.959 192.312 0.001 1 49 127
@@ -13276,9 +14602,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.967 192.811 0.001 1 49 127
     i 9.968 192.874 0.001 1 49 127
     i 9.969 192.938 0.001 1 49 127
-    i 10.199 193.000 -1.000 1 72 127
     i 9.970 193.000 0.001 1 49 127
-    i 10.200 193.000 -1.000 1 76 127
+    i 10.195 193.000 -1.000 1 72 127
+    i 10.196 193.000 -1.000 1 76 127
     i 9.971 193.062 0.001 1 49 127
     i 9.972 193.125 0.001 1 49 127
     i 9.973 193.187 0.001 1 49 127
@@ -13286,6 +14612,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.975 193.312 0.001 1 49 127
     i 9.976 193.374 0.001 1 49 127
     i 9.977 193.437 0.001 1 49 127
+    i -15.048 193.499 0
     i 9.978 193.499 0.001 1 49 127
     i 9.979 193.562 0.001 1 49 127
     i 9.980 193.624 0.001 1 49 127
@@ -13294,14 +14621,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.983 193.811 0.001 1 49 127
     i 9.984 193.875 0.001 1 49 127
     i 9.985 193.937 0.001 1 49 127
+    i 14.077 193.981 -1.000 1 62 66
+    i 14.078 193.981 -1.000 1 65 69
     i 5.131 194.000 0.001 1 37 127
     i 6.131 194.000 0.001 1 37 127
     i 9.986 194.000 0.001 1 49 127
-    i -10.199 194.000 0
-    i -10.200 194.000 0
+    i -10.195 194.000 0
+    i -10.196 194.000 0
     i 9.987 194.062 0.001 1 49 127
     i 9.988 194.125 0.001 1 49 127
     i 9.989 194.187 0.001 1 49 127
+    i -14.075 194.213 0
+    i -14.076 194.213 0
     i 9.990 194.249 0.001 1 49 127
     i 9.991 194.312 0.001 1 49 127
     i 9.992 194.374 0.001 1 49 127
@@ -13314,9 +14645,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.999 194.811 0.001 1 49 127
     i 9.001 194.875 0.001 1 49 127
     i 9.002 194.937 0.001 1 49 127
+    i 10.197 195.000 -1.000 1 72 127
+    i 10.198 195.000 -1.000 1 76 127
     i 9.003 195.000 0.001 1 49 127
-    i 10.201 195.000 -1.000 1 72 127
-    i 10.202 195.000 -1.000 1 76 127
     i 9.004 195.062 0.001 1 49 127
     i 9.005 195.125 0.001 1 49 127
     i 9.006 195.187 0.001 1 49 127
@@ -13328,17 +14659,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.012 195.561 0.001 1 49 127
     i 9.013 195.624 0.001 1 49 127
     i 9.014 195.686 0.001 1 49 127
-    i 9.015 195.749 0.001 1 49 127
     i 6.132 195.749 0.001 1 37 127
+    i 9.015 195.749 0.001 1 49 127
     i 5.132 195.749 0.001 1 37 127
     i 9.016 195.812 0.001 1 49 127
     i 9.017 195.875 0.001 1 49 127
     i 9.018 195.937 0.001 1 49 127
-    i 5.133 196.000 0.001 1 37 127
-    i 6.133 196.000 0.001 1 37 127
-    i -10.201 196.000 0
-    i -10.202 196.000 0
     i 9.019 196.000 0.001 1 49 127
+    i 6.133 196.000 0.001 1 37 127
+    i -10.197 196.000 0
+    i -10.198 196.000 0
+    i 5.133 196.000 0.001 1 37 127
     i 9.020 196.062 0.001 1 49 127
     i 9.021 196.124 0.001 1 49 127
     i 9.022 196.187 0.001 1 49 127
@@ -13354,9 +14685,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.032 196.812 0.001 1 49 127
     i 9.033 196.875 0.001 1 49 127
     i 9.034 196.937 0.001 1 49 127
-    i 10.203 197.000 -1.000 1 72 127
     i 9.035 197.000 0.001 1 49 127
-    i 10.204 197.000 -1.000 1 76 127
+    i 10.199 197.000 -1.000 1 72 127
+    i 10.200 197.000 -1.000 1 76 127
     i 9.036 197.062 0.001 1 49 127
     i 9.037 197.124 0.001 1 49 127
     i 9.038 197.187 0.001 1 49 127
@@ -13372,8 +14703,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     i 9.048 197.812 0.001 1 49 127
     i 9.049 197.875 0.001 1 49 127
     i 9.050 197.937 0.001 1 49 127
-    i -10.203 197.999 0
-    i -10.204 197.999 0
+    i -10.199 197.999 0
+    i -10.200 197.999 0
+    i -14.077 198.264 0
+    i -14.078 198.264 0
     s
     i "SendEndedMessage" 5 -1
     #ifdef IS_GENERATING_JSON
