@@ -6931,7 +6931,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprintks(SJsonFile, ",\\"xyz\\":[%.3f,%.3f,%.3f]", kX, kY, kZ)
     endif
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
     endif
     #end
     endif
@@ -7995,7 +7994,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
     endif
     #end
     endif
@@ -8137,7 +8135,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
     endif
     #end
     endif
@@ -8279,7 +8276,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    scoreline(sprintfk("i \\"Json_CloseFile\\" 0 -1 \\"%s\\"", SJsonFile), 1)
     endif
     #end
     endif

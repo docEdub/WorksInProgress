@@ -197,7 +197,6 @@ instr INSTRUMENT_ID
                     fprintks(SJsonFile, ",\"xyz\":[%.3f,%.3f,%.3f]", kX, kY, kZ)
                 endif
                 fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
-                scoreline(sprintfk("i \"Json_CloseFile\" 0 -1 \"%s\"", SJsonFile), 1)
             endif
         ${CSOUND_ENDIF}
     endif
