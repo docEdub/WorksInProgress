@@ -186,14 +186,6 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
     giWriteComma init false
     gSPluginUuids[][] init TRACK_COUNT_MAX, PLUGIN_COUNT_MAX
 
-    opcode setPluginUuid, 0, iiS
-        iTrackIndex, iPluginIndex, SUuid xin
-        ; if (iPluginIndex > 0 && strlen(gSPluginUuids[iTrackIndex][iPluginIndex]) == 0) then
-        ;     gSPluginUuids[iTrackIndex][iPluginIndex] = "bus-head"
-        ; endif
-        gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
-    endop
-
     instr StartJsonArray
         turnoff
         fprints("DawPlayback.json", "[")

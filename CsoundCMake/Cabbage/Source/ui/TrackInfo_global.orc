@@ -78,12 +78,6 @@ opcode addTrackRef, 0, k
 endop
 
 
-opcode setPluginUuid, 0, S
-    SPluginUuid xin
-    gSPluginUuid = SPluginUuid
-endop
-
-
 // A separate instrument needs to be used for the Csound 'readk' opcode because setting the 'period' argument to zero
 // causes Reaper to crash? (When this happened it might have been unrelated to the 'period' argument being zero).
 // TODO: Investigate. Does the 'readk' opcode really crash Reaper when the 'period' argument is zero?

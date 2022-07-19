@@ -5192,10 +5192,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef IS_GENERATING_JSON
     giWriteComma init 0
     gSPluginUuids[][] init 1000, 100
-    opcode setPluginUuid, 0, iiS
-    iTrackIndex, iPluginIndex, SUuid xin
-    gSPluginUuids[iTrackIndex][iPluginIndex] = SUuid
-    endop
     instr StartJsonArray
     turnoff
     fprints("DawPlayback.json", "[")
@@ -5528,7 +5524,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
     giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(0, 0, "e274e9138ef048c4ba9c4d42e836c85c")
+    gSPluginUuids[0][0] = "e274e9138ef048c4ba9c4d42e836c85c"
     instr Json_4
     SJsonFile = sprintf("json/%s.0.json", "e274e9138ef048c4ba9c4d42e836c85c")
     fprints(SJsonFile, "{")
@@ -5717,7 +5713,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(1, 0, "8aac7747b6b44366b1080319e34a8616")
+    gSPluginUuids[1][0] = "8aac7747b6b44366b1080319e34a8616"
     instr Json_5
     SJsonFile = sprintf("json/%s.0.json", "8aac7747b6b44366b1080319e34a8616")
     fprints(SJsonFile, "{")
@@ -5906,7 +5902,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(2, 0, "8e12ccc0dff44a4283211d553199a8cd")
+    gSPluginUuids[2][0] = "8e12ccc0dff44a4283211d553199a8cd"
     instr Json_6
     SJsonFile = sprintf("json/%s.0.json", "8e12ccc0dff44a4283211d553199a8cd")
     fprints(SJsonFile, "{")
@@ -6095,7 +6091,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(3, 0, "6aecd056fd3f4c6d9a108de531c48ddf")
+    gSPluginUuids[3][0] = "6aecd056fd3f4c6d9a108de531c48ddf"
     instr Json_7
     SJsonFile = sprintf("json/%s.0.json", "6aecd056fd3f4c6d9a108de531c48ddf")
     fprints(SJsonFile, "{")
@@ -6284,7 +6280,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 7))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(4, 0, "e3e7d57082834a28b53e021beaeb783d")
+    gSPluginUuids[4][0] = "e3e7d57082834a28b53e021beaeb783d"
     instr Json_8
     SJsonFile = sprintf("json/%s.0.json", "e3e7d57082834a28b53e021beaeb783d")
     fprints(SJsonFile, "{")
@@ -6473,7 +6469,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(5, 0, "02c103e8fcef483292ebc49d3898ef96")
+    gSPluginUuids[5][0] = "02c103e8fcef483292ebc49d3898ef96"
     instr Json_9
     SJsonFile = sprintf("json/%s.0.json", "02c103e8fcef483292ebc49d3898ef96")
     fprints(SJsonFile, "{")
@@ -6817,7 +6813,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTriangle2Synth_NoteIndex[] init 1
     giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, 7, 0, 15, 1, 30, -1, 15, 0)
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(6, 0, "fd575f03378047af835c19ef4f7d5991")
+    gSPluginUuids[6][0] = "fd575f03378047af835c19ef4f7d5991"
     instr Json_10
     SJsonFile = sprintf("json/%s.0.json", "fd575f03378047af835c19ef4f7d5991")
     fprints(SJsonFile, "{")
@@ -7123,7 +7119,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define TriangleMonoSynth_EffectChain(aOut) ##
     #end
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(7, 0, "ab018f191c70470f98ac3becb76e6d13")
+    gSPluginUuids[7][0] = "ab018f191c70470f98ac3becb76e6d13"
     instr Json_11
     SJsonFile = sprintf("json/%s.0.json", "ab018f191c70470f98ac3becb76e6d13")
     fprints(SJsonFile, "{")
@@ -7437,7 +7433,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define TriangleMonoSynth_EffectChain(aOut) ##
     #end
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(8, 0, "b0ba6f144fac4f668ba6981c691277d6")
+    gSPluginUuids[8][0] = "b0ba6f144fac4f668ba6981c691277d6"
     instr Json_12
     SJsonFile = sprintf("json/%s.0.json", "b0ba6f144fac4f668ba6981c691277d6")
     fprints(SJsonFile, "{")
@@ -7868,7 +7864,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giSaw1RimSynth_MeshRowCount init ${Rim1HiArpMesh.rows}
     giSaw1RimSynth_MeshAudioPositions[] init ${Rim1HiArpMesh.audioPositionsString}
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(9, 0, "d51fb1d5a0104857a7f61b218692743c")
+    gSPluginUuids[9][0] = "d51fb1d5a0104857a7f61b218692743c"
     instr Json_13
     SJsonFile = sprintf("json/%s.0.json", "d51fb1d5a0104857a7f61b218692743c")
     fprints(SJsonFile, "{")
@@ -8009,7 +8005,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 13))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(10, 0, "14afc0dff693459fb6fc521bcf3db0bc")
+    gSPluginUuids[10][0] = "14afc0dff693459fb6fc521bcf3db0bc"
     instr Json_14
     SJsonFile = sprintf("json/%s.0.json", "14afc0dff693459fb6fc521bcf3db0bc")
     fprints(SJsonFile, "{")
@@ -8150,7 +8146,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endin
     scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 14))
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(11, 0, "5006b8ea266f4bf9aba92ff5badfea3e")
+    gSPluginUuids[11][0] = "5006b8ea266f4bf9aba92ff5badfea3e"
     instr Json_15
     SJsonFile = sprintf("json/%s.0.json", "5006b8ea266f4bf9aba92ff5badfea3e")
     fprints(SJsonFile, "{")
@@ -8436,7 +8432,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     xout aOut
     endop
     #ifdef IS_GENERATING_JSON
-    setPluginUuid(12, 0, "f6341a2a81244ea79dd0e1486eb93386")
+    gSPluginUuids[12][0] = "f6341a2a81244ea79dd0e1486eb93386"
     instr Json_16
     SJsonFile = sprintf("json/%s.0.json", "f6341a2a81244ea79dd0e1486eb93386")
     fprints(SJsonFile, "{")

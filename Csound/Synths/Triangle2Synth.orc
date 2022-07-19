@@ -29,7 +29,7 @@ giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+    gSPluginUuids[INSTRUMENT_TRACK_INDEX][INSTRUMENT_PLUGIN_INDEX] = INSTRUMENT_PLUGIN_UUID
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
