@@ -54,10 +54,11 @@ ${CSOUND_DEFINE} CC_CHANNEL_NAME(channel) #gSCcInfo[CC_INDEX($channel)][$CC_INFO
 ${CSOUND_IFDEF} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count)
     // Reshape the gSCcInfo array if it hasn't been reshaped already. This check is required for reloadable instruments
     // because global arrays retain their shape across reloads.
-    if (lenarray(gSCcInfo) == CONCAT($, CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count))) then
-        giCcCount = (lenarray(gSCcInfo) / 4) - 1
-        reshapearray(gSCcInfo, giCcCount + 1, 4)
-    endif
+    if (lenarray(gSCcInfo) != CONCAT($, CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count))) \
+        igoto CONCAT(skipCcInfoReshapeArray_, INSTRUMENT_NAME)
+    giCcCount = (lenarray(gSCcInfo) / 4) - 1
+    reshapearray(gSCcInfo, giCcCount + 1, 4)
+    CONCAT(skipCcInfoReshapeArray_, INSTRUMENT_NAME): // reshape array skipped
 ${CSOUND_ELSE}
     // If gSCcInfo_INSTRUMENT_NAME_Count is not defined then the instrument is not reloadable and the array size check
     // is not possible.

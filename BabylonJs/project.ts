@@ -5296,10 +5296,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_TR_808[giCc_TR_808_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_TR_808_Count
-    if (lenarray(gSCcInfo_TR_808) == $gSCcInfo_TR_808_Count) then
+    if (lenarray(gSCcInfo_TR_808) != $gSCcInfo_TR_808_Count) igoto skipCcInfoReshapeArray_TR_808
     giCcCount_TR_808 = (lenarray(gSCcInfo_TR_808) / 4) - 1
     reshapearray(gSCcInfo_TR_808, giCcCount_TR_808 + 1, 4)
-    endif
+    skipCcInfoReshapeArray_TR_808:
     #else
     giCcCount_TR_808 = (lenarray(gSCcInfo_TR_808) / 4) - 1
     reshapearray(gSCcInfo_TR_808, giCcCount_TR_808 + 1, 4)
@@ -6690,10 +6690,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_Triangle2Synth[giCc_Triangle2Synth_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_Triangle2Synth_Count
-    if (lenarray(gSCcInfo_Triangle2Synth) == $gSCcInfo_Triangle2Synth_Count) then
+    if (lenarray(gSCcInfo_Triangle2Synth) != $gSCcInfo_Triangle2Synth_Count) igoto skipCcInfoReshapeArray_Triangle2Synth
     giCcCount_Triangle2Synth = (lenarray(gSCcInfo_Triangle2Synth) / 4) - 1
     reshapearray(gSCcInfo_Triangle2Synth, giCcCount_Triangle2Synth + 1, 4)
-    endif
+    skipCcInfoReshapeArray_Triangle2Synth:
     #else
     giCcCount_Triangle2Synth = (lenarray(gSCcInfo_Triangle2Synth) / 4) - 1
     reshapearray(gSCcInfo_Triangle2Synth, giCcCount_Triangle2Synth + 1, 4)
@@ -6974,10 +6974,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_Triangle4BassMonoSynth[giCc_Triangle4BassMonoSynth_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_Triangle4BassMonoSynth_Count
-    if (lenarray(gSCcInfo_Triangle4BassMonoSynth) == $gSCcInfo_Triangle4BassMonoSynth_Count) then
+    if (lenarray(gSCcInfo_Triangle4BassMonoSynth) != $gSCcInfo_Triangle4BassMonoSynth_Count) igoto skipCcInfoReshapeArray_Triangle4BassMonoSynth
     giCcCount_Triangle4BassMonoSynth = (lenarray(gSCcInfo_Triangle4BassMonoSynth) / 4) - 1
     reshapearray(gSCcInfo_Triangle4BassMonoSynth, giCcCount_Triangle4BassMonoSynth + 1, 4)
-    endif
+    skipCcInfoReshapeArray_Triangle4BassMonoSynth:
     #else
     giCcCount_Triangle4BassMonoSynth = (lenarray(gSCcInfo_Triangle4BassMonoSynth) / 4) - 1
     reshapearray(gSCcInfo_Triangle4BassMonoSynth, giCcCount_Triangle4BassMonoSynth + 1, 4)
@@ -7751,10 +7751,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_Saw1RimSynth[giCc_Saw1RimSynth_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_Saw1RimSynth_Count
-    if (lenarray(gSCcInfo_Saw1RimSynth) == $gSCcInfo_Saw1RimSynth_Count) then
+    if (lenarray(gSCcInfo_Saw1RimSynth) != $gSCcInfo_Saw1RimSynth_Count) igoto skipCcInfoReshapeArray_Saw1RimSynth
     giCcCount_Saw1RimSynth = (lenarray(gSCcInfo_Saw1RimSynth) / 4) - 1
     reshapearray(gSCcInfo_Saw1RimSynth, giCcCount_Saw1RimSynth + 1, 4)
-    endif
+    skipCcInfoReshapeArray_Saw1RimSynth:
     #else
     giCcCount_Saw1RimSynth = (lenarray(gSCcInfo_Saw1RimSynth) / 4) - 1
     reshapearray(gSCcInfo_Saw1RimSynth, giCcCount_Saw1RimSynth + 1, 4)
@@ -8319,10 +8319,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_TriangleUdoTriggerSynth[giCc_TriangleUdoTriggerSynth_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_TriangleUdoTriggerSynth_Count
-    if (lenarray(gSCcInfo_TriangleUdoTriggerSynth) == $gSCcInfo_TriangleUdoTriggerSynth_Count) then
+    if (lenarray(gSCcInfo_TriangleUdoTriggerSynth) != $gSCcInfo_TriangleUdoTriggerSynth_Count) igoto skipCcInfoReshapeArray_TriangleUdoTriggerSynth
     giCcCount_TriangleUdoTriggerSynth = (lenarray(gSCcInfo_TriangleUdoTriggerSynth) / 4) - 1
     reshapearray(gSCcInfo_TriangleUdoTriggerSynth, giCcCount_TriangleUdoTriggerSynth + 1, 4)
-    endif
+    skipCcInfoReshapeArray_TriangleUdoTriggerSynth:
     #else
     giCcCount_TriangleUdoTriggerSynth = (lenarray(gSCcInfo_TriangleUdoTriggerSynth) / 4) - 1
     reshapearray(gSCcInfo_TriangleUdoTriggerSynth, giCcCount_TriangleUdoTriggerSynth + 1, 4)
@@ -8535,10 +8535,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #define CC_SYNC_TO_CHANNEL #1#
     #define CC_CHANNEL_NAME(channel) #gSCcInfo_Reverb[giCc_Reverb_$channel][$CC_INFO_CHANNEL]#
     #ifdef gSCcInfo_Reverb_Count
-    if (lenarray(gSCcInfo_Reverb) == $gSCcInfo_Reverb_Count) then
+    if (lenarray(gSCcInfo_Reverb) != $gSCcInfo_Reverb_Count) igoto skipCcInfoReshapeArray_Reverb
     giCcCount_Reverb = (lenarray(gSCcInfo_Reverb) / 4) - 1
     reshapearray(gSCcInfo_Reverb, giCcCount_Reverb + 1, 4)
-    endif
+    skipCcInfoReshapeArray_Reverb:
     #else
     giCcCount_Reverb = (lenarray(gSCcInfo_Reverb) / 4) - 1
     reshapearray(gSCcInfo_Reverb, giCcCount_Reverb + 1, 4)
