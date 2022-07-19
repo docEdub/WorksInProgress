@@ -17,6 +17,7 @@ function(read_shared_module_property property output_variable)
         set(${output_variable} ${stdout} PARENT_SCOPE)
     else()
         set(${output_variable} "${error}" PARENT_SCOPE)
+        message(FATAL_ERROR "${error}")
     endif()
 endfunction()
 
