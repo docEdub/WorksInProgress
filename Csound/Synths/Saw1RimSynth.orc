@@ -37,8 +37,11 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        iPositionIndexOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
+        fprints(SJsonFile, sprintf(",\"positionCount\":%d", gi${InstrumentName}_RimPositionCount))
+        fprints(SJsonFile, sprintf(",\"positionIndexOffset\":%d", iPositionIndexOffset))
         fprints(SJsonFile, "}")
         turnoff
     endin
@@ -67,6 +70,18 @@ instr INSTRUMENT_ID
         a2 = 0
         a3 = 0
         a4 = 0
+
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
+            endif
+            giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] = giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("json/%s.%d.json",
+                INSTRUMENT_PLUGIN_UUID,
+                giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX])
+            iOnTime = times()
+            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
+        ${CSOUND_ENDIF}
 
         // Oscillator
         //--------------------------------------------------------------------------------------------------------------
@@ -117,7 +132,7 @@ instr INSTRUMENT_ID
             iY = gi${InstrumentName}_MeshAudioPositions[iIndex]
             kY = iY
 
-            iRimPositionOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
+            iRimPositionIndexOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
             kRimPositionIndex = 0
             kRimPositionIndexWithOffset = 0
             kPrinted init false
@@ -149,9 +164,18 @@ instr INSTRUMENT_ID
                 a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
 
                 kRimPositionIndex += 1
-                kRimPositionIndexWithOffset += iRimPositionOffset
+                kRimPositionIndexWithOffset += iRimPositionIndexOffset
             od
             kPrinted = true
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                iPositionIndex = \
+                    gi${InstrumentName}_RimPositionOffset \
+                    + (iMeshRow * gi${InstrumentName}_MeshSegmentCount) \
+                    + iMeshRow
+                iPositionIndex = iPositionIndex % iRimIndexCount
+                fprints(SJsonFile, ",\"positionIndex\":%d", iPositionIndex)
+            ${CSOUND_ENDIF}
         else
             // Position disabled.
             a1 = 0
@@ -184,15 +208,6 @@ instr INSTRUMENT_ID
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
-            endif
-            giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] = giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("json/%s.%d.json",
-                INSTRUMENT_PLUGIN_UUID,
-                giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX])
-            iOnTime = times()
-            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
             if (lastcycle() == true) then
                 fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
             endif
