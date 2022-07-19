@@ -1,4 +1,6 @@
 
+const BABYLON = require('babylonjs')
+
 class RimMesh {
     scaling = 1
     y = 1
@@ -28,11 +30,17 @@ class RimMesh {
         return this._private.audioPositionsString
     }
 
+    get faceMatrices() {
+        this.#init()
+        return this._private.faceMatrices
+    }
+
     _private = {
         audioPositions: null,
         vertexPositions: null,
         vertexIndices: null,
-        audioPositionsString: null
+        audioPositionsString: null,
+        faceMatrices: []
     }
 
     #init = () => {
@@ -69,23 +77,66 @@ class RimMesh {
                 )
             }
 
-            // Calculate audio positions.
+            // Calculate audio positions and face matrices.
             if (rowIndex < this.rows) {
                 const rowCenterAngle = rowAngle + (this.rowAngle / 2) / 180 * Math.PI
                 const rowCenterY =
                     this.scaling
                     * (Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY)
                     + this.y
+
+                const upVectorAngle = rowCenterAngle + (this.rowAngle / 2) / 180 * Math.PI
+                const upVectorY =
+                    this.scaling
+                    * (Math.sin(upVectorAngle) * this.segmentRadius + this.segmentCenterY)
+                    + this.y
+                let upVectorRadius = Math.cos(upVectorAngle) * this.segmentRadius
+                upVectorRadius = groundRadius - (upVectorRadius - groundRadius)
+
+                const downVectorAngle = rowCenterAngle + (this.rowAngle / 2) / 180 * Math.PI
+                const downVectorY =
+                    this.scaling
+                    * (Math.sin(downVectorAngle) * this.segmentRadius + this.segmentCenterY)
+                    + this.y
+                let downVectorRadius = Math.cos(downVectorAngle) * this.segmentRadius
+                downVectorRadius = groundRadius - (downVectorRadius - groundRadius)
+
                 for (let segmentIndex = 0; segmentIndex < segmentsD2; segmentIndex++) {
                     const segmentCenterAngleA = segmentIndex * segmentAngleIncrement + segmentAngleOffset
-                    const positionXA = Math.cos(segmentCenterAngleA) * positionRadius
-                    const positionZA = Math.sin(segmentCenterAngleA) * positionRadius
-                    this._private.audioPositions.push(this.scaling * positionXA, rowCenterY, this.scaling * positionZA)
+                    const positionXA = this.scaling * Math.cos(segmentCenterAngleA) * positionRadius
+                    const positionZA = this.scaling * Math.sin(segmentCenterAngleA) * positionRadius
+                    this._private.audioPositions.push(positionXA, rowCenterY, positionZA)
+
+                    const upVectorXA = (this.scaling * Math.cos(segmentCenterAngleA) * upVectorRadius) - positionXA
+                    const upVectorZA = (this.scaling * Math.sin(segmentCenterAngleA) * upVectorRadius) - positionZA
+                    const faceMatrixA = BABYLON.Matrix.LookAtLH(
+                        new BABYLON.Vector3(positionXA, rowCenterY, positionZA),
+                        BABYLON.Vector3.ZeroReadOnly,
+                        new BABYLON.Vector3(upVectorXA, upVectorY, upVectorZA)
+                    )
+                    const flippedFaceMatrixA =
+                        faceMatrixA.getRotationMatrix()
+                        * BABYLON.Matrix.RotationY(Math.PI)
+                        * BABYLON.Matrix.Translation(positionXA, rowCenterY, positionZA)
+                    this._private.faceMatrices.push(flippedFaceMatrixA)
 
                     const segmentCenterAngleB = segmentCenterAngleA + segmentAngleIncrement / 2
-                    const positionXB = Math.cos(segmentCenterAngleB) * positionRadius
-                    const positionZB = Math.sin(segmentCenterAngleB) * positionRadius
+                    const positionXB = this.scaling * Math.cos(segmentCenterAngleB) * positionRadius
+                    const positionZB = this.scaling * Math.sin(segmentCenterAngleB) * positionRadius
                     this._private.audioPositions.push(this.scaling * positionXB, rowCenterY, this.scaling * positionZB)
+
+                    const upVectorXB = (this.scaling * Math.cos(segmentCenterAngleB) * downVectorRadius) - positionXB
+                    const upVectorZB = (this.scaling * Math.sin(segmentCenterAngleB) * downVectorRadius) - positionZB
+                    const faceMatrixB = BABYLON.Matrix.LookAtLH(
+                        new BABYLON.Vector3(positionXB, rowCenterY, positionZB),
+                        BABYLON.Vector3.ZeroReadOnly,
+                        new BABYLON.Vector3(upVectorXB, downVectorY, upVectorZB)
+                    )
+                    const flippedFaceMatrixB =
+                        faceMatrixB.getRotationMatrix()
+                        * BABYLON.Matrix.RotationY(Math.PI)
+                        * BABYLON.Matrix.Translation(positionXB, rowCenterY, positionZB)
+                    this._private.faceMatrices.push(flippedFaceMatrixB)
                 }
             }
         }
