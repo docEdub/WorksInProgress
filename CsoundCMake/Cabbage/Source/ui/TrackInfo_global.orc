@@ -254,7 +254,7 @@ instr SuggestPluginUuid
             gi_oscPort, SSuggestedPluginUuid)
         event("i", "ListenForPluginUuid", 0, -1)
     endif
-    
+
     log_ik_trace("%s('%s') - done", nstrstr(p1), SSuggestedPluginUuid)
     turnoff
 endin

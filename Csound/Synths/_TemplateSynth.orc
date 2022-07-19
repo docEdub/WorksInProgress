@@ -72,7 +72,7 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        
+
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (gi_TemplateSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
                 scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
