@@ -2218,9 +2218,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    //#region class RimMeshComponentBase
+    //#region class RimMeshBaseComponent
 
-    class RimMeshComponentBase extends SharedMeshBaseComponent {
+    class RimMeshBaseComponent extends SharedMeshBaseComponent {
         constructor(sharedMeshData, meshName) {
             super(sharedMeshData)
             this.mesh = new BABYLON.Mesh(meshName, scene)
@@ -2240,16 +2240,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region class Rim1AnimationComponent
 
-    class Rim1AnimationComponent extends RimMeshComponentBase {
-        static singleton = null
-
+    class Rim1AnimationComponent extends RimMeshBaseComponent {
         constructor() {
             super(Rim1HiArpMesh, Rim1AnimationComponent.name)
-            Rim1AnimationComponent.singleton = this
         }
     }
-
-    new Rim1AnimationComponent
 
     //#endregion
 
@@ -2286,31 +2281,83 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region class Rim2AnimationComponent
 
-    class Rim2AnimationComponent extends RimMeshComponentBase {
-        static singleton = null
-
+    class Rim2AnimationComponent extends RimMeshBaseComponent {
         constructor() {
             super(Rim2HiLineMesh, Rim2AnimationComponent.name)
-            Rim2AnimationComponent.singleton = this
         }
     }
 
-    new Rim2AnimationComponent
+    //#endregion
+
+    //#region class Rim2AnimationSystem
+
+    class Rim2AnimationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            Rim2AnimationComponent
+        ]}
+
+        track = null
+        animation = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(Rim2AnimationComponent)) {
+                    this.animation = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.animation, `${Rim2AnimationComponent.name} missing.`)
+        }
+    }
+
+    world.add(Rim2AnimationSystem)
 
     //#endregion
 
     //#region class Rim3AnimationComponent
 
-    class Rim3AnimationComponent extends RimMeshComponentBase {
-        static singleton = null
-
+    class Rim3AnimationComponent extends RimMeshBaseComponent {
         constructor() {
             super(Rim3LoLineMesh, Rim3AnimationComponent.name)
-            Rim3AnimationComponent.singleton = this
         }
     }
 
-    new Rim3AnimationComponent
+    //#endregion
+
+    //#region class Rim3AnimationSystem
+
+    class Rim3AnimationSystem extends System {
+        static requiredComponentTypes = () => { return [
+            TrackComponent,
+            Rim3AnimationComponent
+        ]}
+
+        track = null
+        animation = null
+
+        constructor(components) {
+            super(components)
+            for (let i = 0; i < components.length; i++) {
+                const component = components[i]
+                if (component.isA(TrackComponent)) {
+                    this.track = component
+                }
+                else if (component.isA(Rim3AnimationComponent)) {
+                    this.animation = component
+                }
+            }
+            assert(this.track, `${TrackComponent.name} missing.`)
+            assert(this.animation, `${Rim3AnimationComponent.name} missing.`)
+        }
+    }
+
+    world.add(Rim3AnimationSystem)
 
     //#endregion
 
@@ -2355,6 +2402,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const beaconTrackId = 'fd575f03378047af835c19ef4f7d5991'
     const rim1TrackId = 'd51fb1d5a0104857a7f61b218692743c'
+    const rim2TrackId = '14afc0dff693459fb6fc521bcf3db0bc'
+    const rim3TrackId = '5006b8ea266f4bf9aba92ff5badfea3e'
 
     const createTrack = (id, json, options) => {
         const entity = new Entity
@@ -2473,6 +2522,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const createRim1Animation = (id, json, options) => {
         const entity = createTrack(id, json, options)
+        const animation = new Rim1AnimationComponent
+        entity.addComponent(animation)
+        return entity
+    }
+
+    const createRim2Animation = (id, json, options) => {
+        const entity = createTrack(id, json, options)
+        const animation = new Rim2AnimationComponent
+        entity.addComponent(animation)
+        return entity
+    }
+
+    const createRim3Animation = (id, json, options) => {
+        const entity = createTrack(id, json, options)
+        const animation = new Rim3AnimationComponent
+        entity.addComponent(animation)
         return entity
     }
 
@@ -2616,7 +2681,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     trackOptionsMap[rim1TrackId] = {
         function: createRim1Animation,
         options: {
-            name: '10 Rim 1'
+            name: '09: Rim 1: Hi Arp'
+        }
+    }
+
+    trackOptionsMap[rim2TrackId] = {
+        function: createRim2Animation,
+        options: {
+            name: '10: Rim 1: Hi Line'
+        }
+    }
+
+    trackOptionsMap[rim3TrackId] = {
+        function: createRim3Animation,
+        options: {
+            name: '11: Rim 3: Lo Line'
         }
     }
 
