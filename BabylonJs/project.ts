@@ -42,7 +42,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = true
+document.useDawTiming = false
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -6904,12 +6904,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a3 = 0
     a4 = aOut
     endif
-    gaInstrumentSignals[6][0] = a1
-    gaInstrumentSignals[6][1] = a2
-    gaInstrumentSignals[6][2] = a3
-    gaInstrumentSignals[6][3] = a4
-    gaInstrumentSignals[6][4] = aOut
-    gaInstrumentSignals[6][5] = aOut
+    gaInstrumentSignals[6][0] = gaInstrumentSignals[6][0] + a1
+    gaInstrumentSignals[6][1] = gaInstrumentSignals[6][1] + a2
+    gaInstrumentSignals[6][2] = gaInstrumentSignals[6][2] + a3
+    gaInstrumentSignals[6][3] = gaInstrumentSignals[6][3] + a4
+    gaInstrumentSignals[6][4] = gaInstrumentSignals[6][4] + aOut
+    gaInstrumentSignals[6][5] = gaInstrumentSignals[6][5] + aOut
     #ifdef IS_GENERATING_JSON
     if (giTriangle2Synth_NoteIndex[0] == 0) then
     scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_10"))
@@ -7991,12 +7991,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a3 = 0
     a4 = aOut
     endif
-    gaInstrumentSignals[9][0] = a1
-    gaInstrumentSignals[9][1] = a2
-    gaInstrumentSignals[9][2] = a3
-    gaInstrumentSignals[9][3] = a4
-    gaInstrumentSignals[9][4] = aOut
-    gaInstrumentSignals[9][5] = aOut
+    gaInstrumentSignals[9][0] = gaInstrumentSignals[9][0] + a1
+    gaInstrumentSignals[9][1] = gaInstrumentSignals[9][1] + a2
+    gaInstrumentSignals[9][2] = gaInstrumentSignals[9][2] + a3
+    gaInstrumentSignals[9][3] = gaInstrumentSignals[9][3] + a4
+    gaInstrumentSignals[9][4] = gaInstrumentSignals[9][4] + aOut
+    gaInstrumentSignals[9][5] = gaInstrumentSignals[9][5] + aOut
     #ifdef IS_GENERATING_JSON
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -8142,12 +8142,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a3 = 0
     a4 = aOut
     endif
-    gaInstrumentSignals[10][0] = a1
-    gaInstrumentSignals[10][1] = a2
-    gaInstrumentSignals[10][2] = a3
-    gaInstrumentSignals[10][3] = a4
-    gaInstrumentSignals[10][4] = aOut
-    gaInstrumentSignals[10][5] = aOut
+    gaInstrumentSignals[10][0] = gaInstrumentSignals[10][0] + a1
+    gaInstrumentSignals[10][1] = gaInstrumentSignals[10][1] + a2
+    gaInstrumentSignals[10][2] = gaInstrumentSignals[10][2] + a3
+    gaInstrumentSignals[10][3] = gaInstrumentSignals[10][3] + a4
+    gaInstrumentSignals[10][4] = gaInstrumentSignals[10][4] + aOut
+    gaInstrumentSignals[10][5] = gaInstrumentSignals[10][5] + aOut
     #ifdef IS_GENERATING_JSON
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -8293,12 +8293,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a3 = 0
     a4 = aOut
     endif
-    gaInstrumentSignals[11][0] = a1
-    gaInstrumentSignals[11][1] = a2
-    gaInstrumentSignals[11][2] = a3
-    gaInstrumentSignals[11][3] = a4
-    gaInstrumentSignals[11][4] = aOut
-    gaInstrumentSignals[11][5] = aOut
+    gaInstrumentSignals[11][0] = gaInstrumentSignals[11][0] + a1
+    gaInstrumentSignals[11][1] = gaInstrumentSignals[11][1] + a2
+    gaInstrumentSignals[11][2] = gaInstrumentSignals[11][2] + a3
+    gaInstrumentSignals[11][3] = gaInstrumentSignals[11][3] + a4
+    gaInstrumentSignals[11][4] = gaInstrumentSignals[11][4] + aOut
+    gaInstrumentSignals[11][5] = gaInstrumentSignals[11][5] + aOut
     #ifdef IS_GENERATING_JSON
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
