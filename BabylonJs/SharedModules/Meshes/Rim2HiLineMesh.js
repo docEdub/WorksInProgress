@@ -4,7 +4,7 @@ const RimMesh = require('./Common/RimMesh')
 class Rim2HiLineMesh extends RimMesh {
     scaling = 2
     y = 500
-    rows = 6
+    rows = 8
     rowAngle = 1 // degrees
     segments = 240
     segmentRadius = 500
