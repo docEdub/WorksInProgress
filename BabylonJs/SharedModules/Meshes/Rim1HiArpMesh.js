@@ -2,13 +2,13 @@
 const RimMesh = require('./Common/RimMesh')
 
 class Rim1HiArpMesh extends RimMesh {
-    scaling = 2
-    y = 1500
-    segments = 240
+    scaling = 1
+    y = 1450
     rows = 3
-    segmentRadius = 900
-    segmentCenterY = 500
     rowAngle = 1 // degrees
+    segments = 240
+    segmentRadius = 2000
+    segmentCenterY = 500
 }
 
 module.exports = new Rim1HiArpMesh

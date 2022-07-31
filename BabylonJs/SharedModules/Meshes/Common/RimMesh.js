@@ -4,166 +4,259 @@ const BABYLON = require('babylonjs')
 class RimMesh {
     scaling = 1
     y = 1
-    segments = 100
     rows = 10
+    rowAngle = 1 // degrees
+    segments = 100
     segmentRadius = 100
     segmentCenterY = 100
-    rowAngle = 1 // degrees
 
     get audioPositions() {
         this.#init()
-        return this._private.audioPositions
+        return this.#private.audioPositions
     }
 
     get vertexPositions() {
         this.#init()
-        return this._private.vertexPositions
+        return this.#private.vertexPositions
     }
 
     get vertexIndices() {
         this.#init()
-        return this._private.vertexIndices
+        return this.#private.vertexIndices
     }
 
     get audioPositionsString() {
         this.#init()
-        return this._private.audioPositionsString
+        return this.#private.audioPositionsString
     }
 
     get faceMatrices() {
         this.#init()
-        return this._private.faceMatrices
+        return this.#private.faceMatrices
     }
 
-    _private = {
-        audioPositions: null,
-        vertexPositions: null,
-        vertexIndices: null,
-        audioPositionsString: null,
-        faceMatrices: []
+
+
+    #Private = class {
+        get #public() {
+            return this._public
+        }
+
+        constructor(this_public) {
+            this._public = this_public
+
+            this.audioPositions = null
+            this.vertexPositions = null
+            this.vertexIndices = null
+            this.audioPositionsString = null
+            this.faceMatrices = []
+
+            this.angleToGround = -Math.asin(this.#public.segmentCenterY / this.#public.segmentRadius)
+            this.rowAngleIncrement = this.#public.rowAngle / 180 * Math.PI
+            this.rowAngleIncrementD2 = this.rowAngleIncrement / 2
+            this.segmentsD2 = this.#public.segments / 2
+            this.segmentAngleIncrement = 2 * Math.PI / this.segmentsD2
+            this.segmentAngleIncrementD2 = this.segmentAngleIncrement / 2
+            this.tubeCenterRadius = this.#public.segmentRadius * 2
+        }
+    }
+    _private = null
+    get #private() {
+        if (!this._private) {
+            this._private = new this.#Private(this)
+        }
+        return this._private
+    }
+
+    #getRowVertexStartVector = (rowIndex) => {
+        const vertexAngle = this.#private.angleToGround + rowIndex * this.#private.rowAngleIncrement
+
+        let x = Math.cos(vertexAngle) * this.segmentRadius
+        let y = Math.sin(vertexAngle) * this.segmentRadius
+        let z = x * Math.tan(this.#private.segmentAngleIncrementD2)
+
+        x -= this.#private.tubeCenterRadius
+        y += this.segmentCenterY
+
+        x *= this.scaling
+        y *= this.scaling
+        z *= this.scaling
+
+        y += this.y
+
+        return new BABYLON.Vector3(x, y, z)
+    }
+
+    #getRowCenterStartVector = (rowIndex) => {
+        const vertexAngle = this.#private.angleToGround + rowIndex * this.#private.rowAngleIncrement
+
+        let x = Math.cos(vertexAngle) * this.segmentRadius
+        let y = Math.sin(vertexAngle) * this.segmentRadius
+
+        x -= this.#private.tubeCenterRadius
+        y += this.segmentCenterY
+
+        x *= this.scaling
+        y *= this.scaling
+
+        return new BABYLON.Vector3(x, y, 0)
+    }
+
+    #getRowFaceStartMatrix = (rowIndex, xRotationXform) => {
+        const vertexAngleX = this.#private.angleToGround + rowIndex * this.#private.rowAngleIncrement
+        const vertexAngleY = vertexAngleX + this.#private.rowAngleIncrement
+
+        let x = Math.cos(vertexAngleX) * this.segmentRadius
+        let xy = Math.sin(vertexAngleX) * this.segmentRadius
+        let y = Math.sin(vertexAngleY) * this.segmentRadius
+        let yx = Math.cos(vertexAngleY) * this.segmentRadius
+        let z = x * Math.tan(this.#private.segmentAngleIncrementD2)
+
+        x -= this.#private.tubeCenterRadius
+        xy += this.segmentCenterY
+        y += this.segmentCenterY
+        yx -= this.#private.tubeCenterRadius
+
+        x *= this.scaling
+        xy *= this.scaling
+        y *= this.scaling
+        yx *= this.scaling
+        z *= this.scaling
+
+        let scaleXform = BABYLON.Matrix.Scaling(x - yx, y - xy, z)
+        let translationXform = BABYLON.Matrix.Translation(x, xy + this.y, 0)
+
+        return scaleXform
+            // .multiply(xRotationXform)
+            .multiply(translationXform)
     }
 
     #init = () => {
-        if (this._private.audioPositions) {
+        if (this.#private.audioPositions) {
             return
         }
 
-        this._private.audioPositions = []
-        this._private.vertexPositions = []
-        this._private.vertexIndices = []
+        this.#private.audioPositions = []
+        this.#private.vertexPositions = []
+        this.#private.vertexIndices = []
 
-        const segmentsD2 = this.segments / 2
-        const angleToGround = -Math.asin(this.segmentCenterY / this.segmentRadius)
-        const groundRadius =  Math.cos(angleToGround) * this.segmentRadius
-        const segmentAngleIncrement = 2 * Math.PI / segmentsD2
-
-        // Calculate vertex positions and audio positions.
+        // Calculate row start vectors.
+        const rowVertexStartVectors = []
         for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
+            rowVertexStartVectors.push(this.#getRowVertexStartVector(rowIndex))
+        }
+        const rowCenterStartVectors = []
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            rowCenterStartVectors.push(this.#getRowCenterStartVector(rowIndex))
+        }
 
-            // Calculate vertex positions.
-            const rowAngle = angleToGround + rowIndex * this.rowAngle / 180 * Math.PI
-            const positionY = Math.sin(rowAngle) * this.segmentRadius + this.segmentCenterY
-            let positionRadius = Math.cos(rowAngle) * this.segmentRadius
-            positionRadius = groundRadius - (positionRadius - groundRadius)
-            const segmentAngleOffset = rowIndex * segmentAngleIncrement / 2
-            for (let segmentIndex = 0; segmentIndex < segmentsD2; segmentIndex++) {
-                const segmentAngle = segmentIndex * segmentAngleIncrement + segmentAngleOffset
-                const positionX = Math.cos(segmentAngle) * positionRadius
-                const positionZ = Math.sin(segmentAngle) * positionRadius
-                this._private.vertexPositions.push(
-                    this.scaling * positionX,
-                    this.scaling * positionY + this.y,
-                    this.scaling * positionZ
-                )
+        // Calculate face up and down start matrices.
+        const faceUpStartMatrices = []
+        const faceDownStartMatrices = []
+        const xRotationMatrixForFaceUp = BABYLON.Matrix.RotationX(0)
+        const xRotationMatrixForFaceDown = BABYLON.Matrix.RotationX(Math.PI)
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            faceUpStartMatrices.push(this.#getRowFaceStartMatrix(rowIndex, xRotationMatrixForFaceUp))
+            // faceDownStartMatrices.push(this.#getRowFaceStartMatrix(rowIndex, xRotationMatrixForFaceDown))
+        }
+
+        // Calculate vertex positions.
+        const rowSegmentVertexPositions = []
+        for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
+            const startPosition = rowVertexStartVectors[rowIndex]
+            const segmentVertexPositions = []
+            let segmentAngle = rowIndex * this.#private.segmentAngleIncrementD2
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const xform = BABYLON.Matrix.RotationY(segmentAngle)
+                segmentVertexPositions.push(BABYLON.Vector3.TransformCoordinates(startPosition, xform))
+                segmentAngle += this.#private.segmentAngleIncrement
             }
+            rowSegmentVertexPositions.push(segmentVertexPositions)
+        }
 
-            // Calculate audio positions and face matrices.
-            if (rowIndex < this.rows) {
-                const rowCenterAngle = rowAngle + (this.rowAngle / 2) / 180 * Math.PI
-                const rowCenterY =
-                    this.scaling
-                    * (Math.sin(rowCenterAngle) * this.segmentRadius + this.segmentCenterY)
-                    + this.y
+        // Calculate audio positions.
+        const rowSegmentAudioPositions = []
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            const startPosition = rowCenterStartVectors[rowIndex]
+            const segmentAudioPositions = []
+            let segmentAngle = 0
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const yXformUp = BABYLON.Matrix.RotationY(segmentAngle)
+                segmentAudioPositions.push(BABYLON.Vector3.TransformCoordinates(startPosition, yXformUp))
+                segmentAngle += this.#private.segmentAngleIncrementD2
+                // const yXformDown = BABYLON.Matrix.RotationY(segmentAngle)
+                // segmentAudioPositions.push(BABYLON.Vector3.TransformCoordinates(startPosition, yXformDown))
+                segmentAngle += this.#private.segmentAngleIncrementD2
+            }
+            rowSegmentAudioPositions.push(segmentAudioPositions)
+        }
 
-                const upVectorAngle = rowCenterAngle + (this.rowAngle / 2) / 180 * Math.PI
-                const upVectorY =
-                    this.scaling
-                    * (Math.sin(upVectorAngle) * this.segmentRadius + this.segmentCenterY)
-                    + this.y
-                let upVectorRadius = Math.cos(upVectorAngle) * this.segmentRadius
-                upVectorRadius = groundRadius - (upVectorRadius - groundRadius)
+        // Calculate face matrices.
+        const rowSegmentFaceMatrices = []
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            const faceUpStartMatrix = faceUpStartMatrices[rowIndex]
+            const faceDownStartMatrix = faceDownStartMatrices[rowIndex]
+            const segmentFaceMatrices = []
+            let segmentAngle = rowIndex * this.#private.segmentAngleIncrementD2
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const yXformUp = BABYLON.Matrix.RotationY(segmentAngle)
+                segmentFaceMatrices.push(faceUpStartMatrix.multiply(yXformUp))
+                segmentAngle += this.#private.segmentAngleIncrementD2
+                // const yXformDown = BABYLON.Matrix.RotationY(segmentAngle)
+                // segmentFaceMatrices.push(faceDownStartMatrix.multiply(yXformDown))
+                segmentAngle += this.#private.segmentAngleIncrementD2
+            }
+            rowSegmentFaceMatrices.push(segmentFaceMatrices)
+        }
 
-                const downVectorAngle = rowCenterAngle + (this.rowAngle / 2) / 180 * Math.PI
-                const downVectorY =
-                    this.scaling
-                    * (Math.sin(downVectorAngle) * this.segmentRadius + this.segmentCenterY)
-                    + this.y
-                let downVectorRadius = Math.cos(downVectorAngle) * this.segmentRadius
-                downVectorRadius = groundRadius - (downVectorRadius - groundRadius)
+        // Flatten vertex positions.
+        for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const position = rowSegmentVertexPositions[rowIndex][segmentIndex]
+                this.#private.vertexPositions.push(position.x, position.y, position.z)
+            }
+        }
 
-                for (let segmentIndex = 0; segmentIndex < segmentsD2; segmentIndex++) {
-                    const segmentCenterAngleA = segmentIndex * segmentAngleIncrement + segmentAngleOffset
-                    const positionXA = this.scaling * Math.cos(segmentCenterAngleA) * positionRadius
-                    const positionZA = this.scaling * Math.sin(segmentCenterAngleA) * positionRadius
-                    this._private.audioPositions.push(positionXA, rowCenterY, positionZA)
+        // Flatten audio positions.
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const position = rowSegmentAudioPositions[rowIndex][segmentIndex]
+                this.#private.audioPositions.push(position.x, position.y, position.z)
+            }
+        }
 
-                    const upVectorXA = (this.scaling * Math.cos(segmentCenterAngleA) * upVectorRadius) - positionXA
-                    const upVectorZA = (this.scaling * Math.sin(segmentCenterAngleA) * upVectorRadius) - positionZA
-                    const faceMatrixA = BABYLON.Matrix.LookAtLH(
-                        new BABYLON.Vector3(positionXA, rowCenterY, positionZA),
-                        BABYLON.Vector3.ZeroReadOnly,
-                        new BABYLON.Vector3(upVectorXA, upVectorY, upVectorZA)
-                    )
-                    const flippedFaceMatrixA =
-                        faceMatrixA.getRotationMatrix()
-                        * BABYLON.Matrix.RotationY(Math.PI)
-                        * BABYLON.Matrix.Translation(positionXA, rowCenterY, positionZA)
-                    this._private.faceMatrices.push(flippedFaceMatrixA)
-
-                    const segmentCenterAngleB = segmentCenterAngleA + segmentAngleIncrement / 2
-                    const positionXB = this.scaling * Math.cos(segmentCenterAngleB) * positionRadius
-                    const positionZB = this.scaling * Math.sin(segmentCenterAngleB) * positionRadius
-                    this._private.audioPositions.push(this.scaling * positionXB, rowCenterY, this.scaling * positionZB)
-
-                    const upVectorXB = (this.scaling * Math.cos(segmentCenterAngleB) * downVectorRadius) - positionXB
-                    const upVectorZB = (this.scaling * Math.sin(segmentCenterAngleB) * downVectorRadius) - positionZB
-                    const faceMatrixB = BABYLON.Matrix.LookAtLH(
-                        new BABYLON.Vector3(positionXB, rowCenterY, positionZB),
-                        BABYLON.Vector3.ZeroReadOnly,
-                        new BABYLON.Vector3(upVectorXB, downVectorY, upVectorZB)
-                    )
-                    const flippedFaceMatrixB =
-                        faceMatrixB.getRotationMatrix()
-                        * BABYLON.Matrix.RotationY(Math.PI)
-                        * BABYLON.Matrix.Translation(positionXB, rowCenterY, positionZB)
-                    this._private.faceMatrices.push(flippedFaceMatrixB)
-                }
+        // Flatten face matrices.
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                const matrix = rowSegmentFaceMatrices[rowIndex][segmentIndex]
+                // this.#private.faceMatrices.push(matrix.asArray())
+                this.#private.faceMatrices.push(matrix)
             }
         }
 
         // Calculate vertex indices.
         for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
-            const baseSegmentIndex = segmentsD2 * rowIndex
-            for (let segmentIndex = 0; segmentIndex < segmentsD2; segmentIndex++) {
-                let index1a = segmentIndex % segmentsD2
+            const baseSegmentIndex = this.#private.segmentsD2 * rowIndex
+            for (let segmentIndex = 0; segmentIndex < this.#private.segmentsD2; segmentIndex++) {
+                let index1a = segmentIndex % this.#private.segmentsD2
                 let index2a = index1a - 1
                 if (index2a < 0) {
-                    index2a += segmentsD2
+                    index2a += this.#private.segmentsD2
                 }
-                let index3a = index2a + segmentsD2
-                this._private.vertexIndices.push(
+                let index3a = index2a + this.#private.segmentsD2
+                this.#private.vertexIndices.push(
                     index1a + baseSegmentIndex,
                     index2a + baseSegmentIndex,
                     index3a + baseSegmentIndex
                 )
 
                 let index1b = segmentIndex
-                let index2b = index1b + segmentsD2 - 1
-                if (index2b < segmentsD2) {
-                    index2b += segmentsD2
+                let index2b = index1b + this.#private.segmentsD2 - 1
+                if (index2b < this.#private.segmentsD2) {
+                    index2b += this.#private.segmentsD2
                 }
-                let index3b = index1b + segmentsD2
-                this._private.vertexIndices.push(
+                let index3b = index1b + this.#private.segmentsD2
+                this.#private.vertexIndices.push(
                     index1b + baseSegmentIndex,
                     index2b + baseSegmentIndex,
                     index3b + baseSegmentIndex
@@ -172,11 +265,11 @@ class RimMesh {
         }
 
         // Set audio position string.
-        let s = `${this._private.audioPositions.length}`
-        for (let i = 0; i < this._private.audioPositions.length; i++) {
-            s +=  `\ngiSaw1RimSynth_MeshAudioPositions[${i}] =  ${this._private.audioPositions[i].toFixed(3)}`
+        let s = `${this.#private.audioPositions.length}`
+        for (let i = 0; i < this.#private.audioPositions.length; i++) {
+            s +=  `\ngiSaw1RimSynth_MeshAudioPositions[${i}] =  ${this.#private.audioPositions[i].toFixed(3)}`
         }
-        this._private.audioPositionsString = s
+        this.#private.audioPositionsString = s
     }
 }
 

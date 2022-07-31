@@ -37,7 +37,7 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
-        iPositionIndexOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
+        iPositionIndexOffset = (gi${InstrumentName}_MeshSegmentCount / 2) / gi${InstrumentName}_RimPositionCount
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, sprintf(",\"positionCount\":%d", gi${InstrumentName}_RimPositionCount))
@@ -122,17 +122,16 @@ instr INSTRUMENT_ID
                 iMeshRow = 1
             elseif (iNoteNumber == gi${InstrumentName}_NoteNumber3) then
                 iMeshRow = 2
-            else
-                gi${InstrumentName}_RimPositionOffset += 2
             endif
             log_i_debug("iNoteNumber = %d, iMeshRow = %d", iNoteNumber, iMeshRow)
 
+            iMeshSegmentCountD2 = gi${InstrumentName}_MeshSegmentCount / 2
             iRimIndexCount = lenarray(gi${InstrumentName}_MeshAudioPositions) / 3
-            iIndex = (((iMeshRow * gi${InstrumentName}_MeshSegmentCount) % iRimIndexCount) * 3) + 1
+            iIndex = (((iMeshRow * iMeshSegmentCountD2) % iRimIndexCount) * 3) + 1
             iY = gi${InstrumentName}_MeshAudioPositions[iIndex]
             kY = iY
 
-            iRimPositionIndexOffset = gi${InstrumentName}_MeshSegmentCount / gi${InstrumentName}_RimPositionCount
+            iRimPositionIndexOffset = iMeshSegmentCountD2 / gi${InstrumentName}_RimPositionCount
             kRimPositionIndex = 0
             kRimPositionIndexWithOffset = 0
             kPrinted init false
@@ -140,8 +139,7 @@ instr INSTRUMENT_ID
                 kIndex = \
                     kRimPositionIndexWithOffset \
                     + gi${InstrumentName}_RimPositionOffset \
-                    + (iMeshRow * gi${InstrumentName}_MeshSegmentCount) \
-                    + iMeshRow
+                    + (iMeshRow * iMeshSegmentCountD2)
                 kIndex = kIndex % iRimIndexCount
                 kIndex *= 3
                 kX = gi${InstrumentName}_MeshAudioPositions[kIndex]
@@ -171,11 +169,14 @@ instr INSTRUMENT_ID
             ${CSOUND_IFDEF} IS_GENERATING_JSON
                 iPositionIndex = \
                     gi${InstrumentName}_RimPositionOffset \
-                    + (iMeshRow * gi${InstrumentName}_MeshSegmentCount) \
-                    + iMeshRow
+                    + (iMeshRow * iMeshSegmentCountD2)
                 iPositionIndex = iPositionIndex % iRimIndexCount
                 fprints(SJsonFile, ",\"positionIndex\":%d", iPositionIndex)
             ${CSOUND_ENDIF}
+
+            if (iNoteNumber == gi${InstrumentName}_NoteNumber3) then
+                gi${InstrumentName}_RimPositionOffset += 1
+            endif
         else
             // Position disabled.
             a1 = 0
