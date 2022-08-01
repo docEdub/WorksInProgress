@@ -2241,6 +2241,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class RimArpAnimationComponent
 
     class RimArpAnimationComponent extends RimMeshBaseComponent {
+        color = [ 0.5, 0.5, 0.5 ]
+
         constructor(mesh) {
             super(mesh, RimArpAnimationComponent.name)
         }
@@ -2278,7 +2280,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             const material = new BABYLON.StandardMaterial('', scene)
             material.backFaceCulling = false
-            material.emissiveColor.set(1, 1, 1)
+            material.emissiveColor.fromArray(this.animation.color)
             this.mesh.material = material
 
             const positions = [
@@ -2335,6 +2337,70 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class RimLineAnimationComponent
 
     class RimLineAnimationComponent extends RimMeshBaseComponent {
+        color = [ 0.5, 0.5, 0.5 ]
+
+        _noteNumbers = []
+
+        get noteNumbers() {
+            return this._noteNumbers
+        }
+
+        set noteNumbers(value) {
+            this._noteNumbers = value
+            this.#initRowMeshes()
+        }
+
+        showNoteNumber = (noteNumber) => {
+            this.#setNoteNumberVisible(noteNumber, true)
+        }
+
+        hideNoteNumber = (noteNumber) => {
+            this.#setNoteNumberVisible(noteNumber, false)
+        }
+
+        setNoteNumberAlpha = (noteNumber, alpha) => {
+            this._rowMeshMaterials[this.#rowOfNoteNumber(noteNumber)].alpha = alpha
+        }
+
+        #rowOfNoteNumber = (noteNumber) => {
+            return this.noteNumbers.indexOf(noteNumber)
+        }
+
+        #setNoteNumberVisible = (noteNumber, visible) => {
+            this._rowMeshes[this.#rowOfNoteNumber(noteNumber)].isVisible = visible
+        }
+
+        _rowMeshes = []
+        _rowMeshMaterials = []
+
+        #initRowMeshes = () => {
+            // console.debug(`#initRowMeshes() called on ${this.sharedMeshData.constructor.name}`)
+            for (let i = 0; i < this.sharedMeshData.rows; i++) {
+                const mesh = new BABYLON.Mesh('', scene)
+                mesh.isVisible = false
+
+                const material = new BABYLON.StandardMaterial('', scene)
+                material.emissiveColor.fromArray(this.color)
+                material.backFaceCulling = false
+                mesh.material = material
+
+                let normals = []
+                let indices = this.sharedMeshData.vertexIndices.slice(
+                    i * 3 * this.sharedMeshData.segments,
+                    (i + 1) * 3 * this.sharedMeshData.segments
+                )
+                BABYLON.VertexData.ComputeNormals(this.sharedMeshData.vertexPositions, indices, normals)
+                const vertexData = new BABYLON.VertexData
+                vertexData.positions = this.sharedMeshData.vertexPositions
+                vertexData.indices = indices
+                vertexData.normals = normals
+                vertexData.applyToMesh(mesh)
+
+                this._rowMeshes.push(mesh)
+                this._rowMeshMaterials.push(material)
+            }
+        }
+
         constructor(mesh) {
             super(mesh, RimLineAnimationComponent.name)
         }
@@ -2347,6 +2413,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     class RimLineAnimationSystem extends System {
         static requiredComponentTypes = () => { return [
             TrackComponent,
+            TrackNoteDurationComponent,
+            TrackNoteNormalizedDurationComponent,
             RimLineAnimationComponent
         ]}
 
@@ -2366,6 +2434,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             assert(this.track, `${TrackComponent.name} missing.`)
             assert(this.animation, `${RimLineAnimationComponent.name} missing.`)
+        }
+
+        run = (time, deltaTime) => {
+            if (this.track.activeNotesChanged) {
+                const noteNumbers = this.animation.noteNumbers
+                for (let i = 0; i < noteNumbers.length; i++) {
+                    this.animation.hideNoteNumber(noteNumbers[i])
+                }
+                for (let i = 0; i < this.track.activeNotes.length; i++) {
+                    this.animation.showNoteNumber(this.track.activeNotes[i].pitch)
+                }
+            }
+            for (let i = 0; i < this.track.activeNotes.length; i++) {
+                const note = this.track.activeNotes[i]
+                this.animation.setNoteNumberAlpha(note.pitch, 1 - note.normalizedDuration)
+            }
         }
     }
 
@@ -2535,6 +2619,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const createRimArpAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
         const animation = new RimArpAnimationComponent(options.mesh)
+        if (options.color !== undefined) {
+            animation.color = options.color
+        }
         entity.addComponent(animation)
         return entity
     }
@@ -2543,7 +2630,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const entity = createTrack(id, json, options)
         const duration = new TrackNoteDurationComponent
         entity.addComponent(duration)
+        const normalizedDuration = new TrackNoteNormalizedDurationComponent
+        entity.addComponent(normalizedDuration)
         const animation = new RimLineAnimationComponent(options.mesh)
+        if (options.color !== undefined) {
+            animation.color = options.color
+        }
+        animation.noteNumbers = options.noteNumbers
         entity.addComponent(animation)
         return entity
     }
@@ -2689,7 +2782,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         function: createRimArpAnimation,
         options: {
             name: '09: Rim 1: Hi Arp',
-            mesh: Rim1HiArpMesh
+            mesh: Rim1HiArpMesh,
+            color: [ 0.3, 0.6, 0.5 ]
         }
     }
 
@@ -2698,6 +2792,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '10: Rim 2: Hi Line',
             mesh: Rim2HiLineMesh,
+            color: [ 0.5, 0.5, 0.1 ],
             noteNumbers: [ 60, 62, 64, 65, 67, 69, 71, 72 ]
         }
     }
@@ -2707,6 +2802,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '11: Rim 3: Lo Line',
             mesh: Rim3LoLineMesh,
+            color: [ 0.5, 0.1, 0.5 ],
             noteNumbers: [ 52, 53, 55, 57, 59, 60 ]
         }
     }
