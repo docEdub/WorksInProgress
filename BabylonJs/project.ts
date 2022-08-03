@@ -8162,14 +8162,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kRimPositionIndex = 0
     kRimPositionIndexWithOffset = 0
     kPrinted init 0
-    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
-    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
-    kIndex = kIndex % iRimIndexCount
-    kIndex *= 3
-    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
-    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
-    if (kPrinted == 0) then
-    endif
+    kX = 0
+    kZ = 0
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
@@ -8183,8 +8177,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     kRimPositionIndex += 1
     kRimPositionIndexWithOffset += iRimPositionIndexOffset
-    od
-    kPrinted = 1
     #ifdef IS_GENERATING_JSON
     iPositionIndex = giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
     iPositionIndex = iPositionIndex % iRimIndexCount
@@ -8315,14 +8307,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kRimPositionIndex = 0
     kRimPositionIndexWithOffset = 0
     kPrinted init 0
-    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
-    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
-    kIndex = kIndex % iRimIndexCount
-    kIndex *= 3
-    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
-    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
-    if (kPrinted == 0) then
-    endif
+    kX = 0
+    kZ = 0
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
@@ -8336,8 +8322,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     kRimPositionIndex += 1
     kRimPositionIndexWithOffset += iRimPositionIndexOffset
-    od
-    kPrinted = 1
     #ifdef IS_GENERATING_JSON
     iPositionIndex = giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
     iPositionIndex = iPositionIndex % iRimIndexCount
@@ -8468,14 +8452,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kRimPositionIndex = 0
     kRimPositionIndexWithOffset = 0
     kPrinted init 0
-    while (kRimPositionIndex < giSaw1RimSynth_RimPositionCount) do
-    kIndex = kRimPositionIndexWithOffset + giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
-    kIndex = kIndex % iRimIndexCount
-    kIndex *= 3
-    kX = giSaw1RimSynth_MeshAudioPositions[kIndex]
-    kZ = giSaw1RimSynth_MeshAudioPositions[kIndex + 2]
-    if (kPrinted == 0) then
-    endif
+    kX = 0
+    kZ = 0
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
@@ -8489,8 +8467,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     kRimPositionIndex += 1
     kRimPositionIndexWithOffset += iRimPositionIndexOffset
-    od
-    kPrinted = 1
     #ifdef IS_GENERATING_JSON
     iPositionIndex = giSaw1RimSynth_RimPositionOffset + (iMeshRow * iMeshSegmentCountD2)
     iPositionIndex = iPositionIndex % iRimIndexCount

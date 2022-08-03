@@ -135,19 +135,22 @@ instr INSTRUMENT_ID
             kRimPositionIndex = 0
             kRimPositionIndexWithOffset = 0
             kPrinted init false
-            while (kRimPositionIndex < gi${InstrumentName}_RimPositionCount) do
-                kIndex = \
-                    kRimPositionIndexWithOffset \
-                    + gi${InstrumentName}_RimPositionOffset \
-                    + (iMeshRow * iMeshSegmentCountD2)
-                kIndex = kIndex % iRimIndexCount
-                kIndex *= 3
-                kX = gi${InstrumentName}_MeshAudioPositions[kIndex]
-                kZ = gi${InstrumentName}_MeshAudioPositions[kIndex + 2]
+            ; while (kRimPositionIndex < gi${InstrumentName}_RimPositionCount) do
+            ;     kIndex = \
+            ;         kRimPositionIndexWithOffset \
+            ;         + gi${InstrumentName}_RimPositionOffset \
+            ;         + (iMeshRow * iMeshSegmentCountD2)
+            ;     kIndex = kIndex % iRimIndexCount
+            ;     kIndex *= 3
+            ;     kX = gi${InstrumentName}_MeshAudioPositions[kIndex]
+            ;     kZ = gi${InstrumentName}_MeshAudioPositions[kIndex + 2]
 
-                if (kPrinted == false) then
-                    log_k_debug("Position[%d] = [%.3f, %.3f, %.3f]", kRimPositionIndex, kX, kY, kZ)
-                endif
+            ;     if (kPrinted == false) then
+            ;         log_k_debug("Position[%d] = [%.3f, %.3f, %.3f]", kRimPositionIndex, kX, kY, kZ)
+            ;     endif
+
+                kX = 0
+                kZ = 0
 
                 aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
                 aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
@@ -163,8 +166,8 @@ instr INSTRUMENT_ID
 
                 kRimPositionIndex += 1
                 kRimPositionIndexWithOffset += iRimPositionIndexOffset
-            od
-            kPrinted = true
+            ; od
+            ; kPrinted = true
 
             ${CSOUND_IFDEF} IS_GENERATING_JSON
                 iPositionIndex = \
