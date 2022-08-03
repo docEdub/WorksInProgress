@@ -42,7 +42,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = true
+document.useDawTiming = false
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -184,8 +184,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #restartCount = 0
         get restartCount() { return this.#restartCount }
 
+        _updateCameraMatrixTimer = null
+
         #startUpdatingCameraMatrix = () => {
-            setInterval(() => {
+            camera.matrixIsDirty = true
+            this._updateCameraMatrixTimer = setInterval(() => {
                 if (!this.isStarted) {
                     return
                 }
@@ -198,6 +201,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     camera.matrixIsDirty = false
                 }
             }, camera.matrixMillisecondsPerUpdate)
+        }
+
+        #stopUpdatingCameraMatrix = () => {
+            if (this._updateCameraMatrixTimer === null) return
+            clearInterval(this._updateCameraMatrixTimer)
         }
 
         #onImportScriptDone = async () => {
@@ -268,6 +276,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug('Starting Csound playback - done')
         }
 
+        stop = async () => {
+            if (!this.isStarted) return
+            if (!this.#previousConsoleLog) return
+            this.#startWasRequested = false
+            if (!this.audioEngineIsUnlocked) return
+            if (!this.isLoaded) return
+
+            console.debug('Stopping Csound playback ...')
+
+            this.volume = 0
+            this.#stopUpdatingCameraMatrix()
+            await this.#csoundObj.stop()
+            this.#playbackIsStarted = false
+            this.#isStarted = false
+            console.log = this.#previousConsoleLog
+
+            console.debug('Stopping Csound playback - done')
+        }
+
         _isPaused = false
         _isResumed = false
 
@@ -316,8 +343,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         #restart = async () => {
             console.debug('Restarting Csound ...')
-            this.#playbackIsStarted = false
-            await this.#csoundObj.rewindScore()
+            await this.stop()
+            await this.start()
             console.debug('Restarting Csound - done')
             this.#restartCount++
             console.debug('Restart count =', this.restartCount)
