@@ -150,10 +150,10 @@ instr INSTRUMENT_ID
             a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
         else
             // Disabled.
-            a1 = 0
+            a1 = aOut
             a2 = 0
             a3 = 0
-            a4 = aOut
+            a4 = 0
         endif
 
         #if IS_PLAYBACK
