@@ -135,39 +135,25 @@ instr INSTRUMENT_ID
             kRimPositionIndex = 0
             kRimPositionIndexWithOffset = 0
             kPrinted init false
-            ; while (kRimPositionIndex < gi${InstrumentName}_RimPositionCount) do
-            ;     kIndex = \
-            ;         kRimPositionIndexWithOffset \
-            ;         + gi${InstrumentName}_RimPositionOffset \
-            ;         + (iMeshRow * iMeshSegmentCountD2)
-            ;     kIndex = kIndex % iRimIndexCount
-            ;     kIndex *= 3
-            ;     kX = gi${InstrumentName}_MeshAudioPositions[kIndex]
-            ;     kZ = gi${InstrumentName}_MeshAudioPositions[kIndex + 2]
 
-            ;     if (kPrinted == false) then
-            ;         log_k_debug("Position[%d] = [%.3f, %.3f, %.3f]", kRimPositionIndex, kX, kY, kZ)
-            ;     endif
+            kX = 0
+            kZ = 0
 
-                kX = 0
-                kZ = 0
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+                aDistance,
+                kPositionReferenceDistance,
+                kPositionRolloffFactor)
+            aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            aReverbOut = aOut * (1 - (1 - aDistanceAmp) / 5)
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ, 90)
+            a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
 
-                aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
-                aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
-                    aDistance,
-                    kPositionReferenceDistance,
-                    kPositionRolloffFactor)
-                aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
-                AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-                a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-                a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-                a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-                a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-
-                kRimPositionIndex += 1
-                kRimPositionIndexWithOffset += iRimPositionIndexOffset
-            ; od
-            ; kPrinted = true
+            kRimPositionIndex += 1
+            kRimPositionIndexWithOffset += iRimPositionIndexOffset
 
             ${CSOUND_IFDEF} IS_GENERATING_JSON
                 iPositionIndex = \
@@ -193,8 +179,8 @@ instr INSTRUMENT_ID
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -208,7 +194,7 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a1, a2, a3, a4, aOut, aOut)
+            outc(a1, a2, a3, a4, aReverbOut, aReverbOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON

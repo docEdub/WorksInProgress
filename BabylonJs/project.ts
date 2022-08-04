@@ -42,7 +42,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -8170,7 +8170,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionReferenceDistance,
     kPositionRolloffFactor)
     aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
-    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ, 360)
     a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
@@ -8315,7 +8315,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionReferenceDistance,
     kPositionRolloffFactor)
     aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
-    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ, 360)
     a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
@@ -8460,7 +8460,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kPositionReferenceDistance,
     kPositionRolloffFactor)
     aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
-    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ, 360)
     a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
     a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
