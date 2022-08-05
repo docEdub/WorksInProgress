@@ -2,6 +2,7 @@ var fs = require('fs')
 var os = require('os');
 var path = require('path');
 var spawnSync = require('child_process').spawnSync;
+const readSharedModule = require('./BabylonJs/SharedModules/read.js')
 
 const csoundDir = path.resolve('Csound');
 const buildDir = path.join(csoundDir, '/build');
@@ -44,7 +45,7 @@ const updateBabylonJsProject = () => {
     data = fs.readFileSync(path.join(babylonJsDir, '/project.ts'), 'ascii')
     data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
     fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-    console.log('-- Updating BabylonJs/project.ts `csdText` done')
+    console.log('-- Updating BabylonJs/project.ts `csdText` - done')
 }
 
 if (os.type() === 'Darwin') {
@@ -57,6 +58,21 @@ if (os.type() === 'Darwin') {
 
     updateBabylonJsProject()
 
+    // Remove the configured playback .csd.
+    const configuredPlaybackCsdPath = path.join(csoundDir, 'build', 'bounce', 'DawPlayback.configured.csd')
+    if (fs.existsSync(configuredPlaybackCsdPath)) {
+        fs.rmSync(configuredPlaybackCsdPath)
+    }
+
+    // Replace all configuration variables in playback .csd. Configuration variables = ${.*}
+    let data = fs.readFileSync(path.join(csoundDir, 'build', 'bounce', 'DawPlayback.csd'), 'ascii')
+    const matches = data.match(/\$\{.*\}/g)
+    for (let i = 0; i < matches.length; i++) {
+        const match = matches[i]
+        data = data.replaceAll(match, readSharedModule(match))
+    }
+    fs.writeFileSync(bounceDir + '/DawPlayback.configured.csd', data)
+
     if (process.argv.indexOf('--with-json') != -1) {
         // Wipe the json folder.
         if (fs.existsSync(jsonDir)) {
@@ -65,7 +81,7 @@ if (os.type() === 'Darwin') {
         fs.mkdirSync(jsonDir);
 
         // Generate DawPlayback.json
-        spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.csd --control-rate=120 --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
+        spawnSync('bash', [ '-c', 'cd ' + bounceDir + ' && csound DawPlayback.configured.csd --control-rate=120 --omacro:IS_GENERATING_JSON=1 --smacro:IS_GENERATING_JSON=1' ], {
             stdio: 'inherit'
         });
 
@@ -83,7 +99,7 @@ if (os.type() === 'Darwin') {
 
         data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
         fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-        console.log('-- Updating BabylonJs/project.ts `csdJson` done')
+        console.log('-- Updating BabylonJs/project.ts `csdJson` - done')
     }
 
     if (process.argv.indexOf('--mixdown') != -1) {

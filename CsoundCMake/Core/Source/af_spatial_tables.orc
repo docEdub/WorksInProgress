@@ -23,7 +23,7 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_spatial_tables_orc ${CSOUND_INCLUD
 gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_000_179[][] init 180, 6
 gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_180_359[][] init 180, 6
 gi_AF_3D_Audio_SphericalHarmonicsElevationLookupTable[][] init 180, 9
-gi_AF_3D_Audio_MaxReWeightsLookupTable[][] init 360, 4
+gi_AF_3D_Audio_MaxReWeightsLookupTable[][] init 361, 4
 
 // Pre-computed Spherical Harmonics Coefficients.
 //
@@ -946,7 +946,8 @@ gi_AF_3D_Audio_MaxReWeightsLookupTable fillarray _(\)
 2.397469, .000002, 0, 0,
 2.397469, .000001, 0, 0,
 2.397469, .000001, 0, 0,
-2.397469, .000001, 0, 0
+2.397469, .000001, 0, 0,
+2.397469, 0, 0, 0
 
 gi_AF_3D_HrirChannel1TableNumber = ftgen(0, 0, 256, -2, _(\)
 -.00027735404243516849874529039965, _(\)

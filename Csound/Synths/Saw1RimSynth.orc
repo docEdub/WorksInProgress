@@ -1,10 +1,10 @@
 #include "definitions.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// File: Triangle2Synth.orc
+// File: Saw1RimSynth.orc
 //
 // Description:
-//  Single triangle wave oscillator with piano-like decay and 2 note number LFOs.
+//  Single saw wave oscillator with piano-like decay.
 //----------------------------------------------------------------------------------------------------------------------
 
 #include "synth-before-include-guard.h.orc"
@@ -16,13 +16,17 @@
 
 ${CSOUND_INCLUDE} "json.orc"
 
-giTriangle2Synth_PlaybackVolumeAdjustment = 0.9
-giTriangle2Synth_PlaybackReverbAdjustment = 1.5
-giTriangle2Synth_NoteNumberLfoAmp = 0.333
+gi${InstrumentName}_PlaybackVolumeAdjustment = 0.9
+gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
+gi${InstrumentName}_NoteNumber1 = 89 // F
+gi${InstrumentName}_NoteNumber2 = 91 // G
+gi${InstrumentName}_NoteNumber3 = 93 // A
+gi${InstrumentName}_RimPositionCount = 20
+gi${InstrumentName}_RimPositionOffset = 0
 
-giTriangle2Synth_NoteIndex[] init ORC_INSTANCE_COUNT
+gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
-giTriangle2Synth_LfoShapeTable = ftgen(0, 0, 60, GEN07, 0, 15, 1, 30, -1, 15, 0)
+#include "Common/RimMesh.orc"
 
 #endif // #ifndef ${InstrumentName}_orc__include_guard
 
@@ -33,52 +37,15 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
+        iPositionIndexOffset = (gi${InstrumentName}_MeshSegmentCount / 2) / gi${InstrumentName}_RimPositionCount
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
-        fprints(SJsonFile, sprintf(",\"pitchLfoAmp\":%.3f", giTriangle2Synth_NoteNumberLfoAmp))
-
-        fprints(SJsonFile, ",\"pitchLfoShape\":[")
-        iLfoShapeTableIndex = 0
-        while (iLfoShapeTableIndex < 60) do
-            if (iLfoShapeTableIndex > 0) then
-                fprints(SJsonFile, ",")
-            endif
-            fprints(SJsonFile, sprintf("%.3f", tab_i(iLfoShapeTableIndex, giTriangle2Synth_LfoShapeTable)))
-            iLfoShapeTableIndex += 1
-        od
-        fprints(SJsonFile, "]}")
+        fprints(SJsonFile, sprintf(",\"positionCount\":%d", gi${InstrumentName}_RimPositionCount))
+        fprints(SJsonFile, sprintf(",\"positionIndexOffset\":%d", iPositionIndexOffset))
+        fprints(SJsonFile, "}")
         turnoff
     endin
 ${CSOUND_ENDIF}
-
-
-gkNoteNumberLfo init 0
-
-instr CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)
-    log_i_trace("%s ...", nstrstr(p1))
-
-    gkNoteNumberLfo = abs(lfo(33, .03, LFO_SHAPE_TRIANGLE))
-
-    #if !IS_PLAYBACK
-        if (gkReloaded == true) then
-            event("i", STRINGIZE(CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)), 0, -1)
-            turnoff
-        endif
-    #endif
-
-    ; #if LOGGING
-    ;     kLastTime init 0
-    ;     kTime = time_k()
-    ;     if (kTime - kLastTime > 1) then
-    ;         kLastTime = kTime
-    ;         log_k_trace("%s running ...", nstrstr(p1))
-    ;     endif
-    ; #endif
-
-    log_i_trace("%s - done", nstrstr(p1))
-endin
-
-event_i("i", STRINGIZE(CONCAT(GlobalNoteNumberLfo_, INSTRUMENT_ID)), 0, -1)
 
 
 instr INSTRUMENT_ID
@@ -97,7 +64,6 @@ instr INSTRUMENT_ID
         iNoteNumber = p5
         iVelocity = p6
 
-        iNoteNumberLfoTime = i(gkNoteNumberLfo)
         iOrcInstanceIndex = ORC_INSTANCE_INDEX
         aOut = 0
         a1 = 0
@@ -105,11 +71,22 @@ instr INSTRUMENT_ID
         a3 = 0
         a4 = 0
 
+        ${CSOUND_IFDEF} IS_GENERATING_JSON
+            if (giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
+                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
+            endif
+            giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] = giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX] + 1
+            SJsonFile = sprintf("json/%s.%d.json",
+                INSTRUMENT_PLUGIN_UUID,
+                giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX])
+            iOnTime = times()
+            fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
+        ${CSOUND_ENDIF}
+
         // Oscillator
         //--------------------------------------------------------------------------------------------------------------
         kAmp init 0.333 * (iVelocity / 127)
-        kNoteNumber = iNoteNumber + lfo(giTriangle2Synth_NoteNumberLfoAmp, iNoteNumberLfoTime, LFO_SHAPE_TRIANGLE)
-        aOut = vco2(kAmp, cpsmidinn(kNoteNumber), VCO2_WAVEFORM_TRIANGLE_NO_RAMP)
+        aOut = vco2(kAmp, cpsmidinn(iNoteNumber), VCO2_WAVEFORM_INTEGRATED_SAWTOOTH)
 
         // Volume envelope
         //--------------------------------------------------------------------------------------------------------------
@@ -132,24 +109,65 @@ instr INSTRUMENT_ID
         endif
         aOut *= aEnvelopeS_decayAmount
 
-        // Low pass filter
-        //--------------------------------------------------------------------------------------------------------------
-        aOut = tone(aOut, 999 + 333)
-
         if (CC_VALUE_k(positionEnabled) == true) then
             #include "Position_kXYZ.orc"
 
-            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
-            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(aDistance, kPositionReferenceDistance, kPositionRolloffFactor)
-            aOut *= min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = 0
 
-            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aOut
-            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aOut
+            iMeshRow = 0
+            if (iNoteNumber == gi${InstrumentName}_NoteNumber2) then
+                iMeshRow = 1
+            elseif (iNoteNumber == gi${InstrumentName}_NoteNumber3) then
+                iMeshRow = 2
+            endif
+            log_i_debug("iNoteNumber = %d, iMeshRow = %d", iNoteNumber, iMeshRow)
+
+            iMeshSegmentCountD2 = gi${InstrumentName}_MeshSegmentCount / 2
+            iRimIndexCount = lenarray(gi${InstrumentName}_MeshAudioPositions) / 3
+            iIndex = (((iMeshRow * iMeshSegmentCountD2) % iRimIndexCount) * 3) + 1
+            iY = gi${InstrumentName}_MeshAudioPositions[iIndex]
+            kY = iY
+
+            iRimPositionIndexOffset = iMeshSegmentCountD2 / gi${InstrumentName}_RimPositionCount
+            kRimPositionIndex = 0
+            kRimPositionIndexWithOffset = 0
+            kPrinted init false
+
+            kX = 0
+            kZ = 0
+
+            aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+            aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+                aDistance,
+                kPositionReferenceDistance,
+                kPositionRolloffFactor)
+            aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+            aReverbOut = aOut * (1 - (1 - aDistanceAmp) / 5)
+            AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ, 90)
+            a1 += lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a2 += lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a3 += lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a4 += lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+
+            kRimPositionIndex += 1
+            kRimPositionIndexWithOffset += iRimPositionIndexOffset
+
+            ${CSOUND_IFDEF} IS_GENERATING_JSON
+                iPositionIndex = \
+                    gi${InstrumentName}_RimPositionOffset \
+                    + (iMeshRow * iMeshSegmentCountD2)
+                iPositionIndex = iPositionIndex % iRimIndexCount
+                fprints(SJsonFile, ",\"positionIndex\":%d", iPositionIndex)
+            ${CSOUND_ENDIF}
+
+            if (iNoteNumber == gi${InstrumentName}_NoteNumber3) then
+                gi${InstrumentName}_RimPositionOffset += 1
+            endif
         else
-            // Disabled.
+            // Position disabled.
             a1 = aOut
             a2 = 0
             a3 = 0
@@ -161,8 +179,8 @@ instr INSTRUMENT_ID
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
             gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aReverbOut
+            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aReverbOut
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1
@@ -176,26 +194,11 @@ instr INSTRUMENT_ID
                     turnoff
                 endif
             endif
-            outc(a1, a2, a3, a4, aOut, aOut)
+            outc(a1, a2, a3, a4, aReverbOut, aReverbOut)
         #endif
 
         ${CSOUND_IFDEF} IS_GENERATING_JSON
-            if (giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
-                scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
-            endif
-            giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] = giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            SJsonFile = sprintf("json/%s.%d.json",
-                INSTRUMENT_PLUGIN_UUID,
-                giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            iOnTime = times()
-            SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f",
-                iOnTime, iNoteNumber, iNoteNumberLfoTime)
             if (lastcycle() == true) then
-                // Only print the position xyz for the first note since all other notes are in the same position.
-                fprintks(SJsonFile, SJsonData)
-                if (CC_VALUE_k(positionEnabled) == true && giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX] == 1) then
-                    fprintks(SJsonFile, ",\"xyz\":[%.3f,%.3f,%.3f]", kX, kY, kZ)
-                endif
                 fprintks(SJsonFile, ",\"offTime\":%.3f}}", timeinsts() + iOnTime)
             endif
         ${CSOUND_ENDIF}

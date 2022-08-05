@@ -53,7 +53,7 @@ gi_TemplateSynth_NoteIndex[] init ORC_INSTANCE_COUNT
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+    gSPluginUuids[INSTRUMENT_TRACK_INDEX][INSTRUMENT_PLUGIN_INDEX] = INSTRUMENT_PLUGIN_UUID
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
@@ -72,7 +72,7 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_NOTE_ON) then
         iNoteNumber = p5
         iVelocity = p6
-        
+
         ${CSOUND_IFDEF} IS_GENERATING_JSON
             if (gi_TemplateSynth_NoteIndex[ORC_INSTANCE_INDEX] == 0) then
                 scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))

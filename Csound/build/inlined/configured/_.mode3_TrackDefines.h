@@ -7,8 +7,12 @@
 #define Triangle2Synth_6 10
 #define Triangle4BassMonoSynth_7 11
 #define Triangle4BassMonoSynth_8 12
-#define AuxMixInstrument 13
-#define AuxInstrument 14
-#define Reverb_9_0 15
-#define MasterInstrument 16
-#define FinalMixInstrument 17
+#define Saw1RimSynth_9 13
+#define Saw1RimSynth_10 14
+#define Saw1RimSynth_11 15
+#define TriangleUdoTriggerSynth_12 16
+#define AuxMixInstrument 17
+#define AuxInstrument 18
+#define Reverb_13_0 19
+#define MasterInstrument 20
+#define FinalMixInstrument 21

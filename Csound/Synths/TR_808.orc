@@ -107,7 +107,7 @@ giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+    gSPluginUuids[INSTRUMENT_TRACK_INDEX][INSTRUMENT_PLUGIN_INDEX] = INSTRUMENT_PLUGIN_UUID
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)

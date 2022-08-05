@@ -160,8 +160,80 @@
 #undef INSTRUMENT_NAME
 #undef INSTRUMENT_ID
 
-#define INSTRUMENT_ID Reverb_9_0 // -0
+#define INSTRUMENT_ID Saw1RimSynth_9 // -0
+#define INSTRUMENT_NAME Saw1RimSynth // -0
+#define INSTANCE_NAME STRINGIZE(-) // -0
 #define INSTRUMENT_TRACK_INDEX 9
+#define INSTRUMENT_PLUGIN_INDEX 0
+#define INSTRUMENT_PLUGIN_UUID "d51fb1d5a0104857a7f61b218692743c" // -0
+#define ORC_INSTANCE_COUNT 3
+#define ORC_INSTANCE_INDEX 0
+#include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Saw1RimSynth/Saw1RimSynth.orc" // -0
+#undef ORC_INSTANCE_INDEX
+#undef ORC_INSTANCE_COUNT
+#undef INSTRUMENT_PLUGIN_UUID
+#undef INSTRUMENT_PLUGIN_INDEX
+#undef INSTRUMENT_TRACK_INDEX
+#undef INSTANCE_NAME
+#undef INSTRUMENT_NAME
+#undef INSTRUMENT_ID
+
+#define INSTRUMENT_ID Saw1RimSynth_10 // -0
+#define INSTRUMENT_NAME Saw1RimSynth // -0
+#define INSTANCE_NAME STRINGIZE(-) // -0
+#define INSTRUMENT_TRACK_INDEX 10
+#define INSTRUMENT_PLUGIN_INDEX 0
+#define INSTRUMENT_PLUGIN_UUID "14afc0dff693459fb6fc521bcf3db0bc" // -0
+#define ORC_INSTANCE_COUNT 3
+#define ORC_INSTANCE_INDEX 1
+#include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Saw1RimSynth/Saw1RimSynth.orc" // -0
+#undef ORC_INSTANCE_INDEX
+#undef ORC_INSTANCE_COUNT
+#undef INSTRUMENT_PLUGIN_UUID
+#undef INSTRUMENT_PLUGIN_INDEX
+#undef INSTRUMENT_TRACK_INDEX
+#undef INSTANCE_NAME
+#undef INSTRUMENT_NAME
+#undef INSTRUMENT_ID
+
+#define INSTRUMENT_ID Saw1RimSynth_11 // -0
+#define INSTRUMENT_NAME Saw1RimSynth // -0
+#define INSTANCE_NAME STRINGIZE(-) // -0
+#define INSTRUMENT_TRACK_INDEX 11
+#define INSTRUMENT_PLUGIN_INDEX 0
+#define INSTRUMENT_PLUGIN_UUID "5006b8ea266f4bf9aba92ff5badfea3e" // -0
+#define ORC_INSTANCE_COUNT 3
+#define ORC_INSTANCE_INDEX 2
+#include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Saw1RimSynth/Saw1RimSynth.orc" // -0
+#undef ORC_INSTANCE_INDEX
+#undef ORC_INSTANCE_COUNT
+#undef INSTRUMENT_PLUGIN_UUID
+#undef INSTRUMENT_PLUGIN_INDEX
+#undef INSTRUMENT_TRACK_INDEX
+#undef INSTANCE_NAME
+#undef INSTRUMENT_NAME
+#undef INSTRUMENT_ID
+
+#define INSTRUMENT_ID TriangleUdoTriggerSynth_12 // -0
+#define INSTRUMENT_NAME TriangleUdoTriggerSynth // -0
+#define INSTANCE_NAME STRINGIZE(-) // -0
+#define INSTRUMENT_TRACK_INDEX 12
+#define INSTRUMENT_PLUGIN_INDEX 0
+#define INSTRUMENT_PLUGIN_UUID "f6341a2a81244ea79dd0e1486eb93386" // -0
+#define ORC_INSTANCE_COUNT 1
+#define ORC_INSTANCE_INDEX 0
+#include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/TriangleUdoTriggerSynth/TriangleUdoTriggerSynth.orc" // -0
+#undef ORC_INSTANCE_INDEX
+#undef ORC_INSTANCE_COUNT
+#undef INSTRUMENT_PLUGIN_UUID
+#undef INSTRUMENT_PLUGIN_INDEX
+#undef INSTRUMENT_TRACK_INDEX
+#undef INSTANCE_NAME
+#undef INSTRUMENT_NAME
+#undef INSTRUMENT_ID
+
+#define INSTRUMENT_ID Reverb_13_0 // -0
+#define INSTRUMENT_TRACK_INDEX 13
 #define INSTRUMENT_PLUGIN_INDEX 1
 #define ORC_INSTANCE_COUNT 1
 #define ORC_INSTANCE_INDEX 0

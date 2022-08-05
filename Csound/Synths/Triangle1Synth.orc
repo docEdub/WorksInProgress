@@ -24,7 +24,7 @@ giTriangle1Synth_NoteIndex[] init ORC_INSTANCE_COUNT
 //----------------------------------------------------------------------------------------------------------------------
 
 ${CSOUND_IFDEF} IS_GENERATING_JSON
-    setPluginUuid(INSTRUMENT_TRACK_INDEX, INSTRUMENT_PLUGIN_INDEX, INSTRUMENT_PLUGIN_UUID)
+    gSPluginUuids[INSTRUMENT_TRACK_INDEX][INSTRUMENT_PLUGIN_INDEX] = INSTRUMENT_PLUGIN_UUID
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)

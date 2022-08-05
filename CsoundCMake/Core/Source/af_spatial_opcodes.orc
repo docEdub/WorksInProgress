@@ -79,7 +79,7 @@ gk_AF_3D_ListenerPosition[] init 3
 //
  opcode AF_3D_Audio_MaxReWeightsLookupTableRow, k, k
     k_sourceWidth xin
-    xout min(max(0, round(k_sourceWidth)), 359)
+    xout min(max(0, round(k_sourceWidth)), 360)
  endop
 
 
