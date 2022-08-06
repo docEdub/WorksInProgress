@@ -264,7 +264,7 @@ class RimMesh {
             }
         }
 
-        // Set audio position string.
+        // Set audio positions string.
         let s = `${this.#private.audioPositions.length}`
         for (let i = 0; i < this.#private.audioPositions.length; i++) {
             s +=  `\ngiSaw1RimSynth_MeshAudioPositions[${i}] =  ${this.#private.audioPositions[i].toFixed(3)}`

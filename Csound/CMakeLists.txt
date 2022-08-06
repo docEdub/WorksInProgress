@@ -22,6 +22,7 @@ add_csd_targets(
         "Effects/Spatializer.csd"
     SYNTH_PLUGIN_SOURCES
         "Synths/Saw1RimSynth.csd"
+        "Synths/Saw2FlyerSynth.csd"
         "Synths/TR_808.csd"
         "Synths/Triangle1Synth.csd"
         "Synths/Triangle2Synth.csd"
