@@ -32,7 +32,6 @@ ${CSOUND_IFDEF} IS_GENERATING_JSON
 
     instr CONCAT(Json_, INSTRUMENT_ID)
         SJsonFile = sprintf("json/%s.0.json", INSTRUMENT_PLUGIN_UUID)
-        iPositionIndexOffset = (gi${InstrumentName}_MeshSegmentCount / 2) / gi${InstrumentName}_RimPositionCount
         fprints(SJsonFile, "{")
         fprints(SJsonFile, sprintf("\"instanceName\":\"%s\"", INSTANCE_NAME))
         fprints(SJsonFile, "}")

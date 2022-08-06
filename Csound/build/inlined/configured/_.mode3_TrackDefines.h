@@ -10,7 +10,7 @@
 #define Saw1RimSynth_9 13
 #define Saw1RimSynth_10 14
 #define Saw1RimSynth_11 15
-#define TriangleUdoTriggerSynth_12 16
+#define Saw2FlyerSynth_12 16
 #define AuxMixInstrument 17
 #define AuxInstrument 18
 #define Reverb_13_0 19
