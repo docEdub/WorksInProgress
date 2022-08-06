@@ -1,5 +1,4 @@
 
-
 function(read_shared_module_property property output_variable)
     execute_process(
         COMMAND node ./BabylonJs/SharedModules/read-cli.js -- ${property}
