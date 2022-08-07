@@ -2,9 +2,14 @@
 const BABYLON = require('babylonjs')
 
 class FlyerPath {
-    get path() {
+    startRadius = 0
+    height = 210 // center of main pyramid mesh's top piece
+    segments = 120
+    radiusDelta = 9
+
+    get points() {
         this.#init()
-        return this.#private.path
+        return this.#private.points
     }
 
     get audioPositions() {
@@ -25,7 +30,7 @@ class FlyerPath {
         constructor(this_public) {
             this._public = this_public
 
-            this.path = null
+            this.points = null
             this.audioPositions = null
         }
     }
@@ -39,14 +44,31 @@ class FlyerPath {
 
     #spiralDescentPoints = (startPoint) => {
         const points = []
-        const pointCount = 360
-        const yDelta = startPoint.y / 360
-        const angleDelta = Math.PI / 180
+        const yDelta = this.height / this.segments
+        const angleDelta = Math.PI / (this.segments / 2)
+        let referencePoint = new BABYLON.Vector3(0, startPoint.y, startPoint.z)
         let angle = 0
-        for (let i = 0; i <= pointCount; i++) {
-            const point = BABYLON.Vector3.TransformCoordinates(startPoint, BABYLON.Matrix.RotationY(angle))
-            point.y -= yDelta
+        for (let i = 0; i <= this.segments; i++) {
+            const point = BABYLON.Vector3.TransformCoordinates(referencePoint, BABYLON.Matrix.RotationY(angle))
+            points.push(point)
+            referencePoint.z -= this.radiusDelta
+            referencePoint.y -= Math.abs(Math.sin(angle)) * yDelta
             angle += angleDelta
+        }
+        return points
+    }
+
+    #spiralAscendPoints = (startPoint) => {
+        const points = []
+        const yDelta = this.height / this.segments
+        const angleDelta = Math.PI / (this.segments / 2)
+        let referencePoint = new BABYLON.Vector3(0, startPoint.y, startPoint.z)
+        let angle = 0
+        for (let i = 0; i < this.segments; i++) {
+            referencePoint.z -= this.radiusDelta
+            referencePoint.y += Math.abs(Math.sin(angle)) * yDelta
+            angle += angleDelta
+            const point = BABYLON.Vector3.TransformCoordinates(referencePoint, BABYLON.Matrix.RotationY(angle))
             points.push(point)
         }
         return points
@@ -57,9 +79,13 @@ class FlyerPath {
             return
         }
 
-        const startPoint = new BABYLON.Vector3(100, 100, 0)
-        const points = this.#spiralDescentPoints(startPoint)
-        this.#private.path = new BABYLON.Path3D(points)
+        const hiPoint = new BABYLON.Vector3(0, this.height, this.startRadius)
+        const points = []
+        points.push(...this.#spiralDescentPoints(hiPoint))
+        const lowPoint = points[points.length - 1]
+        points.push(...this.#spiralAscendPoints(lowPoint))
+        // points.push(hiPoint)
+        this.#private.points = points
 
         this.#private.audioPositions = [
             0, 0, 0

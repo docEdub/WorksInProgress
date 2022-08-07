@@ -43,7 +43,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -2490,7 +2490,72 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     class Flyer1AnimationComponent extends Component {
         color = [ 0.5, 0.5, 0.5 ]
 
+        #makeTriangleTube = (path) => {
+            const positions = [
+                0, 1, 0,
+                0.866, -0.5, 0,
+                -0.866, -0.5, 0
+            ]
+            const indices = [
+                0, 1, 2
+            ]
+            const mesh = new BABYLON.Mesh('', scene)
+            let vertexData = new BABYLON.VertexData()
+            vertexData.positions = positions
+            vertexData.indices = indices
+            vertexData.applyToMesh(mesh, true)
+
+            mesh.scaling.setAll(10)
+            mesh.bakeCurrentTransformIntoVertices()
+
+            const material = new BABYLON.StandardMaterial('', scene)
+            material.backFaceCulling = false
+            material.diffuseColor = material.specularColor.set(0.01, 0.01, 0.01)
+            material.emissiveColor.set(1, 1, 1)//set(0.1, 0.1, 0.1)
+            material.wireframe = true
+            mesh.material = material
+
+            const instanceMatrices = []
+            const pathPoints = path.getPoints()
+            const tangents = path.getTangents();
+            const binormals = path.getBinormals();
+            const normals = path.getNormals();
+            for (let i = 0; i < pathPoints.length; i++) {
+                const translationXform = BABYLON.Matrix.Translation(pathPoints[i].x, pathPoints[i].y, pathPoints[i].z)
+                const rotationXform = new BABYLON.Matrix()
+                BABYLON.Matrix.FromXYZAxesToRef(normals[i], binormals[i], tangents[i], rotationXform)
+                instanceMatrices.push(rotationXform.multiply(translationXform))
+            }
+            mesh.thinInstanceAdd(instanceMatrices, true)
+        }
+
+        #visualizePath = (path) => {
+            const tangents = path.getTangents();
+            const normals = path.getNormals();
+            const binormals = path.getBinormals();
+            const curve = path.getCurve();
+
+            const curveLines = BABYLON.MeshBuilder.CreateLines('', { points: curve, updatable: false }, scene);
+            const tangentLines = [];
+            const normalLines = [];
+            const binormalLines = [];
+            for (let i = 0; i < curve.length; i++) {
+                tangentLines[i] = BABYLON.MeshBuilder.CreateLines('', { points: [curve[i], curve[i].add(tangents[i])], updatable: false }, scene);
+                tangentLines[i].color = BABYLON.Color3.Red();
+                normalLines[i] = BABYLON.MeshBuilder.CreateLines('', { points: [curve[i], curve[i].add(normals[i])], updatable: false }, scene);
+                normalLines[i].color = BABYLON.Color3.Blue();
+                binormalLines[i] = BABYLON.MeshBuilder.CreateLines('', { points: [curve[i], curve[i].add(binormals[i])], updatable: false }, scene);
+                binormalLines[i].color = BABYLON.Color3.Green();
+            }
+        }
+
         constructor() {
+            super()
+
+            const points = Flyer1Path.points
+            const path = new BABYLON.Path3D(Flyer1Path.points)
+            this.#visualizePath(path)
+            this.#makeTriangleTube(path)
         }
     }
 
