@@ -9,19 +9,20 @@
     "help": "webpack serve --help=verbose"
   },
   "devDependencies": {
-    "@types/core-js": "^2.5.5",
-    "@types/jest": "^28.1.6",
-    "html-webpack-plugin": "^5.3.1",
-    "node-watch": "^0.7.1",
-    "terser-webpack-plugin": "^5.2.4",
-    "ts-loader": "^9.2.2",
-    "webpack": "^5.37.1",
-    "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2"
+    "@types/core-js": "2.5.5",
+    "@types/jest": "28.1.6",
+    "html-webpack-plugin": "5.3.1",
+    "node-watch": "0.7.1",
+    "portfinder": "1.0.28",
+    "terser-webpack-plugin": "5.2.4",
+    "ts-loader": "9.3.1",
+    "webpack": "5.37.1",
+    "webpack-cli": "4.10.0",
+    "webpack-dev-server": "3.11.2"
   },
   "dependencies": {
-    "babylonjs": "^4.2.0",
-    "console-log-html": "^2.0.2",
-    "osc-js": "^2.3.0"
+    "babylonjs": "4.2.0",
+    "console-log-html": "2.0.2",
+    "osc-js": "2.3.0"
   }
 }
