@@ -13,14 +13,9 @@ class FlyerPath {
         return this.#private.points
     }
 
-    get audioPositions() {
+    get audioPointsString() {
         this.#init()
-        return this.#private.audioPositions
-    }
-
-    get audioPositionsString() {
-        this.#init()
-        return this.#private.audioPositionsString
+        return this.#private.audioPointsString
     }
 
     get speedMultiplier() {
@@ -36,7 +31,7 @@ class FlyerPath {
             this._public = this_public
 
             this.points = null
-            this.audioPositions = null
+            this.audioPointsString = null
             this.speedMultiplier = 1000 / this.#public.segmentMilliseconds
         }
     }
@@ -83,7 +78,7 @@ class FlyerPath {
     #extensionPoints = (endPoint, extensionVector) => {
         const points = []
         endPoint = endPoint.clone()
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 100; i++) {
             endPoint.addInPlace(extensionVector.scaleInPlace(1.05))
             points.push(endPoint.clone())
         }
@@ -91,7 +86,7 @@ class FlyerPath {
     }
 
     #init = () => {
-        if (this.#private.audioPositions) {
+        if (this.#private.audioPoints) {
             return
         }
 
@@ -103,16 +98,18 @@ class FlyerPath {
         points.push(...this.#extensionPoints(points[points.length - 1], points[points.length - 1].subtract(points[points.length - 2])))
         this.#private.points = points
 
-        this.#private.audioPositions = [
-            0, 0, 0
-        ]
-
-        // Set audio positions string.
-        let s = `${this.#private.audioPositions.length}`
-        for (let i = 0; i < this.#private.audioPositions.length; i++) {
-            s +=  `\ngiSaw2FlyerSynth_PathAudioPositions[${i}] =  ${this.#private.audioPositions[i].toFixed(3)}`
+        const audioPoints = []
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i]
+            audioPoints.push(point.x, point.y, point.z)
         }
-        this.#private.audioPositionsString = s
+
+        // Set audio point strings.
+        let audioPointsString = `${audioPoints.length}`
+        for (let i = 0; i < audioPoints.length; i++) {
+            audioPointsString +=  `\ngiSaw2FlyerSynth_PathAudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
+        }
+        this.#private.audioPointsString = audioPointsString
     }
 }
 

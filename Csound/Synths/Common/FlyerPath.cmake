@@ -20,4 +20,5 @@ function(read_shared_module_property property output_variable)
     endif()
 endfunction()
 
-read_shared_module_property(${FlyerPath}.audioPositionsString FlyerPath.audioPositionsString)
+read_shared_module_property(${FlyerPath}.audioPointsString FlyerPath.audioPointsString)
+read_shared_module_property(${FlyerPath}.speedMultiplier FlyerPath.speedMultiplier)
