@@ -6,7 +6,7 @@ class FlyerPath {
     segments = 60
     startRadius = 0
     radiusDelta = 9
-    pointToPointMilliseconds = 100
+    segmentMilliseconds = 100
 
     get points() {
         this.#init()
@@ -23,8 +23,8 @@ class FlyerPath {
         return this.#private.audioPositionsString
     }
 
-    get speed() {
-        return this.#private.speed
+    get speedMultiplier() {
+        return this.#private.speedMultiplier
     }
 
     #Private = class {
@@ -37,7 +37,7 @@ class FlyerPath {
 
             this.points = null
             this.audioPositions = null
-            this.speed = 1000 / this.#public.pointToPointMilliseconds
+            this.speedMultiplier = 1000 / this.#public.segmentMilliseconds
         }
     }
     _private = null

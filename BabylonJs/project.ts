@@ -2594,7 +2594,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             mesh.animations.push(meshPositionAnimation)
             mesh.animations.push(meshRotationAnimation)
 
-            scene.beginAnimation(mesh, 0, fps * pathPoints.length, true, Flyer1Path.speed)
+            scene.beginAnimation(mesh, 0, fps * pathPoints.length, true, Flyer1Path.speedMultiplier)
         }
 
         constructor() {
