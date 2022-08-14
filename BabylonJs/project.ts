@@ -79,6 +79,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region Fullscreen toggle
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen()
+        } else if (document.exitFullscreen) {
+            document.exitFullscreen()
+        }
+    }
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            toggleFullScreen();
+        }
+    }, false);
+
+    //#endregion
+
     //#region Babylon scene setup
 
     // The BabylonJS playground adds the materials extension to BABYLON.
