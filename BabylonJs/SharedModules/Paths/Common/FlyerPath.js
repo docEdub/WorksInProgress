@@ -2,18 +2,15 @@
 const BABYLON = require('babylonjs')
 
 class FlyerPath {
-    startRadius = 0
     height = 210 // center of main pyramid mesh's top piece
     segments = 60
+    startRadius = 0
     radiusDelta = 9
+    pointToPointMilliseconds = 100
 
     get points() {
         this.#init()
         return this.#private.points
-    }
-
-    get startDirection() {
-        return new BABYLON.Vector3(0, 0, -1)
     }
 
     get audioPositions() {
@@ -26,6 +23,10 @@ class FlyerPath {
         return this.#private.audioPositionsString
     }
 
+    get speed() {
+        return this.#private.speed
+    }
+
     #Private = class {
         get #public() {
             return this._public
@@ -36,6 +37,7 @@ class FlyerPath {
 
             this.points = null
             this.audioPositions = null
+            this.speed = 1000 / this.#public.pointToPointMilliseconds
         }
     }
     _private = null
