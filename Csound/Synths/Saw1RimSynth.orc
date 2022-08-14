@@ -15,6 +15,7 @@
 #include "synth-inside-include-guard.h.orc"
 
 ${CSOUND_INCLUDE} "json.orc"
+${CSOUND_INCLUDE} "time_NoteTime.orc"
 
 gi${InstrumentName}_PlaybackVolumeAdjustment = 0.9
 gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
@@ -95,15 +96,15 @@ instr INSTRUMENT_ID
         iEnvelopeS = 0.667
         iEnvelopeR = 0.1
 
-        iEnvelopeS_decayTime = 0.333 + 33 * (1 - iNoteNumber / 127)
+        iEnvelopeS_decayTime = 0.333 + 66 * (1 - iNoteNumber / 127)
         iEnvelopeS_decayAmountMinimum = 0.001 * (1 - iNoteNumber / 127)
 
         aOut *= MIDIFY_OPCODE(xadsr):a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
 
-        iEnvelopeS_decayStartTime = p2 + iEnvelopeA + iEnvelopeD
+        iEnvelopeS_decayStartTime = iEnvelopeA + iEnvelopeD
         iEnvelopeS_decayEndTime = iEnvelopeS_decayStartTime + iEnvelopeS_decayTime
         aEnvelopeS_decayAmount init 1
-        kTime = time_k()
+        kTime = time_NoteTime:k()
         if (kTime >= iEnvelopeS_decayStartTime && kTime < iEnvelopeS_decayEndTime) then
             aEnvelopeS_decayAmount = expon(1, iEnvelopeS_decayTime, iEnvelopeS_decayAmountMinimum)
         endif
