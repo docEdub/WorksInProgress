@@ -2549,6 +2549,36 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
+        #animateMeshAlongPath = (mesh, path) => {
+            const fps = 30
+
+            const pathPoints = path.getPoints()
+            const pathTangents = path.getTangents()
+            const pathBinormals = path.getBinormals();
+
+            const meshPositionAnimation = new BABYLON.Animation('', 'position', fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
+            const meshRotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
+            const meshPositionKeys = []
+            const meshRotationKeys = []
+
+            for (let i = 0; i < pathPoints.length; i++) {
+                const frame = fps * i
+                const position = pathPoints[i]
+                const forward = pathTangents[i]
+                const up = pathBinormals[i]
+                const rotation = BABYLON.Quaternion.FromLookDirectionRH(forward, up)
+                meshPositionKeys.push({ frame: frame, value: position })
+                meshRotationKeys.push({ frame: frame, value: rotation })
+            }
+
+            meshPositionAnimation.setKeys(meshPositionKeys)
+            meshRotationAnimation.setKeys(meshRotationKeys)
+            mesh.animations.push(meshPositionAnimation)
+            mesh.animations.push(meshRotationAnimation)
+
+            scene.beginAnimation(mesh, 0, fps * pathPoints.length, true, 10)
+        }
+
         constructor() {
             super()
 
@@ -2556,6 +2586,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const path = new BABYLON.Path3D(Flyer1Path.points)
             this.#visualizePath(path)
             this.#makeTriangleTube(path)
+
+            const animatedTrianglePolygonMesh = makeTrianglePolygonMesh()
+            animatedTrianglePolygonMesh.isVisible = true
+            animatedTrianglePolygonMesh.scaling.setAll(10)
+            const material = new BABYLON.StandardMaterial('', scene)
+            material.diffuseColor.set(1, 1, 1)
+            material.emissiveColor.set(1, 0.1, 0.1)
+            animatedTrianglePolygonMesh.material = material
+            this.#animateMeshAlongPath(animatedTrianglePolygonMesh, path)
         }
     }
 

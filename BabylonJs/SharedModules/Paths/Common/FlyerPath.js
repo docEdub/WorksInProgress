@@ -4,12 +4,16 @@ const BABYLON = require('babylonjs')
 class FlyerPath {
     startRadius = 0
     height = 210 // center of main pyramid mesh's top piece
-    segments = 120
+    segments = 60
     radiusDelta = 9
 
     get points() {
         this.#init()
         return this.#private.points
+    }
+
+    get startDirection() {
+        return new BABYLON.Vector3(0, 0, -1)
     }
 
     get audioPositions() {
@@ -74,6 +78,16 @@ class FlyerPath {
         return points
     }
 
+    #extensionPoints = (endPoint, extensionVector) => {
+        const points = []
+        endPoint = endPoint.clone()
+        for (let i = 0; i < 200; i++) {
+            endPoint.addInPlace(extensionVector.scaleInPlace(1.05))
+            points.push(endPoint.clone())
+        }
+        return points
+    }
+
     #init = () => {
         if (this.#private.audioPositions) {
             return
@@ -84,7 +98,7 @@ class FlyerPath {
         points.push(...this.#spiralDescentPoints(hiPoint))
         const lowPoint = points[points.length - 1]
         points.push(...this.#spiralAscendPoints(lowPoint))
-        // points.push(hiPoint)
+        points.push(...this.#extensionPoints(points[points.length - 1], points[points.length - 1].subtract(points[points.length - 2])))
         this.#private.points = points
 
         this.#private.audioPositions = [
