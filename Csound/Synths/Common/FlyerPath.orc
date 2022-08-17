@@ -7,3 +7,6 @@
     gi${InstrumentName}_PathAudioPoints[] init ${FlyerPath.audioPointsString}
     gi${InstrumentName}_PathSpeedMultipler init ${FlyerPath.speedMultiplier}
 #endif
+
+gi${InstrumentName}_PathPointCount init lenarray(gi${InstrumentName}_PathAudioPoints) / 3
+gi${InstrumentName}_PathPointLastIndex init gi${InstrumentName}_PathPointCount - 1

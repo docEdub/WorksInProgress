@@ -15,6 +15,7 @@
 #include "synth-inside-include-guard.h.orc"
 
 ${CSOUND_INCLUDE} "json.orc"
+${CSOUND_INCLUDE} "time_NoteTime.orc"
 
 gi${InstrumentName}_PlaybackVolumeAdjustment = 0.9
 gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
@@ -75,13 +76,78 @@ instr INSTRUMENT_ID
             fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
         ${CSOUND_ENDIF}
 
-        // Oscillator
-        //--------------------------------------------------------------------------------------------------------------
-        kAmp init 0.333 * (iVelocity / 127)
-        aOut = vco2(kAmp, cpsmidinn(iNoteNumber), VCO2_WAVEFORM_INTEGRATED_SAWTOOTH)
-
         if (CC_VALUE_k(positionEnabled) == true) then
             #include "Position_kXYZ.orc"
+
+            a1 = 0
+            a2 = 0
+            a3 = 0
+            a4 = 0
+
+            // Position on path
+            //---------------------------------------------------------------------------------------------------------
+            kNoteTime = time_NoteTime:k()
+            kPointIndexAndFraction = kNoteTime * gi${InstrumentName}_PathSpeedMultipler
+            kPointIndex = floor:k(kPointIndexAndFraction)
+            kTurnedOff init false
+
+            ; Turn off if end of path is one segment away. Assumes release envelope time is the same as one path
+            ; segment.
+            if (kTurnedOff == false && kPointIndex == gi${InstrumentName}_PathPointLastIndex - 1) then
+                log_k_debug("turnoff")
+                turnoff
+                kTurnedOff = true
+            endif
+            kPointIndex = min(gi${InstrumentName}_PathPointLastIndex - 1, kPointIndex)
+
+            kPoint1[] init 3
+            kPoint2[] init 3
+            kCoordinateIndex = kPointIndex * 3
+            kPoint1[$X] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex]
+            kPoint1[$Y] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 1]
+            kPoint1[$Z] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 2]
+            kPoint2[$X] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 3]
+            kPoint2[$Y] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 4]
+            kPoint2[$Z] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 5]
+
+            kPointFraction = frac(kPointIndexAndFraction)
+            kX = kPoint1[$X] + (kPoint2[$X] - kPoint1[$X]) * kPointFraction
+            kY = kPoint1[$Y] + (kPoint2[$Y] - kPoint1[$Y]) * kPointFraction
+            kZ = kPoint1[$Z] + (kPoint2[$Z] - kPoint1[$Z]) * kPointFraction
+
+            // Doppler effect
+            //---------------------------------------------------------------------------------------------------------
+            kDoppler_currentDistance init -1
+            kDoppler_currentTime init 0
+
+            kDoppler_previousDistance = kDoppler_currentDistance
+            kDoppler_previousTime = kDoppler_currentTime
+
+            kDoppler_currentDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+            kDoppler_currentTime = kNoteTime
+
+            if (kDoppler_previousDistance == -1) then
+                kDoppler_previousDistance = kDoppler_currentDistance
+            endif
+
+            kDoppler_factor = AF_3D_Audio_DopplerShift(
+                kDoppler_previousDistance,
+                kDoppler_currentDistance,
+                100 * (kDoppler_currentTime - kDoppler_previousTime))
+
+            // Oscillator
+            //---------------------------------------------------------------------------------------------------------
+            kAmp init 0.333 * (iVelocity / 127)
+            aOut = vco2(kAmp, kDoppler_factor * cpsmidinn(iNoteNumber), VCO2_WAVEFORM_INTEGRATED_SAWTOOTH)
+
+            // Volume envelope
+            //---------------------------------------------------------------------------------------------------------
+            iEnvelopeA = 0.01
+            iEnvelopeD = 0.1
+            iEnvelopeS = 0.667
+            iEnvelopeR = 1 / gi${InstrumentName}_PathSpeedMultipler
+
+            aOut *= MIDIFY_OPCODE(xadsr):a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
 
             aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
             aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
@@ -89,7 +155,7 @@ instr INSTRUMENT_ID
                 kPositionReferenceDistance,
                 kPositionRolloffFactor)
             aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
-            aReverbOut = aOut * (1 - (1 - aDistanceAmp) / 5)
+            aReverbOut = aOut * aDistanceAmp
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
             a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
             a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
