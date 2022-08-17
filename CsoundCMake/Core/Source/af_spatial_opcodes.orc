@@ -465,8 +465,7 @@ opcode AF_3D_Audio_DopplerShift, k, kkk
     if (0 < k_deltaTime) then
         k_deltaDistance = k_currentDistance - k_previousDistance
         k_velocity = k_deltaDistance / k_deltaTime
-        k_dopplerShift = lag:k($AF_3D_AUDIO__SPEED_OF_SOUND / ($AF_3D_AUDIO__SPEED_OF_SOUND + k_velocity),
-            $AF_3D_FRAME_DURATION_OVER_2, 1)
+        k_dopplerShift = $AF_3D_AUDIO__SPEED_OF_SOUND / ($AF_3D_AUDIO__SPEED_OF_SOUND + k_velocity)
     endif
 
     xout k_dopplerShift
