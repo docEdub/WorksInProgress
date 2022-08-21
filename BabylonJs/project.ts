@@ -5,6 +5,7 @@ import Flyer1Path from "./SharedModules/Paths/Flyer1Path"
 import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
 import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
+import FlyerPath from "./SharedModules/Paths/Common/FlyerPath"
 
 //#region Non-playground setup
 
@@ -43,7 +44,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -2507,6 +2508,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     class Flyer1AnimationComponent extends Component {
         color = [ 0.5, 0.5, 0.5 ]
+        fps = 30
+
+        start = () => {
+            scene.beginAnimation(this._flyerMesh, 0, this.fps * this._pathPoints.length, true, this._speedMultiplier)
+        }
+
+        stop = () => {
+            scene.stopAnimation(this._flyerMesh)
+        }
+
+        _flyerMesh = null
+        _pathPoints = Flyer1Path.points
+        _speedMultiplier = Flyer1Path.speedMultiplier
 
         #makeTriangleTube = (path) => {
             const positions = [
@@ -2568,19 +2582,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         #animateMeshAlongPath = (mesh, path) => {
-            const fps = 30
-
             const pathPoints = path.getPoints()
             const pathTangents = path.getTangents()
             const pathBinormals = path.getBinormals();
 
-            const meshPositionAnimation = new BABYLON.Animation('', 'position', fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
-            const meshRotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
+            const meshPositionAnimation = new BABYLON.Animation('', 'position', this.fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
+            const meshRotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', this.fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
             const meshPositionKeys = []
             const meshRotationKeys = []
 
             for (let i = 0; i < pathPoints.length; i++) {
-                const frame = fps * i
+                const frame = this.fps * i
                 const position = pathPoints[i]
                 const forward = pathTangents[i]
                 const up = pathBinormals[i]
@@ -2594,14 +2606,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             mesh.animations.push(meshPositionAnimation)
             mesh.animations.push(meshRotationAnimation)
 
-            scene.beginAnimation(mesh, 0, fps * pathPoints.length, true, Flyer1Path.speedMultiplier)
+            this._flyerMesh = mesh
         }
 
         constructor() {
             super()
 
-            const points = Flyer1Path.points
-            const path = new BABYLON.Path3D(Flyer1Path.points)
+            const path = new BABYLON.Path3D(this._pathPoints)
             this.#visualizePath(path)
             this.#makeTriangleTube(path)
 
@@ -2653,6 +2664,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         run = (time, deltaTime) => {
+            if (this.track.activeNotesChanged) {
+                if (0 < this.track.activeNotes.length) {
+                    this.animation.start()
+                }
+                else {
+                    this.animation.stop()
+                }
+            }
         }
     }
 
