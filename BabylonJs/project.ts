@@ -2640,9 +2640,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         track = null
         animation = null
 
-        mesh = new BABYLON.Mesh(`${Flyer1AnimationSystem.name}.mesh`, scene)
-        instanceMatrices = null
-
         constructor(components) {
             super(components)
             for (let i = 0; i < components.length; i++) {
@@ -2656,11 +2653,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             assert(this.track, `${TrackComponent.name} missing.`)
             assert(this.animation, `${Flyer1AnimationComponent.name} missing.`)
-
-            const material = new BABYLON.StandardMaterial('', scene)
-            material.backFaceCulling = false
-            material.emissiveColor.fromArray(this.animation.color)
-            this.mesh.material = material
         }
 
         run = (time, deltaTime) => {
