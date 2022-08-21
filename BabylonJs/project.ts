@@ -2521,6 +2521,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         _flyerMesh = null
+        _path = null
         _pathPoints = Flyer1Path.points
         _speedMultiplier = Flyer1Path.speedMultiplier
 
@@ -2583,7 +2584,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
-        #animateMeshAlongPath = (mesh, path) => {
+        #makeFlyerMeshAnimation = () => {
+            const mesh = this._flyerMesh
+            const path = this._path
+
             const pathPoints = path.getPoints()
             const pathTangents = path.getTangents()
             const pathBinormals = path.getBinormals();
@@ -2607,25 +2611,25 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             meshRotationAnimation.setKeys(meshRotationKeys)
             mesh.animations.push(meshPositionAnimation)
             mesh.animations.push(meshRotationAnimation)
-
-            this._flyerMesh = mesh
         }
 
         constructor() {
             super()
 
-            const path = new BABYLON.Path3D(this._pathPoints)
-            this.#visualizePath(path)
-            this.#makeTriangleTube(path)
+            this._path = new BABYLON.Path3D(this._pathPoints)
+            this.#visualizePath(this._path)
+            this.#makeTriangleTube(this._path)
 
-            const animatedTrianglePolygonMesh = makeTrianglePolygonMesh()
-            animatedTrianglePolygonMesh.isVisible = true
-            animatedTrianglePolygonMesh.scaling.setAll(10)
+            const flyerMesh = makeTrianglePolygonMesh()
+            flyerMesh.isVisible = true
+            flyerMesh.scaling.setAll(10)
             const material = new BABYLON.StandardMaterial('', scene)
             material.diffuseColor.set(1, 1, 1)
             material.emissiveColor.set(1, 0.1, 0.1)
-            animatedTrianglePolygonMesh.material = material
-            this.#animateMeshAlongPath(animatedTrianglePolygonMesh, path)
+            flyerMesh.material = material
+            this._flyerMesh = flyerMesh
+
+            this.#makeFlyerMeshAnimation()
         }
     }
 
