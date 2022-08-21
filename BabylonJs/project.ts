@@ -2511,11 +2511,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         fps = 30
 
         start = () => {
+            this._flyerMesh.isVisible = true
             scene.beginAnimation(this._flyerMesh, 0, this.fps * this._pathPoints.length, true, this._speedMultiplier)
         }
 
         stop = () => {
             scene.stopAnimation(this._flyerMesh)
+            this._flyerMesh.isVisible = false
         }
 
         _flyerMesh = null
