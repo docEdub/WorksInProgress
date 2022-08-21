@@ -1,7 +1,7 @@
 // Path geometry generated in Javascript.
 #if IS_PLAYBACK
     gi${InstrumentName}_PathAudioPoints[] init _($){${FlyerPath}.audioPointsString}
-    gi${InstrumentName}_PathSpeedMultipler init _($){${FlyerPath}.speedMultipler}
+    gi${InstrumentName}_PathSpeedMultipler init _($){${FlyerPath}.speedMultiplier}
 #else
     // Flattened array of xyz coords.
     gi${InstrumentName}_PathAudioPoints[] init ${FlyerPath.audioPointsString}
