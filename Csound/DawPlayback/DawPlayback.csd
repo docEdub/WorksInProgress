@@ -28,9 +28,9 @@ giPresetUuidPreallocationCount[] = fillarray( \
     5,  /* instr 10 -- 06: Beacon */ \
     4,  /* instr 11 -- 07: Bass 1+2: Edited */ \
     4,  /* instr 12 -- 08: Bass 1+2: Distant */ \
-    2,  /* instr 13 -- 09: Rim 1: Hi Arp */ \
-    2,  /* instr 14 -- 10: Rim 2: Hi Line */ \
-    2,  /* instr 15 -- 11: Rim 3: Lo Line */ \
+    4,  /* instr 13 -- 09: Rim 1: Hi Arp */ \
+    5,  /* instr 14 -- 10: Rim 2: Hi Line */ \
+    3,  /* instr 15 -- 11: Rim 3: Lo Line */ \
     2,  /* instr 16 -- 12: Flyer 1 */ \
     0   /* dummy */ \
 )

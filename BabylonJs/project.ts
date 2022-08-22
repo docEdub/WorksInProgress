@@ -3054,7 +3054,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     --nosound
     </CsOptions>
     <CsInstruments>
-    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 2, /* instr 13 -- 09: Rim 1: Hi Arp */ 2, /* instr 14 -- 10: Rim 2: Hi Line */ 2, /* instr 15 -- 11: Rim 3: Lo Line */ 2, /* instr 16 -- 12: Flyer 1 */ 0 /* dummy */ )
+    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 4, /* instr 13 -- 09: Rim 1: Hi Arp */ 5, /* instr 14 -- 10: Rim 2: Hi Line */ 3, /* instr 15 -- 11: Rim 3: Lo Line */ 2, /* instr 16 -- 12: Flyer 1 */ 0 /* dummy */ )
     #ifndef OUTPUT_CHANNEL_COUNT
     #define OUTPUT_CHANNEL_COUNT #2#
     #end
