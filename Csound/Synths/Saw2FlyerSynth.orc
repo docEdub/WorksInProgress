@@ -88,17 +88,7 @@ instr INSTRUMENT_ID
             //---------------------------------------------------------------------------------------------------------
             kNoteTime = time_NoteTime:k()
             kPointIndexAndFraction = kNoteTime * gi${InstrumentName}_PathSpeedMultipler
-            kPointIndex = floor:k(kPointIndexAndFraction)
-            kTurnedOff init false
-
-            ; Turn off if end of path is one segment away. Assumes release envelope time is the same as one path
-            ; segment.
-            if (kTurnedOff == false && kPointIndex == gi${InstrumentName}_PathPointLastIndex - 1) then
-                log_k_debug("turnoff")
-                turnoff
-                kTurnedOff = true
-            endif
-            kPointIndex = min(gi${InstrumentName}_PathPointLastIndex - 1, kPointIndex)
+            kPointIndex = min(gi${InstrumentName}_PathPointLastIndex - 1, floor:k(kPointIndexAndFraction))
 
             kPoint1[] init 3
             kPoint2[] init 3

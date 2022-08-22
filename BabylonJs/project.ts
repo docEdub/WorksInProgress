@@ -8914,13 +8914,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a4 = 0
     kNoteTime = time_NoteTime:k()
     kPointIndexAndFraction = kNoteTime * giSaw2FlyerSynth_PathSpeedMultipler
-    kPointIndex = floor:k(kPointIndexAndFraction)
-    kTurnedOff init 0
-    if (kTurnedOff == 0 && kPointIndex == giSaw2FlyerSynth_PathPointLastIndex - 1) then
-    turnoff
-    kTurnedOff = 1
-    endif
-    kPointIndex = min(giSaw2FlyerSynth_PathPointLastIndex - 1, kPointIndex)
+    kPointIndex = min(giSaw2FlyerSynth_PathPointLastIndex - 1, floor:k(kPointIndexAndFraction))
     kPoint1[] init 3
     kPoint2[] init 3
     kCoordinateIndex = kPointIndex * 3
