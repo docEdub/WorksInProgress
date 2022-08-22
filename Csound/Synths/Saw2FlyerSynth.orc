@@ -157,10 +157,10 @@ instr INSTRUMENT_ID
             aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
             aReverbOut = aOut * aDistanceAmp
             AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
-            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
-            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aPositionOut
+            a1 = a(gkAmbisonicChannelGains[0]) * aPositionOut
+            a2 = a(gkAmbisonicChannelGains[1]) * aPositionOut
+            a3 = a(gkAmbisonicChannelGains[2]) * aPositionOut
+            a4 = a(gkAmbisonicChannelGains[3]) * aPositionOut
         else
             // Position disabled.
             a1 = aOut

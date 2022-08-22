@@ -371,15 +371,15 @@ instr FinalMixInstrument
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    am0 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[0]), $AF_3D_LISTENER_LAG_TIME)
-    am1 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[1]), $AF_3D_LISTENER_LAG_TIME)
-    am2 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[2]), $AF_3D_LISTENER_LAG_TIME)
-    am3 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[3]), $AF_3D_LISTENER_LAG_TIME)
-    am4 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[4]), $AF_3D_LISTENER_LAG_TIME)
-    am5 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[5]), $AF_3D_LISTENER_LAG_TIME)
-    am6 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[6]), $AF_3D_LISTENER_LAG_TIME)
-    am7 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[7]), $AF_3D_LISTENER_LAG_TIME)
-    am8 = lag:a(a(gk_AF_3D_ListenerRotationMatrix[8]), $AF_3D_LISTENER_LAG_TIME)
+    am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
+    am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
+    am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
+    am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
+    am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
+    am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
+    am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
+    am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
+    am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
     ayr = -(ay * am0 + az * am3 + ax * am6)
     azr =   ay * am1 + az * am4 + ax * am7
     axr = -(ay * am2 + az * am5 + ax * am8)
@@ -407,7 +407,7 @@ instr FinalMixInstrument
         kPaused = false
         printsk("csd:resumed at %.3f\n", timeinsts())
     endif
-    aMainVolume = lag:a(a(kMainVolume), 0.05)
+    aMainVolume = a(kMainVolume)
     outs(aL * aMainVolume, aR * aMainVolume)
 endin
 

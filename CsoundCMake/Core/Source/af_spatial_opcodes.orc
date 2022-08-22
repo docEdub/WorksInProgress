@@ -101,10 +101,8 @@ gk_AF_3D_ListenerPosition[] init 3
 //
 opcode AF_3D_Audio_ChannelGains, 0, kkkp
     k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder xin
-    kLagAzimuth = lag:k(k_azimuth, $AF_3D_LISTENER_LAG_TIME)
-    kLagElevation = lag:k(k_elevation, $AF_3D_LISTENER_LAG_TIME)
-    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(kLagAzimuth)
-    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(kLagElevation)
+    k_azimuthRow = AF_3D_Audio_AzimuthLookupTableRow(k_azimuth)
+    k_elevationRow = AF_3D_Audio_ElevationLookupTableRow(k_elevation)
     k_spreadRow = AF_3D_Audio_MaxReWeightsLookupTableRow(k_sourceWidth)
     gkAmbisonicChannelGains[0] = gi_AF_3D_Audio_MaxReWeightsLookupTable[k_spreadRow][0]
     k_i = 1
@@ -156,7 +154,7 @@ opcode AF_3D_Audio_ChannelGains, 0, i[]kp
         i_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
-        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
+        sqrt:k(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
@@ -180,7 +178,7 @@ opcode AF_3D_Audio_ChannelGains, 0, k[]kp
         k_sourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z])
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
-        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
+        sqrt:k(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
@@ -207,7 +205,7 @@ opcode AF_3D_Audio_ChannelGains_XYZ, 0, kkkPp
     k_direction[$Z] = k_sourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
     k_azimuth = taninv2(k_direction[$X], k_direction[$Z]) * $AF_MATH__RADIANS_TO_DEGREES
     k_elevation = taninv2(k_direction[$Y],
-        sqrt(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
+        sqrt:k(k_direction[$X] * k_direction[$X] + k_direction[$Z] * k_direction[$Z])) * $AF_MATH__RADIANS_TO_DEGREES
     AF_3D_Audio_ChannelGains(k_azimuth, k_elevation, k_sourceWidth, i_ambisonicOrder)
 endop
 
@@ -316,7 +314,7 @@ opcode AF_3D_Audio_SourceDistance, k, iii
     kVector[$X] = iSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = iSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = iSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    xout lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME)
 endop
 
 
@@ -337,7 +335,7 @@ opcode AF_3D_Audio_SourceDistance, k, kkk
     kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    xout lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME)
 endop
 
 
@@ -358,7 +356,7 @@ opcode AF_3D_Audio_SourceDistance_a, a, kkk
     kVector[$X] = kSourcePositionX - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePositionY - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePositionZ - gk_AF_3D_ListenerPosition[$Z]
-    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
+    xout a(lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME))
 endop
 
 
@@ -374,10 +372,10 @@ endop
 opcode AF_3D_Audio_SourceDistance, k, i[]
     iSourcePosition[] xin
     kVector[] init 3
-    kVector[$X] = lag:k(iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
-    kVector[$Y] = lag:k(iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
-    kVector[$Z] = lag:k(iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    kVector[$X] = iSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = iSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = iSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
+    xout lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME)
 endop
 
 
@@ -393,10 +391,10 @@ endop
 opcode AF_3D_Audio_SourceDistance, k, k[]
     kSourcePosition[] xin
     kVector[] init 3
-    kVector[$X] = lag:k(kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X], $AF_3D_LISTENER_LAG_TIME)
-    kVector[$Y] = lag:k(kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y], $AF_3D_LISTENER_LAG_TIME)
-    kVector[$Z] = lag:k(kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z], $AF_3D_LISTENER_LAG_TIME)
-    xout sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])
+    kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
+    kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
+    kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
+    xout lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME)
 endop
 
 
@@ -415,7 +413,7 @@ opcode AF_3D_Audio_SourceDistance_a, a, k[]
     kVector[$X] = kSourcePosition[$X] - gk_AF_3D_ListenerPosition[$X]
     kVector[$Y] = kSourcePosition[$Y] - gk_AF_3D_ListenerPosition[$Y]
     kVector[$Z] = kSourcePosition[$Z] - gk_AF_3D_ListenerPosition[$Z]
-    xout lag:a(a(sqrt(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z])), $AF_3D_LISTENER_LAG_TIME)
+    xout a(lag:k(sqrt:k(kVector[$X] * kVector[$X] + kVector[$Y] * kVector[$Y] + kVector[$Z] * kVector[$Z]), $AF_3D_LISTENER_LAG_TIME))
 endop
 
 

@@ -380,10 +380,10 @@ instr INSTRUMENT_ID
             aAuxOut = aOut * min((aDistanceAmp * 3), a(0.5))
 
             AF_3D_Audio_ChannelGains_XYZ(iX, iY, iZ)
-            a1 = lag:a(a(gkAmbisonicChannelGains[0]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
-            a2 = lag:a(a(gkAmbisonicChannelGains[1]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
-            a3 = lag:a(a(gkAmbisonicChannelGains[2]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
-            a4 = lag:a(a(gkAmbisonicChannelGains[3]), $AF_3D_LISTENER_LAG_TIME) * aDistancedOut
+            a1 = a(gkAmbisonicChannelGains[0]) * aDistancedOut
+            a2 = a(gkAmbisonicChannelGains[1]) * aDistancedOut
+            a3 = a(gkAmbisonicChannelGains[2]) * aDistancedOut
+            a4 = a(gkAmbisonicChannelGains[3]) * aDistancedOut
         else
             // Disabled.
             a1 = aDistancedOut
