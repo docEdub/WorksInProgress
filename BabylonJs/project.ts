@@ -5935,6 +5935,50 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giTR_808_NoteIndex[] init 6
     giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
     giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
+    giTR_808_SampleCacheLongestDuration = 1
+    giTR_808_SampleCacheNoteNumbers[] fillarray 37,
+    39,
+    40,
+    42,
+    44,
+    46,
+    49,
+    51,
+    54,
+    56,
+    58,
+    61,
+    63,
+    66,
+    68,
+    70
+    giTR_808_SampleCacheTableNumbers[] init lenarray(giTR_808_SampleCacheNoteNumbers)
+    giTR_808_SampleCacheLength init sr * giTR_808_SampleCacheLongestDuration
+    giTR_808_SampleCacheTableLength = 2
+    while (giTR_808_SampleCacheTableLength < giTR_808_SampleCacheLength) do
+    giTR_808_SampleCacheTableLength *= 2
+    od
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    giTR_808_SampleCacheTableNumbers[ii] = ftgen(0, 0, giTR_808_SampleCacheTableLength, 2, 0)
+    ii += 1
+    od
+    instr FillSampleCache_TR_808
+    iInsrumentNumber = 4
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    prints("Filling TR_808 sample cache for note %d\\n", giTR_808_SampleCacheNoteNumbers[ii])
+    scoreline_i(sprintf(
+    "i %d 0 %f %d %d",
+    iInsrumentNumber,
+    giTR_808_SampleCacheLongestDuration,
+    5,
+    giTR_808_SampleCacheNoteNumbers[ii]))
+    ii += 1
+    od
+    turnoff
+    endin
+    scoreline_i("i \\"FillSampleCache_TR_808\\" 0 -1")
     #ifdef IS_GENERATING_JSON
     gSPluginUuids[0][0] = "e274e9138ef048c4ba9c4d42e836c85c"
     instr Json_4
@@ -5958,11 +6002,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[0][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -5977,7 +6031,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -5996,7 +6050,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6026,7 +6080,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -6057,9 +6111,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6113,6 +6174,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ficlose(SJsonFile)
     #end
     endif
+    endif
     end:
     endin
     instr Preallocate_4
@@ -6147,11 +6209,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[1][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -6166,7 +6238,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -6185,7 +6257,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6215,7 +6287,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -6246,9 +6318,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6302,6 +6381,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ficlose(SJsonFile)
     #end
     endif
+    endif
     end:
     endin
     instr Preallocate_5
@@ -6336,11 +6416,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[2][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -6355,7 +6445,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -6374,7 +6464,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6404,7 +6494,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -6435,9 +6525,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6491,6 +6588,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ficlose(SJsonFile)
     #end
     endif
+    endif
     end:
     endin
     instr Preallocate_6
@@ -6525,11 +6623,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[3][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -6544,7 +6652,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -6563,7 +6671,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6593,7 +6701,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -6624,9 +6732,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6680,6 +6795,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ficlose(SJsonFile)
     #end
     endif
+    endif
     end:
     endin
     instr Preallocate_7
@@ -6714,11 +6830,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[4][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -6733,7 +6859,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -6752,7 +6878,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6782,7 +6908,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -6813,9 +6939,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6869,6 +7002,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ficlose(SJsonFile)
     #end
     endif
+    endif
     end:
     endin
     instr Preallocate_8
@@ -6903,11 +7037,21 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_TR_808[5][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 1) then
+    elseif (iEventType == 1 || iEventType == 5) then
     iNoteNumber = p5
-    iVelocity = p6
     aOut init 0
-    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    iSampleCacheIndex = -1
+    ii = 0
+    while (ii < lenarray(giTR_808_SampleCacheNoteNumbers)) do
+    if (iNoteNumber == giTR_808_SampleCacheNoteNumbers[ii]) then
+    iSampleCacheIndex = ii
+    ii = lenarray(giTR_808_SampleCacheNoteNumbers)
+    endif
+    ii += 1
+    od
+    if (iSampleCacheIndex == -1 || iSampleCacheIndex <= lenarray(giTR_808_SampleCacheNoteNumbers)) then
+    endif
+    if (iEventType == 5) then
     if (iNoteNumber == 37) then
     iNoteDuration = 2 * giTR_808_BassDrum_Decay
     p3 = iNoteDuration
@@ -6922,7 +7066,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aenv = linseg:a(1, 0.07, 0)
     acps = expsega(400, 0.07, 0.001, 1, 0.001)
     aimp = oscili(aenv, acps * octave(giTR_808_BassDrum_Tune * 0.25), giTR_808_Sine_TableNumber)
-    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level * iAmp
+    aOut = ((asig * 0.5) + (aimp * 0.35)) * giTR_808_BassDrum_Level
     aOut = atone(aOut, k(giTR_808_BassDrum_HighPassCutoffFrequencyHz))
     aOut = tone(aOut, k(giTR_808_BassDrum_LowPassCutoffFrequencyHz))
     elseif (iNoteNumber == 39) then
@@ -6941,7 +7085,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = buthp(anoise, 1000)
     kcf = expseg(5000, 0.1, 3000, iNoteDuration - 0.2, 3000)
     anoise = butlp(anoise, kcf)
-    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level * iAmp
+    aOut = ((apitch * aenv1) + (anoise * aenv2)) * giTR_808_SnareDrum_Level
     elseif (iNoteNumber == 51) then
     xtratim(0.1)
     kFrq1 = 296 * octave(giTR_808_OpenHighHat_Tune)
@@ -6971,7 +7115,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_OpenHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     elseif (iNoteNumber == 49) then
     xtratim 0.1
@@ -7002,9 +7146,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
     anoise = anoise * aenv
-    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * iAmp * 0.55
+    aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
+    kPass init 0
+    kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+    kPass += 1
+    elseif (iEventType == 1) then
+    iVelocity = p6
+    iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
+    aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -7057,6 +7208,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     fprints(SJsonFile, "}}")
     ficlose(SJsonFile)
     #end
+    endif
     endif
     end:
     endin
