@@ -102,7 +102,8 @@ giTR_808_NoteIndex[] init ORC_INSTANCE_COUNT
 giTR_808_Sine_TableNumber = ftgen(0, 0, 1024, 10, 1)
 giTR_808_Cosine_TableNumber = ftgen(0, 0, 65536, 9, 1, 1, 90)
 
-giTR_808_SampleCacheLongestDuration = 1 // seconds
+giTR_808_SampleCacheLongestDuration = 10.1 // seconds
+gkTR_808_SampleCacheCps init 1 / giTR_808_SampleCacheLongestDuration
 giTR_808_SampleCacheNoteNumbers[] fillarray \
     TR_808_BASS_DRUM_KEY,
     TR_808_SNARE_DRUM_KEY,
@@ -212,8 +213,7 @@ instr INSTRUMENT_ID
         if (iNoteNumber == TR_808_BASS_DRUM_KEY) then
             log_i_trace("Bass drum triggered")
             iNoteDuration = 2 * giTR_808_BassDrum_Decay
-            ; xtratim(0.1)
-            xtratim(2)
+            xtratim(0.1)
         elseif (iNoteNumber == TR_808_SNARE_DRUM_KEY) then
             log_i_trace("Snare triggered")
             iNoteDuration = 0.3 * giTR_808_SnareDrum_Decay
@@ -437,9 +437,10 @@ instr INSTRUMENT_ID
 
             // Copy `aOut` into note's sample cache table at sample offset `kPass` * ksmps.
             kPass init 0
-            kDummy = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
+            tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
             kPass += 1
-            ; log_k_debug("Wrote %d samples to cache index %d (%d total)", ksmps, iSampleCacheIndex, kPass * ksmps)
+            kMaxOut = max_k(aOut, k(true), 1)
+            ; log_k_debug("Wrote %d samples to cache index %d, %d total, max = %.3f)", ksmps, iSampleCacheIndex, kPass * ksmps, kMaxOut)
 
         elseif (iEventType == EVENT_NOTE_ON) then
             iVelocity = p6
@@ -449,8 +450,13 @@ instr INSTRUMENT_ID
             log_i_debug("iAmp = %f", iAmp)
 
             // Read `aOut` from note's sample cache.
-            log_i_debug("Reading from sample cache index %d.", iSampleCacheIndex)
-            aOut = oscil(1, 1, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * iAmp
+            ; log_i_debug("Reading from sample cache index %d.", iSampleCacheIndex)
+            aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+
+            kPass init 0
+            kPass += 1
+            kMaxOut = max_k(aOut, k(true), 1)
+            ; log_k_debug("Read %d samples from cache index %d, %d total, max = %.3f)", ksmps, iSampleCacheIndex, kPass * ksmps, kMaxOut)
 
             if (CC_VALUE_i(positionEnabled) == true) then
                 ; log_i_trace("Calling position UDO ...")
