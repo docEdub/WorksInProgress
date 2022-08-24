@@ -44,7 +44,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
