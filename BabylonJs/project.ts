@@ -6132,7 +6132,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
@@ -6351,7 +6351,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
@@ -6570,7 +6570,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
@@ -6789,7 +6789,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
@@ -7008,7 +7008,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
@@ -7227,7 +7227,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
     kPass init 0
-    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+    aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
     kPass += 1
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]

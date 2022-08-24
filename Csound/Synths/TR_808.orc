@@ -453,7 +453,7 @@ instr INSTRUMENT_ID
 
             // Read `aOut` from note's sample cache.
             kPass init 0
-            aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+            aOut = tab:a(a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope * iAmp
             kPass += 1
 
             if (CC_VALUE_i(positionEnabled) == true) then
