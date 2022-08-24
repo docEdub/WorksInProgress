@@ -443,8 +443,6 @@ instr INSTRUMENT_ID
             kPass init 0
             tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
             kPass += 1
-            kMaxOut = max_k(aOut, k(true), 1)
-            ; log_k_debug("Wrote %d samples to cache index %d, %d total, max = %.3f)", ksmps, iSampleCacheIndex, kPass * ksmps, kMaxOut)
 
         elseif (iEventType == EVENT_NOTE_ON) then
             iVelocity = p6
@@ -454,13 +452,7 @@ instr INSTRUMENT_ID
             log_i_debug("iAmp = %f", iAmp)
 
             // Read `aOut` from note's sample cache.
-            ; log_i_debug("Reading from sample cache index %d.", iSampleCacheIndex)
             aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
-
-            kPass init 0
-            kPass += 1
-            kMaxOut = max_k(aOut, k(true), 1)
-            ; log_k_debug("Read %d samples from cache index %d, %d total, max = %.3f)", ksmps, iSampleCacheIndex, kPass * ksmps, kMaxOut)
 
             if (CC_VALUE_i(positionEnabled) == true) then
                 ; log_i_trace("Calling position UDO ...")
