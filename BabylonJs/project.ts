@@ -6126,16 +6126,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6347,16 +6345,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6568,16 +6564,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -6789,16 +6783,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -7010,16 +7002,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]
@@ -7231,16 +7221,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
     kPass init 0
-    tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
+    aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
     kPass += 1
-    kMaxOut = max_k(aOut, k(1), 1)
     if (giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionEnabled] == 1) then
     iPositionMaxAmpWhenClose = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionMaxAmpWhenClose]
     iPositionReferenceDistance = giCcValues_TR_808[iOrcInstanceIndex][giCc_TR_808_positionReferenceDistance]

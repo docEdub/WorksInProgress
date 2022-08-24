@@ -441,7 +441,7 @@ instr INSTRUMENT_ID
 
             // Copy `aOut` into note's sample cache table at sample offset `kPass` * ksmps.
             kPass init 0
-            tablew(aOut, a(kPass * ksmps), giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+            kUnused = tablewa(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], aOut, kPass * ksmps)
             kPass += 1
 
         elseif (iEventType == EVENT_NOTE_ON) then
@@ -452,7 +452,9 @@ instr INSTRUMENT_ID
             log_i_debug("iAmp = %f", iAmp)
 
             // Read `aOut` from note's sample cache.
-            aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
+            kPass init 0
+            aOut = tablera(giTR_808_SampleCacheTableNumbers[iSampleCacheIndex], kPass * ksmps, 0) * aAmpEnvelope * iAmp
+            kPass += 1
 
             if (CC_VALUE_i(positionEnabled) == true) then
                 ; log_i_trace("Calling position UDO ...")
