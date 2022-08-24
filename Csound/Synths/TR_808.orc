@@ -223,9 +223,21 @@ instr INSTRUMENT_ID
             xtratim(0.1)
         elseif (iNoteNumber == TR_808_CLOSED_HIGH_HAT_KEY) then
             log_i_trace("Closed high hat triggered")
-            iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+            if (iEventType == EVENT_NOTE_ON) then
+                iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+            else
+                iNoteDuration = 10
+            endif
             xtratim(0.1)
         endif
+
+        aAmpEnvelope init 1
+        if (iEventType == EVENT_NOTE_ON) then
+            if (iNoteNumber == TR_808_CLOSED_HIGH_HAT_KEY) then
+                aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+            endif
+        endif
+
         log_i_debug("iNoteDuration = %f", iNoteDuration)
         p3 = iNoteDuration
 
@@ -390,8 +402,6 @@ instr INSTRUMENT_ID
 
                 // Pitched element
                 //----------------------------------------------------------------------------------------------------------
-                // Amplitude envelope for the pulse oscillators.
-                aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
                 // Pulse width.
                 ipw = 0.25
                 // Pulse oscillators.
@@ -409,13 +419,9 @@ instr INSTRUMENT_ID
                 // Highpass filter the pulse oscillators, twice.
                 amix = buthp(amix, 5000)
                 amix = buthp(amix, 5000)
-                // Apply the amplitude envelope.
-                amix = (amix * aenv)
 
                 // Noise element.
                 //----------------------------------------------------------------------------------------------------------
-                // Amplitude envelope for the noise.
-                aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
                 // White noise.
                 anoise = noise(0.8, 0)
                 // Cutoff frequency envelope for a lowpass filter
@@ -424,8 +430,6 @@ instr INSTRUMENT_ID
                 anoise = butlp(anoise, kcf)
                 // Highpass filter the noise signal.
                 anoise = buthp(anoise, 8000)
-                // Apply the amplitude envelope.
-                anoise = anoise * aenv
 
                 // Mix pulse oscillator and noise.
                 aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
@@ -451,7 +455,7 @@ instr INSTRUMENT_ID
 
             // Read `aOut` from note's sample cache.
             ; log_i_debug("Reading from sample cache index %d.", iSampleCacheIndex)
-            aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+            aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
 
             kPass init 0
             kPass += 1

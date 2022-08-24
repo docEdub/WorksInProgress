@@ -6028,8 +6028,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -6097,7 +6107,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -6109,13 +6118,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -6126,7 +6132,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
@@ -6243,8 +6249,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -6312,7 +6328,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -6324,13 +6339,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -6341,7 +6353,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
@@ -6458,8 +6470,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -6527,7 +6549,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -6539,13 +6560,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -6556,7 +6574,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
@@ -6673,8 +6691,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -6742,7 +6770,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -6754,13 +6781,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -6771,7 +6795,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
@@ -6888,8 +6912,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -6957,7 +6991,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -6969,13 +7002,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -6986,7 +7016,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
@@ -7103,8 +7133,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iNoteDuration = 0.5 * giTR_808_OpenHighHat_Decay
     xtratim(0.1)
     elseif (iNoteNumber == 49) then
+    if (iEventType == 1) then
     iNoteDuration = limit(0.088 * giTR_808_ClosedHighHat_Decay, 0.1, 10)
+    else
+    iNoteDuration = 10
+    endif
     xtratim(0.1)
+    endif
+    aAmpEnvelope init 1
+    if (iEventType == 1) then
+    if (iNoteNumber == 49) then
+    aAmpEnvelope = expsega(1, iNoteDuration, 0.001, 1, 0.001)
+    endif
     endif
     p3 = iNoteDuration
     if (iEventType == 5) then
@@ -7172,7 +7212,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kFrq4 = 348 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq5 = 420 * octave(giTR_808_ClosedHighHat_Tune)
     kFrq6 = 835 * octave(giTR_808_ClosedHighHat_Tune)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     ipw = 0.25
     a1 = vco2(0.5, kFrq1, 2, ipw)
     a2 = vco2(0.5, kFrq2, 2, ipw)
@@ -7184,13 +7223,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     amix = reson(amix, 5000 * octave(giTR_808_ClosedHighHat_Tune), 5000, 1)
     amix = buthp(amix, 5000)
     amix = buthp(amix, 5000)
-    amix = (amix * aenv)
-    aenv = expsega(1, iNoteDuration, 0.001, 1, 0.001)
     anoise = noise(0.8, 0)
     kcf = expseg(20000, 0.7, 9000, iNoteDuration - 0.1, 9000)
     anoise = butlp(anoise, kcf)
     anoise = buthp(anoise, 8000)
-    anoise = anoise * aenv
     aOut = (amix + anoise) * giTR_808_ClosedHighHat_Level * 0.55
     aOut = atone(aOut, k(giTR_808_HighHat_HighPassCutoffFrequencyHz))
     endif
@@ -7201,7 +7237,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     elseif (iEventType == 1) then
     iVelocity = p6
     iAmp = ampdbfs(((iVelocity / 127) - 1) * 30)
-    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex])
+    aOut = oscil:a(iAmp, gkTR_808_SampleCacheCps, giTR_808_SampleCacheTableNumbers[iSampleCacheIndex]) * aAmpEnvelope
     kPass init 0
     kPass += 1
     kMaxOut = max_k(aOut, k(1), 1)
