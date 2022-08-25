@@ -2655,9 +2655,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         track = null
         animation = null
 
-        nextFlyerIndex = 0
-        activeFlyerIndexes = []
-        noteFlyerIndexMap = {}
+        activeNotes = []
+        noteFlyerIndexMap = {
+            98: 0, // D
+            101: 1, // F
+            105: 2 // A
+        }
 
         constructor(components) {
             super(components)
@@ -2676,20 +2679,36 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         run = (time, deltaTime) => {
             if (this.track.activeNotesChanged) {
-                for (let i = 0; i < this.activeFlyerIndexes.length; i++) {
-                    this.animation.stop(this.activeFlyerIndexes[i])
+                // Turn finished notes off.
+                for (let i = 0; i < this.activeNotes.length; i++) {
+                    const note = this.activeNotes[i]
+                    let found = false
+                    for (let j = 0; j < this.track.activeNotes.length; j++) {
+                        if (note === this.track.activeNotes[j]) {
+                            found = true
+                            break
+                        }
+                    }
+                    if (!found) {
+                        this.animation.stop(this.noteFlyerIndexMap[note.pitch])
+                        this.activeNotes.splice(i, 1)
+                    }
                 }
+                // Turn started notes on.
                 for (let i = 0; i < this.track.activeNotes.length; i++) {
                     const note = this.track.activeNotes[i]
-                    let flyerIndex = this.nextFlyerIndex
-                    if (this.noteFlyerIndexMap[note.pitch]) {
-                        flyerIndex = this.noteFlyerIndexMap[note.pitch]
+                    let found = false
+                    for (let j = 0; j < this.activeNotes.length; j++) {
+                        if (note === this.activeNotes[j]) {
+                            found = true
+                            break
+                        }
                     }
-                    else {
-                        this.noteFlyerIndexMap[note.pitch] = flyerIndex
-                        this.nextFlyerIndex++
+                    if (!found) {
+                        const flyerIndex = this.noteFlyerIndexMap[note.pitch]
+                        this.animation.start(flyerIndex)
+                        this.activeNotes.push(note)
                     }
-                    this.animation.start(flyerIndex)
                 }
             }
         }
