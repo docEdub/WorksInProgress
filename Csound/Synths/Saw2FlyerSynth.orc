@@ -86,19 +86,27 @@ instr INSTRUMENT_ID
 
             // Position on path
             //---------------------------------------------------------------------------------------------------------
+            iFlyerIndex init -1
+            if (iNoteNumber == 98) then // D
+                iFlyerIndex = 0
+            elseif (iNoteNumber == 101) then // F
+                iFlyerIndex = 1
+            elseif (iNoteNumber == 105) then // A
+                iFlyerIndex = 2
+            endif
             kNoteTime = time_NoteTime:k()
-            kPointIndexAndFraction = kNoteTime * gi${InstrumentName}_PathSpeedMultipler
+            kPointIndexAndFraction = kNoteTime * gi${InstrumentName}_PathSpeedMultipler[iFlyerIndex]
             kPointIndex = min(gi${InstrumentName}_PathPointLastIndex - 1, floor:k(kPointIndexAndFraction))
 
             kPoint1[] init 3
             kPoint2[] init 3
             kCoordinateIndex = kPointIndex * 3
-            kPoint1[$X] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex]
-            kPoint1[$Y] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 1]
-            kPoint1[$Z] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 2]
-            kPoint2[$X] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 3]
-            kPoint2[$Y] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 4]
-            kPoint2[$Z] = gi${InstrumentName}_PathAudioPoints[kCoordinateIndex + 5]
+            kPoint1[$X] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex]
+            kPoint1[$Y] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 1]
+            kPoint1[$Z] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 2]
+            kPoint2[$X] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 3]
+            kPoint2[$Y] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 4]
+            kPoint2[$Z] = gi${InstrumentName}_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 5]
 
             kPointFraction = frac(kPointIndexAndFraction)
             kX = kPoint1[$X] + (kPoint2[$X] - kPoint1[$X]) * kPointFraction
@@ -135,7 +143,7 @@ instr INSTRUMENT_ID
             iEnvelopeA = 0.01
             iEnvelopeD = 0.1
             iEnvelopeS = 0.667
-            iEnvelopeR = 1 / gi${InstrumentName}_PathSpeedMultipler
+            iEnvelopeR = 1 / gi${InstrumentName}_PathSpeedMultipler[iFlyerIndex]
 
             aOut *= MIDIFY_OPCODE(xadsr):a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
 

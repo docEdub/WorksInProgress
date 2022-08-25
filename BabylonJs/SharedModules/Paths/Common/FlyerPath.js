@@ -116,7 +116,7 @@ class FlyerPath {
         // Set audio point strings.
         let audioPointsString = `${audioPoints.length}`
         for (let i = 0; i < audioPoints.length; i++) {
-            audioPointsString +=  `\ngiSaw2FlyerSynth_PathAudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
+            audioPointsString +=  `\ngiSaw2FlyerSynth_${this.constructor.name}AudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
         }
         this.#private.audioPointsString = audioPointsString
     }
