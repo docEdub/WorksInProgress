@@ -22,7 +22,7 @@ gi${InstrumentName}_PlaybackReverbAdjustment = 1.5
 
 gi${InstrumentName}_NoteIndex[] init ORC_INSTANCE_COUNT
 
-#include "Common/FlyerPath.orc"
+#include "Common/FlyerPaths.orc"
 
 #endif // #ifndef ${InstrumentName}_orc__include_guard
 
