@@ -6,6 +6,7 @@ class FlyerPath {
     segments = 60
     startRadius = 0
     radiusDelta = 9
+    zDelta = 9
     segmentMilliseconds = 100
 
     get points() {
@@ -96,6 +97,11 @@ class FlyerPath {
         const lowPoint = points[points.length - 1]
         points.push(...this.#spiralAscendPoints(lowPoint))
         points.push(...this.#extensionPoints(points[points.length - 1], points[points.length - 1].subtract(points[points.length - 2])))
+        let zOffset = 0
+        for (let i = 0; i < points.length; i++) {
+            points[i].z += zOffset
+            zOffset += this.zDelta
+        }
         this.#private.points = points
 
         const audioPoints = []

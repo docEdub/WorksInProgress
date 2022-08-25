@@ -44,7 +44,7 @@ declare global {
 }
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -2618,7 +2618,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this._path = new BABYLON.Path3D(this._pathPoints)
             this.#visualizePath(this._path)
-            this.#makeTriangleTube(this._path)
+            // this.#makeTriangleTube(this._path)
 
             const flyerMesh = makeTrianglePolygonMesh()
             flyerMesh.isVisible = true
