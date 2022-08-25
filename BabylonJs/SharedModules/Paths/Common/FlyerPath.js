@@ -4,6 +4,7 @@ const BABYLON = require('babylonjs')
 class FlyerPath {
     height = 210 // center of main pyramid mesh's top piece
     segments = 60
+    startRotation = 0 // degrees
     startRadius = 0
     radiusDelta = 9
     zDelta = 9
@@ -33,6 +34,7 @@ class FlyerPath {
 
             this.points = null
             this.audioPointsString = null
+            this.startRotationQuaternion = BABYLON.Quaternion.RotationAxis(new BABYLON.Vector3(0, 1, 0), this.#public.startRotation / 180 * Math.PI)
             this.speedMultiplier = 1000 / this.#public.segmentMilliseconds
         }
     }
@@ -100,6 +102,7 @@ class FlyerPath {
         let zOffset = 0
         for (let i = 0; i < points.length; i++) {
             points[i].z += zOffset
+            points[i].applyRotationQuaternionInPlace(this.#private.startRotationQuaternion)
             zOffset += this.zDelta
         }
         this.#private.points = points

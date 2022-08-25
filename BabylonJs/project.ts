@@ -2,10 +2,11 @@ import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 import Flyer1Path from "./SharedModules/Paths/Flyer1Path"
+import Flyer2Path from "./SharedModules/Paths/Flyer2Path"
+import Flyer3Path from "./SharedModules/Paths/Flyer3Path"
 import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
 import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
-import FlyerPath from "./SharedModules/Paths/Common/FlyerPath"
 
 //#region Non-playground setup
 
@@ -2510,20 +2511,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         color = [ 0.5, 0.5, 0.5 ]
         fps = 30
 
-        start = () => {
-            this._flyerMesh.isVisible = true
-            scene.beginAnimation(this._flyerMesh, 0, this.fps * this._pathPoints.length, true, this._speedMultiplier)
+        start = (flyerIndex) => {
+            this._flyerMeshes[flyerIndex].isVisible = true
+            scene.beginAnimation(this._flyerMeshes[flyerIndex], 0, this.fps * this._pathsPoints[flyerIndex].length, true, this._speedMultipliers[flyerIndex])
         }
 
-        stop = () => {
-            scene.stopAnimation(this._flyerMesh)
-            this._flyerMesh.isVisible = false
+        stop = (flyerIndex) => {
+            scene.stopAnimation(this._flyerMeshes[flyerIndex])
+            this._flyerMeshes[flyerIndex].isVisible = false
         }
 
-        _flyerMesh = null
-        _path = null
-        _pathPoints = Flyer1Path.points
-        _speedMultiplier = Flyer1Path.speedMultiplier
+        _flyerMeshes = []
+        _paths = null
+        _pathsPoints = [ Flyer1Path.points, Flyer2Path.points, Flyer3Path.points ]
+        _speedMultipliers = [ Flyer1Path.speedMultiplier, Flyer2Path.speedMultiplier, Flyer3Path.speedMultiplier ]
 
         #makeTriangleTube = (path) => {
             const positions = [
@@ -2584,9 +2585,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
-        #makeFlyerMeshAnimation = () => {
-            const mesh = this._flyerMesh
-            const path = this._path
+        #makeFlyerMeshAnimation = (flyerIndex) => {
+            const mesh = this._flyerMeshes[flyerIndex]
+            const path = this._paths[flyerIndex]
 
             const pathPoints = path.getPoints()
             const pathTangents = path.getTangents()
@@ -2616,9 +2617,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         constructor() {
             super()
 
-            this._path = new BABYLON.Path3D(this._pathPoints)
-            this.#visualizePath(this._path)
-            // this.#makeTriangleTube(this._path)
+            this._paths = [ new BABYLON.Path3D(this._pathsPoints[0]), new BABYLON.Path3D(this._pathsPoints[1]), new BABYLON.Path3D(this._pathsPoints[2]) ]
+            this.#visualizePath(this._paths[0])
+            this.#visualizePath(this._paths[1])
+            this.#visualizePath(this._paths[2])
+            // this.#makeTriangleTube(this._paths[0])
+            // this.#makeTriangleTube(this._paths[1])
+            // this.#makeTriangleTube(this._paths[2])
 
             const flyerMesh = makeTrianglePolygonMesh()
             flyerMesh.isVisible = true
@@ -2627,9 +2632,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             material.diffuseColor.set(1, 1, 1)
             material.emissiveColor.set(1, 0.1, 0.1)
             flyerMesh.material = material
-            this._flyerMesh = flyerMesh
+            this._flyerMeshes[0] = flyerMesh
+            this._flyerMeshes[1] = flyerMesh.clone()
+            this._flyerMeshes[2] = flyerMesh.clone()
 
-            this.#makeFlyerMeshAnimation()
+            this.#makeFlyerMeshAnimation(0)
+            this.#makeFlyerMeshAnimation(1)
+            this.#makeFlyerMeshAnimation(2)
         }
     }
 
@@ -2645,6 +2654,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         track = null
         animation = null
+
+        nextFlyerIndex = 0
+        activeFlyerIndexes = []
+        noteFlyerIndexMap = {}
 
         constructor(components) {
             super(components)
@@ -2663,11 +2676,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         run = (time, deltaTime) => {
             if (this.track.activeNotesChanged) {
-                if (0 < this.track.activeNotes.length) {
-                    this.animation.start()
+                for (let i = 0; i < this.activeFlyerIndexes.length; i++) {
+                    this.animation.stop(this.activeFlyerIndexes[i])
                 }
-                else {
-                    this.animation.stop()
+                for (let i = 0; i < this.track.activeNotes.length; i++) {
+                    const note = this.track.activeNotes[i]
+                    let flyerIndex = this.nextFlyerIndex
+                    if (this.noteFlyerIndexMap[note.pitch]) {
+                        flyerIndex = this.noteFlyerIndexMap[note.pitch]
+                    }
+                    else {
+                        this.noteFlyerIndexMap[note.pitch] = flyerIndex
+                        this.nextFlyerIndex++
+                    }
+                    this.animation.start(flyerIndex)
                 }
             }
         }
