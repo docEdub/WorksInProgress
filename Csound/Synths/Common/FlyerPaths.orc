@@ -18,14 +18,15 @@
     gi${InstrumentName}_Flyer3PathSpeedMultipler init ${Flyer3Path.speedMultiplier}
 #endif
 
-gi${InstrumentName}_PathPointCount init lenarray(gi${InstrumentName}_Flyer1PathAudioPoints) / 3
+gi${InstrumentName}_PathCoordinateCount init lenarray(gi${InstrumentName}_Flyer1PathAudioPoints)
+gi${InstrumentName}_PathPointCount init gi${InstrumentName}_PathCoordinateCount / 3
 gi${InstrumentName}_PathPointLastIndex init gi${InstrumentName}_PathPointCount - 1
 
-gi${InstrumentName}_PathAudioPoints[][] init 3, gi${InstrumentName}_PathPointCount
+gi${InstrumentName}_PathAudioPoints[][] init 3, gi${InstrumentName}_PathCoordinateCount
 gi${InstrumentName}_PathSpeedMultipler[] init 3
 
 ii = 0
-while (ii < gi${InstrumentName}_PathPointCount) do
+while (ii < gi${InstrumentName}_PathCoordinateCount) do
     gi${InstrumentName}_PathAudioPoints[0][ii] = gi${InstrumentName}_Flyer1PathAudioPoints[ii]
     gi${InstrumentName}_PathAudioPoints[1][ii] = gi${InstrumentName}_Flyer2PathAudioPoints[ii]
     gi${InstrumentName}_PathAudioPoints[2][ii] = gi${InstrumentName}_Flyer3PathAudioPoints[ii]

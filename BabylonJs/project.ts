@@ -9096,10 +9096,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giSaw2FlyerSynth_PlaybackVolumeAdjustment = 0.9
     giSaw2FlyerSynth_PlaybackReverbAdjustment = 1.5
     giSaw2FlyerSynth_NoteIndex[] init 1
-    giSaw2FlyerSynth_PathAudioPoints[] init ${Flyer1Path.audioPointsString}
-    giSaw2FlyerSynth_PathSpeedMultipler init ${Flyer1Path.speedMultiplier}
-    giSaw2FlyerSynth_PathPointCount init lenarray(giSaw2FlyerSynth_PathAudioPoints) / 3
+    giSaw2FlyerSynth_Flyer1PathAudioPoints[] init ${Flyer1Path.audioPointsString}
+    giSaw2FlyerSynth_Flyer1PathSpeedMultipler init ${Flyer1Path.speedMultiplier}
+    giSaw2FlyerSynth_Flyer2PathAudioPoints[] init ${Flyer2Path.audioPointsString}
+    giSaw2FlyerSynth_Flyer2PathSpeedMultipler init ${Flyer2Path.speedMultiplier}
+    giSaw2FlyerSynth_Flyer3PathAudioPoints[] init ${Flyer3Path.audioPointsString}
+    giSaw2FlyerSynth_Flyer3PathSpeedMultipler init ${Flyer3Path.speedMultiplier}
+    giSaw2FlyerSynth_PathCoordinateCount init lenarray(giSaw2FlyerSynth_Flyer1PathAudioPoints)
+    giSaw2FlyerSynth_PathPointCount init giSaw2FlyerSynth_PathCoordinateCount / 3
     giSaw2FlyerSynth_PathPointLastIndex init giSaw2FlyerSynth_PathPointCount - 1
+    giSaw2FlyerSynth_PathAudioPoints[][] init 3, giSaw2FlyerSynth_PathCoordinateCount
+    giSaw2FlyerSynth_PathSpeedMultipler[] init 3
+    ii = 0
+    while (ii < giSaw2FlyerSynth_PathCoordinateCount) do
+    giSaw2FlyerSynth_PathAudioPoints[0][ii] = giSaw2FlyerSynth_Flyer1PathAudioPoints[ii]
+    giSaw2FlyerSynth_PathAudioPoints[1][ii] = giSaw2FlyerSynth_Flyer2PathAudioPoints[ii]
+    giSaw2FlyerSynth_PathAudioPoints[2][ii] = giSaw2FlyerSynth_Flyer3PathAudioPoints[ii]
+    ii += 1
+    od
+    giSaw2FlyerSynth_PathSpeedMultipler[0] = giSaw2FlyerSynth_Flyer1PathSpeedMultipler
+    giSaw2FlyerSynth_PathSpeedMultipler[1] = giSaw2FlyerSynth_Flyer2PathSpeedMultipler
+    giSaw2FlyerSynth_PathSpeedMultipler[2] = giSaw2FlyerSynth_Flyer3PathSpeedMultipler
     #ifdef IS_GENERATING_JSON
     gSPluginUuids[12][0] = "89fb9657327e406b80a253b6c9d69b8a"
     instr Json_16
@@ -9158,18 +9175,26 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a2 = 0
     a3 = 0
     a4 = 0
+    iFlyerIndex init -1
+    if (iNoteNumber == 98) then
+    iFlyerIndex = 0
+    elseif (iNoteNumber == 101) then
+    iFlyerIndex = 1
+    elseif (iNoteNumber == 105) then
+    iFlyerIndex = 2
+    endif
     kNoteTime = time_NoteTime:k()
-    kPointIndexAndFraction = kNoteTime * giSaw2FlyerSynth_PathSpeedMultipler
+    kPointIndexAndFraction = kNoteTime * giSaw2FlyerSynth_PathSpeedMultipler[iFlyerIndex]
     kPointIndex = min(giSaw2FlyerSynth_PathPointLastIndex - 1, floor:k(kPointIndexAndFraction))
     kPoint1[] init 3
     kPoint2[] init 3
     kCoordinateIndex = kPointIndex * 3
-    kPoint1[$X] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex]
-    kPoint1[$Y] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex + 1]
-    kPoint1[$Z] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex + 2]
-    kPoint2[$X] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex + 3]
-    kPoint2[$Y] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex + 4]
-    kPoint2[$Z] = giSaw2FlyerSynth_PathAudioPoints[kCoordinateIndex + 5]
+    kPoint1[$X] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex]
+    kPoint1[$Y] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 1]
+    kPoint1[$Z] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 2]
+    kPoint2[$X] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 3]
+    kPoint2[$Y] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 4]
+    kPoint2[$Z] = giSaw2FlyerSynth_PathAudioPoints[iFlyerIndex][kCoordinateIndex + 5]
     kPointFraction = frac(kPointIndexAndFraction)
     kX = kPoint1[$X] + (kPoint2[$X] - kPoint1[$X]) * kPointFraction
     kY = kPoint1[$Y] + (kPoint2[$Y] - kPoint1[$Y]) * kPointFraction
@@ -9192,7 +9217,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     iEnvelopeA = 0.01
     iEnvelopeD = 0.1
     iEnvelopeS = 0.667
-    iEnvelopeR = 1 / giSaw2FlyerSynth_PathSpeedMultipler
+    iEnvelopeR = 1 / giSaw2FlyerSynth_PathSpeedMultipler[iFlyerIndex]
     aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
