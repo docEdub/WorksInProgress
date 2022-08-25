@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1661409745
+<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1661410606
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -8786,7 +8786,7 @@
     <ITEM
       POSITION 126
       SNAPOFFS 0
-      LENGTH 22
+      LENGTH 24
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -8806,9 +8806,9 @@
         CCINTERP 32
         POOLEDEVTS {CACECF3E-0DB0-1046-9230-A5BAF2E97C42}
         E 3840 90 62 7f
-        E 0 90 65 7f
-        e 0 90 69 7f
-        E 261120 80 62 00
+        E 1920 90 65 7f
+        e 1920 90 69 7f
+        E 257280 80 62 00
         E 0 80 65 00
         e 0 80 69 00
         E 0 b0 7b 00
@@ -8818,17 +8818,17 @@
         IGNTEMPO 0 120 4 4
         SRCCOLOR 446
         VELLANE -1 100 0
-        CFGEDITVIEW -39196.567744 0.000921 20 12 0 -1 0 0 0 0.5
+        CFGEDITVIEW 348.621215 0.038179 20 12 0 -1 0 0 0 0.5
         KEYSNAP 0
         TRACKSEL -252
         EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
-        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 717 205 1717 788 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
+        CFGEDIT 1 1 0 1 0 0 1 1 1 1 1 0.125 641 47 1641 630 0 0 0 0 0 0 0 0 0 0.5 0 0 1 64
       >
     >
     <ITEM
       POSITION 150
       SNAPOFFS 0
-      LENGTH 22
+      LENGTH 23
       LOOP 1
       ALLTAKES 0
       FADEIN 1 0 0 1 0 0 0
@@ -8847,12 +8847,12 @@
         HASDATA 1 960 QN
         CCINTERP 32
         POOLEDEVTS {5435FFEC-5814-BD4D-BB6F-8C6BB1223E3B}
-        E 3840 90 62 7f
-        E 0 90 65 7f
-        e 0 90 69 7f
-        E 261120 80 62 00
+        e 3720 90 69 7f
+        E 1080 90 65 7f
+        E 960 90 62 7f
+        e 259200 80 69 00
         E 0 80 65 00
-        e 0 80 69 00
+        E 0 80 62 00
         E 0 b0 7b 00
         CCINTERP 32
         CHASE_CC_TAKEOFFS 1
@@ -8860,7 +8860,7 @@
         IGNTEMPO 0 120 4 4
         SRCCOLOR 446
         VELLANE -1 100 0
-        CFGEDITVIEW -39196.567744 0.000921 20 12 0 -1 0 0 0 0.5
+        CFGEDITVIEW 3257.503336 0.090178 20 12 0 -1 0 0 0 0.5
         KEYSNAP 0
         TRACKSEL -252
         EVTFILTER 0 -1 -1 -1 -1 0 0 0 0 -1 -1 -1 -1 0 -1 0 -1 -1
