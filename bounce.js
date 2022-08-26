@@ -92,7 +92,7 @@ if (os.type() === 'Darwin') {
         fs.writeFileSync(bounceDir + '/DawPlayback.min.json', jsonData)
 
         // Wrap JSON data with Javascript multiline string variable named `csdJson`.
-        let output = 'const csdJson = `\n    ' + jsonData + '\n    `'
+        let output = 'const csdJson = `\r\n    ' + jsonData + '\r\n    `'
 
         // Update BabylonJs/project.ts csdJson variable.
         let data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
