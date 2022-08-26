@@ -18,6 +18,12 @@ include("${CsoundCMake.Cabbage_DIR}/Source/ui/TrackInfo.cmake")
 add_tab(s88_tab "S88" 64)
 add_tab(position_tab "Position" 64)
 add_tab(log_tab "Log" 64)
+
+if(EXISTS "${CSD_SOURCE_DIR}/${InstrumentName}.ui")
+    add_tab(${InstrumentName}_tab "${InstrumentName}" 128)
+    set(CSD_UI_CONTENT "#include \"${InstrumentName}.ui\"")
+endif()
+
 process_tabs()
 
 set(tab_group_y MATH "${TrackInfo_height} + ${padding}")

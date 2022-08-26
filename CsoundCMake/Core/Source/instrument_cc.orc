@@ -52,13 +52,18 @@ ${CSOUND_DEFINE} CC_CHANNEL_NAME(channel) #gSCcInfo[CC_INDEX($channel)][$CC_INFO
 #define CreateCcIndexesInstrument CONCAT(INSTRUMENT_NAME, _CreateCcIndexes)
 
 ${CSOUND_IFDEF} CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count)
+    log_i_trace("Checking CC info array for reshape ...")
     // Reshape the gSCcInfo array if it hasn't been reshaped already. This check is required for reloadable instruments
     // because global arrays retain their shape across reloads.
+    log_i_debug("gSCcInfo length = %d", lenarray(gSCcInfo))
+    log_i_debug("gSCcInfo count = %d", CONCAT($, CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count)))
     if (lenarray(gSCcInfo) != CONCAT($, CONCAT(CONCAT(gSCcInfo_, INSTRUMENT_NAME), _Count))) \
         igoto CONCAT(skipCcInfoReshapeArray_, INSTRUMENT_NAME)
     giCcCount = (lenarray(gSCcInfo) / 4) - 1
     reshapearray(gSCcInfo, giCcCount + 1, 4)
+    log_i_debug("gSCcInfo reshaped to length %d", giCcCount)
     CONCAT(skipCcInfoReshapeArray_, INSTRUMENT_NAME): // reshape array skipped
+    log_i_trace("Checking CC info array for reshape - done")
 ${CSOUND_ELSE}
     // If gSCcInfo_INSTRUMENT_NAME_Count is not defined then the instrument is not reloadable and the array size check
     // is not possible.

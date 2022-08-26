@@ -12,8 +12,15 @@
 #ifndef ${InstrumentName}_orc__include_guard
 #define ${InstrumentName}_orc__include_guard
 
-#include "synth-inside-include-guard.h.orc"
+#define CSD_CC_INFO \
+    "flyerDirectionComboBoxIndex",  "number",   "0",    "synced",   \
+    "flyerDirection",               "string",   "",     "synced",   \
 
+#define CSD_CC_INFO_COUNT 8
+
+#define HAS_CSD_CC_INDEXES_ORC
+
+#include "synth-inside-include-guard.h.orc"
 ${CSOUND_INCLUDE} "json.orc"
 ${CSOUND_INCLUDE} "time_NoteTime.orc"
 

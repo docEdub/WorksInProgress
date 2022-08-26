@@ -7358,6 +7358,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced",
     \\
     "", "", "", "")
+    #ifdef gSCcInfo_Triangle2Synth_Count
+    #undef gSCcInfo_Triangle2Synth_Count
+    #end
     #define gSCcInfo_Triangle2Synth_Count #52#
     #define CC_INFO_CHANNEL #0#
     #define CC_INFO_TYPE #1#
@@ -7642,6 +7645,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced",
     \\
     "", "", "", "")
+    #ifdef gSCcInfo_Triangle4BassMonoSynth_Count
+    #undef gSCcInfo_Triangle4BassMonoSynth_Count
+    #end
     #define gSCcInfo_Triangle4BassMonoSynth_Count #52#
     #define CC_INFO_CHANNEL #0#
     #define CC_INFO_TYPE #1#
@@ -8419,6 +8425,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced",
     \\
     "", "", "", "")
+    #ifdef gSCcInfo_Saw1RimSynth_Count
+    #undef gSCcInfo_Saw1RimSynth_Count
+    #end
     #define gSCcInfo_Saw1RimSynth_Count #52#
     #define CC_INFO_CHANNEL #0#
     #define CC_INFO_TYPE #1#
@@ -8999,10 +9008,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #end
     gSCcInfo_Saw2FlyerSynth[] = fillarray( \\
     \\
-    "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced",
+    "positionEnabled", "bool", "true", "synced", "positionMaxAmpWhenClose", "number", "1", "synced", "positionReferenceDistance", "number", "0.1", "synced", "positionRolloffFactor", "number", "0.01", "synced", "positionOpcodeComboBoxIndex", "number", "0", "synced", "positionOpcode", "string", "", "synced", "positionXScale", "number", "100", "synced", "positionYScale", "number", "100", "synced", "positionZScale", "number", "100", "synced", "positionXOffset", "number", "0", "synced", "positionYOffset", "number", "0", "synced", "positionZOffset", "number", "0", "synced", "flyerDirectionComboBoxIndex", "number", "0", "synced", "flyerDirection", "string", "", "synced",
     \\
     "", "", "", "")
-    #define gSCcInfo_Saw2FlyerSynth_Count #52#
+    #ifdef gSCcInfo_Saw2FlyerSynth_Count
+    #undef gSCcInfo_Saw2FlyerSynth_Count
+    #end
+    #define gSCcInfo_Saw2FlyerSynth_Count #52 + 8#
     #define CC_INFO_CHANNEL #0#
     #define CC_INFO_TYPE #1#
     #define CC_INFO_VALUE #2#
@@ -9109,6 +9121,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giCc_Saw2FlyerSynth_positionXOffset init ccIndex_Saw2FlyerSynth("positionXOffset")
     giCc_Saw2FlyerSynth_positionYOffset init ccIndex_Saw2FlyerSynth("positionYOffset")
     giCc_Saw2FlyerSynth_positionZOffset init ccIndex_Saw2FlyerSynth("positionZOffset")
+    giCc_Saw2FlyerSynth_flyerDirectionComboBoxIndex init ccIndex_Saw2FlyerSynth("flyerDirectionComboBoxIndex")
+    giCc_Saw2FlyerSynth_flyerDirection init ccIndex_Saw2FlyerSynth("flyerDirection")
     turnoff
     endin
     event_i("i", "Saw2FlyerSynth_CreateCcIndexes", 0, -1)
