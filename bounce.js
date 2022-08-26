@@ -94,7 +94,7 @@ if (os.type() === 'Darwin') {
         // Wrap JSON data with Javascript multiline string variable named `csdJson`.
         let output = 'const csdJson = `\n    ' + jsonData + '\n    `'
 
-            // Update BabylonJs/project.ts csdJson variable.
+        // Update BabylonJs/project.ts csdJson variable.
         let data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
 
         data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
