@@ -899,12 +899,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         _light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
 
-        reset = () => {
-        }
-
-        render = () => {
-            this.color = [ 1, 1, 1 ]
-            this._light.intensity = 1
+        constructor() {
+            this._light.intensity = 0.02
         }
     }
     const sunLight = new SunLight
@@ -1748,11 +1744,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._strikerGlassMesh.scaling.set(210, 180, 210)
             this._strikerGlassMesh.parent = this._strikerLegsMesh
 
-            this._strikerGlassMeshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._strikerGlassMeshMaterial.alpha = 0.5
-            this._strikerGlassMeshMaterial.backFaceCulling = false
-            this._strikerGlassMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
-            this._strikerGlassMesh.material = this._strikerGlassMeshMaterial
+            {
+                const material = new BABYLON.StandardMaterial('', scene)
+                material.alpha = 0.5
+                material.backFaceCulling = false
+                material.emissiveColor.set(0.5, 0.5, 0.5)
+                material.specularPower = 0.25
+                this._strikerGlassMeshMaterial = material
+                this._strikerGlassMesh.material = material
+            }
 
             this.isRunning = false
         }
@@ -2767,8 +2767,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         set intensity(value) { this._light.intensity = value }
 
         constructor() {
-            this._light.intensity = 0.25
-            this._light.range = 200
+            {
+                const light = this._light
+                light.intensity = 0.1
+                light.range = 250
+                light.specular.set(0.5, 0.5, 0.5)
+            }
 
             const entity = new Entity
             const reset = new ObjectPropertyResetComponent
