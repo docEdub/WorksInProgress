@@ -2649,7 +2649,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // this.#makeTriangleTube(this._paths[2][1])
 
             const flyerMesh = makeTrianglePolygonMesh()
-            flyerMesh.isVisible = true
+            flyerMesh.isVisible = false
             flyerMesh.scaling.setAll(10)
             const material = new BABYLON.StandardMaterial('', scene)
             material.diffuseColor.set(1, 1, 1)
