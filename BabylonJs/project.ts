@@ -8,7 +8,7 @@ import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
 import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
 
-//#region Non-playground setup
+//#region Non-playground TypeScript declarations
 
 declare global {
     interface Document {
@@ -44,6 +44,8 @@ declare global {
     }
 }
 
+//#endregion
+
 document.isProduction = true
 document.useDawTiming = false
 document.debugAsserts = true
@@ -51,8 +53,6 @@ document.alwaysRun = true
 
 // var ConsoleLogHTML = require('console-log-html')
 // ConsoleLogHTML.connect(document.getElementById('ConsoleOutput'), {}, false, false, false)
-
-//#endregion
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
