@@ -1,0 +1,9 @@
+; Custom tab content
+${group} bounds(${tab_content_group_rect}) identchannel("${InstrumentName}_tab_content_ui") visible(0) {
+   ; Flyer direction.
+   ${group} bounds(0, 0, ${setting_width}, ${setting_height_x2}) {
+      ${setting_label} text("Flyer direction")
+      ${setting_combobox} bounds(0, ${setting_height}, ${setting_dimensions}) channel("flyerDirectionComboBoxIndex") identchannel("flyerDirectionComboBoxIndexUi") items("counter clockwise", "clockwise", "both")
+      ${texteditor} ${hidden} channel("flyerDirection") identchannel("flyerDirectionUi")
+   }
+}

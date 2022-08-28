@@ -25,6 +25,10 @@ ${CSOUND_INCLUDE} "TrackInfo_global.orc"
 ${CSOUND_INCLUDE} "time.orc"
 ${CSOUND_INCLUDE} "watchOrcFile.orc"
 
+#ifdef CSD_HAD_GLOBAL_ORC
+    ${CSOUND_INCLUDE} "${InstrumentName}_global.orc"
+#endif
+
 
 //======================================================================================================================
 // Main processing instrument. Always on.
@@ -34,6 +38,11 @@ instr 1
     ${CSOUND_INCLUDE} "cabbage_core_instr_1_head.orc"
     ${CSOUND_INCLUDE} "TrackInfo_instr_1_head.orc"
     ${CSOUND_INCLUDE} "Position_instr_1_head.orc"
+
+    #ifdef CSD_HAS_INSTR_1_HEAD_ORC
+        ${CSOUND_INCLUDE} "${InstrumentName}_instr_1_head.orc"
+    #endif
+
     AF_3D_UpdateListenerRotationMatrix()
     AF_3D_UpdateListenerPosition()
 endin
@@ -90,5 +99,8 @@ ${group} bounds(${tab_content_group_rect}) identchannel("position_tab_content_ui
 
 ; Log tab content
 ${csoundoutput} bounds(${tab_content_group_rect}) identchannel("log_tab_content_ui") visible(0)
+
+; Custom UI content
+${CSD_UI_CONTENT}
 
 </Cabbage>

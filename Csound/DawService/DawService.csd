@@ -26,7 +26,7 @@ gSPresetUuidOrder[] = fillarray( \
     "d51fb1d5a0104857a7f61b218692743c", /* Rim 1: Hi Arp */ \
     "14afc0dff693459fb6fc521bcf3db0bc", /* Rim 2: Hi Line */ \
     "5006b8ea266f4bf9aba92ff5badfea3e", /* Rim 3: Lo Line */ \
-    "f6341a2a81244ea79dd0e1486eb93386"  /* UDO Triggers */ \
+    "89fb9657327e406b80a253b6c9d69b8a"  /* Flyer 1 */ \
 )
 
 #include "core_global.h"
