@@ -3096,7 +3096,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '09: Rim 1: Hi Arp',
             mesh: Rim1HiArpMesh,
-            color: [ 0.3, 0.6, 0.5 ]
+            color: [ 0.1, 5, 0.1 ]
         }
     }
 
@@ -3105,7 +3105,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '10: Rim 2: Hi Line',
             mesh: Rim2HiLineMesh,
-            color: [ 0.5, 0.5, 0.1 ],
+            color: [ 0.8, 0.8, 0.25 ],
             noteNumbers: [ 60, 62, 64, 65, 67, 69, 71, 72 ]
         }
     }
@@ -3115,7 +3115,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '11: Rim 3: Lo Line',
             mesh: Rim3LoLineMesh,
-            color: [ 0.5, 0.1, 0.5 ],
+            color: [ 0.9, 0.1, 0.9 ],
             noteNumbers: [ 52, 53, 55, 57, 59, 60 ]
         }
     }
