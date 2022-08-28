@@ -72,6 +72,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         static readonly NeonGreen = [ 0.05, 0.7, 0.05 ]
         static readonly NeonOrange = [ 1, 0.5, 0.1 ]
         static readonly NeonPurple = [ 0.45, 0.1, 0.9 ]
+
+        static readonly LightBrightRed = [ 1, 0.15, 0.15 ]
     }
 
     //#endregion
@@ -2522,8 +2524,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class Flyer1AnimationComponent
 
     class Flyer1AnimationComponent extends Component {
-        color = [ 0.5, 0.5, 0.5 ]
         fps = 30
+
+        get color() { return this._flyerMeshMaterial.emissiveColor.asArray() }
+        set color(value) {
+            this._flyerMeshMaterial.emissiveColor.fromArray(value)
+        }
 
         start = (flyerIndex, directionIndex) => {
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = true
@@ -2541,6 +2547,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         _flyerMeshes = [[]] // [note][flyer direction]
+        _flyerMeshMaterial = null
+
         _paths = null
         _pathsPoints = [
             [ Flyer1Path.points, Flyer1Path.pointsCounterClockwise ],
@@ -2674,6 +2682,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 [ flyerMesh.clone(), flyerMesh.clone() ],
                 [ flyerMesh.clone(), flyerMesh.clone() ]
             ]
+            this._flyerMeshMaterial = material
 
             this.#makeFlyerMeshAnimation(0, 0)
             this.#makeFlyerMeshAnimation(0, 1)
@@ -2967,6 +2976,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const createFlyerAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
         const animation = new Flyer1AnimationComponent
+        if (options.color != undefined) {
+            animation.color = options.color
+        }
         entity.addComponent(animation)
         return entity
     }
@@ -3141,7 +3153,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     trackOptionsMap[flyer1TrackId] = {
         function: createFlyerAnimation,
         options: {
-            name: '12: Flyer 1'
+            name: '12: Flyer 1',
+            color: Color.LightBrightRed
         }
     }
 
