@@ -65,6 +65,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region Colors
+
+    class Color {
+        static readonly NeonBlue = [ 0.2, 0.2, 1 ]
+        static readonly NeonGreen = [ 0.05, 0.7, 0.05 ]
+        static readonly NeonOrange = [ 1, 0.5, 0.1 ]
+        static readonly NeonPurple = [ 0.45, 0.1, 0.9 ]
+    }
+
+    //#endregion
+
     //#region Constants
 
     const halfGroundSize = groundSize / 2
@@ -1964,6 +1975,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         pitchFloor = 60
         rotationSpeed = 2
 
+        get color() { return this._meshMaterial.emissiveColor.asArray() }
+        set color(value) {
+            this._meshMaterial.emissiveColor.fromArray(value)
+            this._pillarMeshMaterial.emissiveColor.fromArray(value)
+        }
+
         set maximumActiveNoteCount(value) {
             this._activeNoteData.length = value
             for (let i = 0; i < value; i++) {
@@ -2034,16 +2051,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._mesh = BABYLON.Mesh.MergeMeshes([ triangleMesh1, triangleMesh2, triangleMesh3 ], true)
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.emissiveColor.set(1, 0, 0)
-            this._meshMaterial.specularPower = 0.25
             this._mesh.material = this._meshMaterial
 
             this._pillarMesh = makeTrianglePolygonMesh()
             this._pillarMesh.isVisible = true
             this._pillarMesh.scaling.set(1, 10, 1)
             this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._pillarMeshMaterial.diffuseColor.set(1, 0, 0)
             this._pillarMeshMaterial.emissiveColor.set(1, 0, 0)
-            this._pillarMeshMaterial.specularPower = 0.25
             this._pillarMesh.material = this._pillarMeshMaterial
         }
     }
@@ -2891,6 +2905,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         entity.addComponent(pitchLfo)
         const animation = new BeaconAnimationComponent
         animation.maximumActiveNoteCount = 2
+        if (options.color != undefined) {
+            animation.color = options.color
+        }
         let position = json[1].note.xyz
         if (options.x != undefined) {
             position[0] = options.x
@@ -2978,7 +2995,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '00: Kick 1',
             totalDuration: kickOptions.totalDuration,
-            color: [ 1, 0.5, 0.1 ],
+            color: Color.NeonOrange,
             flashScalingMin: kickOptions.flashScalingMin,
             flashScalingMax: kickOptions.flashScalingMax,
             strikerMeshScaling: kickOptions.strikerMeshScaling,
@@ -2991,7 +3008,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '01: Kick 2: Left',
             totalDuration: kickOptions.totalDuration,
-            color: [ 0.1, 1, 0.5 ],
+            color: Color.NeonGreen,
             flashScalingMin: kickOptions.flashScalingMin,
             flashScalingMax: kickOptions.flashScalingMax,
             strikerMeshScaling: kickOptions.strikerMeshScaling,
@@ -3004,7 +3021,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '02: Kick 2: Right',
             totalDuration: kickOptions.totalDuration,
-            color: [ 0.5, 0.1, 1 ],
+            color: Color.NeonPurple,
             flashScalingMin: kickOptions.flashScalingMin,
             flashScalingMax: kickOptions.flashScalingMax,
             strikerMeshScaling: kickOptions.strikerMeshScaling,
@@ -3017,7 +3034,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '03: Snare',
             totalDuration: snareOptions.totalDuration,
-            color: [ 0.1, 0.1, 1 ],
+            color: Color.NeonBlue,
             flashScalingMin: snareOptions.flashScalingMin,
             flashScalingMax: snareOptions.flashScalingMax,
             strikerMeshScaling: snareOptions.strikerMeshScaling,
@@ -3049,6 +3066,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         function: createBeaconAnimation,
         options: {
             name: '06: Beacon',
+            color: Color.NeonBlue,
             x: 0,
             z: 300
         }
@@ -3096,7 +3114,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '09: Rim 1: Hi Arp',
             mesh: Rim1HiArpMesh,
-            color: [ 0.1, 5, 0.1 ]
+            color: Color.NeonGreen
         }
     }
 
@@ -3105,7 +3123,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '10: Rim 2: Hi Line',
             mesh: Rim2HiLineMesh,
-            color: [ 0.8, 0.8, 0.25 ],
+            color: Color.NeonOrange,
             noteNumbers: [ 60, 62, 64, 65, 67, 69, 71, 72 ]
         }
     }
@@ -3115,7 +3133,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '11: Rim 3: Lo Line',
             mesh: Rim3LoLineMesh,
-            color: [ 0.9, 0.1, 0.9 ],
+            color: Color.NeonPurple,
             noteNumbers: [ 52, 53, 55, 57, 59, 60 ]
         }
     }
