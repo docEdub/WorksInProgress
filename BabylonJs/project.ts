@@ -1741,7 +1741,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this._strikerGlassMesh = makeTrianglePolygonMesh()
             this._strikerGlassMesh.isVisible = true
-            this._strikerGlassMesh.scaling.set(210, 180, 210)
+            this._strikerGlassMesh.scaling.set(210, 178, 210)
             this._strikerGlassMesh.parent = this._strikerLegsMesh
 
             {
