@@ -15,6 +15,11 @@ class FlyerPath {
         return this.#private.points
     }
 
+    get pointsCounterClockwise() {
+        this.#initCounterClockwise()
+        return this.#private.pointsCounterClockwise
+    }
+
     get audioPointsString() {
         this.#init()
         return this.#private.audioPointsString
@@ -36,6 +41,8 @@ class FlyerPath {
             this.audioPointsString = null
             this.startRotationQuaternion = BABYLON.Quaternion.RotationAxis(new BABYLON.Vector3(0, 1, 0), this.#public.startRotation / 180 * Math.PI)
             this.speedMultiplier = 1000 / this.#public.segmentMilliseconds
+
+            this.pointsCounterClockwise = null
         }
     }
     _private = null
@@ -119,6 +126,17 @@ class FlyerPath {
             audioPointsString +=  `\ngiSaw2FlyerSynth_${this.constructor.name}AudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
         }
         this.#private.audioPointsString = audioPointsString
+    }
+
+    #initCounterClockwise = () => {
+        if (this.#private.pointsCounterClockwise) {
+            return
+        }
+
+        this.#private.pointsCounterClockwise = [...this.points]
+        for (let i = 0; i < this.#private.pointsCounterClockwise.length; i++) {
+            this.#private.pointsCounterClockwise[i].z *= -1
+        }
     }
 }
 
