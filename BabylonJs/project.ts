@@ -47,7 +47,7 @@ declare global {
 //#endregion
 
 document.isProduction = true
-document.useDawTiming = false
+document.useDawTiming = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -15702,10 +15702,10 @@ const csdJson = `
                     message.add(camera.matrix[i])
                 }
                 serverOsc.send(message)
-                console.debug('Setting DAW listener position to ['
-                    + camera.matrix[12] + ', '
-                    + camera.matrix[13] + ', '
-                    + camera.matrix[14] + ']')
+                // console.debug('Setting DAW listener position to ['
+                //     + camera.matrix[12] + ', '
+                //     + camera.matrix[13] + ', '
+                //     + camera.matrix[14] + ']')
                 camera.matrixIsDirty = false
             }
         }, camera.matrixMillisecondsPerUpdate)
