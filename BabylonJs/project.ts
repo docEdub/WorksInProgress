@@ -812,11 +812,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region MainTriangles mesh
 
     const mainTrianglesOuterMeshScale = 20
-    const mainTrianglesOuterMeshRotationY = BABYLON.Angle.FromDegrees(60).radians()
+    const mainTrianglesOuterMeshRotationY = 0
     const mainTrianglesDefaultColor = [ 0.05, 0.05, 0.05 ]
 
     let mainTriangleMesh = null
     let mainTriangleMeshHeight = 1
+
+    let outerMainTrianglesMeshMaterial = null
+    const outerMainTrianglesDefaultColor = [ 0.06, 0.06, 0.06 ]
 
     const meshString_MainTriangles = `
     {"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
@@ -844,10 +847,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const material = new BABYLON.StandardMaterial('', scene)
             material.ambientColor.set(1, 1, 1)
             material.diffuseColor.set(1, 1, 1)
-            material.emissiveColor.set(
-                mainTrianglesDefaultColor[0],
-                mainTrianglesDefaultColor[1],
-                mainTrianglesDefaultColor[2])
+            material.emissiveColor.fromArray(mainTrianglesDefaultColor)
             material.specularColor.set(0.25, 0.25, 0.25)
             material.specularPower = 2
             mainTriangleMesh = scene.getMeshByName('MainTriangles')
@@ -856,7 +856,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const outerMesh = mainTriangleMesh.clone('OuterMainTriangles', mainTriangleMesh.parent)
             outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
             outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
-            outerMesh.material = material.clone('')
+            const outerMeshMaterial = material.clone('')
+            outerMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
+            outerMesh.material = outerMeshMaterial
+            outerMainTrianglesMeshMaterial = outerMeshMaterial
         },
         () => {},
         () => {},
@@ -2126,6 +2129,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             for (let i = 0; i < this.meshesToColor.length; i++) {
                 this.meshesToColor[i].material.emissiveColor.fromArray(mainTrianglesDefaultColor)
             }
+            outerMainTrianglesMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
         }
 
         set pitch(value) {
