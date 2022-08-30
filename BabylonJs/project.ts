@@ -65,7 +65,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    //#region Colors
+    //#region Light and color
+
+    class Light {
+        static readonly MaxSimultaneous = 8
+    }
 
     class Color {
         static readonly NeonBlue = [ 0.2, 0.2, 1 ]
@@ -848,6 +852,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             material.ambientColor.set(1, 1, 1)
             material.diffuseColor.set(1, 1, 1)
             material.emissiveColor.fromArray(mainTrianglesDefaultColor)
+            material.maxSimultaneousLights = Light.MaxSimultaneous
             material.specularColor.set(0.25, 0.25, 0.25)
             material.specularPower = 2
             mainTriangleMesh = scene.getMeshByName('MainTriangles')
@@ -1765,6 +1770,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 material.alpha = 0.5
                 material.backFaceCulling = false
                 material.emissiveColor.set(0.5, 0.5, 0.5)
+                material.maxSimultaneousLights = Light.MaxSimultaneous
                 material.specularPower = 0.25
                 this._strikerGlassMeshMaterial = material
                 this._strikerGlassMesh.material = material
@@ -2225,11 +2231,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._meshMaterial.emissiveColor.set(1, 1, 1)
             this._meshMaterial.backFaceCulling = false
             this._meshMaterial.alpha = 0.75
+            this._meshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._mesh.material = this._meshMaterial
 
             this._frameMesh = new BABYLON.Mesh('', scene)
             this._frameMeshMaterial = new BABYLON.StandardMaterial('', scene)
             this._frameMeshMaterial.emissiveColor.set(1, 0, 0)
+            this._frameMeshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._frameMesh.material = this._frameMeshMaterial
             this._frameMesh.isVisible = false
 
@@ -2536,9 +2544,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         start = (flyerIndex, directionIndex) => {
+            this._flyerLights[flyerIndex][directionIndex].range = 500
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = true
             scene.beginAnimation(
-                this._flyerMeshes[flyerIndex][directionIndex],
+                this._flyerNodes[flyerIndex][directionIndex],
                 0,
                 this.fps * this._pathsPoints[flyerIndex][directionIndex].length,
                 false,
@@ -2546,11 +2555,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         stop = (flyerIndex, directionIndex) => {
-            scene.stopAnimation(this._flyerMeshes[flyerIndex][directionIndex])
+            scene.stopAnimation(this._flyerNodes[flyerIndex][directionIndex])
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = false
+            this._flyerLights[flyerIndex][directionIndex].range = 0
         }
 
-        _flyerMeshes = [[]] // [note][flyer direction]
+        _flyerNodes = [[]] // [note][flyer direction]
+        _flyerLights = [[]]
+        _flyerMeshes = [[]]
         _flyerMeshMaterial = null
 
         _paths = null
@@ -2625,17 +2637,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         #makeFlyerMeshAnimation = (flyerIndex, directionIndex) => {
-            const mesh = this._flyerMeshes[flyerIndex][directionIndex]
+            const node = this._flyerNodes[flyerIndex][directionIndex]
             const path = this._paths[flyerIndex][directionIndex]
 
             const pathPoints = path.getPoints()
             const pathTangents = path.getTangents()
             const pathBinormals = path.getBinormals();
 
-            const meshPositionAnimation = new BABYLON.Animation('', 'position', this.fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
-            const meshRotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', this.fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
-            const meshPositionKeys = []
-            const meshRotationKeys = []
+            const positionAnimation = new BABYLON.Animation('', 'position', this.fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
+            const rotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', this.fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
+            const positionKeys = []
+            const rotationKeys = []
 
             for (let i = 0; i < pathPoints.length; i++) {
                 const frame = this.fps * i
@@ -2643,14 +2655,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 const forward = pathTangents[i]
                 const up = pathBinormals[i]
                 const rotation = BABYLON.Quaternion.FromLookDirectionRH(forward, up)
-                meshPositionKeys.push({ frame: frame, value: position })
-                meshRotationKeys.push({ frame: frame, value: rotation })
+                positionKeys.push({ frame: frame, value: position })
+                rotationKeys.push({ frame: frame, value: rotation })
             }
 
-            meshPositionAnimation.setKeys(meshPositionKeys)
-            meshRotationAnimation.setKeys(meshRotationKeys)
-            mesh.animations.push(meshPositionAnimation)
-            mesh.animations.push(meshRotationAnimation)
+            positionAnimation.setKeys(positionKeys)
+            rotationAnimation.setKeys(rotationKeys)
+            node.animations.push(positionAnimation)
+            node.animations.push(rotationAnimation)
         }
 
         constructor() {
@@ -2674,6 +2686,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // this.#makeTriangleTube(this._paths[2][0])
             // this.#makeTriangleTube(this._paths[2][1])
 
+            const flyerNode = new BABYLON.TransformNode('')
+            this._flyerNodes = [
+                [ flyerNode, flyerNode.clone('', null) ],
+                [ flyerNode.clone('', null), flyerNode.clone('', null) ],
+                [ flyerNode.clone('', null), flyerNode.clone('', null) ]
+            ]
+
+            const flyerLight = new BABYLON.PointLight('', BABYLON.Vector3.ZeroReadOnly, scene)
+            flyerLight.intensity = 0.5
+            flyerLight.diffuse.fromArray(Color.LightBrightRed)
+            flyerLight.specular.fromArray(Color.LightBrightRed)
+            flyerLight.specular.r /= 5
+            flyerLight.specular.g /= 5
+            flyerLight.specular.b /= 5
+            flyerLight.range = 0
+            this._flyerLights = [
+                [ flyerLight, flyerLight.clone('') ],
+                [ flyerLight.clone(''), flyerLight.clone('') ],
+                [ flyerLight.clone(''), flyerLight.clone('') ]
+            ]
+
             const flyerMesh = makeTrianglePolygonMesh()
             flyerMesh.isVisible = false
             flyerMesh.scaling.setAll(10)
@@ -2687,6 +2720,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 [ flyerMesh.clone(), flyerMesh.clone() ]
             ]
             this._flyerMeshMaterial = material
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    this._flyerLights[i][j].parent = this._flyerNodes[i][j]
+                    this._flyerMeshes[i][j].parent = this._flyerNodes[i][j]
+                }
+            }
 
             this.#makeFlyerMeshAnimation(0, 0)
             this.#makeFlyerMeshAnimation(0, 1)
