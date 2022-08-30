@@ -2566,17 +2566,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         updateMirroredFlyer = (flyerIndex) => {
             const node = this._flyerNodes[flyerIndex][0]
             const mirroredNode = this._flyerNodes[flyerIndex][1]
-            if (node.rotationQuaternion) {
-                if (!mirroredNode.rotationQuaternion) {
-                    mirroredNode.rotationQuaternion = new BABYLON.Quaternion
-                }
-                mirroredNode.rotationQuaternion.copyFrom(node.rotationQuaternion)
-            }
-            else {
-                mirroredNode.rotation.copyFrom(node.rotation)
-            }
-            mirroredNode.position.copyFrom(node.position)
-            mirroredNode.position.z = -mirroredNode.position.z
+            mirroredNode.position.set(node.position.x, node.position.y, -node.position.z)
         }
 
         _flyerNodes = [[]] // [note][flyer direction]
@@ -2660,28 +2650,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const path = this._paths[flyerIndex][directionIndex]
 
             const pathPoints = path.getPoints()
-            const pathTangents = path.getTangents()
-            const pathBinormals = path.getBinormals();
 
             const positionAnimation = new BABYLON.Animation('', 'position', this.fps, BABYLON.Animation.ANIMATIONTYPE_VECTOR3)
-            const rotationAnimation = new BABYLON.Animation('', 'rotationQuaternion', this.fps, BABYLON.Animation.ANIMATIONTYPE_QUATERNION)
             const positionKeys = []
-            const rotationKeys = []
 
             for (let i = 0; i < pathPoints.length; i++) {
                 const frame = this.fps * i
                 const position = pathPoints[i]
-                const forward = pathTangents[i]
-                const up = pathBinormals[i]
-                const rotation = BABYLON.Quaternion.FromLookDirectionRH(forward, up)
                 positionKeys.push({ frame: frame, value: position })
-                rotationKeys.push({ frame: frame, value: rotation })
             }
 
             positionAnimation.setKeys(positionKeys)
-            rotationAnimation.setKeys(rotationKeys)
             node.animations.push(positionAnimation)
-            node.animations.push(rotationAnimation)
         }
 
         constructor() {
