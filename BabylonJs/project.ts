@@ -2228,9 +2228,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this._mesh = trianglePlaneMesh.clone('Bass')
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._meshMaterial.emissiveColor.set(1, 1, 1)
-            this._meshMaterial.backFaceCulling = false
             this._meshMaterial.alpha = 0.75
+            this._meshMaterial.backFaceCulling = false
+            this._meshMaterial.emissiveColor.set(1, 1, 1)
             this._meshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._mesh.material = this._meshMaterial
 
