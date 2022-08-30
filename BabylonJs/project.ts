@@ -2536,7 +2536,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class Flyer1AnimationComponent
 
     class Flyer1AnimationComponent extends Component {
-        fps = 30
+        fps = 120
 
         get color() { return this._flyerMeshMaterial.emissiveColor.asArray() }
         set color(value) {
@@ -2546,18 +2546,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         start = (flyerIndex, directionIndex) => {
             this._flyerLights[flyerIndex][directionIndex].range = 500
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = true
-            scene.beginAnimation(
-                this._flyerNodes[flyerIndex][directionIndex],
-                0,
-                this.fps * this._pathsPoints[flyerIndex][directionIndex].length,
-                false,
-                this._speedMultipliers[flyerIndex][directionIndex])
+            if (directionIndex == 0 || !this._flyerMeshes[flyerIndex][0].isVisible) {
+                scene.beginAnimation(
+                    this._flyerNodes[flyerIndex][directionIndex],
+                    0,
+                    this.fps * this._pathsPoints[flyerIndex][directionIndex].length,
+                    false,
+                    this._speedMultipliers[flyerIndex][directionIndex]
+                )
+            }
         }
 
         stop = (flyerIndex, directionIndex) => {
             scene.stopAnimation(this._flyerNodes[flyerIndex][directionIndex])
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = false
             this._flyerLights[flyerIndex][directionIndex].range = 0
+        }
+
+        updateMirroredFlyer = (flyerIndex) => {
+            const node = this._flyerNodes[flyerIndex][0]
+            const mirroredNode = this._flyerNodes[flyerIndex][1]
+            if (node.rotationQuaternion) {
+                if (!mirroredNode.rotationQuaternion) {
+                    mirroredNode.rotationQuaternion = new BABYLON.Quaternion
+                }
+                mirroredNode.rotationQuaternion.copyFrom(node.rotationQuaternion)
+            }
+            else {
+                mirroredNode.rotation.copyFrom(node.rotation)
+            }
+            mirroredNode.position.copyFrom(node.position)
+            mirroredNode.position.z = -mirroredNode.position.z
         }
 
         _flyerNodes = [[]] // [note][flyer direction]
@@ -2796,26 +2815,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     }
                 }
                 // Turn started notes on.
-                for (let i = 0; i < this.track.activeNotes.length; i++) {
-                    const note = this.track.activeNotes[i]
-                    let found = false
-                    for (let j = 0; j < this.activeNotes.length; j++) {
-                        if (note === this.activeNotes[j]) {
-                            found = true
-                            break
+                if (0 < this.track.activeNotes.length) {
+                    for (let i = 0; i < this.track.activeNotes.length; i++) {
+                        const note = this.track.activeNotes[i]
+                        let found = false
+                        for (let j = 0; j < this.activeNotes.length; j++) {
+                            if (note === this.activeNotes[j]) {
+                                found = true
+                                break
+                            }
+                        }
+                        if (!found) {
+                            const flyerIndex = this.noteFlyerIndexMap[note.pitch]
+                            if (note.flyerDirection == 3) {
+                                this.animation.start(flyerIndex, 0)
+                                this.animation.start(flyerIndex, 1)
+                            }
+                            else {
+                                this.animation.start(flyerIndex, note.flyerDirection - 1)
+                            }
+                            this.activeNotes.push(note)
                         }
                     }
-                    if (!found) {
-                        const flyerIndex = this.noteFlyerIndexMap[note.pitch]
-                        if (note.flyerDirection == 3) {
-                            this.animation.start(flyerIndex, 0)
-                            this.animation.start(flyerIndex, 1)
-                        }
-                        else {
-                            this.animation.start(flyerIndex, note.flyerDirection - 1)
-                        }
-                        this.activeNotes.push(note)
-                    }
+                }
+            }
+            for (let i = 0; i < this.track.activeNotes.length; i++) {
+                const note = this.track.activeNotes[i]
+                if (note.flyerDirection == 3) {
+                    const flyerIndex = this.noteFlyerIndexMap[note.pitch]
+                    this.animation.updateMirroredFlyer(flyerIndex)
                 }
             }
         }
