@@ -15868,21 +15868,23 @@ const csdJson = `
         world.run(time, time - previousTime)
     })
 
-    let documentWasVisible = true
-    setInterval(() => {
-        if (document.visible !== undefined) {
-            if (documentWasVisible && !document.visible) {
-                console.debug(`Pausing Csound`)
-                csound.pause()
-                documentWasVisible = false
+    if (!document.useDawTiming) {
+        let documentWasVisible = true
+        setInterval(() => {
+            if (document.visible !== undefined) {
+                if (documentWasVisible && !document.visible) {
+                    console.debug(`Pausing Csound`)
+                    csound.pause()
+                    documentWasVisible = false
+                }
+                else if (!documentWasVisible && document.visible) {
+                    console.debug(`Resuming Csound`)
+                    csound.resume()
+                    documentWasVisible = true
+                }
             }
-            else if (!documentWasVisible && document.visible) {
-                console.debug(`Resuming Csound`)
-                csound.resume()
-                documentWasVisible = true
-            }
-        }
-    }, 100)
+        }, 100)
+    }
 
     //#endregion
 
