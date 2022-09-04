@@ -831,11 +831,58 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const mainTrianglesOuterMeshRotationY = 0
     const mainTrianglesDefaultColor = [ 0.05, 0.05, 0.05 ]
 
-    let mainTriangleMesh = null
+    let mainTriangleMesh: BABYLON.Mesh = null
     let mainTriangleMeshHeight = 1
 
+    let outerMainTriangleMesh = null
     let outerMainTrianglesMeshMaterial = null
     const outerMainTrianglesDefaultColor = [ 0.06, 0.06, 0.06 ]
+
+    let mainTriangleInnerMesh = null
+    let mainTriangleOuterMesh = null
+
+    const separateMainTriangleMesh = () => {
+        const mesh = mainTriangleMesh
+        const indexes = mesh.getIndices()!
+        const points = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!
+        const normals = mesh.getNormalsData()!
+
+        const innerIndexes = []
+        const outerIndexes = []
+        for (let i = 0; i < indexes.length; i++) {
+            const normalY = normals[3 * i + 1]
+            if (normalY < 0) {
+                innerIndexes.push(indexes[i])
+            }
+            else {
+                outerIndexes.push(indexes[i])
+            }
+        }
+
+        {
+            const vertexData = new BABYLON.VertexData
+            vertexData.indices = innerIndexes
+            vertexData.normals = normals
+            vertexData.positions = points
+
+            const mesh = new BABYLON.Mesh('mainTriangle.innerMesh')
+            vertexData.applyToMesh(mesh, true)
+            mesh.material = mainTriangleMesh.material!.clone('')
+            mainTriangleInnerMesh = mesh
+        }
+
+        {
+            const vertexData = new BABYLON.VertexData
+            vertexData.indices = outerIndexes
+            vertexData.normals = normals
+            vertexData.positions = points
+
+            const mesh = new BABYLON.Mesh('mainTriangle.outerMesh')
+            vertexData.applyToMesh(mesh, true)
+            mesh.material = mainTriangleMesh.material!.clone('')
+            mainTriangleOuterMesh = mesh
+        }
+    }
 
     const meshString_MainTriangles = `
     {"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
@@ -867,10 +914,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             material.maxSimultaneousLights = Light.MaxSimultaneous
             material.specularColor.set(0.25, 0.25, 0.25)
             material.specularPower = 2
-            mainTriangleMesh = scene.getMeshByName('MainTriangles')
+            mainTriangleMesh = scene.getMeshByName('MainTriangles') as BABYLON.Mesh
             mainTriangleMesh.material = material
             mainTriangleMeshHeight = mainTriangleMesh.getBoundingInfo().boundingBox.maximumWorld.y
             mainTriangleMesh.freezeWorldMatrix()
+
             const outerMesh = mainTriangleMesh.clone('OuterMainTriangles', mainTriangleMesh.parent)
             outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
             outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
@@ -879,6 +927,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             outerMesh.material = outerMeshMaterial
             outerMainTrianglesMeshMaterial = outerMeshMaterial
             outerMesh.freezeWorldMatrix()
+            outerMainTriangleMesh = outerMesh
+
+            mainTriangleMesh.isVisible = false
+            separateMainTriangleMesh()
         },
         () => {},
         () => {},
@@ -3204,7 +3256,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '07: Bass 1+2: Edited',
             meshesToColor: [
-                scene.getMeshByName('MainTriangles')
+                mainTriangleInnerMesh
             ]
         }
     }
@@ -3216,7 +3268,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             baseScale: mainTrianglesOuterMeshScale,
             rotation: mainTrianglesOuterMeshRotationY,
             meshesToColor: [
-                scene.getMeshByName('MainTriangles'),
+                mainTriangleOuterMesh,
                 scene.getMeshByName('OuterMainTriangles')
             ]
         }
