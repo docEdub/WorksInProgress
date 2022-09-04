@@ -9348,43 +9348,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_Saw2FlyerSynth[0][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 2) then
-    if (0 < active(p1 + 0.0001)) then
-    endif
     elseif (iEventType == 1) then
     iNoteNumber = p5
     iVelocity = p6
     iOrcInstanceIndex = 0
-    iFlyerDirection init 0
-    iIsFlyerDirectionClockwise = 1
-    if (iVelocity < 0) then
-    iVelocity = abs(iVelocity)
-    iIsGenerated = 1
-    iIsFlyerDirectionClockwise = 0
-    else
-    iIsGenerated = 0
     iFlyerDirection = giCcValues_Saw2FlyerSynth[iOrcInstanceIndex][giCc_Saw2FlyerSynth_flyerDirectionComboBoxIndex]
-    if (iFlyerDirection == 3) then
-    event_i("i", p1 + 0.0001, 0, -1, p4, p5, -p6)
-    elseif (iFlyerDirection == 2) then
-    iIsFlyerDirectionClockwise = 0
-    endif
-    kIsGeneratedNoteReleased init 0
-    endif
-    if (iFlyerDirection == 3) then
-    kIsReleased = release()
-    if (kIsReleased == 1 && kIsGeneratedNoteReleased == 0) then
-    event("i", -p1 - 0.0001, 0, 0)
-    kIsGeneratedNoteReleased = 1
-    endif
-    endif
     aOut = 0
     a1 = 0
     a2 = 0
     a3 = 0
     a4 = 0
     #ifdef IS_GENERATING_JSON
-    if (iIsGenerated == 0) then
     if (giSaw2FlyerSynth_NoteIndex[0] == 0) then
     scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_16"))
     endif
@@ -9394,7 +9368,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giSaw2FlyerSynth_NoteIndex[0])
     iOnTime = times()
     fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f,\\"flyerDirection\\":%d", iOnTime, iNoteNumber, iFlyerDirection)
-    endif
     #end
     if (gkCcValues_Saw2FlyerSynth[iOrcInstanceIndex][giCc_Saw2FlyerSynth_positionEnabled] == 1) then
     iPositionLagTime = 2
@@ -9436,29 +9409,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kX = kPoint1[$X] + (kPoint2[$X] - kPoint1[$X]) * kPointFraction
     kY = kPoint1[$Y] + (kPoint2[$Y] - kPoint1[$Y]) * kPointFraction
     kZ = kPoint1[$Z] + (kPoint2[$Z] - kPoint1[$Z]) * kPointFraction
-    if (iIsFlyerDirectionClockwise == 0) then
+    if (iFlyerDirection == 2) then
     kZ = -kZ
     endif
     kDoppler_currentDistance init -1
     kDoppler_currentTime init 0
+    kDoppler_previousTime init 0
+    kDoppler_deltaTime_x100 init 0
     kDoppler_previousDistance = kDoppler_currentDistance
-    kDoppler_previousTime = kDoppler_currentTime
     kDoppler_currentDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
     kDoppler_currentTime = kNoteTime
+    kDoppler_deltaTime_x100 = (kDoppler_currentTime - kDoppler_previousTime) * 100
     if (kDoppler_previousDistance == -1) then
     kDoppler_previousDistance = kDoppler_currentDistance
     endif
     kDoppler_factor = AF_3D_Audio_DopplerShift(
     kDoppler_previousDistance,
     kDoppler_currentDistance,
-    100 * (kDoppler_currentTime - kDoppler_previousTime))
+    kDoppler_deltaTime_x100)
     kAmp init 0.333 * (iVelocity / 127)
     aOut = vco2(kAmp, kDoppler_factor * cpsmidinn(iNoteNumber), 8)
     iEnvelopeA = 0.01
     iEnvelopeD = 0.1
     iEnvelopeS = 0.667
     iEnvelopeR = 1 / giSaw2FlyerSynth_PathSpeedMultipler[iFlyerIndex]
-    aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    aVolumeEnvelope = mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    aOut *= aVolumeEnvelope
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
@@ -9471,6 +9447,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a2 = a(gkAmbisonicChannelGains[1]) * aPositionOut
     a3 = a(gkAmbisonicChannelGains[2]) * aPositionOut
     a4 = a(gkAmbisonicChannelGains[3]) * aPositionOut
+    if (iFlyerDirection == 3) then
+    kZ = -kZ
+    kDoppler_currentDistance2 init -1
+    kDoppler_previousDistance2 = kDoppler_currentDistance2
+    kDoppler_currentDistance2 = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+    if (kDoppler_previousDistance2 == -1) then
+    kDoppler_previousDistance2 = kDoppler_currentDistance2
+    endif
+    kDoppler_factor2 = AF_3D_Audio_DopplerShift(
+    kDoppler_previousDistance2,
+    kDoppler_currentDistance2,
+    kDoppler_deltaTime_x100)
+    kAmp init 0.333 * (iVelocity / 127)
+    aOut = vco2(kAmp, kDoppler_factor2 * cpsmidinn(iNoteNumber), 8)
+    aOut *= aVolumeEnvelope
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+    aDistance,
+    kPositionReferenceDistance,
+    kPositionRolloffFactor)
+    aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aReverbOut += aOut * aDistanceAmp
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    a1 += a(gkAmbisonicChannelGains[0]) * aPositionOut
+    a2 += a(gkAmbisonicChannelGains[1]) * aPositionOut
+    a3 += a(gkAmbisonicChannelGains[2]) * aPositionOut
+    a4 += a(gkAmbisonicChannelGains[3]) * aPositionOut
+    endif
+    kDoppler_previousTime = kDoppler_currentTime
     else
     a1 = aOut
     a2 = 0
@@ -9484,10 +9489,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gaInstrumentSignals[12][4] = gaInstrumentSignals[12][4] + aReverbOut
     gaInstrumentSignals[12][5] = gaInstrumentSignals[12][5] + aReverbOut
     #ifdef IS_GENERATING_JSON
-    if (iIsGenerated == 0) then
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    endif
     endif
     #end
     endif
