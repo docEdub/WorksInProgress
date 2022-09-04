@@ -713,39 +713,51 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const wall = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundSize
         })
+        wall.isPickable = false
         wall.isVisible = false
         wall.position.y = halfGroundSize
+        wall.freezeWorldMatrix()
 
         const northWall = wall.createInstance('')
         northWall.checkCollisions = true
+        northWall.isPickable = false
         northWall.isVisible = false
         northWall.position.z = halfGroundSize + 0.1
+        northWall.freezeWorldMatrix()
 
         const eastWall = wall.createInstance('')
         eastWall.checkCollisions = true
+        eastWall.isPickable = false
         eastWall.isVisible = false
         eastWall.position.x = halfGroundSize + 0.1
         eastWall.rotation.y = Math.PI / 2
+        eastWall.freezeWorldMatrix()
 
         const southWall = wall.createInstance('')
         southWall.checkCollisions = true
+        southWall.isPickable = false
         southWall.isVisible = false
         southWall.position.z = -halfGroundSize - 0.1
         southWall.rotation.y = Math.PI
+        southWall.freezeWorldMatrix()
 
         const westWall = wall.createInstance('')
         westWall.checkCollisions = true
+        westWall.isPickable = false
         westWall.isVisible = false
         westWall.position.x = -halfGroundSize - 0.1
         westWall.rotation.y = -Math.PI / 2
+        westWall.freezeWorldMatrix()
 
     }
 
     const ground = BABYLON.MeshBuilder.CreatePlane('', {
         size: groundSize
     })
-    ground.rotation.set(Math.PI / 2, 0, 0)
     ground.checkCollisions = true
+    ground.isPickable = false
+    ground.rotation.set(Math.PI / 2, 0, 0)
+    ground.freezeWorldMatrix()
 
     if (showGroundGrid) {
         const grid_Texture = createSvgTexture(`
@@ -858,6 +870,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             mainTriangleMesh = scene.getMeshByName('MainTriangles')
             mainTriangleMesh.material = material
             mainTriangleMeshHeight = mainTriangleMesh.getBoundingInfo().boundingBox.maximumWorld.y
+            mainTriangleMesh.freezeWorldMatrix()
             const outerMesh = mainTriangleMesh.clone('OuterMainTriangles', mainTriangleMesh.parent)
             outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
             outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
@@ -865,6 +878,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             outerMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
             outerMesh.material = outerMeshMaterial
             outerMainTrianglesMeshMaterial = outerMeshMaterial
+            outerMesh.freezeWorldMatrix()
         },
         () => {},
         () => {},
@@ -905,6 +919,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         return mesh
     }
     const trianglePolygonMesh = makeTrianglePolygonMesh()
+    trianglePolygonMesh.isPickable = false
 
     //#endregion
 
@@ -1742,38 +1757,50 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this._flashScalingRange = this.flashScalingMax - this.flashScalingMin
 
-            this._flashMesh = makeTrianglePolygonMesh()
-            this._flashMesh.position.setAll(0)
-            this._flashMesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMin)
-            this._flashMesh.bakeCurrentTransformIntoVertices()
+            {
+                const mesh = makeTrianglePolygonMesh()
+                mesh.isPickable = false
+                mesh.position.setAll(0)
+                mesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMin)
+                mesh.bakeCurrentTransformIntoVertices()
+                this._flashMesh = mesh
 
-            this._flashMeshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._flashMeshMaterial.alpha = 0.999
-            this._flashMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
-            this._flashMesh.material = this._flashMeshMaterial
-
-            this._strikerLegsMesh = mainTriangleMesh.clone(`Drum striker legs mesh`, mainTriangleMesh.parent)
-            this._strikerLegsMesh.makeGeometryUnique()
-            this._strikerLegsMesh.isVisible = true
-
-            this._strikerLegsMeshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._strikerLegsMeshMaterial.emissiveColor.set(0.5, 0.5, 0.5)
-            this._strikerLegsMesh.material = this._strikerLegsMeshMaterial
-
-            this._strikerGlassMesh = makeTrianglePolygonMesh()
-            this._strikerGlassMesh.isVisible = true
-            this._strikerGlassMesh.scaling.set(210, 178, 210)
-            this._strikerGlassMesh.parent = this._strikerLegsMesh
+                const material = new BABYLON.StandardMaterial('', scene)
+                material.alpha = 0.999
+                material.emissiveColor.set(0.5, 0.5, 0.5)
+                mesh.material = material
+                this._flashMeshMaterial = material
+            }
 
             {
+                const mesh = mainTriangleMesh.clone(`Drum striker legs mesh`, mainTriangleMesh.parent)
+                mesh.makeGeometryUnique()
+                mesh.isPickable = false
+                mesh.isVisible = true
+                this._strikerLegsMesh = mesh
+
+                const material = new BABYLON.StandardMaterial('', scene)
+                material.emissiveColor.set(0.5, 0.5, 0.5)
+                mesh.material = material
+                this._strikerLegsMeshMaterial = material
+            }
+
+            {
+                const mesh = makeTrianglePolygonMesh()
+                mesh.isPickable = false
+                mesh.isVisible = true
+                mesh.parent = this._strikerLegsMesh
+                mesh.scaling.set(210, 178, 210)
+                this._strikerGlassMesh = mesh
+
                 const material = new BABYLON.StandardMaterial('', scene)
                 material.alpha = 0.5
                 material.backFaceCulling = false
                 material.emissiveColor.set(0.5, 0.5, 0.5)
                 material.maxSimultaneousLights = Light.MaxSimultaneous
                 material.specularPower = 0.25
+                mesh.material = material
                 this._strikerGlassMeshMaterial = material
-                this._strikerGlassMesh.material = material
             }
 
             this.isRunning = false
@@ -1851,7 +1878,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 this._meshPositions[j + 1] = y + this._meshStartPositions[j + 1] + y
                 this._meshPositions[j + 2] = z + this._meshStartPositions[j + 2]
             }
-            this._updateMeshNormals()
+
             this._updateMeshVertices()
         }
 
@@ -1931,6 +1958,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             vertexData.indices = this._meshIndices
             vertexData.normals = this._meshNormals
             vertexData.applyToMesh(this._mesh, true)
+
+            this._mesh.isPickable = false
+            this._mesh.freezeWorldMatrix()
         }
     }
 
@@ -2008,8 +2038,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         set position(value) {
+            this._mesh.unfreezeWorldMatrix()
+            this._pillarMesh.unfreezeWorldMatrix()
+
             this._mesh.position.fromArray(value)
             this._pillarMesh.position.fromArray(value)
+
+            this._mesh.freezeWorldMatrix()
+            this._pillarMesh.freezeWorldMatrix()
         }
 
         updateActiveNoteDataMatrixes = () => {
@@ -2060,13 +2096,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             triangleMesh3.bakeCurrentTransformIntoVertices()
 
             this._mesh = BABYLON.Mesh.MergeMeshes([ triangleMesh1, triangleMesh2, triangleMesh3 ], true)
+            this._mesh.isPickable = false
+            this._mesh.freezeWorldMatrix()
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.emissiveColor.set(1, 0, 0)
             this._mesh.material = this._meshMaterial
 
             this._pillarMesh = makeTrianglePolygonMesh()
+            this._pillarMesh.isPickable = false
             this._pillarMesh.isVisible = true
             this._pillarMesh.scaling.set(1, 10, 1)
+            this._pillarMesh.freezeWorldMatrix()
             this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
             this._pillarMeshMaterial.emissiveColor.set(1, 0, 0)
             this._pillarMesh.material = this._pillarMeshMaterial
@@ -2227,6 +2267,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             super()
 
             this._mesh = trianglePlaneMesh.clone('Bass')
+            this._mesh.isPickable = false
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.alpha = 0.75
             this._meshMaterial.backFaceCulling = false
@@ -2235,11 +2276,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._mesh.material = this._meshMaterial
 
             this._frameMesh = new BABYLON.Mesh('', scene)
+            this._frameMesh.isPickable = false
+            this._frameMesh.isVisible = false
             this._frameMeshMaterial = new BABYLON.StandardMaterial('', scene)
             this._frameMeshMaterial.emissiveColor.set(1, 0, 0)
             this._frameMeshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._frameMesh.material = this._frameMeshMaterial
-            this._frameMesh.isVisible = false
 
             BABYLON.VertexData.ComputeNormals(this._frameMeshPositions, this._frameMeshIndices, this._frameMeshNormals)
             const frameMeshVertexData = new BABYLON.VertexData()
@@ -2374,6 +2416,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this.instanceMatrices = new Array<BABYLON.Matrix>(this.track.header.positionCount).fill(new BABYLON.Matrix)
             this.mesh.thinInstanceAdd(this.instanceMatrices, false)
+
+            this.mesh.isPickable = false
+            this.mesh.freezeWorldMatrix()
         }
 
         run = (time, deltaTime) => {
@@ -2453,6 +2498,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // console.debug(`#initRowMeshes() called on ${this.sharedMeshData.constructor.name}`)
             for (let i = 0; i < this.sharedMeshData.rows; i++) {
                 const mesh = new BABYLON.Mesh('', scene)
+                mesh.isPickable = false
                 mesh.isVisible = false
 
                 const material = new BABYLON.StandardMaterial('', scene)
@@ -2471,6 +2517,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 vertexData.indices = indices
                 vertexData.normals = normals
                 vertexData.applyToMesh(mesh)
+
+                mesh.freezeWorldMatrix()
 
                 this._rowMeshes.push(mesh)
                 this._rowMeshMaterials.push(material)
@@ -2707,6 +2755,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ]
 
             const flyerMesh = makeTrianglePolygonMesh()
+            flyerMesh.isPickable = false
             flyerMesh.isVisible = false
             flyerMesh.scaling.setAll(10)
             const material = new BABYLON.StandardMaterial('', scene)
@@ -3222,7 +3271,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     --nosound
     </CsOptions>
     <CsInstruments>
-    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 4, /* instr 13 -- 09: Rim 1: Hi Arp */ 5, /* instr 14 -- 10: Rim 2: Hi Line */ 3, /* instr 15 -- 11: Rim 3: Lo Line */ 2, /* instr 16 -- 12: Flyer 1 */ 0 /* dummy */ )
+    giPresetUuidPreallocationCount[] = fillarray( 5, /* instr 4  -- 00: Kick 1 */ 6, /* instr 5  -- 01: Kick 2: Left */ 6, /* instr 6  -- 02: Kick 2: Right */ 4, /* instr 7  -- 03: Snare */ 5, /* instr 8  -- 04: HiHat 1 */ 7, /* instr 9  -- 05: HiHat 2 */ 5, /* instr 10 -- 06: Beacon */ 4, /* instr 11 -- 07: Bass 1+2: Edited */ 4, /* instr 12 -- 08: Bass 1+2: Distant */ 4, /* instr 13 -- 09: Rim 1: Hi Arp */ 5, /* instr 14 -- 10: Rim 2: Hi Line */ 3, /* instr 15 -- 11: Rim 3: Lo Line */ 6, /* instr 16 -- 12: Flyer 1 */ 0 /* dummy */ )
     #ifndef OUTPUT_CHANNEL_COUNT
     #define OUTPUT_CHANNEL_COUNT #2#
     #end
@@ -9299,43 +9348,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gkCcValues_Saw2FlyerSynth[0][iCcIndex] = iCcValue
     endif
     turnoff
-    elseif (iEventType == 2) then
-    if (0 < active(p1 + 0.0001)) then
-    endif
     elseif (iEventType == 1) then
     iNoteNumber = p5
     iVelocity = p6
     iOrcInstanceIndex = 0
-    iFlyerDirection init 0
-    iIsFlyerDirectionClockwise = 1
-    if (iVelocity < 0) then
-    iVelocity = abs(iVelocity)
-    iIsGenerated = 1
-    iIsFlyerDirectionClockwise = 0
-    else
-    iIsGenerated = 0
     iFlyerDirection = giCcValues_Saw2FlyerSynth[iOrcInstanceIndex][giCc_Saw2FlyerSynth_flyerDirectionComboBoxIndex]
-    if (iFlyerDirection == 3) then
-    event_i("i", p1 + 0.0001, 0, -1, p4, p5, -p6)
-    elseif (iFlyerDirection == 2) then
-    iIsFlyerDirectionClockwise = 0
-    endif
-    kIsGeneratedNoteReleased init 0
-    endif
-    if (iFlyerDirection == 3) then
-    kIsReleased = release()
-    if (kIsReleased == 1 && kIsGeneratedNoteReleased == 0) then
-    event("i", -p1 - 0.0001, 0, 0)
-    kIsGeneratedNoteReleased = 1
-    endif
-    endif
     aOut = 0
     a1 = 0
     a2 = 0
     a3 = 0
     a4 = 0
     #ifdef IS_GENERATING_JSON
-    if (iIsGenerated == 0) then
     if (giSaw2FlyerSynth_NoteIndex[0] == 0) then
     scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_16"))
     endif
@@ -9345,7 +9368,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     giSaw2FlyerSynth_NoteIndex[0])
     iOnTime = times()
     fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f,\\"flyerDirection\\":%d", iOnTime, iNoteNumber, iFlyerDirection)
-    endif
     #end
     if (gkCcValues_Saw2FlyerSynth[iOrcInstanceIndex][giCc_Saw2FlyerSynth_positionEnabled] == 1) then
     iPositionLagTime = 2
@@ -9387,29 +9409,32 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kX = kPoint1[$X] + (kPoint2[$X] - kPoint1[$X]) * kPointFraction
     kY = kPoint1[$Y] + (kPoint2[$Y] - kPoint1[$Y]) * kPointFraction
     kZ = kPoint1[$Z] + (kPoint2[$Z] - kPoint1[$Z]) * kPointFraction
-    if (iIsFlyerDirectionClockwise == 0) then
+    if (iFlyerDirection == 2) then
     kZ = -kZ
     endif
     kDoppler_currentDistance init -1
     kDoppler_currentTime init 0
+    kDoppler_previousTime init 0
+    kDoppler_deltaTime_x100 init 0
     kDoppler_previousDistance = kDoppler_currentDistance
-    kDoppler_previousTime = kDoppler_currentTime
     kDoppler_currentDistance = AF_3D_Audio_SourceDistance(kX, kY, kZ)
     kDoppler_currentTime = kNoteTime
+    kDoppler_deltaTime_x100 = (kDoppler_currentTime - kDoppler_previousTime) * 100
     if (kDoppler_previousDistance == -1) then
     kDoppler_previousDistance = kDoppler_currentDistance
     endif
     kDoppler_factor = AF_3D_Audio_DopplerShift(
     kDoppler_previousDistance,
     kDoppler_currentDistance,
-    100 * (kDoppler_currentTime - kDoppler_previousTime))
+    kDoppler_deltaTime_x100)
     kAmp init 0.333 * (iVelocity / 127)
     aOut = vco2(kAmp, kDoppler_factor * cpsmidinn(iNoteNumber), 8)
     iEnvelopeA = 0.01
     iEnvelopeD = 0.1
     iEnvelopeS = 0.667
     iEnvelopeR = 1 / giSaw2FlyerSynth_PathSpeedMultipler[iFlyerIndex]
-    aOut *= mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    aVolumeEnvelope = mxadsr:a(iEnvelopeA, iEnvelopeD, iEnvelopeS, iEnvelopeR)
+    aOut *= aVolumeEnvelope
     aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
     aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
     aDistance,
@@ -9422,6 +9447,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     a2 = a(gkAmbisonicChannelGains[1]) * aPositionOut
     a3 = a(gkAmbisonicChannelGains[2]) * aPositionOut
     a4 = a(gkAmbisonicChannelGains[3]) * aPositionOut
+    if (iFlyerDirection == 3) then
+    kZ = -kZ
+    kDoppler_currentDistance2 init -1
+    kDoppler_previousDistance2 = kDoppler_currentDistance2
+    kDoppler_currentDistance2 = AF_3D_Audio_SourceDistance(kX, kY, kZ)
+    if (kDoppler_previousDistance2 == -1) then
+    kDoppler_previousDistance2 = kDoppler_currentDistance2
+    endif
+    kDoppler_factor2 = AF_3D_Audio_DopplerShift(
+    kDoppler_previousDistance2,
+    kDoppler_currentDistance2,
+    kDoppler_deltaTime_x100)
+    kAmp init 0.333 * (iVelocity / 127)
+    aOut = vco2(kAmp, kDoppler_factor2 * cpsmidinn(iNoteNumber), 8)
+    aOut *= aVolumeEnvelope
+    aDistance = AF_3D_Audio_SourceDistance_a(kX, kY, kZ)
+    aDistanceAmp = AF_3D_Audio_DistanceAttenuation:a(
+    aDistance,
+    kPositionReferenceDistance,
+    kPositionRolloffFactor)
+    aPositionOut = aOut * min(aDistanceAmp, a(kPositionMaxAmpWhenClose))
+    aReverbOut += aOut * aDistanceAmp
+    AF_3D_Audio_ChannelGains_XYZ(kX, kY, kZ)
+    a1 += a(gkAmbisonicChannelGains[0]) * aPositionOut
+    a2 += a(gkAmbisonicChannelGains[1]) * aPositionOut
+    a3 += a(gkAmbisonicChannelGains[2]) * aPositionOut
+    a4 += a(gkAmbisonicChannelGains[3]) * aPositionOut
+    endif
+    kDoppler_previousTime = kDoppler_currentTime
     else
     a1 = aOut
     a2 = 0
@@ -9435,10 +9489,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     gaInstrumentSignals[12][4] = gaInstrumentSignals[12][4] + aReverbOut
     gaInstrumentSignals[12][5] = gaInstrumentSignals[12][5] + aReverbOut
     #ifdef IS_GENERATING_JSON
-    if (iIsGenerated == 0) then
     if (lastcycle() == 1) then
     fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
-    endif
     endif
     #end
     endif
