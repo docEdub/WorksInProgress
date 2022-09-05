@@ -488,7 +488,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // 6
             { position: new BABYLON.Vector3(0, this.height, -100), target: new BABYLON.Vector3(0, 180, 0) },
             // 7: Safari mixdown location.
-            { position: new BABYLON.Vector3(0, this.height, 335), target: new BABYLON.Vector3(0, 135, 0) }
+            { position: new BABYLON.Vector3(0, this.height, 335), target: new BABYLON.Vector3(0, 135, 0) },
+            // 8
+            { position: new BABYLON.Vector3(halfGroundSize, this.height, halfGroundSize), target: new BABYLON.Vector3(0, 135, 0) },
         ]
 
         get setting() { return this.#settings[this.#settingIndex] }
