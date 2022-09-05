@@ -833,14 +833,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     let mainTriangleMeshHeight = 1
 
     let outerMainTriangleMesh = null
-    let outerMainTrianglesMeshMaterial = null
+    let outerMainTriangleMeshMaterial = null
     const outerMainTrianglesDefaultColor = [ 0.06, 0.06, 0.06 ]
 
-    let mainTriangleInnerMesh = null
-    let mainTriangleOuterMesh = null
+    let mainTriangleInnerMesh: BABYLON.Mesh = null
+    let mainTriangleOuterMesh: BABYLON.Mesh = null
+    let outerMainTriangleInnerMesh: BABYLON.Mesh = null
+    let outerMainTriangleOuterMesh: BABYLON.Mesh = null
 
-    const separateMainTriangleMesh = () => {
-        const mesh = mainTriangleMesh
+    let mainTriangleInnerMeshMaterial = null
+    let mainTriangleOuterMeshMaterial = null
+    let outerMainTriangleInnerMeshMaterial = null
+    let outerMainTriangleOuterMeshMaterial = null
+
+    const separateMainTriangleMesh = (mesh, materialNamePrefix) => {
+        mesh.isVisible = false
+
         const indexes = mesh.getIndices()!
         const points = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!
         const normals = mesh.getNormalsData()!
@@ -857,29 +865,27 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
         }
 
+        const innerMesh = new BABYLON.Mesh(`${materialNamePrefix}.inner`)
         {
             const vertexData = new BABYLON.VertexData
             vertexData.indices = innerIndexes
             vertexData.normals = normals
             vertexData.positions = points
-
-            const mesh = new BABYLON.Mesh('mainTriangle.innerMesh')
-            vertexData.applyToMesh(mesh, true)
-            mesh.material = mainTriangleMesh.material!.clone('')
-            mainTriangleInnerMesh = mesh
+            vertexData.applyToMesh(innerMesh, true)
+            innerMesh.material = mesh.material!.clone(`${materialNamePrefix}.inner`)
         }
 
+        const outerMesh = new BABYLON.Mesh(`${materialNamePrefix}.outer`)
         {
             const vertexData = new BABYLON.VertexData
             vertexData.indices = outerIndexes
             vertexData.normals = normals
             vertexData.positions = points
-
-            const mesh = new BABYLON.Mesh('mainTriangle.outerMesh')
-            vertexData.applyToMesh(mesh, true)
-            mesh.material = mainTriangleMesh.material!.clone('')
-            mainTriangleOuterMesh = mesh
+            vertexData.applyToMesh(outerMesh, true)
+            outerMesh.material = mesh.material!.clone(`${materialNamePrefix}.outer`)
         }
+
+        return [ innerMesh, outerMesh ]
     }
 
     const meshString_MainTriangles = `
@@ -912,23 +918,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             material.maxSimultaneousLights = Light.MaxSimultaneous
             material.specularColor.set(0.25, 0.25, 0.25)
             material.specularPower = 2
-            mainTriangleMesh = scene.getMeshByName('MainTriangles') as BABYLON.Mesh
-            mainTriangleMesh.material = material
-            mainTriangleMeshHeight = mainTriangleMesh.getBoundingInfo().boundingBox.maximumWorld.y
-            mainTriangleMesh.freezeWorldMatrix()
 
-            const outerMesh = mainTriangleMesh.clone('OuterMainTriangles', mainTriangleMesh.parent)
-            outerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
+            const mesh = scene.getMeshByName('MainTriangles') as BABYLON.Mesh
+            mesh.material = material
+            mesh.isVisible = false
+
+            mainTriangleMesh = mesh
+            mainTriangleMeshHeight = mesh.getBoundingInfo().boundingBox.maximumWorld.y
+
+            const meshes = separateMainTriangleMesh(mesh, `mainTriangleMesh`)
+            mainTriangleInnerMesh = meshes[0]
+            mainTriangleOuterMesh = meshes[1]
+
+            mainTriangleInnerMeshMaterial = mainTriangleInnerMesh.material
+            mainTriangleOuterMeshMaterial = mainTriangleOuterMesh.material
+
+            const outerMesh = mesh.clone('')
             outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
-            const outerMeshMaterial = material.clone('')
-            outerMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
-            outerMesh.material = outerMeshMaterial
-            outerMainTrianglesMeshMaterial = outerMeshMaterial
-            outerMesh.freezeWorldMatrix()
-            outerMainTriangleMesh = outerMesh
+            outerMesh.material = material
 
-            mainTriangleMesh.isVisible = false
-            separateMainTriangleMesh()
+            outerMainTriangleMesh = outerMesh
+            outerMainTriangleMeshMaterial = material
+
+            const outerMeshes = separateMainTriangleMesh(outerMesh, `outerMainTriangleMesh`)
+            outerMainTriangleInnerMesh = outerMeshes[0]
+            outerMainTriangleOuterMesh = outerMeshes[1]
+
+            outerMainTriangleInnerMeshMaterial = outerMainTriangleInnerMesh.material
+            outerMainTriangleOuterMeshMaterial = outerMainTriangleOuterMesh.material
+
+            outerMainTriangleInnerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
+            outerMainTriangleOuterMesh.scaling.setAll(mainTrianglesOuterMeshScale)
         },
         () => {},
         () => {},
@@ -2223,9 +2243,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             this._mesh.isVisible = this._frameMesh.isVisible = value
             for (let i = 0; i < this.meshesToColor.length; i++) {
-                this.meshesToColor[i].material.emissiveColor.fromArray(mainTrianglesDefaultColor)
+                this.meshesToColor[i]?.material.emissiveColor.fromArray(mainTrianglesDefaultColor)
             }
-            outerMainTrianglesMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
+            outerMainTriangleInnerMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
+            outerMainTriangleOuterMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
         }
 
         set pitch(value) {
@@ -2325,7 +2346,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._meshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._mesh.material = this._meshMaterial
 
-            this._frameMesh = new BABYLON.Mesh('', scene)
+            this._frameMesh = new BABYLON.Mesh(`mainTriangle.bassFrame`, scene)
             this._frameMesh.isPickable = false
             this._frameMesh.isVisible = false
             this._frameMeshMaterial = new BABYLON.StandardMaterial('', scene)
@@ -3267,7 +3288,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             rotation: mainTrianglesOuterMeshRotationY,
             meshesToColor: [
                 mainTriangleOuterMesh,
-                scene.getMeshByName('OuterMainTriangles')
+                outerMainTriangleInnerMesh
             ]
         }
     }
