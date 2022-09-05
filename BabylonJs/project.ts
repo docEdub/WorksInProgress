@@ -56,14 +56,10 @@ document.alwaysRun = true
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
-    //#region Options
-
     const groundSize = 9000
     const logDebugMessages = true
     const showBabylonInspector = false
     const showGroundGrid = true
-
-    //#endregion
 
     //#region Light and color
 
