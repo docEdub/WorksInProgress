@@ -947,6 +947,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             outerMainTriangleInnerMeshMaterial = outerMainTriangleInnerMesh.material
             outerMainTriangleOuterMeshMaterial = outerMainTriangleOuterMesh.material
 
+            outerMainTriangleInnerMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
+            outerMainTriangleOuterMeshMaterial.emissiveColor.fromArray(outerMainTrianglesDefaultColor)
+
             outerMainTriangleInnerMesh.scaling.setAll(mainTrianglesOuterMeshScale)
             outerMainTriangleOuterMesh.scaling.setAll(mainTrianglesOuterMeshScale)
         },
