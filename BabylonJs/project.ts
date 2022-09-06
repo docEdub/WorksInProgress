@@ -2316,7 +2316,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const hue = 256 * ((pitch - 32) / 15)
             BABYLON.Color3.HSVtoRGBToRef(hue, 1, 0.667, this._meshMaterial.emissiveColor)
             for (let i = 0; i < this.meshesToColor.length; i++) {
-                BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.175, this.meshesToColor[i].material.emissiveColor)
+                BABYLON.Color3.HSVtoRGBToRef(hue, 0.95, 0.155, this.meshesToColor[i].material.emissiveColor)
             }
         }
 
@@ -2958,13 +2958,24 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region World center light setup
 
     class CenterLight {
+        get r() { return this._light.diffuse.r }
+        set r(value) { this._light.diffuse.r = this._light.specular.r = value }
+
+        get g() { return this._light.diffuse.g }
+        set g(value) { this._light.diffuse.g = this._light.specular.g = value }
+
+        get b() { return this._light.diffuse.b }
+        set b(value) { this._light.diffuse.b = this._light.specular.b = value }
+
         get intensity() { return this._light.intensity }
         set intensity(value) { this._light.intensity = value }
 
         constructor() {
             {
                 const light = this._light
-                light.intensity = 0.1
+                light.diffuse.set(0.1, 0.1, 0.1)
+                light.specular.set(0.1, 0.1, 0.1)
+                light.intensity = 0.5
                 light.range = 250
                 light.specular.set(0.5, 0.5, 0.5)
             }
@@ -2972,7 +2983,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const entity = new Entity
             const reset = new ObjectPropertyResetComponent
             reset.object = this
-            reset.keys = [ 'intensity' ]
+            reset.keys = [ 'r', 'g', 'b', 'intensity' ]
             entity.addComponent(reset)
             world.add(entity)
         }
@@ -2982,10 +2993,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const centerLight = new CenterLight
 
-    const addCenterLightFlashComponent = (entity) => {
+    const addCenterLightFlashComponent = (entity, color) => {
         const callback = new TrackActiveNotesChangedCallbackComponent
+        const addedColor = [...color]
+        addedColor[0] *= 0.333
+        addedColor[1] *= 0.333
+        addedColor[2] *= 0.333
         callback.function = (activeNotes) => {
             if (0 < activeNotes.length) {
+                centerLight.r += addedColor[0]
+                centerLight.g += addedColor[1]
+                centerLight.b += addedColor[2]
                 centerLight.intensity += 0.25
             }
         }
@@ -3052,7 +3070,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             animation.strikerMeshY = options.strikerMeshY
         }
         entity.addComponent(animation)
-        addCenterLightFlashComponent(entity)
+        addCenterLightFlashComponent(entity, options.color)
         return entity
     }
 
@@ -3066,7 +3084,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             animation.y = options.y
         }
         entity.addComponent(animation)
-        addCenterLightFlashComponent(entity)
+        addCenterLightFlashComponent(entity, options.color)
         return entity
     }
 
