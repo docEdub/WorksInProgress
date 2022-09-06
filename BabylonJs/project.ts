@@ -476,7 +476,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
             // 1
-            { position: new BABYLON.Vector3(0, this.height, -400), target: new BABYLON.Vector3(0, 100, 0) },
+            { position: new BABYLON.Vector3(0, this.height, -315), target: new BABYLON.Vector3(0, 130, 0) },
             // 2
             { position: new BABYLON.Vector3(-137, this.height, -298), target: new BABYLON.Vector3(0, 100, 0) },
             // 3
