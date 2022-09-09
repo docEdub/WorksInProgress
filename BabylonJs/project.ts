@@ -1212,7 +1212,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ObjectPropertyResetComponent
         ]}
 
-        reset = null
+        resets = []
 
         previousValues = {}
 
@@ -1221,46 +1221,179 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             for (let i = 0; i < components.length; i++) {
                 const component = components[i]
                 if (component.isA(ObjectPropertyResetComponent)) {
-                    this.reset = component
+                    this.resets.push({component: component})
                 }
             }
-            assert(this.reset, `${ObjectPropertyResetComponent.name} missing.`)
+            assert(0 < this.resets.length, `${ObjectPropertyResetComponent.name} missing.`)
             this.#checkKeys()
             this.#initializePreviousValues()
         }
 
         run = (time, deltaTime) => {
-            const object = this.reset.object
-            const keys = this.reset.keys
-            const previousValues = this.previousValues
-            for (let i = 0; i < keys.length; i++) {
-                const key = keys[i]
-                object[key] = previousValues[key]
+            for (let i = 0; i < this.resets.length; i++) {
+                const reset = this.resets[i]
+                const object = reset.component.object
+                const keys = reset.component.keys
+                const previousValues = reset.previousValues
+                for (let i = 0; i < keys.length; i++) {
+                    const key = keys[i]
+                    // console.debug(`resetting key ${key} from ${object[key]} to ${previousValues[key]}`)
+                    object[key] = previousValues[key]
+                }
             }
         }
 
         #checkKeys = () => {
-            const object = this.reset.object
-            const keys = this.reset.keys
-            for (let i = 0; i < keys.length; i++) {
-                if (object[keys[i]] === undefined) {
-                    console.warn(`Object key not found. Key = ${keys[i]}. Object = ${object}.`)
+            for (let i = 0; i < this.resets.length; i++) {
+                const reset = this.resets[i]
+                const object = reset.component.object
+                const keys = reset.component.keys
+                for (let i = 0; i < keys.length; i++) {
+                    if (object[keys[i]] === undefined) {
+                        console.warn(`Object key not found. Key = ${keys[i]}. Object = ${object}.`)
+                    }
                 }
             }
         }
 
         #initializePreviousValues = () => {
-            const object = this.reset.object
-            const keys = this.reset.keys
-            const previousValues = this.previousValues
-            for (let i = 0; i < keys.length; i++) {
-                const key = keys[i]
-                previousValues[key] = object[key]
+            for (let i = 0; i < this.resets.length; i++) {
+                const reset = this.resets[i]
+                const object = reset.component.object
+                const keys = reset.component.keys
+                const previousValues = {}
+                for (let i = 0; i < keys.length; i++) {
+                    const key = keys[i]
+                    previousValues[key] = object[key]
+                }
+                reset.previousValues = previousValues
             }
         }
     }
 
     world.add(ObjectPropertyResetSystem)
+
+    //#endregion
+
+    //#region class MeshColorizerComponent
+
+    // NB: This class assumes an ObjectPropertyResetComponent is added to the entity to reset the mesh colors on each
+    // frame before this class adds its colors.
+    class MeshColorizerComponent extends Component {
+        #Private = class {
+            color = [1, 1, 1]
+            enabled = false
+            factor = 1
+
+            diffuseFactor = 0 // 0 to 1
+            emissiveFactor = 1 // 0 to 1
+            specularFactor = 0 // 0 to 1
+            meshesToColorize = []
+            originalDiffuseColors = [[]]
+            originalEmissiveColors = [[]]
+            originalSpecularColors = [[]]
+
+            colorize = () => {
+                if (this.factor === 0) {
+                    return
+                }
+
+                for (let i = 0; i < this.meshesToColorize.length; i++) {
+                    const material = this.meshesToColorize[i].material as BABYLON.StandardMaterial
+                    if (0 < this.diffuseFactor) {
+                        const color = material.diffuseColor
+                        const finalFactor = this.factor * this.diffuseFactor
+                        color.r = Math.min(1, color.r + this.color[0] * finalFactor)
+                        color.g = Math.min(1, color.g + this.color[1] * finalFactor)
+                        color.b = Math.min(1, color.b + this.color[2] * finalFactor)
+                    }
+                    if (0 < this.emissiveFactor) {
+                        const color = material.emissiveColor
+                        const finalFactor = this.factor * this.emissiveFactor
+                        color.r = Math.min(1, color.r + this.color[0] * finalFactor)
+                        color.g = Math.min(1, color.g + this.color[1] * finalFactor)
+                        color.b = Math.min(1, color.b + this.color[2] * finalFactor)
+                    }
+                    if (0 < this.specularFactor) {
+                        const color = material.specularColor
+                        const finalFactor = this.factor * this.specularFactor
+                        color.r = Math.min(1, color.r + this.color[0] * finalFactor)
+                        color.g = Math.min(1, color.g + this.color[1] * finalFactor)
+                        color.b = Math.min(1, color.b + this.color[2] * finalFactor)
+                    }
+                }
+            }
+
+            update = () => {
+                if (this.enabled) {
+                    this.colorize()
+                }
+            }
+        }
+
+        _private = new this.#Private
+
+        set color(value: Array<number>) {
+            this._private.color[0] = value[0]
+            this._private.color[1] = value[1]
+            this._private.color[2] = value[2]
+            this._private.update()
+        }
+
+        set enabled(value: boolean) {
+            this._private.enabled = value
+            if (this._private.enabled) {
+                this._private.colorize()
+            }
+        }
+
+        get factor() {
+            return this._private.factor
+        }
+
+        set factor(value: number) {
+            this._private.factor = value
+            this._private.update()
+        }
+
+        set diffuseFactor(value: number) {
+            this._private.diffuseFactor = value
+            this._private.update()
+        }
+
+        set emissiveFactor(value: number) {
+            this._private.emissiveFactor = value
+            this._private.update()
+        }
+
+        set specularFactor(value: number) {
+            this._private.specularFactor = value
+            this._private.update()
+        }
+
+        set meshesToColorize(value: Array<BABYLON.Mesh>) {
+            const _private = this._private
+            _private.meshesToColorize.length = value.length
+            _private.originalDiffuseColors.length = value.length
+            _private.originalEmissiveColors.length = value.length
+            _private.originalSpecularColors.length = value.length
+            for (let i = 0; i < value.length; i++) {
+                _private.meshesToColorize[i] = value[i]
+                const material = value[i].material as BABYLON.StandardMaterial
+                _private.originalDiffuseColors[i] = material.diffuseColor.asArray()
+                _private.originalEmissiveColors[i] = material.emissiveColor.asArray()
+                _private.originalSpecularColors[i] = material.specularColor.asArray()
+            }
+        }
+
+        enable = () => {
+            this.enabled = true
+        }
+
+        disable = () => {
+            this.enabled = false
+        }
+    }
 
     //#endregion
 
@@ -2447,11 +2580,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     class RimArpAnimationSystem extends System {
         static requiredComponentTypes = () => { return [
             TrackComponent,
-            RimArpAnimationComponent
+            RimArpAnimationComponent,
+            MeshColorizerComponent
         ]}
 
         track = null
         animation = null
+        meshColorizer = null
 
         mesh = new BABYLON.Mesh(RimArpAnimationSystem.name + '.mesh', scene)
         instanceMatrices = null
@@ -2466,9 +2601,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 else if (component.isA(RimArpAnimationComponent)) {
                     this.animation = component
                 }
+                else if (component.isA(MeshColorizerComponent)) {
+                    this.meshColorizer = component
+                }
             }
             assert(this.track, `${TrackComponent.name} missing.`)
             assert(this.animation, `${RimArpAnimationComponent.name} missing.`)
+            assert(this.meshColorizer, `${MeshColorizerComponent.name} missing.`)
 
             const material = new BABYLON.StandardMaterial('', scene)
             material.backFaceCulling = false
@@ -2496,6 +2635,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         run = (time, deltaTime) => {
+            this.meshColorizer.enabled = 0 < this.track.activeNotes.length
             if (this.track.activeNotesChanged) {
                 if (0 < this.track.activeNotes.length) {
                     // Update and show mesh thin instances.
@@ -2613,11 +2753,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             TrackComponent,
             TrackNoteDurationComponent,
             TrackNoteNormalizedDurationComponent,
-            RimLineAnimationComponent
+            RimLineAnimationComponent,
+            MeshColorizerComponent
         ]}
 
         track = null
         animation = null
+        meshColorizer = null
 
         constructor(components) {
             super(components)
@@ -2629,9 +2771,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 else if (component.isA(RimLineAnimationComponent)) {
                     this.animation = component
                 }
+                else if (component.isA(MeshColorizerComponent)) {
+                    this.meshColorizer = component
+                }
             }
             assert(this.track, `${TrackComponent.name} missing.`)
             assert(this.animation, `${RimLineAnimationComponent.name} missing.`)
+            assert(this.meshColorizer, `${MeshColorizerComponent.name} missing.`)
         }
 
         run = (time, deltaTime) => {
@@ -2644,9 +2790,20 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                     this.animation.showNoteNumber(this.track.activeNotes[i].pitch)
                 }
             }
-            for (let i = 0; i < this.track.activeNotes.length; i++) {
-                const note = this.track.activeNotes[i]
-                this.animation.setNoteNumberAlpha(note.pitch, 1 - note.normalizedDuration)
+
+            if (0 < this.track.activeNotes.length) {
+                let meshColorizationFactor = 0
+                for (let i = 0; i < this.track.activeNotes.length; i++) {
+                    const note = this.track.activeNotes[i]
+                    const durationFactor = 1 - note.normalizedDuration
+                    this.animation.setNoteNumberAlpha(note.pitch, durationFactor)
+                    meshColorizationFactor += durationFactor
+                }
+                this.meshColorizer.emissiveFactor = Math.min(meshColorizationFactor, 1)
+                this.meshColorizer.enable()
+            }
+            else {
+                this.meshColorizer.disable()
             }
         }
     }
@@ -3143,26 +3300,66 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const createRimArpAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
+
+        for (let i = 0; i < options.meshesToColor.length; i++) {
+            const material = options.meshesToColor[i].material as BABYLON.StandardMaterial
+            const reset = new ObjectPropertyResetComponent
+            reset.object = material.emissiveColor
+            reset.keys = [ 'r', 'g', 'b' ]
+            entity.addComponent(reset)
+        }
+
+        const meshColorizer = new MeshColorizerComponent
+        meshColorizer.color = options.color
+        meshColorizer.factor = options.meshColorizationFactor
+        meshColorizer.diffuseFactor = 0
+        meshColorizer.emissiveFactor = 1
+        meshColorizer.specularFactor = 0
+        meshColorizer.meshesToColorize = options.meshesToColor
+        entity.addComponent(meshColorizer)
+
         const animation = new RimArpAnimationComponent(options.mesh)
         if (options.color !== undefined) {
             animation.color = options.color
         }
         entity.addComponent(animation)
+
         return entity
     }
 
     const createRimLineAnimation = (id, json, options) => {
         const entity = createTrack(id, json, options)
+
         const duration = new TrackNoteDurationComponent
         entity.addComponent(duration)
+
         const normalizedDuration = new TrackNoteNormalizedDurationComponent
         entity.addComponent(normalizedDuration)
+
+        for (let i = 0; i < options.meshesToColor.length; i++) {
+            const material = options.meshesToColor[i].material as BABYLON.StandardMaterial
+            const reset = new ObjectPropertyResetComponent
+            reset.object = material.emissiveColor
+            reset.keys = ['r', 'g', 'b']
+            entity.addComponent(reset)
+        }
+
+        const meshColorizer = new MeshColorizerComponent
+        meshColorizer.color = options.color
+        meshColorizer.factor = options.meshColorizationFactor
+        meshColorizer.diffuseFactor = 0
+        meshColorizer.emissiveFactor = 1
+        meshColorizer.specularFactor = 0
+        meshColorizer.meshesToColorize = options.meshesToColor
+        entity.addComponent(meshColorizer)
+
         const animation = new RimLineAnimationComponent(options.mesh)
         if (options.color !== undefined) {
             animation.color = options.color
         }
         animation.noteNumbers = options.noteNumbers
         entity.addComponent(animation)
+
         return entity
     }
 
@@ -3319,7 +3516,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         options: {
             name: '09: Rim 1: Hi Arp',
             mesh: Rim1HiArpMesh,
-            color: Color.NeonGreen
+            color: Color.NeonGreen,
+            meshesToColor: [
+                mainTriangleOuterMesh,
+                outerMainTriangleInnerMesh
+            ],
+            meshColorizationFactor: 0.05
         }
     }
 
@@ -3329,7 +3531,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             name: '10: Rim 2: Hi Line',
             mesh: Rim2HiLineMesh,
             color: Color.NeonOrange,
-            noteNumbers: [ 60, 62, 64, 65, 67, 69, 71, 72 ]
+            noteNumbers: [ 60, 62, 64, 65, 67, 69, 71, 72 ],
+            meshesToColor: [
+                mainTriangleOuterMesh,
+                outerMainTriangleInnerMesh
+            ],
+            meshColorizationFactor: 0.2
         }
     }
 
@@ -3339,7 +3546,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             name: '11: Rim 3: Lo Line',
             mesh: Rim3LoLineMesh,
             color: Color.NeonPurple,
-            noteNumbers: [ 52, 53, 55, 57, 59, 60 ]
+            noteNumbers: [ 52, 53, 55, 57, 59, 60 ],
+            meshesToColor: [
+                mainTriangleOuterMesh,
+                outerMainTriangleInnerMesh
+            ],
+            meshColorizationFactor: 0.1
         }
     }
 
@@ -3347,7 +3559,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         function: createFlyerAnimation,
         options: {
             name: '12: Flyer 1',
-            color: Color.LightBrightRed
+            color: Color.LightBrightRed,
         }
     }
 
