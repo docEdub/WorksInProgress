@@ -827,7 +827,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const mainTrianglesOuterMeshScale = 20
     const mainTrianglesOuterMeshRotationY = 0
-    const mainTrianglesDefaultColor = [ 0.05, 0.05, 0.05 ]
+    const mainTrianglesDefaultColor = [ 0.07, 0.07, 0.07 ]
 
     let mainTriangleMesh: BABYLON.Mesh = null
     let mainTriangleMeshHeight = 1
@@ -3521,7 +3521,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 mainTriangleOuterMesh,
                 outerMainTriangleInnerMesh
             ],
-            meshColorizationFactor: 0.05
+            meshColorizationFactor: 0.01
         }
     }
 
@@ -3536,7 +3536,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 mainTriangleOuterMesh,
                 outerMainTriangleInnerMesh
             ],
-            meshColorizationFactor: 0.2
+            meshColorizationFactor: 0.02
         }
     }
 
@@ -3551,7 +3551,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 mainTriangleOuterMesh,
                 outerMainTriangleInnerMesh
             ],
-            meshColorizationFactor: 0.1
+            meshColorizationFactor: 0.02
         }
     }
 
