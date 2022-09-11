@@ -1,4 +1,4 @@
-<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1661510711
+<REAPER_PROJECT 0.1 "6.21/OSX64-clang" 1662870321
   RIPPLE 0
   GROUPOVERRIDE 0 0 0
   AUTOXFADE 1
@@ -8625,7 +8625,7 @@
     PEAKCOL 16576
     BEAT -1
     AUTOMODE 0
-    VOLPAN 0.02483856506917 0 -1 -1 1
+    VOLPAN 0.02054775803371 0 -1 -1 1
     MUTESOLO 0 0 0
     IPHASE 0
     PLAYOFFS 0 1
@@ -8679,7 +8679,9 @@
         PT 100 0.5 1
         PT 124 0.25 1 0 0 0 1
         PT 144 0.5 1 0 0 0 1
-        PT 168 1 1 0 1 0 1
+        PT 174 0.895 1
+        PT 196.0005 0.83561668 0
+        PT 200.0005 0.895 1
       >
       WAK 0 0
     >
@@ -8820,9 +8822,9 @@
         CCINTERP 32
         POOLEDEVTS {CACECF3E-0DB0-1046-9230-A5BAF2E97C42}
         E 3840 90 62 7f
-        E 1920 90 65 7f
-        e 1920 90 69 7f
-        E 257280 80 62 00
+        E 3840 90 65 7f
+        e 3840 90 69 7f
+        E 253440 80 62 00
         E 0 80 65 00
         e 0 80 69 00
         E 0 b0 7b 00
@@ -8862,9 +8864,9 @@
         CCINTERP 32
         POOLEDEVTS {5435FFEC-5814-BD4D-BB6F-8C6BB1223E3B}
         e 3720 90 69 7f
-        E 1080 90 65 7f
-        E 960 90 62 7f
-        e 259200 80 69 00
+        E 2040 90 65 7f
+        E 1920 90 62 7f
+        e 257280 80 69 00
         E 0 80 65 00
         E 0 80 62 00
         E 0 b0 7b 00
