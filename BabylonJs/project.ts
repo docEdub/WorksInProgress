@@ -59,7 +59,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const groundSize = 9000
     const logDebugMessages = true
     const showBabylonInspector = false
-    const showGroundGrid = true
 
     //#region Light and color
 
@@ -757,43 +756,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ground.rotation.set(Math.PI / 2, 0, 0)
     ground.freezeWorldMatrix()
 
-    if (showGroundGrid) {
-        const grid_Texture = createSvgTexture(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
-                <line x1="0%" y1="0%" x2="100%" y2="0%"/>
-                <line x1="0%" y1="50%" x2="100%" y2="50%"/>
-                <line x1="0%" y1="100%" x2="100%" y2="100%"/>
+    const grid_Texture = createSvgTexture(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+            <line x1="0%" y1="0%" x2="100%" y2="0%"/>
+            <line x1="0%" y1="50%" x2="100%" y2="50%"/>
+            <line x1="0%" y1="100%" x2="100%" y2="100%"/>
 
-                <line x1="0%" y1="50%" x2="25%" y2="0%"/>
-                <line x1="25%" y1="0%" x2="50%" y2="50%"/>
-                <line x1="50%" y1="50%" x2="75%" y2="0%"/>
-                <line x1="75%" y1="0%" x2="100%" y2="50%"/>
+            <line x1="0%" y1="50%" x2="25%" y2="0%"/>
+            <line x1="25%" y1="0%" x2="50%" y2="50%"/>
+            <line x1="50%" y1="50%" x2="75%" y2="0%"/>
+            <line x1="75%" y1="0%" x2="100%" y2="50%"/>
 
-                <line x1="0%" y1="50%" x2="25%" y2="100%"/>
-                <line x1="25%" y1="100%" x2="50%" y2="50%"/>
-                <line x1="50%" y1="50%" x2="75%" y2="100%"/>
-                <line x1="75%" y1="100%" x2="100%" y2="50%"/>
+            <line x1="0%" y1="50%" x2="25%" y2="100%"/>
+            <line x1="25%" y1="100%" x2="50%" y2="50%"/>
+            <line x1="50%" y1="50%" x2="75%" y2="100%"/>
+            <line x1="75%" y1="100%" x2="100%" y2="50%"/>
 
-                <style>
-                    line {
-                        fill: none;
-                        stroke: white;
-                        stroke-width: 4;
-                    }
-                </style>
-            </svg>
-        `)
-        grid_Texture.uScale = grid_Texture.vScale = groundSize / 2
-        const gridMaterial = new BABYLON.StandardMaterial('', scene)
-        gridMaterial.emissiveColor.set(0.333, 0.333, 0.333)
-        gridMaterial.ambientTexture = grid_Texture
-        // gridMaterial.opacityTexture = grid_Texture
-        gridMaterial.disableLighting = true
-        ground.material = gridMaterial
-    }
-    else {
-        ground.material = blackMaterial
-    }
+            <style>
+                line {
+                    fill: none;
+                    stroke: white;
+                    stroke-width: 4;
+                }
+            </style>
+        </svg>
+    `)
+    grid_Texture.uScale = grid_Texture.vScale = groundSize / 2
+    const gridMaterial = new BABYLON.StandardMaterial('', scene)
+    gridMaterial.emissiveColor.set(0.333, 0.333, 0.333)
+    gridMaterial.ambientTexture = grid_Texture
+    gridMaterial.disableLighting = true
+    ground.material = gridMaterial
 
     //#endregion
 
