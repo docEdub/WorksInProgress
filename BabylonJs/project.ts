@@ -685,25 +685,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Scene environment setup
 
-    const skyBrightness = 0.05
-    scene.clearColor.set(skyBrightness, skyBrightness, skyBrightness, 1)
-
-    const whiteColor = BABYLON.Color3.White()
-    const grayColor = new BABYLON.Color3(0.2, 0.2, 0.2)
-
-    const whiteMaterial = new BABYLON.StandardMaterial('', scene)
-    whiteMaterial.emissiveColor = whiteColor
-    whiteMaterial.disableLighting = true
-    whiteMaterial.freeze()
-
-    const grayMaterial = new BABYLON.StandardMaterial('', scene)
-    grayMaterial.emissiveColor = grayColor
-    grayMaterial.disableLighting = true
-    grayMaterial.freeze()
-
-    const blackMaterial = new BABYLON.StandardMaterial('', scene)
-    grayMaterial.disableLighting = true
-    grayMaterial.freeze()
+    scene.clearColor.set(0, 0, 0, 1)
+    scene.ambientColor.set(0, 0, 0)
 
     { // Walls
 
@@ -820,14 +803,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     const mainTrianglesOuterMeshScale = 20
     const mainTrianglesOuterMeshRotationY = 0
-    const mainTrianglesDefaultColor = [ 0.07, 0.07, 0.07 ]
+    const mainTrianglesDefaultColor = [ 0.04, 0.04, 0.04 ]
 
     let mainTriangleMesh: BABYLON.Mesh = null
     let mainTriangleMeshHeight = 1
 
     let outerMainTriangleMesh = null
     let outerMainTriangleMeshMaterial = null
-    const outerMainTrianglesDefaultColor = [ 0.06, 0.06, 0.06 ]
+    const outerMainTrianglesDefaultColor = [ 0.03, 0.03, 0.03 ]
 
     let mainTriangleInnerMesh: BABYLON.Mesh = null
     let mainTriangleOuterMesh: BABYLON.Mesh = null
@@ -882,8 +865,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     const meshString_MainTriangles = `
-    {"producer":{"name":"Blender","version":"2.93.4","exporter_version":"2.93.5","file":"MainTriangles.babylon"},
-    "autoClear":true,"clearColor":[0.0509,0.0509,0.0509],"gravity":[0,-9.81,0],
+    {
     "meshes":[{"name":"MainTriangles","id":"MainTriangles","billboardMode":0,"position":[0,0,0],"rotation":[0,0,0],"scaling":[1,1,1],"isVisible":true,"isEnabled":true,"pickable":false
     ,"positions":[0,202.4602,13.9867,0,220.4601,0,12.1128,202.4602,-6.9933,0,202.4602,13.9867,12.1128,202.4602,-6.9933,-12.1128,202.4602,-6.9933,12.1128,202.4602,-6.9933,0,220.4601,0,-12.1128,202.4602,-6.9933,-12.1128,202.4602,-6.9933,0,220.4601,0,0,202.4602,13.9867,0,0,197.34,0,220.46,0,15,0,171.34,15,0,171.34,0,220.46,0
     ,-15,0,171.34,-15,0,171.34,0,220.46,0,0,0,197.34,170.9015,0,-98.67,0,220.46,0,140.8848,0,-98.6604,140.8848,0,-98.6604,0,220.46,0,155.8848,0,-72.6796,155.8848,0,-72.6796,0,220.46,0,170.9015,0,-98.67,-170.9015,0,-98.67,0,220.46,0,-155.8848,0,-72.6796,-155.8848,0,-72.6796
@@ -1002,7 +984,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         _light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
 
         constructor() {
-            this._light.intensity = 0.02
+            this._light.intensity = 0.00
         }
     }
     const sunLight = new SunLight
@@ -2545,8 +2527,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             const material = new BABYLON.StandardMaterial('', scene)
             material.backFaceCulling = false
-            material.diffuseColor = material.specularColor.set(0.01, 0.01, 0.01)
-            material.emissiveColor.set(0.1, 0.1, 0.1)
+            material.diffuseColor = material.specularColor.set(0, 0, 0)
+            material.emissiveColor.set(0.06, 0.06, 0.06)
             material.wireframe = true
             this.material = material
 
@@ -2816,7 +2798,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
 
         start = (flyerIndex, directionIndex) => {
-            this._flyerLights[flyerIndex][directionIndex].range = 500
+            this._flyerLights[flyerIndex][directionIndex].range = 750
             this._flyerMeshes[flyerIndex][directionIndex].isVisible = true
             if (directionIndex == 0 || !this._flyerMeshes[flyerIndex][0].isVisible) {
                 scene.beginAnimation(
@@ -2965,7 +2947,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ]
 
             const flyerLight = new BABYLON.PointLight('', BABYLON.Vector3.ZeroReadOnly, scene)
-            flyerLight.intensity = 0.5
+            flyerLight.intensity = 0.75
             flyerLight.diffuse.fromArray(Color.LightBrightRed)
             flyerLight.specular.fromArray(Color.LightBrightRed)
             flyerLight.specular.r /= 5
@@ -2981,10 +2963,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const flyerMesh = makeTrianglePolygonMesh()
             flyerMesh.isPickable = false
             flyerMesh.isVisible = false
-            flyerMesh.scaling.setAll(10)
+            flyerMesh.scaling.setAll(7.5)
             const material = new BABYLON.StandardMaterial('', scene)
-            material.diffuseColor.set(1, 1, 1)
-            material.emissiveColor.set(1, 0.1, 0.1)
+            material.emissiveColor.set(1, 0.2, 0.2)
             flyerMesh.material = material
             this._flyerMeshes = [
                 [ flyerMesh, flyerMesh.clone() ],
