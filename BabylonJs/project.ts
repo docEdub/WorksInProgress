@@ -47,7 +47,7 @@ declare global {
 //#endregion
 
 document.isProduction = true
-document.useDawTiming = true
+document.useDawTiming = false
 document.debugAsserts = true
 document.alwaysRun = true
 
