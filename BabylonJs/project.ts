@@ -3111,7 +3111,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 light.specular.set(0.1, 0.1, 0.1)
                 light.intensity = 0.5
                 light.range = 250
-                light.specular.set(0.5, 0.5, 0.5)
             }
 
             const entity = new Entity
