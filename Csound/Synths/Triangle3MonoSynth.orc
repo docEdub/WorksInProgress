@@ -24,8 +24,9 @@ giTriangle3MonoSynth_PlaybackReverbAdjustment = 1.5
 
 #include "Common/TriangleMonoSynth.init.orc"
 
-${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05  #
-${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime                # 0.215 #
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05  #
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeDecayTime  # 0.25  #
+${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime        # 0.215 #
 
 #include "Common/TriangleMonoSynth.instr.orc"
 #include "synth.instr.h.orc"

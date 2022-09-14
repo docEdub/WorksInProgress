@@ -1,6 +1,10 @@
 
-${CSOUND_IFNDEF} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
-${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+${CSOUND_IFNDEF} TriangleMonoSynth_VolumeEnvelopeAttackTime
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackTime #0.05#
+${CSOUND_ENDIF}
+
+${CSOUND_IFNDEF} TriangleMonoSynth_VolumeEnvelopeDecayTime
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeDecayTime #0.25#
 ${CSOUND_ENDIF}
 
 ${CSOUND_IFNDEF} TriangleMonoSynth_NoteNumberLagTime
@@ -127,7 +131,8 @@ instr INSTRUMENT_ID
             scoreline_i(sprintf("i \"%s\" 0 -1 \"%s\"", STRINGIZE(CONCAT(JsonAppend_, INSTRUMENT_ID)), string_escape_i(SiJson)))
         ${CSOUND_ENDIF}
 
-        iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+        iVolumeEnvelopeAttackSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackTime
+        iVolumeEnvelopeDecaySlope = -giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeDecayTime
         kVolumeEnvelopeModifier init 0
         kActiveNoteCount = gk${InstrumentName}_ActiveNoteCount[ORC_INSTANCE_INDEX]
         #if !IS_PLAYBACK
@@ -149,10 +154,10 @@ instr INSTRUMENT_ID
                 kNoteNumberWhenActivated = gk${InstrumentName}_NoteNumber[ORC_INSTANCE_INDEX]
                 kActiveNoteCountChanged = true
                 kNoteNumberNeedsLag = false
-                kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
+                kVolumeEnvelopeModifier = iVolumeEnvelopeAttackSlope
             elseif (kActiveNoteCount == 0) then
                 ; log_k_trace("Decay started")
-                kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
+                kVolumeEnvelopeModifier = iVolumeEnvelopeDecaySlope
             endif
             kActiveNoteCountPrevious = kActiveNoteCount
         endif

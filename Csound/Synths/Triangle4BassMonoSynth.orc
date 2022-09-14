@@ -38,9 +38,10 @@ endop
 
 #include "Common/TriangleMonoSynth.init.orc"
 
-${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05  #
-${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime                # 0.215 #
-${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith                      # 0.075 #
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05  #
+${CSOUND_DEFINE} TriangleMonoSynth_VolumeEnvelopeDecayTime  # 0.25  #
+${CSOUND_DEFINE} TriangleMonoSynth_NoteNumberLagTime        # 0.215 #
+${CSOUND_DEFINE} TriangleMonoSynth_VcoBandwith              # 0.075 #
 
 ${CSOUND_DEFINE} TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
 
