@@ -470,7 +470,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #height = 2
         get height() { return this.#height }
 
-        #settingIndex = 1
+        #settingIndex = 7
         #settings = [
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
@@ -2323,6 +2323,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             }
             assert(this.track, `${TrackComponent.name} missing.`)
             assert(this.animation, `${BeaconAnimationComponent.name} missing.`)
+
+            this.animation.setActiveNoteDataAt(0, 1, 0, this.track.notes[1].pitch)
+            this.animation.setActiveNoteDataAt(1, 1, 0, this.track.notes[2].pitch)
+            this.animation.updateActiveNoteDataMatrixes()
         }
 
         run = (time, deltaTime) => {
