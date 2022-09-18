@@ -470,7 +470,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         #height = 2
         get height() { return this.#height }
 
-        #settingIndex = 7
+        #settingIndex = 1
         #settings = [
             // 0
             { position: new BABYLON.Vector3(0, this.height, -10), target: new BABYLON.Vector3(0, this.height, 0) },
@@ -799,6 +799,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
+    //#region class SunLight
+
+    class SunLight {
+        get color() { return this._light.diffuse.asArray() }
+        set color(value) {
+            this._light.specular.r = this._light.diffuse.r = value[0]
+            this._light.specular.g = this._light.diffuse.g = value[1]
+            this._light.specular.b = this._light.diffuse.b = value[2]
+        }
+
+        _light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
+
+        constructor() {
+            this._light.intensity = 0.5
+        }
+
+        exclude = (mesh) => {
+            this._light.excludedMeshes.push(mesh)
+        }
+    }
+    const sunLight = new SunLight
+
+    //#endregion
+
     //#region MainTriangles mesh
 
     const mainTrianglesOuterMeshScale = 20
@@ -849,6 +873,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             vertexData.positions = points
             vertexData.applyToMesh(innerMesh, true)
             innerMesh.material = mesh.material!.clone(`${materialNamePrefix}.inner`)
+            sunLight.exclude(innerMesh)
         }
 
         const outerMesh = new BABYLON.Mesh(`${materialNamePrefix}.outer`)
@@ -859,6 +884,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             vertexData.positions = points
             vertexData.applyToMesh(outerMesh, true)
             outerMesh.material = mesh.material!.clone(`${materialNamePrefix}.outer`)
+            sunLight.exclude(outerMesh)
         }
 
         return [ innerMesh, outerMesh ]
@@ -897,6 +923,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const mesh = scene.getMeshByName('MainTriangles') as BABYLON.Mesh
             mesh.material = material
             mesh.isVisible = false
+            sunLight.exclude(mesh)
 
             mainTriangleMesh = mesh
             mainTriangleMeshHeight = mesh.getBoundingInfo().boundingBox.maximumWorld.y
@@ -911,6 +938,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             const outerMesh = mesh.clone('')
             outerMesh.rotation.y = mainTrianglesOuterMeshRotationY
             outerMesh.material = material
+            sunLight.exclude(outerMesh)
 
             outerMainTriangleMesh = outerMesh
             outerMainTriangleMeshMaterial = material
@@ -968,30 +996,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     const trianglePolygonMesh = makeTrianglePolygonMesh()
     trianglePolygonMesh.isPickable = false
-
-    //#endregion
-
-    //#region class SunLight
-
-    class SunLight {
-        get color() { return this._light.diffuse.asArray() }
-        set color(value) {
-            this._light.specular.r = this._light.diffuse.r = value[0]
-            this._light.specular.g = this._light.diffuse.g = value[1]
-            this._light.specular.b = this._light.diffuse.b = value[2]
-        }
-
-        _light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
-
-        constructor() {
-            this._light.intensity = 0.5
-        }
-
-        addMeshToLight = (mesh) => {
-            this._light.includedOnlyMeshes.push(mesh)
-        }
-    }
-    const sunLight = new SunLight
 
     //#endregion
 
@@ -1955,6 +1959,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 material.emissiveColor.set(0.5, 0.5, 0.5)
                 mesh.material = material
                 this._flashMeshMaterial = material
+
+                sunLight.exclude(mesh)
             }
 
             {
@@ -1968,6 +1974,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 material.emissiveColor.set(0.5, 0.5, 0.5)
                 mesh.material = material
                 this._strikerLegsMeshMaterial = material
+
+                sunLight.exclude(mesh)
             }
 
             {
@@ -1986,6 +1994,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 material.specularPower = 0.25
                 mesh.material = material
                 this._strikerGlassMeshMaterial = material
+
+                sunLight.exclude(mesh)
             }
 
             this.isRunning = false
@@ -2146,6 +2156,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             this._mesh.isPickable = false
             this._mesh.freezeWorldMatrix()
+
+            sunLight.exclude(this._mesh)
         }
     }
 
@@ -2288,7 +2300,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.specularColor.set(0.1, 0.1, 0.1)
             this._mesh.material = this._meshMaterial
-            sunLight.addMeshToLight(this._mesh)
 
             this._pillarMesh = makeTrianglePolygonMesh()
             this._pillarMesh.isPickable = false
@@ -2298,7 +2309,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
             this._pillarMeshMaterial.specularColor.set(0.003, 0.003, 0.003)
             this._pillarMesh.material = this._pillarMeshMaterial
-            sunLight.addMeshToLight(this._pillarMesh)
         }
     }
 
@@ -2468,6 +2478,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._meshMaterial.emissiveColor.set(1, 1, 1)
             this._meshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._mesh.material = this._meshMaterial
+            sunLight.exclude(this._mesh)
 
             this._frameMesh = new BABYLON.Mesh(`mainTriangle.bassFrame`, scene)
             this._frameMesh.isPickable = false
@@ -2476,6 +2487,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._frameMeshMaterial.emissiveColor.set(1, 0, 0)
             this._frameMeshMaterial.maxSimultaneousLights = Light.MaxSimultaneous
             this._frameMesh.material = this._frameMeshMaterial
+            sunLight.exclude(this._frameMesh)
 
             BABYLON.VertexData.ComputeNormals(this._frameMeshPositions, this._frameMeshIndices, this._frameMeshNormals)
             const frameMeshVertexData = new BABYLON.VertexData()
@@ -2720,6 +2732,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 vertexData.applyToMesh(mesh)
 
                 mesh.freezeWorldMatrix()
+                sunLight.exclude(mesh)
 
                 this._rowMeshes.push(mesh)
                 this._rowMeshMaterials.push(material)
@@ -2990,6 +3003,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 for (let j = 0; j < 2; j++) {
                     this._flyerLights[i][j].parent = this._flyerNodes[i][j]
                     this._flyerMeshes[i][j].parent = this._flyerNodes[i][j]
+                    sunLight.exclude(this._flyerMeshes[i][j])
                 }
             }
 
