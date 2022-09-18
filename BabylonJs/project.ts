@@ -984,7 +984,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         _light = new BABYLON.DirectionalLight('', new BABYLON.Vector3(0, -1, 0), scene)
 
         constructor() {
-            this._light.intensity = 0.00
+            this._light.intensity = 0.5
+        }
+
+        addMeshToLight = (mesh) => {
+            this._light.includedOnlyMeshes.push(mesh)
         }
     }
     const sunLight = new SunLight
@@ -2194,12 +2198,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#region class BeaconAnimationComponent
 
     class BeaconAnimationComponent extends Component {
-        pitchFloor = 60
+        pitchFloor = 59
         rotationSpeed = 2
 
         get color() { return this._meshMaterial.emissiveColor.asArray() }
         set color(value) {
-            this._meshMaterial.emissiveColor.fromArray(value)
+            this._meshMaterial.emissiveColor.set(value[0] / 1.1, value[1] / 1.1, value[2] / 1.1)
+            this._meshMaterial.diffuseColor.copyFrom(this._meshMaterial.emissiveColor)
             this._pillarMeshMaterial.emissiveColor.fromArray(value)
         }
 
@@ -2261,17 +2266,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         constructor() {
             super()
 
+            const triangleMeshX = 1.367
             const triangleMesh1 = makeTrianglePolygonMesh()
-            triangleMesh1.position.x = 1.225
+            triangleMesh1.position.x = triangleMeshX
             triangleMesh1.rotation.x = triangleMesh1.rotation.z = Math.PI / 2
             triangleMesh1.bakeCurrentTransformIntoVertices()
             const triangleMesh2 = makeTrianglePolygonMesh()
-            triangleMesh2.position.x = 1.225
+            triangleMesh2.position.x = triangleMeshX
             triangleMesh2.rotation.x = triangleMesh2.rotation.z = Math.PI / 2
             triangleMesh2.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.UpReadOnly, -0.667 * Math.PI)
             triangleMesh2.bakeCurrentTransformIntoVertices()
             const triangleMesh3 = makeTrianglePolygonMesh()
-            triangleMesh3.position.x = 1.225
+            triangleMesh3.position.x = triangleMeshX
             triangleMesh3.rotation.x = triangleMesh3.rotation.z = Math.PI / 2
             triangleMesh3.rotateAround(BABYLON.Vector3.ZeroReadOnly, BABYLON.Vector3.UpReadOnly, 0.667 * Math.PI)
             triangleMesh3.bakeCurrentTransformIntoVertices()
@@ -2280,8 +2286,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._mesh.isPickable = false
             this._mesh.freezeWorldMatrix()
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._meshMaterial.emissiveColor.set(1, 0, 0)
+            this._meshMaterial.specularColor.set(0.1, 0.1, 0.1)
             this._mesh.material = this._meshMaterial
+            sunLight.addMeshToLight(this._mesh)
 
             this._pillarMesh = makeTrianglePolygonMesh()
             this._pillarMesh.isPickable = false
@@ -2289,8 +2296,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this._pillarMesh.scaling.set(1, 10, 1)
             this._pillarMesh.freezeWorldMatrix()
             this._pillarMeshMaterial = new BABYLON.StandardMaterial('', scene)
-            this._pillarMeshMaterial.emissiveColor.set(1, 0, 0)
+            this._pillarMeshMaterial.specularColor.set(0.003, 0.003, 0.003)
             this._pillarMesh.material = this._pillarMeshMaterial
+            sunLight.addMeshToLight(this._pillarMesh)
         }
     }
 
