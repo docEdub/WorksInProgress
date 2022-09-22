@@ -6045,6 +6045,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
     ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     gkPlaybackTimeInSeconds init 0
+    #ifdef IS_MIXDOWN
+    giMainCameraArrayLength init ${MainCameraArray.length}
+    giMainCameraArrayMatrixes[] init ${MainCameraArray.matrixesString}
+    #end
     iDummy = vco2init(31)
     chn_k("main-volume", 1, 2, 1, 0, 1)
     chn_k("pause", 1)
@@ -8264,12 +8268,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_EffectChain
     #undef TriangleMonoSynth_EffectChain
     #end
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime # 0.25 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
-    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackTime
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime #0.05#
+    #end
+    #ifndef TriangleMonoSynth_VolumeEnvelopeDecayTime
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime #0.25#
     #end
     #ifndef TriangleMonoSynth_NoteNumberLagTime
     #define TriangleMonoSynth_NoteNumberLagTime #0.1#
@@ -8373,7 +8381,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     SiJson = strcat(SiJson, ",\\"k\\":[")
     scoreline_i(sprintf("i \\"%s\\" 0 -1 \\"%s\\"", "JsonAppend_11", string_escape_i(SiJson)))
     #end
-    iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+    iVolumeEnvelopeAttackSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackTime
+    iVolumeEnvelopeDecaySlope = -giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = gkTriangle4BassMonoSynth_ActiveNoteCount[0]
     kActiveNoteCountPrevious init 0
@@ -8385,9 +8394,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[0]
     kActiveNoteCountChanged = 1
     kNoteNumberNeedsLag = 0
-    kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeAttackSlope
     elseif (kActiveNoteCount == 0) then
-    kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeDecaySlope
     endif
     kActiveNoteCountPrevious = kActiveNoteCount
     endif
@@ -8578,12 +8587,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_EffectChain
     #undef TriangleMonoSynth_EffectChain
     #end
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime # 0.25 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
-    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackTime
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime #0.05#
+    #end
+    #ifndef TriangleMonoSynth_VolumeEnvelopeDecayTime
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime #0.25#
     #end
     #ifndef TriangleMonoSynth_NoteNumberLagTime
     #define TriangleMonoSynth_NoteNumberLagTime #0.1#
@@ -8687,7 +8700,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     SiJson = strcat(SiJson, ",\\"k\\":[")
     scoreline_i(sprintf("i \\"%s\\" 0 -1 \\"%s\\"", "JsonAppend_12", string_escape_i(SiJson)))
     #end
-    iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+    iVolumeEnvelopeAttackSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackTime
+    iVolumeEnvelopeDecaySlope = -giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = gkTriangle4BassMonoSynth_ActiveNoteCount[1]
     kActiveNoteCountPrevious init 0
@@ -8699,9 +8713,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[1]
     kActiveNoteCountChanged = 1
     kNoteNumberNeedsLag = 0
-    kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeAttackSlope
     elseif (kActiveNoteCount == 0) then
-    kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeDecaySlope
     endif
     kActiveNoteCountPrevious = kActiveNoteCount
     endif
@@ -10086,6 +10100,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     aMainVolume = a(kMainVolume)
     outs(aL * aMainVolume, aR * aMainVolume)
+    #ifdef IS_MIXDOWN
+    aw += ga_masterSignals[4]
+    fout("mixdown-wy.ogg", 50, aw, ay)
+    fout("mixdown-zx.ogg", 50, az, ax)
+    #end
     endin
     instr EndOfInstrumentAllocations
     prints("-------------------------------------------------------------------------------------------------------\\n")
@@ -10105,26 +10124,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     turnoff
     endin
+    #ifdef IS_MIXDOWN
     instr SetMixdownListenerPosition
     iTableNumber init 1
-    tablew( -1, 0, iTableNumber)
-    tablew( 0, 1, iTableNumber)
-    tablew( 0, 2, iTableNumber)
-    tablew( 0, 3, iTableNumber)
-    tablew( 0, 4, iTableNumber)
-    tablew( 0.8972800970077515, 5, iTableNumber)
-    tablew( 0.4414618015289306, 6, iTableNumber)
-    tablew( 0, 7, iTableNumber)
-    tablew( 0, 8, iTableNumber)
-    tablew( 0.4414618015289306, 9, iTableNumber)
-    tablew( -0.8972800970077515, 10, iTableNumber)
-    tablew( 0, 11, iTableNumber)
-    tablew( 0, 12, iTableNumber)
-    tablew( 2, 13, iTableNumber)
-    tablew( 250, 14, iTableNumber)
-    tablew( 1, 15, iTableNumber)
+    ii = 0
+    while (ii < 16) do
+    tablew(giMainCameraArrayMatrixes[ii], ii, iTableNumber)
+    ii += 1
+    od
     turnoff
     endin
+    #end
     </CsInstruments>
     <CsScore>
     #ifndef SCORE_START_DELAY

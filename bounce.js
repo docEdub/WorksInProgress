@@ -116,8 +116,8 @@ if (os.type() === 'Darwin') {
         }
         fs.mkdirSync(bounceMixdownDir);
 
-        // Generate stereo mixdown bounce .wav file.
-        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + ' && csound ' + bounceDir + '/DawPlayback.csd --smacro:IS_MIXDOWN=1 --output=mixdown.aif' ], {
+        // Generate stereo mixdown bounce stereo .aif and first order ambisonic .ogg files.
+        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + ' && csound ' + bounceDir + '/DawPlayback.configured.csd --omacro:IS_MIXDOWN=1 --smacro:IS_MIXDOWN=1 --output=mixdown.aif' ], {
             stdio: 'inherit'
         });
     }
