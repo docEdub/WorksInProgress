@@ -10102,8 +10102,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     outs(aL * aMainVolume, aR * aMainVolume)
     #ifdef IS_MIXDOWN
     aw += ga_masterSignals[4]
-    fout("mixdown-wy.ogg", 50, aw, ay)
-    fout("mixdown-zx.ogg", 50, az, ax)
+    fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
     #end
     endin
     instr EndOfInstrumentAllocations

@@ -417,8 +417,7 @@ instr FinalMixInstrument
         // Add reverb.
         aw += ga_masterSignals[4]
 
-        fout("mixdown-wy.ogg", 50, aw, ay)
-        fout("mixdown-zx.ogg", 50, az, ax)
+        fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
     ${CSOUND_ENDIF}
 endin
 

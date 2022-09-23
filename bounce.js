@@ -5,6 +5,7 @@ var spawnSync = require('child_process').spawnSync;
 const readSharedModule = require('./BabylonJs/SharedModules/read.js')
 
 const csoundDir = path.resolve('Csound');
+const dawPlaybackSourceDir = path.join(csoundDir, 'DawPlayback')
 const buildDir = path.join(csoundDir, '/build');
 const mixdownDir = path.join(buildDir, '/mixdown');
 const playbackDir = path.join(buildDir, '/playback');
@@ -116,10 +117,15 @@ if (os.type() === 'Darwin') {
         }
         fs.mkdirSync(bounceMixdownDir);
 
-        // Generate stereo mixdown bounce stereo .aif and first order ambisonic .ogg files.
+        // Generate stereo mixdown .aif and 64 bit ambisonic .aif.
         spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + ' && csound ' + bounceDir + '/DawPlayback.configured.csd --omacro:IS_MIXDOWN=1 --smacro:IS_MIXDOWN=1 --output=mixdown.aif' ], {
             stdio: 'inherit'
         });
+
+        // Normalize 64 bit ambisonic .aif and split it into multiple 2 channel .ogg files.
+        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + '&& csound ' + dawPlaybackSourceDir + '/NormalizeAndSplitSpatialMixdown.csd --omacro:INPUT_FILE=mixdown-wyzx.aif' ], {
+            stdio: 'inherit'
+        })
     }
 }
 else if (os.type() == "Windows_NT") {
