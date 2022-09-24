@@ -8,6 +8,8 @@ import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
 import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
 
+import MainCameraArray from "./SharedModules/CameraArrays/MainCameraArray"
+
 //#region Non-playground TypeScript declarations
 
 declare global {
