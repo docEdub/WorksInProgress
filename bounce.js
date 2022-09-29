@@ -126,6 +126,12 @@ if (os.type() === 'Darwin') {
         spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + '&& csound ' + dawPlaybackSourceDir + '/NormalizeAndSplitSpatialMixdown.csd --omacro:INPUT_FILE=mixdown-wyzx.aif' ], {
             stdio: 'inherit'
         })
+
+        // Use ffmpeg to convert the split 2 channel .aif files into MP3 files.
+        // See https://trac.ffmpeg.org/wiki/Encode/MP3.
+        const ffmpeg_options = `-y -c:a libmp3lame -q:a 0`
+        spawnSync('bash', [ '-c', `cd ${bounceMixdownDir} && ffmpeg -i normalized-01+02.aif ${ffmpeg_options} normalized-wy.mp3` ], { stdio: 'inherit' })
+        spawnSync('bash', [ '-c', `cd ${bounceMixdownDir} && ffmpeg -i normalized-03+04.aif ${ffmpeg_options} normalized-zx.mp3` ], { stdio: 'inherit' })
     }
 }
 else if (os.type() == "Windows_NT") {
