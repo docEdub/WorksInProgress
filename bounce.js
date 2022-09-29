@@ -122,7 +122,7 @@ if (os.type() === 'Darwin') {
             stdio: 'inherit'
         });
 
-        // Normalize 64 bit ambisonic .aif and split it into multiple 2 channel .ogg files.
+        // Normalize 64 bit ambisonic .aif and split it into multiple 2 channel .aif files.
         spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + '&& csound ' + dawPlaybackSourceDir + '/NormalizeAndSplitSpatialMixdown.csd --omacro:INPUT_FILE=mixdown-wyzx.aif' ], {
             stdio: 'inherit'
         })

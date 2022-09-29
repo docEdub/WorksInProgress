@@ -26,8 +26,8 @@ endin
 instr 2
     iChannelA = p4
     iChannelB = p4 + 1
-    SOutputFileName = strcat("$INPUT_FILE", sprintf("-%02d+%02d.ogg", iChannelA + 1, iChannelB + 1))
-    fout(SOutputFileName, 50, gaIn[iChannelA] * giNormalizationFactor, gaIn[iChannelB] * giNormalizationFactor)
+    SOutputFileName = sprintf("normalized-%02d+%02d.aif", iChannelA + 1, iChannelB + 1)
+    fout(SOutputFileName, 9, gaIn[iChannelA] * giNormalizationFactor, gaIn[iChannelB] * giNormalizationFactor)
 endin
 
 instr 3
