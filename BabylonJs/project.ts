@@ -16071,6 +16071,8 @@ const csdJson = `
     let dawOscLastSentTimeInSeconds = -1
     let dawNeedsRender = true
 
+    let mixdownStartTime = 0
+
     if (document.useDawTiming) {
         const OSC_STATUS = {
             IS_NOT_INITIALIZED: -1,
@@ -16197,6 +16199,9 @@ const csdJson = `
         }
     }
     else if (document.useMixdown) {
+        const mixdownStartTimeOffset = -0.95
+        console.debug(`mixdownStartTimeOffset: ${mixdownStartTimeOffset}`)
+
         const soundOptions = {
             autoplay: false,
             loop: false,
@@ -16278,6 +16283,8 @@ const csdJson = `
                         audioZX.stop()
                         audioZX.play()
                         audioContext.resume()
+                        mixdownStartTime = audioContext!.currentTime + mixdownStartTimeOffset
+                        global.audioContext = audioContext
                         clearInterval(intervalId)
                     }
                 }, 1000)
@@ -16366,7 +16373,7 @@ const csdJson = `
         }
         else if (document.useMixdown) {
             previousTime = time
-            time = engine.getAudioContext().currentTime
+            time = engine.getAudioContext().currentTime - mixdownStartTime
         }
         else {
             previousTime = time
