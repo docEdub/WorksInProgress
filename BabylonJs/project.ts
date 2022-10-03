@@ -1,5 +1,6 @@
 import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
+import Omnitone from 'omnitone'
 
 import Flyer1Path from "./SharedModules/Paths/Flyer1Path"
 import Flyer2Path from "./SharedModules/Paths/Flyer2Path"
@@ -17,6 +18,7 @@ declare global {
         Csound: CSOUND.Csound
         isProduction: boolean	// If falsey then we're running in the playground.
         useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
+        useMixdown: boolean     // If falsey then use Csound; otherwise use mixdown recording.
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
         alwaysRun: boolean	    // Always move camera fast on keyboard input, not just when caps lock is on.
         visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
@@ -50,6 +52,7 @@ declare global {
 
 document.isProduction = true
 document.useDawTiming = false
+document.useMixdown = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -93,6 +96,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         Shift: 16,
         Space: 32
     }
+
+    const HALF_PI = Math.PI / 2
 
     //#endregion
 
@@ -428,6 +433,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#flatScreenCamera.position.z = value[2]
         }
 
+        get rotationY() {
+            return this.camera.rotation.y
+        }
+
         _target = new BABYLON.Vector3()
         set target(value) {
             this._target.x = value[0]
@@ -619,7 +628,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Babylon audio engine setup
 
-    if (!document.useDawTiming) {
+    if (!document.useDawTiming && !document.useMixdown) {
         BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
         BABYLON.Engine.audioEngine.lock()
     }
@@ -16187,6 +16196,135 @@ const csdJson = `
             }
         }
     }
+    else if (document.useMixdown) {
+        const soundOptions = {
+            autoplay: false,
+            loop: false,
+            spatialSound: false,
+            streaming: true
+        }
+        let audioWY_isReady = false
+        let audioZX_isReady = false
+        const audioWY = new BABYLON.Sound(
+            `normalized.wy`,
+            `./assets/normalized-wy.mp3`,
+            null,
+            () => {
+                console.log(`audioWY is ready`)
+                audioWY_isReady = true
+            },
+            soundOptions)
+            const audioZX = new BABYLON.Sound(
+                `normalized.zx`,
+                `./assets/normalized-zx.mp3`,
+                null,
+                () => {
+                    console.log(`audioZX is ready`)
+                    audioZX_isReady = true
+                },
+            soundOptions)
+
+        const audioContext = engine.getAudioContext()
+        audioContext?.suspend()
+        let foaRenderer = null
+
+        const button = document.createElement(`button`)
+        button.textContent = `start`
+        button.style.color = `black`
+        button.style.position = 'absolute'
+        button.style.display = 'none'
+        button.style.top = '16px'
+        button.style.left = '16px'
+        button.style.width = '64px'
+        button.style.height = '64px'
+        document.body.appendChild(button)
+        button.onclick = () => {
+            audioContext.resume()
+
+            audioWY.play()
+            audioWY.stop()
+            // audioWY.currentTime = 0
+
+            audioZX.play()
+            audioZX.stop()
+            // audioZX.currentTime = 0
+
+            foaRenderer = Omnitone.createFOARenderer(audioContext)
+
+            foaRenderer.initialize().then(function () {
+                const channelMerger = new ChannelMergerNode(audioContext, {
+                    numberOfInputs: 4,
+                    channelCount: 1,
+                    channelCountMode: 'explicit',
+                    channelInterpretation: 'discrete'
+                })
+                const audioWY_gainNode = audioWY.getSoundGain()
+                const audioZX_gainNode = audioZX.getSoundGain()
+                audioWY_gainNode.disconnect()
+                audioWY_gainNode.connect(channelMerger, 0, 0)
+                audioWY_gainNode.connect(channelMerger, 0, 1)
+                audioZX_gainNode.disconnect()
+                audioZX_gainNode.connect(channelMerger, 0, 3)
+                audioZX_gainNode.connect(channelMerger, 0, 2)
+                channelMerger.connect(foaRenderer.input)
+                foaRenderer.output.connect(audioContext.destination)
+                BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
+                foaRenderer.setRotationMatrix4(rotationMatrix.m)
+                audioContext.suspend()
+
+                const intervalId = setInterval(() => {
+                    if (audioWY_isReady && audioZX_isReady) {
+                        console.log(`Playing ...`)
+                        // Engine.audioEngine?.unlock()
+                        // global.audioEngine = Engine.audioEngine
+                        audioWY.stop()
+                        // audioWY.currentTime = 0
+                        audioWY.play()
+                        audioZX.stop()
+                        // audioZX.currentTime = 0
+                        audioZX.play()
+                        audioContext.resume()
+                        clearInterval(intervalId)
+                    }
+                }, 1000)
+
+                button.style.display = 'none'
+            })
+        }
+
+        scene.onReadyObservable.add(() => {
+            button.style.display = 'block'
+        })
+
+        const tickMs = 0.1
+        const maxRotationAmountPerTick = 0.01
+        let rotationInitialized = false
+        let rotationTarget = 0
+        let rotationCurrent = 0
+        const rotationMatrix = new BABYLON.Matrix
+        setInterval(() => {
+            rotationTarget = camera.rotationY - HALF_PI
+            if (Math.abs(rotationTarget - rotationCurrent) < maxRotationAmountPerTick) {
+                return
+            }
+            if (!rotationInitialized) {
+                rotationInitialized = true
+                rotationCurrent = rotationTarget
+            }
+            if (rotationTarget < rotationCurrent) {
+                rotationCurrent -= maxRotationAmountPerTick
+            }
+            else if (rotationCurrent < rotationTarget) {
+                rotationCurrent += maxRotationAmountPerTick
+            }
+            console.log(`rotation: ${rotationCurrent}`)
+
+            if (foaRenderer) {
+                BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
+                foaRenderer.setRotationMatrix4(rotationMatrix.m)
+            }
+        }, tickMs)
+    }
     else {
         csound = new Csound(csdText)
         csound.start()
@@ -16220,6 +16358,9 @@ const csdJson = `
                 return
             }
         }
+        else if (document.useMixdown) {
+
+        }
         else if (!csound.playbackIsStarted) {
             return
         }
@@ -16229,6 +16370,10 @@ const csdJson = `
             time = dawOscTimeInSeconds
             dawNeedsRender = false
         }
+        else if (document.useMixdown) {
+            previousTime = time
+            time = engine.getAudioContext().currentTime
+        }
         else {
             previousTime = time
             time = csound.audioContext.currentTime - csound.startTime;
@@ -16237,7 +16382,7 @@ const csdJson = `
         world.run(time, time - previousTime)
     })
 
-    if (!document.useDawTiming) {
+    if (!document.useDawTiming && !document.useMixdown) {
         let documentWasVisible = true
         setInterval(() => {
             if (document.visible !== undefined) {
