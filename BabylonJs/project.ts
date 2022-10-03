@@ -16243,11 +16243,9 @@ const csdJson = `
 
             audioWY.play()
             audioWY.stop()
-            // audioWY.currentTime = 0
 
             audioZX.play()
             audioZX.stop()
-            // audioZX.currentTime = 0
 
             foaRenderer = Omnitone.createFOARenderer(audioContext)
 
@@ -16275,13 +16273,9 @@ const csdJson = `
                 const intervalId = setInterval(() => {
                     if (audioWY_isReady && audioZX_isReady) {
                         console.log(`Playing ...`)
-                        // Engine.audioEngine?.unlock()
-                        // global.audioEngine = Engine.audioEngine
                         audioWY.stop()
-                        // audioWY.currentTime = 0
                         audioWY.play()
                         audioZX.stop()
-                        // audioZX.currentTime = 0
                         audioZX.play()
                         audioContext.resume()
                         clearInterval(intervalId)
@@ -16376,7 +16370,7 @@ const csdJson = `
         }
         else {
             previousTime = time
-            time = csound.audioContext.currentTime - csound.startTime;
+            time = csound.audioContext.currentTime - csound.startTime
         }
 
         world.run(time, time - previousTime)
