@@ -22,6 +22,7 @@ declare global {
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
         alwaysRun: boolean	    // Always move camera fast on keyboard input, not just when caps lock is on.
         visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
+        navigator: any
     }
 
     class OSC {
@@ -786,27 +787,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region XR experience handler
 
-    const startXr = async () => {
-        try {
-            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
-            if (!!xr && !!xr.enterExitUI) {
-                xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
-                    if (eventData == null) {
-                        camera.switchToFlatScreen()
-                    }
-                    else {
-                        camera.xrCamera = xr.baseExperience.camera
-                        camera.switchToXR()
-                    }
-                    BABYLON.Engine.audioEngine.unlock()
-                })
+    document.navigator = navigator
+    if (document.navigator.xr) {
+        const startXr = async () => {
+            try {
+                const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
+                if (!!xr && !!xr.enterExitUI) {
+                    xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
+                        if (eventData == null) {
+                            camera.switchToFlatScreen()
+                        }
+                        else {
+                            camera.xrCamera = xr.baseExperience.camera
+                            camera.switchToXR()
+                        }
+                        BABYLON.Engine.audioEngine.unlock()
+                    })
+                }
+            }
+            catch(e) {
+                console.debug(e)
             }
         }
-        catch(e) {
-            console.debug(e)
-        }
+        startXr()
     }
-    startXr()
 
     //#endregion
 
