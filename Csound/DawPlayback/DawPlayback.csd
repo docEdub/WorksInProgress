@@ -374,15 +374,29 @@ instr FinalMixInstrument
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
-    am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
-    am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
-    am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
-    am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
-    am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
-    am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
-    am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
-    am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+    ${CSOUND_IFDEF} IS_MIXDOWN
+        // Ignore rotation for mixdown. The rotation is applied during playback instead.
+        // NB: We rotate around the y axis by negative PI/2 so the rotation is correct during playback. TODO: figure out why we need this.
+        am0 init 0
+        am1 init 0
+        am2 init -1
+        am3 init 0
+        am4 init 1
+        am5 init 0
+        am6 init 1
+        am7 init 0
+        am8 init 0
+    ${CSOUND_ELSE}
+        ; am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
+        ; am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
+        ; am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
+        ; am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
+        ; am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
+        ; am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
+        ; am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
+        ; am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
+        ; am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+    ${CSOUND_ENDIF}
     ayr = -(ay * am0 + az * am3 + ax * am6)
     azr =   ay * am1 + az * am4 + ax * am7
     axr = -(ay * am2 + az * am5 + ax * am8)
