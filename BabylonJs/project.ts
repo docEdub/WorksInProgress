@@ -16322,7 +16322,6 @@ const csdJson = `
             else if (rotationCurrent < rotationTarget) {
                 rotationCurrent += maxRotationAmountPerTick
             }
-            console.log(`rotation: ${rotationCurrent}`)
 
             if (foaRenderer) {
                 BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
