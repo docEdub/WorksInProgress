@@ -2,6 +2,7 @@
 // See https://stackoverflow.com/a/53517149
 const webpack = require('webpack')
 const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -54,6 +55,18 @@ module.exports = {
         publicPath: '/',
     },
     plugins: [
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-wy.mp3'),
+                    to: path.join(__dirname, 'app', 'assets', 'normalized-wy.mp3')
+                },
+                {
+                    from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-zx.mp3'),
+                    to: path.join(__dirname, 'app', 'assets', 'normalized-zx.mp3')
+                }
+            ]
+        }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
             filename: path.join(__dirname, 'app', 'index.html'),
