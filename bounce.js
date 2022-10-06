@@ -5,6 +5,7 @@ var spawnSync = require('child_process').spawnSync;
 const readSharedModule = require('./BabylonJs/SharedModules/read.js')
 
 const csoundDir = path.resolve('Csound');
+const dawPlaybackSourceDir = path.join(csoundDir, 'DawPlayback')
 const buildDir = path.join(csoundDir, '/build');
 const mixdownDir = path.join(buildDir, '/mixdown');
 const playbackDir = path.join(buildDir, '/playback');
@@ -116,10 +117,21 @@ if (os.type() === 'Darwin') {
         }
         fs.mkdirSync(bounceMixdownDir);
 
-        // Generate stereo mixdown bounce .wav file.
-        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + ' && csound ' + bounceDir + '/DawPlayback.csd --smacro:IS_MIXDOWN=1 --output=mixdown.aif' ], {
+        // Generate stereo mixdown .aif and 64 bit ambisonic .aif.
+        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + ' && csound ' + bounceDir + '/DawPlayback.configured.csd --omacro:IS_MIXDOWN=1 --smacro:IS_MIXDOWN=1 --output=mixdown.aif' ], {
             stdio: 'inherit'
         });
+
+        // Normalize 64 bit ambisonic .aif and split it into multiple 2 channel .aif files.
+        spawnSync('bash', [ '-c', 'cd ' + bounceMixdownDir + '&& csound ' + dawPlaybackSourceDir + '/NormalizeAndSplitSpatialMixdown.csd --omacro:INPUT_FILE=mixdown-wyzx.aif' ], {
+            stdio: 'inherit'
+        })
+
+        // Use ffmpeg to convert the split 2 channel .aif files into MP3 files.
+        // See https://trac.ffmpeg.org/wiki/Encode/MP3.
+        const ffmpeg_options = `-y -c:a libmp3lame -q:a 0`
+        spawnSync('bash', [ '-c', `cd ${bounceMixdownDir} && ffmpeg -i normalized-01+02.aif ${ffmpeg_options} normalized-wy.mp3` ], { stdio: 'inherit' })
+        spawnSync('bash', [ '-c', `cd ${bounceMixdownDir} && ffmpeg -i normalized-03+04.aif ${ffmpeg_options} normalized-zx.mp3` ], { stdio: 'inherit' })
     }
 }
 else if (os.type() == "Windows_NT") {

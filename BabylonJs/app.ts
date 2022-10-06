@@ -9,7 +9,12 @@ const createScene = async () => {
     // This creates a Babylon engine object
     const engine = new BABYLON.Engine(canvas, true, {
         // preserveDrawingBuffer: true,
-        // stencil: true
+        // stencil: true,
+        audioEngine: true, audioEngineOptions: {
+            audioContext: new AudioContext({
+                latencyHint: 'playback'
+            })
+        }
     });
 
     // This resizes the BabylonJS window when the browser window is resized

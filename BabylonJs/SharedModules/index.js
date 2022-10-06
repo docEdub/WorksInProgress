@@ -1,5 +1,6 @@
 
 const modulePaths = [
+    'CameraArrays/MainCameraArray',
     'Meshes/Rim1HiArpMesh',
     'Meshes/Rim2HiLineMesh',
     'Meshes/Rim3LoLineMesh',

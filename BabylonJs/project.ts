@@ -1,5 +1,6 @@
 import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
+import Omnitone from 'omnitone'
 
 import Flyer1Path from "./SharedModules/Paths/Flyer1Path"
 import Flyer2Path from "./SharedModules/Paths/Flyer2Path"
@@ -8,6 +9,8 @@ import Rim1HiArpMesh from "./SharedModules/Meshes/Rim1HiArpMesh"
 import Rim2HiLineMesh from "./SharedModules/Meshes/Rim2HiLineMesh"
 import Rim3LoLineMesh from "./SharedModules/Meshes/Rim3LoLineMesh"
 
+import MainCameraArray from "./SharedModules/CameraArrays/MainCameraArray"
+
 //#region Non-playground TypeScript declarations
 
 declare global {
@@ -15,9 +18,11 @@ declare global {
         Csound: CSOUND.Csound
         isProduction: boolean	// If falsey then we're running in the playground.
         useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
+        useMixdown: boolean     // If falsey then use Csound; otherwise use mixdown recording.
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
         alwaysRun: boolean	    // Always move camera fast on keyboard input, not just when caps lock is on.
         visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
+        navigator: any
     }
 
     class OSC {
@@ -48,6 +53,7 @@ declare global {
 
 document.isProduction = true
 document.useDawTiming = false
+document.useMixdown = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -91,6 +97,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         Shift: 16,
         Space: 32
     }
+
+    const HALF_PI = Math.PI / 2
 
     //#endregion
 
@@ -426,6 +434,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.#flatScreenCamera.position.z = value[2]
         }
 
+        get rotationY() {
+            return this.camera.rotation.y
+        }
+
         _target = new BABYLON.Vector3()
         set target(value) {
             this._target.x = value[0]
@@ -617,7 +629,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Babylon audio engine setup
 
-    if (!document.useDawTiming) {
+    if (!document.useDawTiming && !document.useMixdown) {
         BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
         BABYLON.Engine.audioEngine.lock()
     }
@@ -775,27 +787,30 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region XR experience handler
 
-    const startXr = async () => {
-        try {
-            const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
-            if (!!xr && !!xr.enterExitUI) {
-                xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
-                    if (eventData == null) {
-                        camera.switchToFlatScreen()
-                    }
-                    else {
-                        camera.xrCamera = xr.baseExperience.camera
-                        camera.switchToXR()
-                    }
-                    BABYLON.Engine.audioEngine.unlock()
-                })
+    document.navigator = navigator
+    if (document.navigator.xr) {
+        const startXr = async () => {
+            try {
+                const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
+                if (!!xr && !!xr.enterExitUI) {
+                    xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
+                        if (eventData == null) {
+                            camera.switchToFlatScreen()
+                        }
+                        else {
+                            camera.xrCamera = xr.baseExperience.camera
+                            camera.switchToXR()
+                        }
+                        BABYLON.Engine.audioEngine.unlock()
+                    })
+                }
+            }
+            catch(e) {
+                console.debug(e)
             }
         }
-        catch(e) {
-            console.debug(e)
-        }
+        startXr()
     }
-    startXr()
 
     //#endregion
 
@@ -6045,6 +6060,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
     ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
     gkPlaybackTimeInSeconds init 0
+    #ifdef IS_MIXDOWN
+    giMainCameraArrayLength init ${MainCameraArray.length}
+    giMainCameraArrayMatrixes[] init ${MainCameraArray.matrixesString}
+    #end
     iDummy = vco2init(31)
     chn_k("main-volume", 1, 2, 1, 0, 1)
     chn_k("pause", 1)
@@ -8264,12 +8283,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_EffectChain
     #undef TriangleMonoSynth_EffectChain
     #end
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime # 0.25 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
-    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackTime
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime #0.05#
+    #end
+    #ifndef TriangleMonoSynth_VolumeEnvelopeDecayTime
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime #0.25#
     #end
     #ifndef TriangleMonoSynth_NoteNumberLagTime
     #define TriangleMonoSynth_NoteNumberLagTime #0.1#
@@ -8373,7 +8396,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     SiJson = strcat(SiJson, ",\\"k\\":[")
     scoreline_i(sprintf("i \\"%s\\" 0 -1 \\"%s\\"", "JsonAppend_11", string_escape_i(SiJson)))
     #end
-    iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+    iVolumeEnvelopeAttackSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackTime
+    iVolumeEnvelopeDecaySlope = -giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = gkTriangle4BassMonoSynth_ActiveNoteCount[0]
     kActiveNoteCountPrevious init 0
@@ -8385,9 +8409,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[0]
     kActiveNoteCountChanged = 1
     kNoteNumberNeedsLag = 0
-    kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeAttackSlope
     elseif (kActiveNoteCount == 0) then
-    kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeDecaySlope
     endif
     kActiveNoteCountPrevious = kActiveNoteCount
     endif
@@ -8578,12 +8602,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     #ifdef TriangleMonoSynth_EffectChain
     #undef TriangleMonoSynth_EffectChain
     #end
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime # 0.05 #
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime # 0.25 #
     #define TriangleMonoSynth_NoteNumberLagTime # 0.215 #
     #define TriangleMonoSynth_VcoBandwith # 0.075 #
     #define TriangleMonoSynth_EffectChain(aOut) # $aOut = Triangle4BassMonoSynth_EffectChain($aOut) #
-    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
-    #define TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime #0.05#
+    #ifndef TriangleMonoSynth_VolumeEnvelopeAttackTime
+    #define TriangleMonoSynth_VolumeEnvelopeAttackTime #0.05#
+    #end
+    #ifndef TriangleMonoSynth_VolumeEnvelopeDecayTime
+    #define TriangleMonoSynth_VolumeEnvelopeDecayTime #0.25#
     #end
     #ifndef TriangleMonoSynth_NoteNumberLagTime
     #define TriangleMonoSynth_NoteNumberLagTime #0.1#
@@ -8687,7 +8715,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     SiJson = strcat(SiJson, ",\\"k\\":[")
     scoreline_i(sprintf("i \\"%s\\" 0 -1 \\"%s\\"", "JsonAppend_12", string_escape_i(SiJson)))
     #end
-    iVolumeEnvelopeSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackAndDecayTime
+    iVolumeEnvelopeAttackSlope = giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeAttackTime
+    iVolumeEnvelopeDecaySlope = -giSecondsPerSample / $TriangleMonoSynth_VolumeEnvelopeDecayTime
     kVolumeEnvelopeModifier init 0
     kActiveNoteCount = gkTriangle4BassMonoSynth_ActiveNoteCount[1]
     kActiveNoteCountPrevious init 0
@@ -8699,9 +8728,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     kNoteNumberWhenActivated = gkTriangle4BassMonoSynth_NoteNumber[1]
     kActiveNoteCountChanged = 1
     kNoteNumberNeedsLag = 0
-    kVolumeEnvelopeModifier = iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeAttackSlope
     elseif (kActiveNoteCount == 0) then
-    kVolumeEnvelopeModifier = -iVolumeEnvelopeSlope
+    kVolumeEnvelopeModifier = iVolumeEnvelopeDecaySlope
     endif
     kActiveNoteCountPrevious = kActiveNoteCount
     endif
@@ -10051,15 +10080,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
-    am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
-    am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
-    am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
-    am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
-    am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
-    am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
-    am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
-    am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+    #ifdef IS_MIXDOWN
+    am0 init 0
+    am1 init 0
+    am2 init -1
+    am3 init 0
+    am4 init 1
+    am5 init 0
+    am6 init 1
+    am7 init 0
+    am8 init 0
+    #else
+    #end
     ayr = -(ay * am0 + az * am3 + ax * am6)
     azr = ay * am1 + az * am4 + ax * am7
     axr = -(ay * am2 + az * am5 + ax * am8)
@@ -10086,6 +10118,10 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     aMainVolume = a(kMainVolume)
     outs(aL * aMainVolume, aR * aMainVolume)
+    #ifdef IS_MIXDOWN
+    aw += ga_masterSignals[4]
+    fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
+    #end
     endin
     instr EndOfInstrumentAllocations
     prints("-------------------------------------------------------------------------------------------------------\\n")
@@ -10105,26 +10141,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     endif
     turnoff
     endin
+    #ifdef IS_MIXDOWN
     instr SetMixdownListenerPosition
     iTableNumber init 1
-    tablew( -1, 0, iTableNumber)
-    tablew( 0, 1, iTableNumber)
-    tablew( 0, 2, iTableNumber)
-    tablew( 0, 3, iTableNumber)
-    tablew( 0, 4, iTableNumber)
-    tablew( 0.8972800970077515, 5, iTableNumber)
-    tablew( 0.4414618015289306, 6, iTableNumber)
-    tablew( 0, 7, iTableNumber)
-    tablew( 0, 8, iTableNumber)
-    tablew( 0.4414618015289306, 9, iTableNumber)
-    tablew( -0.8972800970077515, 10, iTableNumber)
-    tablew( 0, 11, iTableNumber)
-    tablew( 0, 12, iTableNumber)
-    tablew( 2, 13, iTableNumber)
-    tablew( 250, 14, iTableNumber)
-    tablew( 1, 15, iTableNumber)
+    ii = 0
+    while (ii < 16) do
+    tablew(giMainCameraArrayMatrixes[ii], ii, iTableNumber)
+    ii += 1
+    od
     turnoff
     endin
+    #end
     </CsInstruments>
     <CsScore>
     #ifndef SCORE_START_DELAY
@@ -16048,6 +16075,8 @@ const csdJson = `
     let dawOscLastSentTimeInSeconds = -1
     let dawNeedsRender = true
 
+    let mixdownStartTime = 0
+
     if (document.useDawTiming) {
         const OSC_STATUS = {
             IS_NOT_INITIALIZED: -1,
@@ -16173,6 +16202,134 @@ const csdJson = `
             }
         }
     }
+    else if (document.useMixdown) {
+        const mixdownStartTimeOffset = -0.95
+        console.debug(`mixdownStartTimeOffset: ${mixdownStartTimeOffset}`)
+
+        const soundOptions = {
+            autoplay: false,
+            loop: false,
+            spatialSound: false,
+            streaming: true
+        }
+        let audioWY_isReady = false
+        let audioZX_isReady = false
+        const audioWY = new BABYLON.Sound(
+            `normalized.wy`,
+            `./assets/normalized-wy.mp3`,
+            null,
+            () => {
+                console.log(`audioWY is ready`)
+                audioWY_isReady = true
+            },
+            soundOptions)
+            const audioZX = new BABYLON.Sound(
+                `normalized.zx`,
+                `./assets/normalized-zx.mp3`,
+                null,
+                () => {
+                    console.log(`audioZX is ready`)
+                    audioZX_isReady = true
+                },
+            soundOptions)
+
+        const audioContext = engine.getAudioContext()
+        audioContext?.suspend()
+        let foaRenderer = null
+
+        const button = document.createElement(`button`)
+        button.textContent = `start`
+        button.style.color = `black`
+        button.style.position = 'absolute'
+        button.style.display = 'none'
+        button.style.top = '16px'
+        button.style.left = '16px'
+        button.style.width = '64px'
+        button.style.height = '64px'
+        document.body.appendChild(button)
+        button.onclick = () => {
+            audioContext.resume()
+
+            audioWY.play()
+            audioWY.stop()
+
+            audioZX.play()
+            audioZX.stop()
+
+            foaRenderer = Omnitone.createFOARenderer(audioContext)
+
+            foaRenderer.initialize().then(function () {
+                const channelMerger = new ChannelMergerNode(audioContext, {
+                    numberOfInputs: 4,
+                    channelCount: 1,
+                    channelCountMode: 'explicit',
+                    channelInterpretation: 'discrete'
+                })
+                const audioWY_gainNode = audioWY.getSoundGain()
+                const audioZX_gainNode = audioZX.getSoundGain()
+                audioWY_gainNode.disconnect()
+                audioWY_gainNode.connect(channelMerger, 0, 0)
+                audioWY_gainNode.connect(channelMerger, 0, 1)
+                audioZX_gainNode.disconnect()
+                audioZX_gainNode.connect(channelMerger, 0, 3)
+                audioZX_gainNode.connect(channelMerger, 0, 2)
+                channelMerger.connect(foaRenderer.input)
+                foaRenderer.output.connect(audioContext.destination)
+                BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
+                foaRenderer.setRotationMatrix4(rotationMatrix.m)
+                audioContext.suspend()
+
+                const intervalId = setInterval(() => {
+                    if (audioWY_isReady && audioZX_isReady) {
+                        console.log(`Playing ...`)
+                        audioWY.stop()
+                        audioWY.play()
+                        audioZX.stop()
+                        audioZX.play()
+                        audioContext.resume()
+                        mixdownStartTime = audioContext!.currentTime + mixdownStartTimeOffset
+                        global.audioContext = audioContext
+                        clearInterval(intervalId)
+                    }
+                }, 1000)
+
+                button.style.display = 'none'
+            })
+        }
+
+        scene.onReadyObservable.add(() => {
+            button.style.display = 'block'
+        })
+
+        const tickMs = 0.1
+        const maxRotationAmountPerTick = 0.01
+        let rotationInitialized = false
+        let rotationTarget = 0
+        let rotationCurrent = 0
+        const rotationMatrix = new BABYLON.Matrix
+        setInterval(() => {
+            rotationTarget = camera.rotationY - HALF_PI
+            if (Math.abs(rotationTarget - rotationCurrent) < maxRotationAmountPerTick) {
+                return
+            }
+            if (!rotationInitialized) {
+                rotationInitialized = true
+                rotationCurrent = rotationTarget
+            }
+            if (rotationTarget < rotationCurrent) {
+                rotationCurrent -= maxRotationAmountPerTick
+            }
+            else if (rotationCurrent < rotationTarget) {
+                rotationCurrent += maxRotationAmountPerTick
+            }
+            console.log(`rotation: ${rotationCurrent}`)
+
+            if (foaRenderer) {
+                BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
+                foaRenderer.setRotationMatrix4(rotationMatrix.m)
+            }
+        }, tickMs)
+    }
     else {
         csound = new Csound(csdText)
         csound.start()
@@ -16206,6 +16363,9 @@ const csdJson = `
                 return
             }
         }
+        else if (document.useMixdown) {
+
+        }
         else if (!csound.playbackIsStarted) {
             return
         }
@@ -16215,15 +16375,19 @@ const csdJson = `
             time = dawOscTimeInSeconds
             dawNeedsRender = false
         }
+        else if (document.useMixdown) {
+            previousTime = time
+            time = engine.getAudioContext().currentTime - mixdownStartTime
+        }
         else {
             previousTime = time
-            time = csound.audioContext.currentTime - csound.startTime;
+            time = csound.audioContext.currentTime - csound.startTime
         }
 
         world.run(time, time - previousTime)
     })
 
-    if (!document.useDawTiming) {
+    if (!document.useDawTiming && !document.useMixdown) {
         let documentWasVisible = true
         setInterval(() => {
             if (document.visible !== undefined) {

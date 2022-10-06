@@ -59,10 +59,6 @@ ${CSOUND_INCLUDE} "af_global.orc"
 #define LOW_CHANNEL_COUNT_INDEX 0
 #define HIGH_CHANNEL_COUNT_INDEX 1
 
-#if ${BUILD_MIXDOWN_CSD}
-    ${CSOUND_DEFINE} DISTANCE_DELAY_SYNTH_NOTE_CACHE_ARRAY #fillarray 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127#
-#endif
-
 gi_instrumentCount = 1
 gi_instrumentIndexOffset = 0
 gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
@@ -79,6 +75,13 @@ ga_masterVolumes[][] init gi_trackCount, $INTERNAL_CHANNEL_COUNT
 ga_masterSignals[] init $INTERNAL_CHANNEL_COUNT
 
 gkPlaybackTimeInSeconds init 0
+
+${CSOUND_IFDEF} IS_MIXDOWN
+    // Camera matrixes generated in JavaScript.
+    giMainCameraArrayLength init _($){MainCameraArray.length}
+    giMainCameraArrayMatrixes[] init _($){MainCameraArray.matrixesString}
+${CSOUND_ENDIF}
+
 
 // Initialize all vco2 tables so they don't get initialized during real-time performance and cause xruns on Quest 2.
 iDummy = vco2init(31)
@@ -371,15 +374,29 @@ instr FinalMixInstrument
     ay = ga_masterSignals[1]
     az = ga_masterSignals[2]
     ax = ga_masterSignals[3]
-    am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
-    am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
-    am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
-    am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
-    am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
-    am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
-    am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
-    am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
-    am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+    ${CSOUND_IFDEF} IS_MIXDOWN
+        // Ignore rotation for mixdown. The rotation is applied during playback instead.
+        // NB: We rotate around the y axis by negative PI/2 so the rotation is correct during playback. TODO: figure out why we need this.
+        am0 init 0
+        am1 init 0
+        am2 init -1
+        am3 init 0
+        am4 init 1
+        am5 init 0
+        am6 init 1
+        am7 init 0
+        am8 init 0
+    ${CSOUND_ELSE}
+        ; am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
+        ; am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
+        ; am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
+        ; am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
+        ; am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
+        ; am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
+        ; am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
+        ; am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
+        ; am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+    ${CSOUND_ENDIF}
     ayr = -(ay * am0 + az * am3 + ax * am6)
     azr =   ay * am1 + az * am4 + ax * am7
     axr = -(ay * am2 + az * am5 + ax * am8)
@@ -409,6 +426,13 @@ instr FinalMixInstrument
     endif
     aMainVolume = a(kMainVolume)
     outs(aL * aMainVolume, aR * aMainVolume)
+
+    ${CSOUND_IFDEF} IS_MIXDOWN
+        // Add reverb.
+        aw += ga_masterSignals[4]
+
+        fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
+    ${CSOUND_ENDIF}
 endin
 
 
@@ -440,27 +464,17 @@ instr SendEndedMessage
 endin
 
 
-instr SetMixdownListenerPosition
-    iTableNumber init 1
-    // { position: new BABYLON.Vector3(0, 2, 250), target: new BABYLON.Vector3(0, 125, 0) }
-    tablew(  -1,                   0, iTableNumber)
-    tablew(   0,                   1, iTableNumber)
-    tablew(   0,                   2, iTableNumber)
-    tablew(   0,                   3, iTableNumber)
-    tablew(   0,                   4, iTableNumber)
-    tablew(   0.8972800970077515,  5, iTableNumber)
-    tablew(   0.4414618015289306,  6, iTableNumber)
-    tablew(   0,                   7, iTableNumber)
-    tablew(   0,                   8, iTableNumber)
-    tablew(   0.4414618015289306,  9, iTableNumber)
-    tablew(  -0.8972800970077515, 10, iTableNumber)
-    tablew(   0,                  11, iTableNumber)
-    tablew(   0,                  12, iTableNumber)
-    tablew(   2,                  13, iTableNumber)
-    tablew( 250,                  14, iTableNumber)
-    tablew(   1,                  15, iTableNumber)
-    turnoff
-endin
+${CSOUND_IFDEF} IS_MIXDOWN
+    instr SetMixdownListenerPosition
+        iTableNumber init 1
+        ii = 0
+        while (ii < 16) do
+            tablew(giMainCameraArrayMatrixes[ii], ii, iTableNumber)
+            ii += 1
+        od
+        turnoff
+    endin
+${CSOUND_ENDIF}
 
 
 </CsInstruments>

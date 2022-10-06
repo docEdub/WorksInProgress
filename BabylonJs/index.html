@@ -42,6 +42,11 @@
                 position: absolute; left: 0; top: 0; width: 100%; height: 100%;
                 background: rgba(0, 0, 0, 0);
             }
+
+            #babylonUnmuteIconBtn {
+                display: none !important;
+            }
+
             #ConsoleOutput {
                 position: absolute;
                 top: 83%;
@@ -62,7 +67,7 @@
                 display: none;
             }
         </style>
-        <script defer data-domain="docedub.com" src="https://plausible.io/js/plausible.js"></script>
+        <!-- <script defer data-domain="docedub.com" src="https://plausible.io/js/plausible.js"></script> -->
     </head>
     <body>
         <div id="Loading">Loading ...</div>
@@ -80,6 +85,7 @@
         </script>
         <script src="https://unpkg.com/osc-js@2.3.0/lib/osc.min.js"></script>
         <script src="https://unpkg.com/babylonjs@5.18.0/babylon.js"></script>
+        <script src="https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"></script>
         <script>
             document.visible = true;
             (function() {
