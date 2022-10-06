@@ -14,3 +14,6 @@ for (let i = 0; i < modulePaths.length; i++) {
     const object = modulePath.split('/').pop()
     module.exports[object] = require(`./${modulePath}`)
 }
+
+// This is needed to make webpack external work in browser.
+global.SHARED = module.exports

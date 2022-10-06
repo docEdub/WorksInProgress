@@ -3,12 +3,13 @@
 const webpack = require('webpack')
 const path = require('path')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     context: path.join(__dirname, 'app-dev'),
     entry: {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
+        ['audio-csound']: path.join(__dirname, 'BabylonJs', 'audio-csound.ts'),
+        ['shared']: path.join(__dirname, 'BabylonJs', 'SharedModules', 'index.js'),
     },
     devtool: 'inline-source-map',
     module: {
@@ -30,6 +31,7 @@ module.exports = {
                         "noImplicitReturns": true,
                         "noImplicitThis": true,
                         "noUnusedLocals": false,
+                        "resolveJsonModule": true,
                         "strictNullChecks": false,
                         "strictFunctionTypes": true,
                         "skipLibCheck": true,
@@ -58,6 +60,10 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 {
+                    from: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
+                    to: path.join(__dirname, 'app-dev', 'index.html')
+                },
+                {
                     from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-wy.mp3'),
                     to: path.join(__dirname, 'app-dev', 'assets', 'normalized-wy.mp3')
                 },
@@ -67,19 +73,16 @@ module.exports = {
                 }
             ]
         }),
-        new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
-            filename: path.join(__dirname, 'app-dev', 'index.html'),
-        }),
         new webpack.HotModuleReplacementPlugin(),
     ],
     externals: {
         "babylonjs": "BABYLON",
         "./@doc.e.dub/csound-browser": "CSOUND",
         "omnitone": "Omnitone",
+        "./SharedModules": "SHARED"
     },
     performance: {
-        maxAssetSize: 16384000,
+        hints: false,
     },
     devServer: {
         allowedHosts: [

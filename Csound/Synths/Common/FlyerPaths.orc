@@ -1,11 +1,11 @@
 // Path geometry generated in Javascript.
 #if IS_PLAYBACK
-    gi${InstrumentName}_Flyer1PathAudioPoints[] init _($){Flyer1Path.audioPointsString}
-    gi${InstrumentName}_Flyer1PathSpeedMultipler init _($){Flyer1Path.speedMultiplier}
-    gi${InstrumentName}_Flyer2PathAudioPoints[] init _($){Flyer2Path.audioPointsString}
-    gi${InstrumentName}_Flyer2PathSpeedMultipler init _($){Flyer2Path.speedMultiplier}
-    gi${InstrumentName}_Flyer3PathAudioPoints[] init _($){Flyer3Path.audioPointsString}
-    gi${InstrumentName}_Flyer3PathSpeedMultipler init _($){Flyer3Path.speedMultiplier}
+    gi${InstrumentName}_Flyer1PathAudioPoints[] init _($){SHARED.Flyer1Path.audioPointsString}
+    gi${InstrumentName}_Flyer1PathSpeedMultipler init _($){SHARED.Flyer1Path.speedMultiplier}
+    gi${InstrumentName}_Flyer2PathAudioPoints[] init _($){SHARED.Flyer2Path.audioPointsString}
+    gi${InstrumentName}_Flyer2PathSpeedMultipler init _($){SHARED.Flyer2Path.speedMultiplier}
+    gi${InstrumentName}_Flyer3PathAudioPoints[] init _($){SHARED.Flyer3Path.audioPointsString}
+    gi${InstrumentName}_Flyer3PathSpeedMultipler init _($){SHARED.Flyer3Path.speedMultiplier}
 #else
     // Flattened array of xyz coords.
     gi${InstrumentName}_Flyer1PathAudioPoints[] init ${Flyer1Path.audioPointsString}

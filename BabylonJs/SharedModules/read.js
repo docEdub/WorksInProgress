@@ -16,6 +16,9 @@ module.exports = (arg) => {
     if (arg.startsWith('${')) {
         arg = arg.slice(2)
     }
+    if (arg.startsWith('SHARED.')) {
+        arg = arg.slice(7)
+    }
     if (arg.endsWith('}')) {
         arg = arg.slice(0, -1)
     }

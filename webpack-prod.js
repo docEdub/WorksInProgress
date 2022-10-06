@@ -2,13 +2,14 @@
 // See https://stackoverflow.com/a/53517149
 const webpack = require('webpack')
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-    context: path.join(__dirname, 'app'),
+    context: path.join(__dirname, 'app-prod'),
     entry: {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
+        ['audio-csound']: path.join(__dirname, 'BabylonJs', 'audio-csound.ts'),
+        ['shared']: path.join(__dirname, 'BabylonJs', 'SharedModules', 'index.js'),
     },
     module: {
         rules: [
@@ -29,6 +30,7 @@ module.exports = {
                         "noImplicitReturns": true,
                         "noImplicitThis": true,
                         "noUnusedLocals": false,
+                        "resolveJsonModule": true,
                         "strictNullChecks": false,
                         "strictFunctionTypes": true,
                         "skipLibCheck": true,
@@ -45,46 +47,52 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js'],
+        extensions: [ '.ts', '.tsx', '.js' ],
     },
     output: {
-        path: path.join(__dirname, 'app'),
-        publicPath: './',
-        filename: '[name].js',
         clean: true,
+        filename: '[name].js',
+        path: path.join(__dirname, 'app-prod'),
+        publicPath: '/',
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'BabylonJs', 'index.html'),
-            filename: path.join(__dirname, 'app', 'index.html'),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
+                    to: path.join(__dirname, 'app-prod', 'index.html')
+                },
+                {
+                    from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-wy.mp3'),
+                    to: path.join(__dirname, 'app-prod', 'assets', 'normalized-wy.mp3')
+                },
+                {
+                    from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-zx.mp3'),
+                    to: path.join(__dirname, 'app-prod', 'assets', 'normalized-zx.mp3')
+                }
+            ]
         }),
+        new webpack.HotModuleReplacementPlugin(),
     ],
     externals: {
         "babylonjs": "BABYLON",
         "./@doc.e.dub/csound-browser": "CSOUND",
+        "omnitone": "Omnitone",
+        "./SharedModules": "SHARED"
     },
     performance: {
-        maxAssetSize: 16384000,
-    },
-    optimization: {
-        minimizer: [
-            new TerserPlugin({
-                parallel: true
-            }),
-        ],
+        hints: false,
     },
     devServer: {
         allowedHosts: [
             '.github.com',
         ],
-        contentBase: path.join(__dirname, 'app'),
-        host: '0.0.0.0',
-        port: 9000,
+        contentBase: path.join(__dirname, 'app-prod'),
+        host: '0.0.0.0', port: 9000,
         inline: true,
         noInfo: false,
         mimeTypes: { typeMap: { 'text/javascript': [ 'js' ] }, force: true },
         useLocalIp: true,
-        watchContentBase: false,
+        watchContentBase: true,
     },
 }

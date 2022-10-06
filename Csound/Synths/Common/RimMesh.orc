@@ -1,8 +1,8 @@
 // Mesh geometry generated in Javascript.
 #if IS_PLAYBACK
-    gi${InstrumentName}_MeshSegmentCount init _($){${RimMesh}.segments}
-    gi${InstrumentName}_MeshRowCount init _($){${RimMesh}.rows}
-    gi${InstrumentName}_MeshAudioPositions[] init _($){${RimMesh}.audioPositionsString}
+    gi${InstrumentName}_MeshSegmentCount init _($){SHARED.${RimMesh}.segments}
+    gi${InstrumentName}_MeshRowCount init _($){SHARED.${RimMesh}.rows}
+    gi${InstrumentName}_MeshAudioPositions[] init _($){SHARED.${RimMesh}.audioPositionsString}
 #else
     gi${InstrumentName}_MeshSegmentCount init ${RimMesh.segments}
     gi${InstrumentName}_MeshRowCount init ${RimMesh.rows}
