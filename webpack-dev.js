@@ -48,17 +48,17 @@ module.exports = {
         extensions: [ '.ts', '.tsx', '.js' ],
     },
     output: {
+        clean: true,
+        filename: '[name].js',
         path: path.join(__dirname, 'app'),
         publicPath: '/',
-        filename: '[name].js',
-        clean: true,
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
             filename: path.join(__dirname, 'app', 'index.html'),
         }),
+        new webpack.HotModuleReplacementPlugin(),
     ],
     externals: {
         "babylonjs": "BABYLON",
@@ -73,8 +73,7 @@ module.exports = {
             '.github.com',
         ],
         contentBase: path.join(__dirname, 'app'),
-        host: '0.0.0.0',
-        port: 9000,
+        host: '0.0.0.0', port: 9000,
         inline: true,
         noInfo: false,
         mimeTypes: { typeMap: { 'text/javascript': [ 'js' ] }, force: true },
