@@ -56,7 +56,7 @@ module.exports = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'BabylonJs', 'index.html'),
+            template: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
             filename: path.join(__dirname, 'app', 'index.html'),
         }),
     ],
