@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    context: path.join(__dirname, 'app'),
+    context: path.join(__dirname, 'app-dev'),
     entry: {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
     },
@@ -51,7 +51,7 @@ module.exports = {
     output: {
         clean: true,
         filename: '[name].js',
-        path: path.join(__dirname, 'app'),
+        path: path.join(__dirname, 'app-dev'),
         publicPath: '/',
     },
     plugins: [
@@ -59,17 +59,17 @@ module.exports = {
             patterns: [
                 {
                     from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-wy.mp3'),
-                    to: path.join(__dirname, 'app', 'assets', 'normalized-wy.mp3')
+                    to: path.join(__dirname, 'app-dev', 'assets', 'normalized-wy.mp3')
                 },
                 {
                     from: path.join(__dirname, 'Csound', 'build', 'bounce', 'mixdown', 'normalized-zx.mp3'),
-                    to: path.join(__dirname, 'app', 'assets', 'normalized-zx.mp3')
+                    to: path.join(__dirname, 'app-dev', 'assets', 'normalized-zx.mp3')
                 }
             ]
         }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
-            filename: path.join(__dirname, 'app', 'index.html'),
+            filename: path.join(__dirname, 'app-dev', 'index.html'),
         }),
         new webpack.HotModuleReplacementPlugin(),
     ],
@@ -85,7 +85,7 @@ module.exports = {
         allowedHosts: [
             '.github.com',
         ],
-        contentBase: path.join(__dirname, 'app'),
+        contentBase: path.join(__dirname, 'app-dev'),
         host: '0.0.0.0', port: 9000,
         inline: true,
         noInfo: false,
