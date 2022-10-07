@@ -22,7 +22,7 @@ class MainCameraArray {
             const matrixes = this.matrixes
             let s = `${matrixes.length}`
             for (let i = 0; i < matrixes.length; i++) {
-                s += `\ngi${this.constructor.name}Matrixes[${i}] = ${matrixes[i].toFixed(3)}`
+                s += `\ngiMainCameraArrayMatrixes[${i}] = ${matrixes[i].toFixed(3)}`
             }
             this._.matrixesString = s
         }
