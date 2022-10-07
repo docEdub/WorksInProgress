@@ -9,7 +9,6 @@ class MainCameraArray {
         if (!this._.matrixes) {
             const matrixes = []
             for (let i = 0; i < this.length; i++) {
-                const matrixArray = this.getCameraMatrixAsArray(i)
                 matrixes.push(...this.getCameraMatrixAsArray(i))
             }
             this._.matrixes = matrixes
