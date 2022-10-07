@@ -1,5 +1,4 @@
 import * as CSOUND from "./@doc.e.dub/csound-browser"
-import * as SHARED from "./SharedModules"
 
 import csdText from "./project.csd"
 
@@ -7,6 +6,8 @@ declare global {
     interface Document {
         Csound: CSOUND.Csound
     }
+
+    const SHARED: any
 }
 
 //#region class Csound
@@ -17,9 +18,10 @@ class Csound {
         this.#csdText = csdText
 
         if (document.getElementById('csound-script') === null) {
-            const csoundJsUrl = document.isProduction
-                ? "https://unpkg.com/@csound/browser@6.17.0-beta2/dist/csound.js"
-                : "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
+            const csoundJsUrl = "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
+            // const csoundJsUrl = document.isProduction
+            //     ? "https://unpkg.com/@csound/browser@6.17.0-beta2/dist/csound.js"
+            //     : "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
             // const csoundJsUrl = "./csound.js"
             let csoundImportScript = document.createElement('script')
             csoundImportScript.type = 'module'
@@ -36,6 +38,7 @@ class Csound {
                 console.debug('Csound importing - done')
                 clearInterval(importScriptTimer)
                 this.#onImportScriptDone()
+                this.start()
             }
         })
     }
@@ -131,7 +134,7 @@ class Csound {
     }
 
     #consoleLog = function() {
-        Audio.instance.csound.onLogMessage(console, arguments)
+        AudioEngine.instance.csound.onLogMessage(console, arguments)
     }
 
     start = async () => {
@@ -147,7 +150,7 @@ class Csound {
         this.#previousConsoleLog = console.log
         console.log = this.#consoleLog
         this.#csoundObj = await document.Csound({
-            audioContext: BABYLON.Engine.audioEngine.audioContext,
+            audioContext: this.#audioContext,
             useSAB: false
         })
         console.log = this.#previousConsoleLog
@@ -219,6 +222,7 @@ class Csound {
         if (!this.isStarted) {
             return
         }
+        console.debug(`setting pause control channel to 1`)
         this.#csoundObj.setControlChannel('pause', 1)
         this._isResumed = false
         setTimeout(async () => {
@@ -234,6 +238,7 @@ class Csound {
         if (!this.isStarted) {
             return
         }
+        console.debug(`setting pause control channel to 0`)
         this.#csoundObj.setControlChannel('pause', 0)
         this._isResumed = true
         if (!this._isPaused) {
@@ -292,7 +297,7 @@ class Csound {
         else if (args[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
             return
         }
-        else if (Audio.instance.csound.logMessages) {
+        else if (AudioEngine.instance.csound.logMessages) {
             this.#previousConsoleLog.apply(console, args)
         }
     }
@@ -300,14 +305,18 @@ class Csound {
 
 //#endregion
 
-
-export class Audio {
+class AudioEngine {
     static instance = null
 
     constructor(audioContext) {
-        Audio.instance = this
+        AudioEngine.instance = this
         this.csound = new Csound(audioContext)
+        this.csound.onAudioEngineUnlocked()
     }
 
     csound = null
+}
+
+global.AUDIO = {
+    Engine: AudioEngine
 }

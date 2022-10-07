@@ -8,8 +8,8 @@ module.exports = {
     context: path.join(__dirname, 'app-dev'),
     entry: {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
-        ['audio-csound']: path.join(__dirname, 'BabylonJs', 'audio-csound.ts'),
-        ['shared']: path.join(__dirname, 'BabylonJs', 'SharedModules', 'index.js'),
+        ['audio-3dof']: path.join(__dirname, 'BabylonJs', 'audio-3dof.ts'),
+        ['audio-6dof']: path.join(__dirname, 'BabylonJs', 'audio-6dof.ts'),
     },
     devtool: 'inline-source-map',
     module: {
@@ -79,7 +79,6 @@ module.exports = {
         "babylonjs": "BABYLON",
         "./@doc.e.dub/csound-browser": "CSOUND",
         "omnitone": "Omnitone",
-        "./SharedModules": "SHARED"
     },
     performance: {
         hints: false,

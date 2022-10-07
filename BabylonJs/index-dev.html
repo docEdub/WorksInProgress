@@ -47,6 +47,16 @@
                 display: none !important;
             }
 
+            #audio-selection-overlay {
+                display: none;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.75);
+            }
+
             #ConsoleOutput {
                 position: absolute;
                 top: 83%;
@@ -73,6 +83,12 @@
         <div id="Loading">Loading ...</div>
         <canvas id="BabylonCanvas" class="no-select">
         </canvas>
+        <div id="audio-selection-overlay">
+            <div id="audio-selection-buttons">
+                <button id="audio-3dof-button">3dof</button>
+                <button id="audio-6dof-button">6dof</button>
+            </div>
+        </div>
         <!--
         <ul id="ConsoleOutput">
         </ul>
@@ -88,28 +104,7 @@
         <script src="https://unpkg.com/osc-js@2.3.0/lib/osc.min.js"></script>
         <script src="https://unpkg.com/babylonjs@5.18.0/babylon.js"></script>
         <!-- <script src="https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"></script> -->
-        <script src="./shared.js"></script>
-        <script>
-            const waitForSharedJsToLoad = setInterval(() => {
-                console.debug("Waiting for shared.js to finish loading ...")
-                if (!!SHARED) {
-                    console.debug("Waiting for shared.js to finish loading - done")
-                    clearInterval(waitForSharedJsToLoad)
-
-                    console.debug("Loading app.js ...")
-                    const app = document.createElement('script')
-                    app.addEventListener("load", () => {
-                        console.debug("Loading app.js - done")
-                    })
-                    app.addEventListener("error", (error) => {
-                        console.debug("Loading app.js - failed")
-                        console.debug(error)
-                    })
-                    app.src = "./app.js";
-                    document.body.appendChild(app)
-                }
-            }, 1000)
-        </script>
+        <script src="./app.js"></script>
         <script>
             document.visible = true;
             (function() {

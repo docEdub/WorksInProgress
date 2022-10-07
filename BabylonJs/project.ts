@@ -16,6 +16,12 @@ declare global {
         navigator: any
     }
 
+    namespace AUDIO {
+        class Engine {
+            constructor(audioContext)
+        }
+    }
+
     class OSC {
         constructor()
         constructor(args)
@@ -3280,6 +3286,37 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     //#endregion
 
     //#region Audio initialization
+
+    const audioSelectionOverlay = document.getElementById(`audio-selection-overlay`)
+    audioSelectionOverlay!.style.display = `block`
+
+    const audio3dofButton = document.getElementById(`audio-3dof-button`)
+    const audio6dofButton = document.getElementById(`audio-6dof-button`)
+
+    audio3dofButton.onclick = () => {
+        console.debug(`audio 3dof button clicked`)
+        loadAudio(`3dof`)
+    }
+
+    audio6dofButton.onclick = () => {
+        console.debug(`audio 6dof button clicked`)
+        loadAudio(`6dof`)
+    }
+
+    let audioEngine: AUDIO.Engine = null
+
+    const loadAudio = (dof: string) => {
+        audioSelectionOverlay!.style.display = `none`
+
+        const script = document.createElement(`script`)
+        script.src = `./audio-${dof}.js`
+        script.addEventListener(`load`, (e) => {
+            console.debug(`${script.src} loading - done`)
+            audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
+        })
+        console.debug(`${script.src} loading ...`)
+        document.body.appendChild(script)
+    }
 
     // let dawOscTimeInSeconds = -1
     // let dawOscLastSentTimeInSeconds = -1
