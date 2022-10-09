@@ -19,7 +19,8 @@ declare global {
     namespace AUDIO {
         class Engine {
             constructor(audioContext)
-            onCameraMatrixChanged(matrix: Float32Array)
+            sequenceTime: number
+            onCameraMatrixChanged(matrix: Float32Array): void
         }
     }
 
@@ -3339,6 +3340,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             console.debug(`${script.src} loading - done`)
             audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
             camera.registerOnMatrixChanged(audioEngine.onCameraMatrixChanged)
+            audioEngine.onCameraMatrixChanged(camera.matrix)
+
+            let previousTime = 0
+            let time = -1
+            scene.registerBeforeRender(() => {
+                previousTime = time
+                time = audioEngine.sequenceTime
+                world.run(time, time - previousTime)
+            })
         })
         console.debug(`${script.src} loading ...`)
         document.body.appendChild(script)

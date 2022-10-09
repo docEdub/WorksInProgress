@@ -106,9 +106,16 @@ class Csound {
     #restartCount = 0
     get restartCount() { return this.#restartCount }
 
-    onCameraMatrixChanged = (matrix) => {
+    private pendingCameraMatrix = new Float32Array
+    private hasPendingCameraMatrixChange = false
+
+    onCameraMatrixChanged = (matrix: Float32Array) => {
         if (this.isStarted) {
             this.#csoundObj.tableCopyIn("1", matrix)
+        }
+        else {
+            this.pendingCameraMatrix = matrix.slice()
+            this.hasPendingCameraMatrixChange = true
         }
     }
 
@@ -172,6 +179,10 @@ class Csound {
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
         csound.start()
+        if (this.hasPendingCameraMatrixChange) {
+            this.#csoundObj.tableCopyIn("1", this.pendingCameraMatrix)
+            this.hasPendingCameraMatrixChange = false
+        }
         this.#isStarted = true
         this.volume = 1
 
@@ -288,15 +299,21 @@ class Csound {
 
 class AudioEngine {
     constructor(audioContext) {
+        this.audioContext = audioContext
         this.csound = new Csound(audioContext)
         this.csound.onAudioEngineUnlocked()
         csound = this.csound
     }
 
-    onCameraMatrixChanged = (matrix: Float32Array) => {
+    onCameraMatrixChanged = (matrix: Float32Array): void => {
         return csound.onCameraMatrixChanged(matrix)
     }
 
+    public get sequenceTime(): number {
+        return this.csound.playbackIsStarted ? this.audioContext.currentTime - this.csound.startTime : 0
+    }
+
+    private audioContext = null
     private csound = null
 }
 
