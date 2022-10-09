@@ -19,6 +19,7 @@ declare global {
     namespace AUDIO {
         class Engine {
             constructor(audioContext)
+            onCameraMatrixChanged(matrix: Float32Array)
         }
     }
 
@@ -169,6 +170,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             scene.registerBeforeRender(() => {
                 this.matrix = this.#camera.worldMatrixFromCache.m
+
+                if (0 < this.timeUntilMatrixUpdateInMs) {
+                    this.timeUntilMatrixUpdateInMs -= engine.getDeltaTime()
+                }
+                if (this.timeUntilMatrixUpdateInMs <= 0) {
+                    if (this._matrixIsDirty) {
+                        for (let i = 0; i < this.registeredOnMatrixChangedCallbacks.length; i++) {
+                            this.registeredOnMatrixChangedCallbacks[i](this.matrix)
+                        }
+                        this.timeUntilMatrixUpdateInMs += this.timeUntilMatrixUpdateInMs
+                        this._matrixIsDirty = false
+                    }
+                    else {
+                        this.timeUntilMatrixUpdateInMs = 0
+                    }
+                }
             })
         }
 
@@ -178,6 +195,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         get matrixUpdatesPerSecond() { return this._matrixUpdatesPerSecond }
         set matrixUpdatesPerSecond(value) { this._matrixUpdatesPerSecond = value }
         get matrixMillisecondsPerUpdate() { return 1000 / this.matrixUpdatesPerSecond }
+
+        private matrixTimePerUpdateInMs = 1000 / this._matrixUpdatesPerSecond
+        private timeUntilMatrixUpdateInMs = 0
+        private registeredOnMatrixChangedCallbacks = new Array<(matrix: Float32Array) => void>()
+
+        public registerOnMatrixChanged = (callback: (matrix: Float32Array) => void) => {
+            this.registeredOnMatrixChangedCallbacks.push(callback)
+        }
 
         #slowSpeed = 0.25
         get slowSpeed() { return this.#slowSpeed }
@@ -3313,6 +3338,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         script.addEventListener(`load`, (e) => {
             console.debug(`${script.src} loading - done`)
             audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
+            camera.registerOnMatrixChanged(audioEngine.onCameraMatrixChanged)
         })
         console.debug(`${script.src} loading ...`)
         document.body.appendChild(script)

@@ -10,6 +10,8 @@ declare global {
     const SHARED: any
 }
 
+let csound: Csound = null
+
 //#region class Csound
 
 class Csound {
@@ -104,28 +106,10 @@ class Csound {
     #restartCount = 0
     get restartCount() { return this.#restartCount }
 
-    _updateCameraMatrixTimer = null
-
-    #startUpdatingCameraMatrix = () => {
-        // camera.matrixIsDirty = true
-        // this._updateCameraMatrixTimer = setInterval(() => {
-        //     if (!this.isStarted) {
-        //         return
-        //     }
-        //     if (camera.matrixIsDirty && camera.matrix) {
-        //         console.debug('Setting Csound listener position to ['
-        //             + camera.matrix[12] + ', '
-        //             + camera.matrix[13] + ', '
-        //             + camera.matrix[14] + ']')
-        //         this.#csoundObj.tableCopyIn("1", camera.matrix)
-        //         camera.matrixIsDirty = false
-        //     }
-        // }, camera.matrixMillisecondsPerUpdate)
-    }
-
-    #stopUpdatingCameraMatrix = () => {
-        if (this._updateCameraMatrixTimer === null) return
-        clearInterval(this._updateCameraMatrixTimer)
+    onCameraMatrixChanged = (matrix) => {
+        if (this.isStarted) {
+            this.#csoundObj.tableCopyIn("1", matrix)
+        }
     }
 
     #onImportScriptDone = async () => {
@@ -134,7 +118,7 @@ class Csound {
     }
 
     #consoleLog = function() {
-        AudioEngine.instance.csound.onLogMessage(console, arguments)
+        csound.onLogMessage(console, arguments)
     }
 
     start = async () => {
@@ -144,8 +128,6 @@ class Csound {
         if (!this.isLoaded) return
 
         console.debug('Starting Csound playback ...')
-
-        this.#startUpdatingCameraMatrix()
 
         this.#previousConsoleLog = console.log
         console.log = this.#consoleLog
@@ -206,7 +188,6 @@ class Csound {
         console.debug('Stopping Csound playback ...')
 
         this.volume = 0
-        this.#stopUpdatingCameraMatrix()
         await this.#csoundObj.stop()
         this.#playbackIsStarted = false
         this.#isStarted = false
@@ -297,7 +278,7 @@ class Csound {
         else if (args[0].startsWith('\n<CsoundSynthesizer>\n<CsOptions>\n')) {
             return
         }
-        else if (AudioEngine.instance.csound.logMessages) {
+        else if (csound.logMessages) {
             this.#previousConsoleLog.apply(console, args)
         }
     }
@@ -306,15 +287,17 @@ class Csound {
 //#endregion
 
 class AudioEngine {
-    static instance = null
-
     constructor(audioContext) {
-        AudioEngine.instance = this
         this.csound = new Csound(audioContext)
         this.csound.onAudioEngineUnlocked()
+        csound = this.csound
     }
 
-    csound = null
+    onCameraMatrixChanged = (matrix: Float32Array) => {
+        return csound.onCameraMatrixChanged(matrix)
+    }
+
+    private csound = null
 }
 
 global.AUDIO = {
