@@ -20,7 +20,7 @@ declare global {
         class Engine {
             constructor(audioContext)
             sequenceTime: number
-            onCameraMatrixChanged(matrix: Float32Array): void
+            onCameraMatrixChanged(matrix: BABYLON.Matrix): void
         }
     }
 
@@ -170,7 +170,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.switchToFlatScreen()
 
             scene.registerBeforeRender(() => {
-                this.matrix = this.#camera.worldMatrixFromCache.m
+                this.matrix = this.#camera.worldMatrixFromCache
 
                 if (0 < this.timeUntilMatrixUpdateInMs) {
                     this.timeUntilMatrixUpdateInMs -= engine.getDeltaTime()
@@ -190,7 +190,19 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             })
         }
 
-        //#region Options
+        private _isPositionLocked = false
+        public get isPositionLocked() {
+            return this._isPositionLocked
+        }
+        public lockPosition = () => {
+            this._isPositionLocked = true
+            this.#camera.position = this.setting.position
+            this.#camera.target = this.setting.target
+            this.#camera.keysUp.length = 0
+            this.#camera.keysDown.length = 0
+            this.#camera.keysLeft.length = 0
+            this.#camera.keysRight.length = 0
+        }
 
         _matrixUpdatesPerSecond = 10
         get matrixUpdatesPerSecond() { return this._matrixUpdatesPerSecond }
@@ -199,11 +211,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         private matrixTimePerUpdateInMs = 1000 / this._matrixUpdatesPerSecond
         private timeUntilMatrixUpdateInMs = 0
-        private registeredOnMatrixChangedCallbacks = new Array<(matrix: Float32Array) => void>()
+        private registeredOnMatrixChangedCallbacks = new Array<(matrix: BABYLON.Matrix) => void>()
 
-        public registerOnMatrixChanged = (callback: (matrix: Float32Array) => void) => {
+        public registerOnMatrixChanged = (callback: (matrix: BABYLON.Matrix) => void) => {
             this.registeredOnMatrixChangedCallbacks.push(callback)
         }
+
+        //#region Options
 
         #slowSpeed = 0.25
         get slowSpeed() { return this.#slowSpeed }
@@ -304,23 +318,23 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             return false
         }
 
-        _matrix = null
+        _matrix: BABYLON.Matrix = new BABYLON.Matrix
         _matrixIsDirty = true
         get matrixIsDirty() { return this._matrixIsDirty }
         set matrixIsDirty(value) { this._matrixIsDirty = value }
 
         get matrix() { return this._matrix }
-        set matrix(value) {
-            if (this._matrix != null && !this.matrixIsDirty) {
+        set matrix(value: BABYLON.Matrix) {
+            if (!this.matrixIsDirty) {
                 for (let i = 0; i < 16; i++) {
-                    if (0.01 < Math.abs(value[i] - this._matrix[i])) {
+                    if (0.01 < Math.abs(value.m[i] - this._matrix.m[i])) {
                         this._matrixIsDirty = true
                         break
                     }
                 }
             }
             if (this.matrixIsDirty) {
-                this._matrix = Array.from(value)
+                this._matrix.copyFrom(value)
             }
         }
     }
@@ -3321,7 +3335,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     audio3dofButton.onclick = () => {
         console.debug(`audio 3dof button clicked`)
-        loadAudio(`3dof`)
+        camera.lockPosition()
+
+        const omnitoneScript = document.createElement('script')
+        omnitoneScript.src = "https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"
+        console.debug(`Omnitone script loading ...`)
+        omnitoneScript.addEventListener(`load`, () => {
+            console.debug(`Omnitone script loading - done`)
+            loadAudio(`3dof`)
+        })
+        document.body.appendChild(omnitoneScript)
     }
 
     audio6dofButton.onclick = () => {

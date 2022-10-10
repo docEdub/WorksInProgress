@@ -1,3 +1,4 @@
+import * as BABYLON from "babylonjs"
 import * as CSOUND from "./@doc.e.dub/csound-browser"
 
 import csdText from "./project.csd"
@@ -106,15 +107,15 @@ class Csound {
     #restartCount = 0
     get restartCount() { return this.#restartCount }
 
-    private pendingCameraMatrix = new Float32Array
+    private pendingCameraMatrix = new BABYLON.Matrix
     private hasPendingCameraMatrixChange = false
 
-    onCameraMatrixChanged = (matrix: Float32Array) => {
+    onCameraMatrixChanged = (matrix: BABYLON.Matrix) => {
         if (this.isStarted) {
-            this.#csoundObj.tableCopyIn("1", matrix)
+            this.#csoundObj.tableCopyIn("1", matrix.m)
         }
         else {
-            this.pendingCameraMatrix = matrix.slice()
+            this.pendingCameraMatrix.copyFrom(matrix)
             this.hasPendingCameraMatrixChange = true
         }
     }
@@ -180,7 +181,7 @@ class Csound {
         console.debug('Csound starting ...')
         csound.start()
         if (this.hasPendingCameraMatrixChange) {
-            this.#csoundObj.tableCopyIn("1", this.pendingCameraMatrix)
+            this.#csoundObj.tableCopyIn("1", this.pendingCameraMatrix.m)
             this.hasPendingCameraMatrixChange = false
         }
         this.#isStarted = true
@@ -305,7 +306,7 @@ class AudioEngine {
         csound = this.csound
     }
 
-    onCameraMatrixChanged = (matrix: Float32Array): void => {
+    onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
         return csound.onCameraMatrixChanged(matrix)
     }
 
