@@ -107,11 +107,13 @@ class Csound {
     #restartCount = 0
     get restartCount() { return this.#restartCount }
 
+    private cameraMatrix = null
     private pendingCameraMatrix = new BABYLON.Matrix
     private hasPendingCameraMatrixChange = false
 
     onCameraMatrixChanged = (matrix: BABYLON.Matrix) => {
         if (this.isStarted) {
+            this.cameraMatrix = matrix
             this.#csoundObj.tableCopyIn("1", matrix.m)
         }
         else {
@@ -204,6 +206,9 @@ class Csound {
         this.#playbackIsStarted = false
         this.#isStarted = false
         console.log = this.#previousConsoleLog
+
+        this.pendingCameraMatrix.copyFrom(this.cameraMatrix)
+        this.hasPendingCameraMatrixChange = true
 
         console.debug('Stopping Csound playback - done')
     }
