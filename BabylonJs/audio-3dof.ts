@@ -47,8 +47,10 @@ class AudioEngine {
             const intervalId = setInterval(() => {
                 if (audioWY.isReady() && audioZX.isReady()) {
                     clearInterval(intervalId)
+                    audioContext.suspend()
                     audioWY.play()
                     audioZX.play()
+                    this._.startTime = audioContext.currentTime
                     audioContext.resume()
                 }
             })
@@ -92,7 +94,7 @@ class AudioEngine {
     }
 
     public get sequenceTime(): number {
-        return this._.audioWY.isPlaying ? this._.audioWY.currentTime - StartTimeOffset : 0
+        return this._.audioWY.isPlaying ? (this._.audioContext.currentTime - this._.startTime) - StartTimeOffset : 0
     }
 
     private set rotationY(value: number) {
@@ -108,6 +110,7 @@ class AudioEngine {
             this._.audioContext.suspend()
             this._.audioWY.play()
             this._.audioZX.play()
+            this._.startTime = this._.audioContext.currentTime
             this._.audioContext.resume()
         }
     }
@@ -122,6 +125,7 @@ class AudioEngine {
         adjustedRotationTargetY: number = 0
         rotationY: number = 0
         rotationMatrix = new BABYLON.Matrix
+        startTime: number = 0
     }
 }
 
