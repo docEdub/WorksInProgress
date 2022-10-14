@@ -10,6 +10,7 @@ module.exports = {
         ['app']: path.join(__dirname, 'BabylonJs', 'app.ts'),
         ['audio-3dof']: path.join(__dirname, 'BabylonJs', 'audio-3dof.ts'),
         ['audio-6dof']: path.join(__dirname, 'BabylonJs', 'audio-6dof.ts'),
+        ['audio-daw']: path.join(__dirname, 'BabylonJs', 'audio-daw.ts'),
     },
     devtool: 'inline-source-map',
     module: {

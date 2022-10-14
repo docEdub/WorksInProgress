@@ -8,8 +8,6 @@ import * as csdJson from "../Csound/build/bounce/DawPlayback.min.json"
 declare global {
     interface Document {
         isProduction: boolean	// If falsey then we're running in the playground.
-        useDawTiming: boolean	// If falsey then use Csound; otherwise use OSC messages from DAW to drive animations.
-        useMixdown: boolean     // If falsey then use Csound; otherwise use mixdown recording.
         debugAsserts: boolean	// If truthy then call `debugger` to break in `assert` function.
         alwaysRun: boolean	    // Always move camera fast on keyboard input, not just when caps lock is on.
         visible: boolean        // Set to `true` when browser/tab is visible; otherwise `false`.
@@ -23,36 +21,11 @@ declare global {
             onCameraMatrixChanged(matrix: BABYLON.Matrix): void
         }
     }
-
-    class OSC {
-        constructor()
-        constructor(args)
-        on: any
-        open: any
-        send: any
-        status: any
-    }
-
-    namespace OSC {
-        class Message {
-            constructor(address)
-            constructor(address, ...args)
-            add(any)
-        }
-        class WebsocketClientPlugin {
-            constructor(args)
-        }
-        class WebsocketServerPlugin {
-            constructor(args)
-        }
-    }
 }
 
 //#endregion
 
 document.isProduction = true
-document.useDawTiming = false
-document.useMixdown = true
 document.debugAsserts = true
 document.alwaysRun = true
 
@@ -370,15 +343,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
     }
     let input = new Input
-
-    //#endregion
-
-    //#region Babylon audio engine setup
-
-    // if (!document.useDawTiming && !document.useMixdown) {
-    //     BABYLON.Engine.audioEngine.onAudioUnlockedObservable.addOnce(() => { csound.onAudioEngineUnlocked() })
-    //     BABYLON.Engine.audioEngine.lock()
-    // }
 
     //#endregion
 
@@ -3325,40 +3289,16 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#endregion
 
-    //#region Audio initialization
+    //#region Audio engine setup
 
     const audioSelectionOverlay = document.getElementById(`audio-selection-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
-    const audio3dofButton = document.getElementById(`audio-3dof-button`)
-    const audio6dofButton = document.getElementById(`audio-6dof-button`)
-
-    audio3dofButton.onclick = () => {
-        console.debug(`audio 3dof button clicked`)
-        camera.lockPosition()
-
-        const omnitoneScript = document.createElement('script')
-        omnitoneScript.src = "https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"
-        console.debug(`Omnitone script loading ...`)
-        omnitoneScript.addEventListener(`load`, () => {
-            console.debug(`Omnitone script loading - done`)
-            loadAudio(`3dof`)
-        })
-        document.body.appendChild(omnitoneScript)
-    }
-
-    audio6dofButton.onclick = () => {
-        console.debug(`audio 6dof button clicked`)
-        loadAudio(`6dof`)
-    }
-
-    let audioEngine: AUDIO.Engine = null
-
-    const loadAudio = (dof: string) => {
+    const loadAudio = (engineName: string) => {
         audioSelectionOverlay!.style.display = `none`
 
         const script = document.createElement(`script`)
-        script.src = `./audio-${dof}.js`
+        script.src = `./audio-${engineName}.js`
         script.addEventListener(`load`, (e) => {
             console.debug(`${script.src} loading - done`)
             audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
@@ -3377,268 +3317,43 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         document.body.appendChild(script)
     }
 
-    // let dawOscTimeInSeconds = -1
-    // let dawOscLastSentTimeInSeconds = -1
-    // let dawNeedsRender = true
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get(`audioEngine`) === `daw`) {
+        const oscScript = document.createElement('script')
+        oscScript.src = "https://unpkg.com/osc-js@2.3.0/lib/osc.min.js"
+        console.debug(`OSC script loading ...`)
+        oscScript.addEventListener(`load`, () => {
+            console.debug(`OSC script loading - done`)
+            global.javascriptScoreLines = javascriptScoreLines
+            loadAudio(`daw`)
+        })
+        document.body.appendChild(oscScript)
+    }
+    else {
+        const audio3dofButton = document.getElementById(`audio-3dof-button`)
+        const audio6dofButton = document.getElementById(`audio-6dof-button`)
 
-    // let mixdownStartTime = 0
+        audio3dofButton.onclick = () => {
+            console.debug(`audio 3dof button clicked`)
+            camera.lockPosition()
 
-    // if (document.useDawTiming) {
-    //     const OSC_STATUS = {
-    //         IS_NOT_INITIALIZED: -1,
-    //         IS_CONNECTING: 0,
-    //         IS_OPEN: 1,
-    //         IS_CLOSING: 2,
-    //         IS_CLOSED: 3
-    //     }
+            const omnitoneScript = document.createElement('script')
+            omnitoneScript.src = "https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"
+            console.debug(`Omnitone script loading ...`)
+            omnitoneScript.addEventListener(`load`, () => {
+                console.debug(`Omnitone script loading - done`)
+                loadAudio(`3dof`)
+            })
+            document.body.appendChild(omnitoneScript)
+        }
 
-    //     const clientPlugin = new OSC.WebsocketClientPlugin({ port: 8080 })
-    //     const clientOsc = new OSC({ plugin: clientPlugin })
+        audio6dofButton.onclick = () => {
+            console.debug(`audio 6dof button clicked`)
+            loadAudio(`6dof`)
+        }
+    }
 
-    //     let heartbeatCount = 0
-    //     let previousHeartbeatCount = 0
-    //     let missedHeartbeatCount = 0
-    //     let heartbeatIsActive = false
-    //     clientOsc.on('/daw/heartbeat', message => {
-    //         //console.debug(`daw heartbeat received`)
-    //         heartbeatCount += 1
-    //     })
-    //     setInterval(() => {
-    //         if (previousHeartbeatCount != heartbeatCount) {
-    //             previousHeartbeatCount = heartbeatCount
-    //             missedHeartbeatCount = 0
-    //             if (!heartbeatIsActive) {
-    //                 heartbeatIsActive = true
-    //                 onHeartbeatActivated()
-    //             }
-    //         }
-    //         else if (heartbeatIsActive) {
-    //             missedHeartbeatCount += 1
-    //             if (missedHeartbeatCount == 2) {
-    //                 heartbeatIsActive = false
-    //                 onHeartbeatDeactivated()
-    //             }
-    //         }
-    //     }, 500)
-
-    //     const onHeartbeatActivated = () => {
-    //         console.debug("DAW heartbeat activated")
-
-    //         camera.matrixIsDirty = true
-    //         sendJavascriptScoreLinesViaOsc()
-
-    //         // The heartbeat from the MasterHead plugin often arrives before other plugins are ready to receive
-    //         // javascript score lines, so send the initial OSC messages to the DAW again after 5 seconds.
-    //         // TODO: Send a plugin awake OSC message to Javascript so we know when to send the initial OSC messages.
-    //         let callCount = 0
-    //         setTimeout(() => {
-    //             camera.matrixIsDirty = true
-    //             sendJavascriptScoreLinesViaOsc()
-    //         }, 5000)
-    //     }
-
-    //     const onHeartbeatDeactivated = () => {
-    //         console.debug("DAW heartbeat deactivated")
-    //     }
-
-    //     clientOsc.on('/daw/time_in_seconds', message => {
-    //         dawOscTimeInSeconds = message.args[0] + 3.5 // + 3.5 for score start delay
-    //         if (dawOscLastSentTimeInSeconds !== dawOscTimeInSeconds) {
-    //             dawOscLastSentTimeInSeconds = dawOscTimeInSeconds
-    //             // console.debug(`dawOscTimeInSeconds = ${dawOscTimeInSeconds}`)
-    //             dawNeedsRender = true
-    //         }
-    //     })
-    //     console.debug("Opening OSC client")
-    //     clientOsc.open()
-
-    //     const serverOsc = new OSC()
-    //     console.debug("Opening OSC server")
-    //     serverOsc.open()
-
-    //     setInterval(() => {
-    //         if (clientOsc.status() == OSC_STATUS.IS_CLOSED) {
-    //             console.debug("Re-openinig OSC client")
-    //             serverOsc.open()
-    //         }
-    //         if (serverOsc.status() == OSC_STATUS.IS_CLOSED) {
-    //             console.debug("Re-openinig OSC server")
-    //             serverOsc.open()
-    //             camera.matrixIsDirty = true
-    //             sendJavascriptScoreLinesViaOsc()
-    //         }
-    //     }, 1000)
-
-    //     setInterval(() => {
-    //         if (serverOsc.status() !== OSC_STATUS.IS_OPEN) {
-    //             return
-    //         }
-    //         if (camera.matrixIsDirty) {
-    //             const message = new OSC.Message('/DawService/camera_matrix')
-    //             for (let i = 0; i < 16; i++) {
-    //                 message.add(camera.matrix[i])
-    //             }
-    //             serverOsc.send(message)
-    //             // console.debug('Setting DAW listener position to ['
-    //             //     + camera.matrix[12] + ', '
-    //             //     + camera.matrix[13] + ', '
-    //             //     + camera.matrix[14] + ']')
-    //             camera.matrixIsDirty = false
-    //         }
-    //     }, camera.matrixMillisecondsPerUpdate)
-
-    //     const sendJavascriptScoreLinesViaOsc = () => {
-    //         if (serverOsc.status() !== OSC_STATUS.IS_OPEN) {
-    //             setTimeout(sendJavascriptScoreLinesViaOsc, 10)
-    //             return
-    //         }
-    //         console.debug(`Sending JavaScript score lines via OSC ...`)
-    //         for (let i = 0; i < javascriptScoreLines.length; i++) {
-    //             const scoreLine = javascriptScoreLines[i]
-    //             if (scoreLine.oscMessage === undefined) {
-    //                 const message = new OSC.Message('/DawService/javascript_score_line')
-    //                 message.add(scoreLine.trackId)
-    //                 for (let j = 0; j < scoreLine.parameters.length; j++) {
-    //                     const parameter = scoreLine.parameters[j]
-    //                     message.add(parameter)
-    //                 }
-    //                 scoreLine.oscMessage = message
-    //             }
-    //             serverOsc.send(scoreLine.oscMessage)
-    //         }
-    //     }
-    // }
-    // else if (document.useMixdown) {
-    //     const mixdownStartTimeOffset = -0.95
-    //     console.debug(`mixdownStartTimeOffset: ${mixdownStartTimeOffset}`)
-
-    //     const soundOptions = {
-    //         autoplay: false,
-    //         loop: false,
-    //         spatialSound: false,
-    //         streaming: true
-    //     }
-    //     let audioWY_isReady = false
-    //     let audioZX_isReady = false
-    //     const audioWY = new BABYLON.Sound(
-    //         `normalized.wy`,
-    //         `./assets/normalized-wy.mp3`,
-    //         null,
-    //         () => {
-    //             console.log(`audioWY is ready`)
-    //             audioWY_isReady = true
-    //         },
-    //         soundOptions)
-    //         const audioZX = new BABYLON.Sound(
-    //             `normalized.zx`,
-    //             `./assets/normalized-zx.mp3`,
-    //             null,
-    //             () => {
-    //                 console.log(`audioZX is ready`)
-    //                 audioZX_isReady = true
-    //             },
-    //         soundOptions)
-
-    //     const audioContext = engine.getAudioContext()
-    //     audioContext?.suspend()
-    //     let foaRenderer = null
-
-    //     const button = document.createElement(`button`)
-    //     button.textContent = `start`
-    //     button.style.color = `black`
-    //     button.style.position = 'absolute'
-    //     button.style.display = 'none'
-    //     button.style.top = '16px'
-    //     button.style.left = '16px'
-    //     button.style.width = '64px'
-    //     button.style.height = '64px'
-    //     document.body.appendChild(button)
-    //     button.onclick = () => {
-    //         audioContext.resume()
-
-    //         audioWY.play()
-    //         audioWY.stop()
-
-    //         audioZX.play()
-    //         audioZX.stop()
-
-    //         foaRenderer = Omnitone.createFOARenderer(audioContext)
-
-    //         foaRenderer.initialize().then(function () {
-    //             const channelMerger = new ChannelMergerNode(audioContext, {
-    //                 numberOfInputs: 4,
-    //                 channelCount: 1,
-    //                 channelCountMode: 'explicit',
-    //                 channelInterpretation: 'discrete'
-    //             })
-    //             const audioWY_gainNode = audioWY.getSoundGain()
-    //             const audioZX_gainNode = audioZX.getSoundGain()
-    //             audioWY_gainNode.disconnect()
-    //             audioWY_gainNode.connect(channelMerger, 0, 0)
-    //             audioWY_gainNode.connect(channelMerger, 0, 1)
-    //             audioZX_gainNode.disconnect()
-    //             audioZX_gainNode.connect(channelMerger, 0, 3)
-    //             audioZX_gainNode.connect(channelMerger, 0, 2)
-    //             channelMerger.connect(foaRenderer.input)
-    //             foaRenderer.output.connect(audioContext.destination)
-    //             BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
-    //             foaRenderer.setRotationMatrix4(rotationMatrix.m)
-    //             audioContext.suspend()
-
-    //             const intervalId = setInterval(() => {
-    //                 if (audioWY_isReady && audioZX_isReady) {
-    //                     console.log(`Playing ...`)
-    //                     audioWY.stop()
-    //                     audioWY.play()
-    //                     audioZX.stop()
-    //                     audioZX.play()
-    //                     audioContext.resume()
-    //                     mixdownStartTime = audioContext!.currentTime + mixdownStartTimeOffset
-    //                     global.audioContext = audioContext
-    //                     clearInterval(intervalId)
-    //                 }
-    //             }, 1000)
-
-    //             button.style.display = 'none'
-    //         })
-    //     }
-
-    //     scene.onReadyObservable.add(() => {
-    //         button.style.display = 'block'
-    //     })
-
-    //     const tickMs = 0.1
-    //     const maxRotationAmountPerTick = 0.01
-    //     let rotationInitialized = false
-    //     let rotationTarget = 0
-    //     let rotationCurrent = 0
-    //     const rotationMatrix = new BABYLON.Matrix
-    //     setInterval(() => {
-    //         rotationTarget = camera.rotationY - HALF_PI
-    //         if (Math.abs(rotationTarget - rotationCurrent) < maxRotationAmountPerTick) {
-    //             return
-    //         }
-    //         if (!rotationInitialized) {
-    //             rotationInitialized = true
-    //             rotationCurrent = rotationTarget
-    //         }
-    //         if (rotationTarget < rotationCurrent) {
-    //             rotationCurrent -= maxRotationAmountPerTick
-    //         }
-    //         else if (rotationCurrent < rotationTarget) {
-    //             rotationCurrent += maxRotationAmountPerTick
-    //         }
-
-    //         if (foaRenderer) {
-    //             BABYLON.Matrix.RotationYToRef(rotationCurrent, rotationMatrix)
-    //             foaRenderer.setRotationMatrix4(rotationMatrix.m)
-    //         }
-    //     }, tickMs)
-    // }
-    // else {
-    //     csound = new Csound(csdText)
-    //     csound.start()
-    // }
+    let audioEngine: AUDIO.Engine = null
 
     //#endregion
 
@@ -3662,57 +3377,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     world.build()
-
-    let previousTime = 0
-    let time = -1
-
-    // scene.registerBeforeRender(() => {
-    //     if (document.useDawTiming) {
-    //         if (!dawNeedsRender) {
-    //             return
-    //         }
-    //     }
-    //     else if (document.useMixdown) {
-
-    //     }
-    //     else if (!csound.playbackIsStarted) {
-    //         return
-    //     }
-
-    //     if (document.useDawTiming) {
-    //         previousTime = time
-    //         time = dawOscTimeInSeconds
-    //         dawNeedsRender = false
-    //     }
-    //     else if (document.useMixdown) {
-    //         previousTime = time
-    //         time = engine.getAudioContext().currentTime - mixdownStartTime
-    //     }
-    //     else {
-    //         previousTime = time
-    //         time = csound.audioContext.currentTime - csound.startTime
-    //     }
-
-    //     world.run(time, time - previousTime)
-    // })
-
-    // if (!document.useDawTiming && !document.useMixdown) {
-    //     let documentWasVisible = true
-    //     setInterval(() => {
-    //         if (document.visible !== undefined) {
-    //             if (documentWasVisible && !document.visible) {
-    //                 console.debug(`Pausing Csound`)
-    //                 csound.pause()
-    //                 documentWasVisible = false
-    //             }
-    //             else if (!documentWasVisible && document.visible) {
-    //                 console.debug(`Resuming Csound`)
-    //                 csound.resume()
-    //                 documentWasVisible = true
-    //             }
-    //         }
-    //     }, 100)
-    // }
 
     //#endregion
 
