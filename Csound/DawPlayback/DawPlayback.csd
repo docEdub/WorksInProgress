@@ -78,10 +78,9 @@ gkPlaybackTimeInSeconds init 0
 
 ${CSOUND_IFDEF} IS_MIXDOWN
     // Camera matrixes generated in JavaScript.
-    giMainCameraArrayLength init _($){MainCameraArray.length}
-    giMainCameraArrayMatrixes[] init _($){MainCameraArray.matrixesString}
+    giMainCameraArrayLength init _($){SHARED.MainCameraArray.length}
+    giMainCameraArrayMatrixes[] init _($){SHARED.MainCameraArray.matrixesString}
 ${CSOUND_ENDIF}
-
 
 // Initialize all vco2 tables so they don't get initialized during real-time performance and cause xruns on Quest 2.
 iDummy = vco2init(31)
@@ -387,15 +386,15 @@ instr FinalMixInstrument
         am7 init 0
         am8 init 0
     ${CSOUND_ELSE}
-        ; am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
-        ; am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
-        ; am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
-        ; am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
-        ; am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
-        ; am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
-        ; am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
-        ; am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
-        ; am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
+        am0 = a(gk_AF_3D_ListenerRotationMatrix[0])
+        am1 = a(gk_AF_3D_ListenerRotationMatrix[1])
+        am2 = a(gk_AF_3D_ListenerRotationMatrix[2])
+        am3 = a(gk_AF_3D_ListenerRotationMatrix[3])
+        am4 = a(gk_AF_3D_ListenerRotationMatrix[4])
+        am5 = a(gk_AF_3D_ListenerRotationMatrix[5])
+        am6 = a(gk_AF_3D_ListenerRotationMatrix[6])
+        am7 = a(gk_AF_3D_ListenerRotationMatrix[7])
+        am8 = a(gk_AF_3D_ListenerRotationMatrix[8])
     ${CSOUND_ENDIF}
     ayr = -(ay * am0 + az * am3 + ax * am6)
     azr =   ay * am1 + az * am4 + ax * am7

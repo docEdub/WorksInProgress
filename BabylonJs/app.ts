@@ -21,7 +21,7 @@ const createScene = async () => {
     window.addEventListener('resize', function() {
         engine.resize();
     });
-    
+
     // This creates the scene
     var scene = Project.CreateScene(engine, canvas);
 

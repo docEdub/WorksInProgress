@@ -14,7 +14,7 @@ const jsonDir = path.join(bounceDir, '/json');
 const bounceMixdownDir = path.join(bounceDir, '/mixdown');
 const babylonJsDir = path.resolve('BabylonJs')
 
-const updateBabylonJsProject = () => {
+const updateProjectCsd = () => {
     let data = fs.readFileSync(path.join(csoundDir, 'build', 'bounce', 'DawPlayback.csd'), 'ascii')
 
     // Remove "-+rtmidi=null" option.
@@ -36,17 +36,17 @@ const updateBabylonJsProject = () => {
     // Remove blank lines.
     data = data.replace(/\s*\r?\n/g, os.EOL)
 
-    // Replace leading whitespace with tabs.
-    data = data.replace(/\r?\n\s*/g, '\r\n    ')
+    // Remove leading whitespace.
+    data = data.replace(/\r?\n\s*/g, '\r\n')
 
     // Wrap with Javascript multiline string variable named `csdText`.
     let output = 'const csdText = `' + data + '`'
 
     // Update BabylonJs/project.ts csdText variable.
-    data = fs.readFileSync(path.join(babylonJsDir, '/project.ts'), 'ascii')
+    data = fs.readFileSync(path.join(babylonJsDir, '/project.csd.ts'), 'ascii')
     data = data.replace(new RegExp('const csdText = `[^`]*`', 'g'), output)
-    fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-    console.log('-- Updating BabylonJs/project.ts `csdText` - done')
+    fs.writeFileSync(babylonJsDir + '/project.csd.ts', data, 'ascii')
+    console.log('-- Updating BabylonJs/project.csd.ts `csdText` - done')
 }
 
 if (os.type() === 'Darwin') {
@@ -57,7 +57,7 @@ if (os.type() === 'Darwin') {
         stdio: 'inherit'
     });
 
-    updateBabylonJsProject()
+    updateProjectCsd()
 
     // Remove the configured playback .csd.
     const configuredPlaybackCsdPath = path.join(csoundDir, 'build', 'bounce', 'DawPlayback.configured.csd')
@@ -91,19 +91,9 @@ if (os.type() === 'Darwin') {
         // Minify JSON data.
         jsonData = JSON.stringify(JSON.parse(jsonData))
         fs.writeFileSync(bounceDir + '/DawPlayback.min.json', jsonData)
-
-        // Wrap JSON data with Javascript multiline string variable named `csdJson`.
-        let output = 'const csdJson = `\r\n    ' + jsonData + '\r\n    `'
-
-        // Update BabylonJs/project.ts csdJson variable.
-        let data = fs.readFileSync(babylonJsDir + '/project.ts', 'ascii')
-
-        data = data.replace(new RegExp('const csdJson = `[^`]*`', 'g'), output)
-        fs.writeFileSync(babylonJsDir + '/project.ts', data, 'ascii')
-        console.log('-- Updating BabylonJs/project.ts `csdJson` - done')
     }
 
-    if (process.argv.indexOf('--mixdown') != -1) {
+    if (process.argv.indexOf('--with-mixdown') != -1) {
         spawnSync('bash', [ '-c', 'cmake -B ' + mixdownDir + ' -S ' + csoundDir + ' -D BUILD_PLAYBACK_CSD=ON -D BUILD_MIXDOWN_CSD=ON' ], {
             stdio: 'inherit'
         });

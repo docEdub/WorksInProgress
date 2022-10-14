@@ -2,6 +2,7 @@
 const BABYLON = require('babylonjs')
 
 class FlyerPath {
+    name = `<n/a>`
     height = 210 // center of main pyramid mesh's top piece
     segments = 60
     startRotation = 0 // degrees
@@ -123,7 +124,7 @@ class FlyerPath {
         // Set audio point strings.
         let audioPointsString = `${audioPoints.length}`
         for (let i = 0; i < audioPoints.length; i++) {
-            audioPointsString +=  `\ngiSaw2FlyerSynth_${this.constructor.name}AudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
+            audioPointsString +=  `\ngiSaw2FlyerSynth_${this.name}AudioPoints[${i}] =  ${audioPoints[i].toFixed(3)}`
         }
         this.#private.audioPointsString = audioPointsString
     }

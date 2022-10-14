@@ -47,6 +47,16 @@
                 display: none !important;
             }
 
+            #audio-selection-overlay {
+                display: none;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.75);
+            }
+
             #ConsoleOutput {
                 position: absolute;
                 top: 83%;
@@ -73,19 +83,18 @@
         <div id="Loading">Loading ...</div>
         <canvas id="BabylonCanvas" class="no-select">
         </canvas>
+        <div id="audio-selection-overlay">
+            <div id="audio-selection-buttons">
+                <button id="audio-3dof-button">3dof</button>
+                <button id="audio-6dof-button">6dof</button>
+            </div>
+        </div>
         <!--
         <ul id="ConsoleOutput">
         </ul>
         -->
-        <script id="csound-script" type="module">
-            console.debug("Csound importing ...");
-            import { Csound } from "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js";
-            // import { Csound } from "./csound.esm.js";
-            document.Csound = Csound;
-        </script>
-        <script src="https://unpkg.com/osc-js@2.3.0/lib/osc.min.js"></script>
         <script src="https://unpkg.com/babylonjs@5.18.0/babylon.js"></script>
-        <script src="https://www.gstatic.com/external_hosted/omnitone/build/omnitone.min.js"></script>
+        <script src="./app.js"></script>
         <script>
             document.visible = true;
             (function() {

@@ -1,6 +1,7 @@
 /.logs/**
 /.vscode/launch.json
-/app/**
+/app-dev/**
+/app-prod/**
 /node_modules/**
 
 Csound/build/*
