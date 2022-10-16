@@ -3291,7 +3291,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Audio engine setup
 
-    const audioSelectionOverlay = document.getElementById(`audio-selection-overlay`)
+    const audioSelectionOverlay = document.getElementById(`initial-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
     const loadAudio = (engineName: string) => {
