@@ -151,10 +151,6 @@
                 <div id="initial-bottom"></div>
             </div>
         </div>
-        <!--
-        <ul id="ConsoleOutput">
-        </ul>
-        -->
         <script src="https://unpkg.com/babylonjs@5.18.0/babylon.js"></script>
         <script src="./app.js"></script>
         <script>
@@ -172,10 +168,6 @@
                 }
                 else if ((hidden = "msHidden") in document) {
                     document.addEventListener("msvisibilitychange", onchange);
-                }
-                else if ("onfocusin" in document) {
-                    // IE 9 and lower:
-                    document.onfocusin = document.onfocusout = onchange;
                 }
                 else {
                     // All others:
