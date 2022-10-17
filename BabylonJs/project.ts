@@ -374,13 +374,14 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         }
     }
 
-    const makeMesh = (positions, indices) => {
+    const makeMesh = (positions, indices, uvs = null) => {
         let normals = []
         BABYLON.VertexData.ComputeNormals(positions, indices, normals)
         let vertexData = new BABYLON.VertexData()
         vertexData.positions = positions
         vertexData.indices = indices
         vertexData.normals = normals
+        vertexData.uvs = uvs
         let mesh = new BABYLON.Mesh('', scene)
         vertexData.applyToMesh(mesh)
         mesh.position.set(0, 1, 0)
@@ -720,6 +721,35 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
     const trianglePolygonMesh = makeTrianglePolygonMesh()
     trianglePolygonMesh.isPickable = false
+
+    const makeBottomlessTrianglePolygonMeshWithUvs = () => {
+        const mesh = makeMesh(
+            [ 0, 1.225, 0,
+              0, 0, 0.867,
+              0.75, 0, -0.433,
+              0.75, 0, -0.433,
+              -0.75, 0, -0.433,
+              -0.75, 0, -0.433,
+              0, 0, 0.867,
+            ],
+            [ 0, 2, 1,
+              0, 4, 3,
+              0, 6, 5,
+            ],
+            [ 0.5, 1,
+              1, 0,
+              0, 0,
+              1, 0,
+              0, 0,
+              1, 0,
+              0, 0,
+            ]
+        )
+        const boundingInfo = mesh.getBoundingInfo()
+        boundingInfo.centerOn(BABYLON.Vector3.ZeroReadOnly, new BABYLON.Vector3(0.867, 1.225, 0.867))
+        mesh.setBoundingInfo(boundingInfo)
+        return mesh
+    }
 
     //#endregion
 
@@ -3375,6 +3405,26 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     }
 
     world.build()
+
+    //#endregion
+
+    //#region A+A
+
+    const aaMesh = makeBottomlessTrianglePolygonMeshWithUvs()
+    aaMesh.name = `a+a`
+    aaMesh.rotation.set(0, Math.PI * 0.333, 0)
+    aaMesh.scaling.set(10, 5, 10)
+    aaMesh.position.set(0, 0, -400)
+    aaMesh.isVisible = true
+    const aaTexture = createSvgTexture(`
+        <svg width="2048" height="1761" viewBox="0 0 541.867 465.931" xmlns="http://www.w3.org/2000/svg"><g transform="matrix(1.3483 0 0 1.32874 201.46 175.182)"><g style="line-height:1;text-align:center" font-size="33.867" text-anchor="middle" fill="#fff" stroke-width="1.058" font-weight="700"><path d="M64.375-68.636H57.81l-1.703-4.978H46.98l-1.703 4.978h-6.4l9.095-24.623h7.31zm-9.806-9.492-3.026-8.83-3.026 8.83zm6.466 43.358h-5.986v-9.21q0-1.125-.116-2.233-.116-1.124-.397-1.654-.33-.611-.975-.893-.629-.28-1.77-.28-.81 0-1.653.264-.827.264-1.803.843v13.163h-5.953v-18.57h5.953v2.05q1.588-1.24 3.043-1.901 1.471-.662 3.257-.662 3.01 0 4.697 1.753 1.703 1.753 1.703 5.242zM60.671-.903h-5.953v-1.935Q53.18-1.581 51.841-.986q-1.34.595-3.093.595-3.39 0-5.423-2.612-2.034-2.613-2.034-7.045 0-2.365.678-4.184.694-1.835 1.885-3.141 1.124-1.24 2.728-1.919 1.604-.694 3.208-.694 1.67 0 2.729.364 1.075.347 2.2.893v-7.905h5.952zM54.718-6.03v-9.112q-.628-.265-1.323-.38-.694-.116-1.273-.116-2.348 0-3.522 1.472-1.174 1.455-1.174 4.051 0 2.729.942 3.969.943 1.223 3.026 1.223.81 0 1.72-.297.91-.314 1.604-.81zm-2.894 32.428 4.234-12.005h6.118L51.857 39.776h-6.449l2.944-6.945-7.227-18.438h6.25z" style="-inkscape-font-specification:'sans-serif, Bold'" aria-label="A nd y"/></g><path d="M-87.66 209.376h-6.564l-1.703-4.977h-9.128l-1.704 4.977h-6.4l9.096-24.623h7.309zm-9.805-9.492-3.026-8.83-3.026 8.83zm70.941 9.492h-6.317V192.89l-4.564 10.7h-4.382l-4.564-10.7v16.487h-5.986v-24.623h7.375l5.54 12.353 5.523-12.353h7.375zm60.772 0h-6.565l-1.704-4.977h-9.128l-1.703 4.977h-6.4l9.095-24.623h7.31zm-9.807-9.492-3.026-8.83-3.026 8.83zm67.519 9.492h-6.12l-10.45-16.9v16.9h-5.822v-24.623h7.59l8.98 14.106v-14.106h5.82zm61.333-12.286q0 3.44-1.57 6.168-1.571 2.712-3.97 4.167-1.802 1.091-3.951 1.521-2.15.43-5.094.43h-8.681v-24.623h8.93q3.009 0 5.192.513 2.183.496 3.67 1.422 2.547 1.555 4.003 4.2 1.471 2.63 1.471 6.202zm-6.565-.05q0-2.43-.892-4.15-.877-1.737-2.795-2.713-.976-.48-2.001-.645-1.009-.182-3.06-.182h-1.603v15.412h1.604q2.265 0 3.324-.198 1.058-.215 2.067-.76 1.736-.993 2.546-2.647.81-1.67.81-4.117zm65.915 12.336h-6.565l-1.703-4.977h-9.129l-1.703 4.977h-6.4l9.096-24.623h7.309zm-9.806-9.492-3.027-8.83-3.026 8.83z" aria-label="AMANDA" style="line-height:1.25;-inkscape-font-specification:'sans-serif Bold';text-align:center" font-weight="700" font-size="33.867" letter-spacing="31.75" text-anchor="middle" fill="#fff"/><path d="M125.15 91.482H-23.017v5.292c-.094 47.632 74.083 79.375 74.083 79.375s74.18-31.743 74.084-79.375z" fill="red"/><circle cx="14.025" cy="91.386" r="37.042" fill="red"/><circle cx="88.108" cy="91.61" r="37.042" fill="red"/><path d="m51.526-130.703 200.03 348.978-400.062.003z" fill="none" stroke="gray" stroke-width="1.058"/></g></svg>
+    `)
+    aaTexture.name = `a+a`
+    const aaMaterial = new BABYLON.StandardMaterial('', scene)
+    aaMaterial.emissiveColor.set(1, 1, 1)
+    aaMaterial.ambientTexture = aaTexture
+    aaMaterial.disableLighting = true
+    aaMesh.material = aaMaterial
 
     //#endregion
 
