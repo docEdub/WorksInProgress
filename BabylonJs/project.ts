@@ -29,6 +29,7 @@ document.isProduction = true
 document.debugAsserts = true
 document.alwaysRun = true
 
+const UrlParams = new URLSearchParams(window.location.search)
 
 class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
 
@@ -98,7 +99,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine)
-    if (showBabylonInspector) {
+    if (UrlParams.get(`inspector`) === `true`) {
         scene.debugLayer.show()
     }
 
@@ -3315,8 +3316,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         document.body.appendChild(script)
     }
 
-    const urlParams = new URLSearchParams(window.location.search)
-    if (urlParams.get(`audioEngine`) === `daw`) {
+    if (UrlParams.get(`audioEngine`) === `daw`) {
         const oscScript = document.createElement('script')
         oscScript.src = "https://unpkg.com/osc-js@2.3.0/lib/osc.min.js"
         console.debug(`OSC script loading ...`)
