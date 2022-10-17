@@ -60,7 +60,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 {
-                    from: path.join(__dirname, 'BabylonJs', 'index-dev.html'),
+                    from: path.join(__dirname, 'BabylonJs', 'index-prod.html'),
                     to: path.join(__dirname, 'app-prod', 'index.html')
                 },
                 {
