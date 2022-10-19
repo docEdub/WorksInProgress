@@ -73,7 +73,7 @@ class MainCameraArray {
             if (!this.cameras[cameraIndex]) {
                 switch(cameraIndex) {
                 case 0:
-                    this.createCamera(0, new BABYLON.Vector3(0, 2, -10), new BABYLON.Vector3(0, 2, 0))
+                    this.createCamera(0, new BABYLON.Vector3(0, 2, -100), new BABYLON.Vector3(0, 2, 0))
                     break
                 }
             }
