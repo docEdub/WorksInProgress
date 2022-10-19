@@ -415,21 +415,18 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const wall = BABYLON.MeshBuilder.CreatePlane('', {
             size: groundSize
         })
-        wall.isPickable = false
         wall.isVisible = false
         wall.position.y = halfGroundSize
         wall.freezeWorldMatrix()
 
         const northWall = wall.createInstance('')
         northWall.checkCollisions = true
-        northWall.isPickable = false
         northWall.isVisible = false
         northWall.position.z = halfGroundSize + 0.1
         northWall.freezeWorldMatrix()
 
         const eastWall = wall.createInstance('')
         eastWall.checkCollisions = true
-        eastWall.isPickable = false
         eastWall.isVisible = false
         eastWall.position.x = halfGroundSize + 0.1
         eastWall.rotation.y = Math.PI / 2
@@ -437,7 +434,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const southWall = wall.createInstance('')
         southWall.checkCollisions = true
-        southWall.isPickable = false
         southWall.isVisible = false
         southWall.position.z = -halfGroundSize - 0.1
         southWall.rotation.y = Math.PI
@@ -445,7 +441,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         const westWall = wall.createInstance('')
         westWall.checkCollisions = true
-        westWall.isPickable = false
         westWall.isVisible = false
         westWall.position.x = -halfGroundSize - 0.1
         westWall.rotation.y = -Math.PI / 2
@@ -457,7 +452,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         size: groundSize
     })
     ground.checkCollisions = true
-    ground.isPickable = false
     ground.rotation.set(Math.PI / 2, 0, 0)
     ground.freezeWorldMatrix()
 
@@ -720,7 +714,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         return mesh
     }
     const trianglePolygonMesh = makeTrianglePolygonMesh()
-    trianglePolygonMesh.isPickable = false
 
     const makeBottomlessTrianglePolygonMeshWithUvs = () => {
         const mesh = makeMesh(
@@ -1169,7 +1162,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
         set mesh(value) {
             this._private.mesh = value
-            this._private.mesh.isPickable = false
         }
 
         get sharedMeshData() {
@@ -1702,7 +1694,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             {
                 const mesh = makeTrianglePolygonMesh()
-                mesh.isPickable = false
                 mesh.position.setAll(0)
                 mesh.scaling.set(this.flashScalingMin, 1, this.flashScalingMin)
                 mesh.bakeCurrentTransformIntoVertices()
@@ -1720,7 +1711,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             {
                 const mesh = mainTriangleMesh.clone(`Drum striker legs mesh`, mainTriangleMesh.parent)
                 mesh.makeGeometryUnique()
-                mesh.isPickable = false
                 mesh.isVisible = true
                 this._strikerLegsMesh = mesh
 
@@ -1734,7 +1724,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             {
                 const mesh = makeTrianglePolygonMesh()
-                mesh.isPickable = false
                 mesh.isVisible = true
                 mesh.parent = this._strikerLegsMesh
                 mesh.scaling.set(210, 178, 210)
@@ -1908,7 +1897,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             vertexData.normals = this._meshNormals
             vertexData.applyToMesh(this._mesh, true)
 
-            this._mesh.isPickable = false
             this._mesh.freezeWorldMatrix()
 
             sunLight.exclude(this._mesh)
@@ -2049,14 +2037,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             triangleMesh3.bakeCurrentTransformIntoVertices()
 
             this._mesh = BABYLON.Mesh.MergeMeshes([ triangleMesh1, triangleMesh2, triangleMesh3 ], true)
-            this._mesh.isPickable = false
             this._mesh.freezeWorldMatrix()
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.specularColor.set(0.1, 0.1, 0.1)
             this._mesh.material = this._meshMaterial
 
             this._pillarMesh = makeTrianglePolygonMesh()
-            this._pillarMesh.isPickable = false
             this._pillarMesh.isVisible = true
             this._pillarMesh.scaling.set(1, 10, 1)
             this._pillarMesh.freezeWorldMatrix()
@@ -2225,7 +2211,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             super()
 
             this._mesh = trianglePlaneMesh.clone('Bass')
-            this._mesh.isPickable = false
             this._meshMaterial = new BABYLON.StandardMaterial('', scene)
             this._meshMaterial.alpha = 0.75
             this._meshMaterial.backFaceCulling = false
@@ -2235,7 +2220,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             sunLight.exclude(this._mesh)
 
             this._frameMesh = new BABYLON.Mesh(`mainTriangle.bassFrame`, scene)
-            this._frameMesh.isPickable = false
             this._frameMesh.isVisible = false
             this._frameMeshMaterial = new BABYLON.StandardMaterial('', scene)
             this._frameMeshMaterial.emissiveColor.set(1, 0, 0)
@@ -2383,7 +2367,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             this.instanceMatrices = new Array<BABYLON.Matrix>(this.track.header.positionCount).fill(new BABYLON.Matrix)
             this.mesh.thinInstanceAdd(this.instanceMatrices, false)
 
-            this.mesh.isPickable = false
             this.mesh.freezeWorldMatrix()
         }
 
@@ -2465,7 +2448,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             // console.debug(`#initRowMeshes() called on ${this.sharedMeshData.constructor.name}`)
             for (let i = 0; i < this.sharedMeshData.rows; i++) {
                 const mesh = new BABYLON.Mesh('', scene)
-                mesh.isPickable = false
                 mesh.isVisible = false
 
                 const material = new BABYLON.StandardMaterial('', scene)
@@ -2740,7 +2722,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             ]
 
             const flyerMesh = makeTrianglePolygonMesh()
-            flyerMesh.isPickable = false
             flyerMesh.isVisible = false
             flyerMesh.scaling.setAll(7.5)
             const material = new BABYLON.StandardMaterial('', scene)
@@ -3427,6 +3408,11 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     aaMesh.material = aaMaterial
 
     //#endregion
+
+    const meshes = scene.meshes
+    for (let i = 0; i < meshes.length; i++) {
+        meshes[i].isPickable = false
+    }
 
     return scene
 }}
