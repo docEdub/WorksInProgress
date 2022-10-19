@@ -11,7 +11,7 @@ ${CSOUND_INCLUDE_GUARD_DEFINE} CsoundCMake_af_spatial_tables_orc ${CSOUND_INCLUD
 
 // Pre-computed lookup tables for encoding ambisonic sources.
 /*
- * The resonance audio lookup tables were copied from https://github.com/resonance-audio/resonance-audio-web-sdk.
+ * The resonance audio lookup tables were copied from github.com/resonance-audio/resonance-audio-web-sdk.
  * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
  */
 // In the resonance audio web sdk the azimuth and elevation tables are in a multidimensional javascript array with each

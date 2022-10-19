@@ -151,7 +151,7 @@ SOut[iArrayIndex] = strsub(SIn, iStartIndex)
 xout SOut
 endop
 /*
-* The resonance audio lookup tables were copied from https:
+* The resonance audio lookup tables were copied from github.com/resonance-audio/resonance-audio-web-sdk.
 * The original resonance audio file was authored by Andrew Allen <bitllama@google.com>.
 */
 gi_AF_3D_Audio_SphericalHarmonicsAzimuthLookupTable_000_179[][] init 180, 6
