@@ -19,6 +19,7 @@ declare global {
             constructor(audioContext)
             sequenceTime: number
             onCameraMatrixChanged(matrix: BABYLON.Matrix): void
+            readyObservable: BABYLON.Observable<void>
         }
     }
 }
@@ -3304,16 +3305,29 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const audioSelectionOverlay = document.getElementById(`initial-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
+    const hideLoadingUI = engine.hideLoadingUI
+    engine.hideLoadingUI = () => {}
+
+    const loadingElement = document.getElementById("babylonjsLoadingDiv")
+    const loadingElementDisplayStyle = loadingElement.style.display
+    loadingElement.style.display = "none"
+    loadingElement.style.opacity = "0.75"
+
     const loadAudio = (engineName: string) => {
         audioSelectionOverlay!.style.display = `none`
+        loadingElement.style.display = loadingElementDisplayStyle
 
         const script = document.createElement(`script`)
         script.src = `./audio-${engineName}.js`
         script.addEventListener(`load`, (e) => {
             console.debug(`${script.src} loading - done`)
             audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
+            audioEngine.readyObservable.addOnce(() => {
+                audioEngine.onCameraMatrixChanged(camera.matrix)
+                engine.hideLoadingUI = hideLoadingUI
+                engine.hideLoadingUI()
+            })
             camera.registerOnMatrixChanged(audioEngine.onCameraMatrixChanged)
-            audioEngine.onCameraMatrixChanged(camera.matrix)
 
             let previousTime = 0
             let time = -1

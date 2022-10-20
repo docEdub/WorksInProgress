@@ -52,6 +52,7 @@ class AudioEngine {
                     audioZX.play()
                     this._.startTime = audioContext.currentTime
                     audioContext.resume()
+                    this.readyObservable.notifyObservers()
                 }
             })
         })
@@ -96,6 +97,8 @@ class AudioEngine {
     public get sequenceTime(): number {
         return this._.audioWY.isPlaying ? (this._.audioContext.currentTime - this._.startTime) - StartTimeOffset : 0
     }
+
+    public readyObservable = new BABYLON.Observable<void>()
 
     private set rotationY(value: number) {
         if (0.01 < Math.abs(this._.rotationTargetY - value)) {

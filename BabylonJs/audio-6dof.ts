@@ -16,9 +16,10 @@ let csound: Csound = null
 //#region class Csound
 
 class Csound {
-    constructor(audioContext) {
+    constructor(audioContext: AudioContext, readyObservable: BABYLON.Observable<void>) {
         this.#audioContext = audioContext
         this.#csdText = csdText
+        this.readyObservable = readyObservable
 
         if (document.getElementById('csound-script') === null) {
             const csoundJsUrl = "https://unpkg.com/@doc.e.dub/csound-browser@6.17.0-beta5/dist/csound.esm.js"
@@ -280,6 +281,7 @@ class Csound {
             this.#startTime = this.adjustedAudioContextTime - scoreTime
             this.#playbackIsStarted = true
             console.debug('Playback start message received')
+            this.readyObservable.notifyObservers()
         }
         else if (args[0].startsWith('csd:resumed')) {
             const scoreTime = Number(args[0].split(' at ')[1])
@@ -299,6 +301,8 @@ class Csound {
             this.#previousConsoleLog.apply(console, args)
         }
     }
+
+    private readyObservable: BABYLON.Observable<void> = null
 }
 
 //#endregion
@@ -306,7 +310,7 @@ class Csound {
 class AudioEngine {
     constructor(audioContext) {
         this.audioContext = audioContext
-        this.csound = new Csound(audioContext)
+        this.csound = new Csound(audioContext, this.readyObservable)
         this.csound.onAudioEngineUnlocked()
         csound = this.csound
     }
@@ -318,6 +322,8 @@ class AudioEngine {
     public get sequenceTime(): number {
         return this.csound.playbackIsStarted ? this.audioContext.currentTime - this.csound.startTime : 0
     }
+
+    public readyObservable = new BABYLON.Observable<void>()
 
     private audioContext = null
     private csound = null
