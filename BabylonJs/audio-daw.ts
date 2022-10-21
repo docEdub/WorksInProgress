@@ -75,6 +75,7 @@ class AudioEngine {
             setTimeout(() => {
                 sendJavascriptScoreLinesViaOsc()
             }, 5000)
+            this.readyObservable.notifyObservers()
         }
         const onHeartbeatDeactivated = () => {
             console.debug("DAW heartbeat deactivated")
@@ -134,6 +135,8 @@ class AudioEngine {
     public get sequenceTime(): number {
         return this._.currentTime
     }
+
+    public readyObservable = new BABYLON.Observable<void>()
 
     private updateDawCameraMatrix = (matrix: BABYLON.Matrix): void => {
         const message = new OSC.Message('/DawService/camera_matrix')

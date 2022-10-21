@@ -6561,6 +6561,8 @@ endin
 instr SendStartupMessage
 if (p3 == -1) then
 prints("csd:started at %.3f\\n", times())
+aOut init 1
+outall(aOut)
 endif
 turnoff
 endin

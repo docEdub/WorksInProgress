@@ -98,9 +98,7 @@ class Csound {
     get playbackIsStarted() { return this.#playbackIsStarted }
     set playbackIsStarted(value) { this.#playbackIsStarted = value }
 
-    get #latency() {
-        return this.#audioContext.baseLatency + this.#ioBufferSize / this.#audioContext.sampleRate
-    }
+    #latency = 0
 
     #startTime = 0
     get startTime() { return this.#startTime }
@@ -178,8 +176,6 @@ class Csound {
             return
         }
 
-        // document.latency = audioContext.baseLatency + this.ioBufferSize / audioContext.sampleRate
-        // console.debug('Latency =', document.latency)
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
         csound.start()
@@ -189,6 +185,33 @@ class Csound {
         }
         this.#isStarted = true
         this.volume = 1
+
+        let scene = BABYLON.Engine.LastCreatedScene!
+        const node = await csound.getNode()
+        const analyzer = new BABYLON.Analyser(scene) as any
+        analyzer.FFT_SIZE = 2048
+        analyzer.SMOOTHING = 0
+        node.connect(analyzer._webAudioAnalyser)
+
+        const beforeRender = () => {
+            const bin = analyzer.getByteFrequencyData()
+            for (let i = 0; i < bin.length; i++) {
+                if (0 < bin[i]) {
+                    onStarted()
+                    break
+                }
+            }
+        }
+
+        const onStarted = () => {
+            this.#startTime += audioContext.currentTime
+            console.debug(`start heard at ${audioContext.currentTime}`)
+            scene.unregisterBeforeRender(beforeRender)
+            analyzer._webAudioAnalyser.disconnect()
+            console.debug(`start time = ${this.#startTime}`)
+        }
+
+        scene.registerBeforeRender(beforeRender)
 
         console.debug('Starting Csound playback - done')
     }
@@ -272,15 +295,15 @@ class Csound {
     }
 
     get adjustedAudioContextTime() {
-        return this.#audioContext.currentTime - (3 * this.#latency)
+        return this.#audioContext.currentTime - this.#latency
     }
 
     onLogMessage = (console, args) => {
         if (args[0].startsWith('csd:started')) {
             const scoreTime = Number(args[0].split(' at ')[1])
-            this.#startTime = this.adjustedAudioContextTime - scoreTime
+            this.#startTime -= scoreTime
             this.#playbackIsStarted = true
-            console.debug('Playback start message received')
+            console.debug(`Playback start message received. Score time = ${scoreTime}`)
             this.readyObservable.notifyObservers()
         }
         else if (args[0].startsWith('csd:resumed')) {
