@@ -493,31 +493,55 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region XR experience handler
 
-    let xr = null
+    let xr: BABYLON.WebXRDefaultExperience = null
+    let xrButtonOverlay: HTMLElement = null
 
-    document.navigator = navigator
-    if (document.navigator.xr) {
-        const startXr = async () => {
-            try {
-                xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
-                if (!!xr && !!xr.enterExitUI) {
-                    xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
-                        if (eventData == null) {
-                            camera.switchToFlatScreen()
-                        }
-                        else {
-                            camera.xrCamera = xr.baseExperience.camera
-                            camera.switchToXR()
-                        }
-                        BABYLON.Engine.audioEngine.unlock()
-                    })
+    const initXR = async (options: BABYLON.WebXRDefaultExperienceOptions) => {
+        document.navigator = navigator
+        if (document.navigator.xr) {
+            const startXr = async () => {
+                try {
+                    xr = await scene.createDefaultXRExperienceAsync(options)
+                    if (!!xr && !!xr.enterExitUI) {
+                        xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
+                            if (eventData == null) {
+                                camera.switchToFlatScreen()
+                            }
+                            else {
+                                camera.xrCamera = xr.baseExperience.camera
+                                camera.switchToXR()
+                            }
+                            BABYLON.Engine.audioEngine.unlock()
+                        })
+                    }
+                }
+                catch(e) {
+                    console.debug(e)
                 }
             }
-            catch(e) {
-                console.debug(e)
+            await startXr()
+
+            const xrButtonOverlays = document.getElementsByClassName(`xr-button-overlay`)
+            xrButtonOverlay = xrButtonOverlays.length ? <HTMLElement>xrButtonOverlays[0] : null
+            if (xrButtonOverlay) {
+                xrButtonOverlay.style.display = "none"
             }
         }
-        startXr()
+        return xr
+    }
+
+    const showXRUI = () => {
+        if (xrButtonOverlay) {
+            xrButtonOverlay.style.display = "block"
+        }
+    }
+
+    const enterXR = async () => {
+        if (!!xr) {
+            await xr.baseExperience.enterXRAsync("immersive-vr", "local-floor")
+            camera.xrCamera = xr.baseExperience.camera
+            camera.switchToXR()
+        }
     }
 
     //#endregion
@@ -3305,12 +3329,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Audio engine setup
 
-    const xrButtonOverlays = document.getElementsByClassName(`xr-button-overlay`)
-    const xrButtonOverlay = xrButtonOverlays.length ? <HTMLElement>xrButtonOverlays[0] : null
-    if (xrButtonOverlay) {
-        xrButtonOverlay.style.display = "none"
-    }
-
     const audioSelectionOverlay = document.getElementById(`initial-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
@@ -3366,7 +3384,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         const audio3dofButton = document.getElementById(`audio-3dof-button`)
         const audio6dofButton = document.getElementById(`audio-6dof-button`)
 
-        audio3dofButton.onclick = () => {
+        audio3dofButton.onclick = async () => {
             console.debug(`audio 3dof button clicked`)
             camera.lockPosition()
 
@@ -3378,17 +3396,22 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 loadAudio(`3dof`)
             })
             document.body.appendChild(omnitoneScript)
+
+            await initXR({
+                floorMeshes: [ ground ],
+                disableTeleportation: true
+            })
+            showXRUI()
         }
 
-        audio6dofButton.onclick = () => {
+        audio6dofButton.onclick = async () => {
             console.debug(`audio 6dof button clicked`)
             loadAudio(`6dof`)
-            if (xr) {
-                xr.baseExperience.enterXRAsync("immersive-vr", "local-floor")
-            }
-            if (xrButtonOverlay) {
-                xrButtonOverlay.style.display = "block"
-            }
+
+            await initXR({
+                floorMeshes: [ ground ]
+            })
+            enterXR()
         }
     }
 
