@@ -89,7 +89,7 @@ module.exports = {
             '.github.com',
         ],
         contentBase: path.join(__dirname, 'app-dev'),
-        host: '0.0.0.0', port: 9000,
+        host: '0.0.0.0', port: 8081,
         inline: true,
         noInfo: false,
         mimeTypes: { typeMap: { 'text/javascript': [ 'js' ] }, force: true },
