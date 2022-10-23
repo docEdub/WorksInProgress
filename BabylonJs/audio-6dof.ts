@@ -98,9 +98,7 @@ class Csound {
     get playbackIsStarted() { return this.#playbackIsStarted }
     set playbackIsStarted(value) { this.#playbackIsStarted = value }
 
-    get #latency() {
-        return this.#audioContext.baseLatency + this.#ioBufferSize / this.#audioContext.sampleRate
-    }
+    #latency = 0
 
     #startTime = 0
     get startTime() { return this.#startTime }
@@ -178,8 +176,6 @@ class Csound {
             return
         }
 
-        // document.latency = audioContext.baseLatency + this.ioBufferSize / audioContext.sampleRate
-        // console.debug('Latency =', document.latency)
         console.debug('Csound csd compile succeeded')
         console.debug('Csound starting ...')
         csound.start()
@@ -189,6 +185,8 @@ class Csound {
         }
         this.#isStarted = true
         this.volume = 1
+
+        this.listenForEarliestNoteOn()
 
         console.debug('Starting Csound playback - done')
     }
@@ -264,6 +262,7 @@ class Csound {
 
     #restart = async () => {
         console.debug('Restarting Csound ...')
+        this.earliestNoteWasHeard = false
         await this.stop()
         await this.start()
         console.debug('Restarting Csound - done')
@@ -272,15 +271,15 @@ class Csound {
     }
 
     get adjustedAudioContextTime() {
-        return this.#audioContext.currentTime - (3 * this.#latency)
+        return this.#audioContext.currentTime - this.#latency
     }
 
     onLogMessage = (console, args) => {
         if (args[0].startsWith('csd:started')) {
             const scoreTime = Number(args[0].split(' at ')[1])
-            this.#startTime = this.adjustedAudioContextTime - scoreTime
+            // this.#startTime -= scoreTime
             this.#playbackIsStarted = true
-            console.debug('Playback start message received')
+            console.debug(`Playback start message received. Score time = ${scoreTime}`)
             this.readyObservable.notifyObservers()
         }
         else if (args[0].startsWith('csd:resumed')) {
@@ -303,6 +302,45 @@ class Csound {
     }
 
     private readyObservable: BABYLON.Observable<void> = null
+
+    private listenForEarliestNoteOn = async () => {
+        let scene = BABYLON.Engine.LastCreatedScene!
+        if (!this.audioAnalyzer) {
+            const analyzer = new BABYLON.Analyser(scene) as any
+            analyzer.FFT_SIZE = 32
+            analyzer.SMOOTHING = 0
+            this.audioAnalyzer = analyzer
+        }
+        const csound = this.#csoundObj
+        const audioOutputNode = await csound.getNode()
+        audioOutputNode.connect(this.audioAnalyzerNode)
+
+        this.earliestNoteWasHeard = false
+        this.#startTime = -this.earliestNoteOnTime
+        const beforeRender = () => {
+            const bin = this.audioAnalyzer.getByteFrequencyData()
+            for (let i = 0; i < bin.length; i++) {
+                if (0 < bin[i]) {
+                    this.earliestNoteWasHeard = true
+                    this.#startTime += this.#audioContext.currentTime
+                    scene.unregisterBeforeRender(beforeRender)
+                    this.audioAnalyzerNode.disconnect()
+                    console.debug(`start heard at ${this.#audioContext.currentTime}`)
+                    console.debug(`start time = ${this.#startTime}`)
+                    break
+                }
+            }
+        }
+
+        scene.registerBeforeRender(beforeRender)
+    }
+
+    public earliestNoteWasHeard = false
+    private earliestNoteOnTime: number = 0
+    private audioAnalyzer: BABYLON.Analyser = null
+    private get audioAnalyzerNode() {
+        return (<any>this.audioAnalyzer)._webAudioAnalyser
+    }
 }
 
 //#endregion
@@ -315,12 +353,16 @@ class AudioEngine {
         csound = this.csound
     }
 
+    public set earliestNoteOnTime(value: number) {
+        this.csound.earliestNoteOnTime = value
+    }
+
     onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
         return csound.onCameraMatrixChanged(matrix)
     }
 
     public get sequenceTime(): number {
-        return this.csound.playbackIsStarted ? this.audioContext.currentTime - this.csound.startTime : 0
+        return this.csound.earliestNoteWasHeard ? this.audioContext.currentTime - this.csound.startTime : 0
     }
 
     public readyObservable = new BABYLON.Observable<void>()

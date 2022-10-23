@@ -17,6 +17,7 @@ declare global {
     namespace AUDIO {
         class Engine {
             constructor(audioContext)
+            earliestNoteOnTime: number
             sequenceTime: number
             onCameraMatrixChanged(matrix: BABYLON.Matrix): void
             readyObservable: BABYLON.Observable<void>
@@ -3322,6 +3323,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         script.addEventListener(`load`, (e) => {
             console.debug(`${script.src} loading - done`)
             audioEngine = new AUDIO.Engine(BABYLON.Engine.audioEngine!.audioContext)
+            audioEngine.earliestNoteOnTime = earliestNoteOnTime
             audioEngine.readyObservable.addOnce(() => {
                 audioEngine.onCameraMatrixChanged(camera.matrix)
                 engine.hideLoadingUI = hideLoadingUI
@@ -3382,6 +3384,8 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region World initialization
 
+    let earliestNoteOnTime = Number.MAX_VALUE
+
     const csdData = csdJson
     const csdDataUuids = Object.keys(csdData)
     for (let i = 0; i < csdDataUuids.length; i++) {
@@ -3397,7 +3401,17 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         else {
             console.warn(`No create track function found for id ${id}.`)
         }
+
+        const csdTrackItems = csdData[id]
+        for (let i = 0; i < csdTrackItems.length; i++) {
+            const item = csdTrackItems[i]
+            if (!!item.note && !!item.note.onTime && item.note.onTime < earliestNoteOnTime) {
+                earliestNoteOnTime = item.note.onTime
+            }
+        }
     }
+
+    console.debug(`earliestNoteOnTime = ${earliestNoteOnTime}`)
 
     world.build()
 

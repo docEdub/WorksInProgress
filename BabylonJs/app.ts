@@ -11,9 +11,7 @@ const createScene = async () => {
         // preserveDrawingBuffer: true,
         // stencil: true,
         audioEngine: true, audioEngineOptions: {
-            audioContext: new AudioContext({
-                latencyHint: 'playback'
-            })
+            audioContext: new AudioContext
         }
     });
 
