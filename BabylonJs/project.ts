@@ -493,11 +493,13 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region XR experience handler
 
+    let xr = null
+
     document.navigator = navigator
     if (document.navigator.xr) {
         const startXr = async () => {
             try {
-                const xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
+                xr = await scene.createDefaultXRExperienceAsync({floorMeshes: [ ground ]})
                 if (!!xr && !!xr.enterExitUI) {
                     xr.enterExitUI.activeButtonChangedObservable.add((eventData) => {
                         if (eventData == null) {
@@ -3303,6 +3305,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
     //#region Audio engine setup
 
+    const xrButtonOverlays = document.getElementsByClassName(`xr-button-overlay`)
+    const xrButtonOverlay = xrButtonOverlays.length ? <HTMLElement>xrButtonOverlays[0] : null
+    if (xrButtonOverlay) {
+        xrButtonOverlay.style.display = "none"
+    }
+
     const audioSelectionOverlay = document.getElementById(`initial-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
@@ -3375,6 +3383,12 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
         audio6dofButton.onclick = () => {
             console.debug(`audio 6dof button clicked`)
             loadAudio(`6dof`)
+            if (xr) {
+                xr.baseExperience.enterXRAsync("immersive-vr", "local-floor")
+            }
+            if (xrButtonOverlay) {
+                xrButtonOverlay.style.display = "block"
+            }
         }
     }
 
