@@ -186,32 +186,7 @@ class Csound {
         this.#isStarted = true
         this.volume = 1
 
-        let scene = BABYLON.Engine.LastCreatedScene!
-        const node = await csound.getNode()
-        const analyzer = new BABYLON.Analyser(scene) as any
-        analyzer.FFT_SIZE = 32
-        analyzer.SMOOTHING = 0
-        node.connect(analyzer._webAudioAnalyser)
-
-        const beforeRender = () => {
-            const bin = analyzer.getByteFrequencyData()
-            for (let i = 0; i < bin.length; i++) {
-                if (0 < bin[i]) {
-                    onStarted()
-                    break
-                }
-            }
-        }
-
-        const onStarted = () => {
-            this.#startTime += audioContext.currentTime
-            console.debug(`start heard at ${audioContext.currentTime}`)
-            scene.unregisterBeforeRender(beforeRender)
-            analyzer._webAudioAnalyser.disconnect()
-            console.debug(`start time = ${this.#startTime}`)
-        }
-
-        scene.registerBeforeRender(beforeRender)
+        this.listenForEarliestNoteOn()
 
         console.debug('Starting Csound playback - done')
     }
@@ -287,6 +262,7 @@ class Csound {
 
     #restart = async () => {
         console.debug('Restarting Csound ...')
+        this.earliestNoteWasHeard = false
         await this.stop()
         await this.start()
         console.debug('Restarting Csound - done')
@@ -327,8 +303,43 @@ class Csound {
 
     private readyObservable: BABYLON.Observable<void> = null
 
-    public set earliestNoteOnTime(value: number) {
-        this.#startTime -= value
+    private listenForEarliestNoteOn = async () => {
+        let scene = BABYLON.Engine.LastCreatedScene!
+        if (!this.audioAnalyzer) {
+            const analyzer = new BABYLON.Analyser(scene) as any
+            analyzer.FFT_SIZE = 32
+            analyzer.SMOOTHING = 0
+            this.audioAnalyzer = analyzer
+        }
+        const csound = this.#csoundObj
+        const audioOutputNode = await csound.getNode()
+        audioOutputNode.connect(this.audioAnalyzerNode)
+
+        this.earliestNoteWasHeard = false
+        this.#startTime = -this.earliestNoteOnTime
+        const beforeRender = () => {
+            const bin = this.audioAnalyzer.getByteFrequencyData()
+            for (let i = 0; i < bin.length; i++) {
+                if (0 < bin[i]) {
+                    this.earliestNoteWasHeard = true
+                    this.#startTime += this.#audioContext.currentTime
+                    scene.unregisterBeforeRender(beforeRender)
+                    this.audioAnalyzerNode.disconnect()
+                    console.debug(`start heard at ${this.#audioContext.currentTime}`)
+                    console.debug(`start time = ${this.#startTime}`)
+                    break
+                }
+            }
+        }
+
+        scene.registerBeforeRender(beforeRender)
+    }
+
+    public earliestNoteWasHeard = false
+    private earliestNoteOnTime: number = 0
+    private audioAnalyzer: BABYLON.Analyser = null
+    private get audioAnalyzerNode() {
+        return (<any>this.audioAnalyzer)._webAudioAnalyser
     }
 }
 
@@ -342,16 +353,16 @@ class AudioEngine {
         csound = this.csound
     }
 
-    onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
-        return csound.onCameraMatrixChanged(matrix)
-    }
-
     public set earliestNoteOnTime(value: number) {
         this.csound.earliestNoteOnTime = value
     }
 
+    onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
+        return csound.onCameraMatrixChanged(matrix)
+    }
+
     public get sequenceTime(): number {
-        return this.csound.playbackIsStarted ? this.audioContext.currentTime - this.csound.startTime : 0
+        return this.csound.earliestNoteWasHeard ? this.audioContext.currentTime - this.csound.startTime : 0
     }
 
     public readyObservable = new BABYLON.Observable<void>()

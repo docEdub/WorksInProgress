@@ -43,14 +43,15 @@ class AudioEngine {
             channelMerger.connect(foaRenderer.input)
             foaRenderer.output.connect(audioContext.destination)
             foaRenderer.setRotationMatrix4(this._.rotationMatrix.m)
+            this._.audioOutputNode = foaRenderer.output
 
             const intervalId = setInterval(() => {
                 if (audioWY.isReady() && audioZX.isReady()) {
                     clearInterval(intervalId)
+                    this.listenForEarliestNoteOn()
                     audioContext.suspend()
                     audioWY.play()
                     audioZX.play()
-                    this._.startTime = audioContext.currentTime
                     audioContext.resume()
                     this.readyObservable.notifyObservers()
                 }
@@ -88,6 +89,10 @@ class AudioEngine {
         this._.audioZX = audioZX
     }
 
+    public set earliestNoteOnTime(value: number) {
+        this._.earliestNoteOnTime = value
+    }
+
     public onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
         matrix.decompose(undefined, this._.cameraRotationQuaternion)
         this._.cameraRotationQuaternion.toEulerAnglesToRef(this._.cameraRotation)
@@ -95,7 +100,7 @@ class AudioEngine {
     }
 
     public get sequenceTime(): number {
-        return this._.audioWY.isPlaying ? (this._.audioContext.currentTime - this._.startTime) - StartTimeOffset : 0
+        return this._.earliestNoteWasHeard ? (this._.audioContext.currentTime - this._.startTime) : 0
     }
 
     public readyObservable = new BABYLON.Observable<void>()
@@ -110,18 +115,54 @@ class AudioEngine {
     private onAudioEnded = () => {
         if (!this._.audioWY.isPlaying && !this._.audioZX.isPlaying) {
             console.debug(`Restarting audio`)
+            this.listenForEarliestNoteOn()
             this._.audioContext.suspend()
             this._.audioWY.play()
             this._.audioZX.play()
-            this._.startTime = this._.audioContext.currentTime
             this._.audioContext.resume()
         }
+    }
+
+    private get audioAnalyzerNode(): any {
+        return (<any>this._.audioAnalyzer)._webAudioAnalyser
+    }
+
+    private listenForEarliestNoteOn = () => {
+        let scene = BABYLON.Engine.LastCreatedScene!
+        if (!this._.audioAnalyzer) {
+            const analyzer = new BABYLON.Analyser(scene) as any
+            analyzer.FFT_SIZE = 32
+            analyzer.SMOOTHING = 0
+            this._.audioAnalyzer = analyzer
+        }
+        this._.audioOutputNode.connect(this.audioAnalyzerNode)
+
+        this._.earliestNoteWasHeard = false
+        this._.startTime = -this._.earliestNoteOnTime
+        const beforeRender = () => {
+            const bin = this._.audioAnalyzer.getByteFrequencyData()
+            for (let i = 0; i < bin.length; i++) {
+                if (0 < bin[i]) {
+                    this._.earliestNoteWasHeard = true
+                    this._.startTime += this._.audioContext.currentTime
+                    scene.unregisterBeforeRender(beforeRender)
+                    this.audioAnalyzerNode.disconnect()
+                    console.debug(`start heard at ${this._.audioContext.currentTime}`)
+                    console.debug(`start time = ${this._.startTime}`)
+                    break
+                }
+            }
+        }
+
+        scene.registerBeforeRender(beforeRender)
     }
 
     private _ = new class Private {
         audioContext = null
         audioWY: BABYLON.Sound = null
         audioZX: BABYLON.Sound = null
+        audioAnalyzer: BABYLON.Analyser = null
+        audioOutputNode: AudioNode = null
         cameraRotationQuaternion = new BABYLON.Quaternion
         cameraRotation = new BABYLON.Vector3
         rotationTargetY: number = 0
@@ -129,6 +170,8 @@ class AudioEngine {
         rotationY: number = 0
         rotationMatrix = new BABYLON.Matrix
         startTime: number = 0
+        earliestNoteOnTime: number = 0
+        earliestNoteWasHeard: boolean = false
     }
 }
 

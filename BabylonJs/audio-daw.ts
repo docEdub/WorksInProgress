@@ -125,6 +125,9 @@ class AudioEngine {
         }
     }
 
+    public set earliestNoteOnTime(value: number) {
+    }
+
     public onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
         this._.pendingCameraMatrix.copyFrom(matrix)
         if (this._.oscServer.status() === OSC_STATUS.IS_OPEN) {
