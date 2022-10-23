@@ -189,7 +189,7 @@ class Csound {
         let scene = BABYLON.Engine.LastCreatedScene!
         const node = await csound.getNode()
         const analyzer = new BABYLON.Analyser(scene) as any
-        analyzer.FFT_SIZE = 2048
+        analyzer.FFT_SIZE = 32
         analyzer.SMOOTHING = 0
         node.connect(analyzer._webAudioAnalyser)
 
@@ -301,7 +301,7 @@ class Csound {
     onLogMessage = (console, args) => {
         if (args[0].startsWith('csd:started')) {
             const scoreTime = Number(args[0].split(' at ')[1])
-            this.#startTime -= scoreTime
+            // this.#startTime -= scoreTime
             this.#playbackIsStarted = true
             console.debug(`Playback start message received. Score time = ${scoreTime}`)
             this.readyObservable.notifyObservers()
@@ -326,6 +326,10 @@ class Csound {
     }
 
     private readyObservable: BABYLON.Observable<void> = null
+
+    public set earliestNoteOnTime(value: number) {
+        this.#startTime -= value
+    }
 }
 
 //#endregion
@@ -340,6 +344,10 @@ class AudioEngine {
 
     onCameraMatrixChanged = (matrix: BABYLON.Matrix): void => {
         return csound.onCameraMatrixChanged(matrix)
+    }
+
+    public set earliestNoteOnTime(value: number) {
+        this.csound.earliestNoteOnTime = value
     }
 
     public get sequenceTime(): number {
