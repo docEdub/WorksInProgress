@@ -3138,11 +3138,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "0/0")
-chnset(a2, "0/0")
-chnset(a3, "0/0")
-chnset(a4, "0/0")
-chnset(aAuxOut, "0/0")
-chnset(aAuxOut, "0/0")
+chnset(a2, "0/1")
+chnset(a3, "0/2")
+chnset(a4, "0/3")
+chnset(aAuxOut, "0/4")
+chnset(aAuxOut, "0/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_4"))
@@ -3369,11 +3369,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "1/0")
-chnset(a2, "1/0")
-chnset(a3, "1/0")
-chnset(a4, "1/0")
-chnset(aAuxOut, "1/0")
-chnset(aAuxOut, "1/0")
+chnset(a2, "1/1")
+chnset(a3, "1/2")
+chnset(a4, "1/3")
+chnset(aAuxOut, "1/4")
+chnset(aAuxOut, "1/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[1] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_5"))
@@ -3600,11 +3600,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "2/0")
-chnset(a2, "2/0")
-chnset(a3, "2/0")
-chnset(a4, "2/0")
-chnset(aAuxOut, "2/0")
-chnset(aAuxOut, "2/0")
+chnset(a2, "2/1")
+chnset(a3, "2/2")
+chnset(a4, "2/3")
+chnset(aAuxOut, "2/4")
+chnset(aAuxOut, "2/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[2] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_6"))
@@ -3831,11 +3831,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "3/0")
-chnset(a2, "3/0")
-chnset(a3, "3/0")
-chnset(a4, "3/0")
-chnset(aAuxOut, "3/0")
-chnset(aAuxOut, "3/0")
+chnset(a2, "3/1")
+chnset(a3, "3/2")
+chnset(a4, "3/3")
+chnset(aAuxOut, "3/4")
+chnset(aAuxOut, "3/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[3] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_7"))
@@ -4062,11 +4062,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "4/0")
-chnset(a2, "4/0")
-chnset(a3, "4/0")
-chnset(a4, "4/0")
-chnset(aAuxOut, "4/0")
-chnset(aAuxOut, "4/0")
+chnset(a2, "4/1")
+chnset(a3, "4/2")
+chnset(a4, "4/3")
+chnset(aAuxOut, "4/4")
+chnset(aAuxOut, "4/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[4] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_8"))
@@ -4293,11 +4293,11 @@ a3 = 0
 a4 = 0
 endif
 chnset(a1, "5/0")
-chnset(a2, "5/0")
-chnset(a3, "5/0")
-chnset(a4, "5/0")
-chnset(aAuxOut, "5/0")
-chnset(aAuxOut, "5/0")
+chnset(a2, "5/1")
+chnset(a3, "5/2")
+chnset(a4, "5/3")
+chnset(aAuxOut, "5/4")
+chnset(aAuxOut, "5/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[5] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_9"))
