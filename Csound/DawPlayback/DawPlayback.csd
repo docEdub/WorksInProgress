@@ -53,7 +53,7 @@ nchnls = $OUTPUT_CHANNEL_COUNT
 
 #include "_.mode3_TrackDefines.h"
 
-${CSOUND_DEFINE} INSTANCE_NAME #"TestSynth playback"#
+${CSOUND_DEFINE} INSTANCE_NAME #"DAW playback"#
 ${CSOUND_INCLUDE} "af_global.orc"
 
 #define LOW_CHANNEL_COUNT_INDEX 0

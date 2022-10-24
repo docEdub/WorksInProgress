@@ -20,7 +20,7 @@ sr = 48000
 kr = 200
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
-#define INSTANCE_NAME #"TestSynth playback"#
+#define INSTANCE_NAME #"DAW playback"#
 #ifndef CSD_FILE_PATH
 #define CSD_FILE_PATH #"undefined"#
 #end
