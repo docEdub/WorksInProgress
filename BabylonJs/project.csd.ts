@@ -20,7 +20,7 @@ sr = 48000
 kr = 200
 nchnls = $OUTPUT_CHANNEL_COUNT
 0dbfs = 1
-#define INSTANCE_NAME #"TestSynth playback"#
+#define INSTANCE_NAME #"DAW playback"#
 #ifndef CSD_FILE_PATH
 #define CSD_FILE_PATH #"undefined"#
 #end
@@ -2469,7 +2469,7 @@ ga_AF_Reverb_Send += a_signal
 endop
 gi_instrumentCount = 1
 gi_instrumentIndexOffset = 0
-gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+gSInstrumentSignalIds[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
 gi_auxCount = 1
 gi_auxIndexOffset = 0
 giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
@@ -2499,8 +2499,17 @@ gi_instrumentIndexOffset = p5
 gi_auxCount = p6
 gi_auxIndexOffset = p7
 gi_trackCount = gi_instrumentCount + gi_auxCount
-a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-gaInstrumentSignals = a_instrumentSignals
+SInstrumentSignalIds[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+ii = 0
+while (ii < gi_instrumentCount) do
+ij = 0
+while (ij < $INTERNAL_CHANNEL_COUNT) do
+SInstrumentSignalIds[ii][ij] = sprintf("%d/%d", ii, ij)
+ij += 1
+od
+ii += 1
+od
+gSInstrumentSignalIds = SInstrumentSignalIds
 iAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
 iI = 0
 while (iI < gi_auxCount) do
@@ -2536,14 +2545,17 @@ turnoff
 endin
 instr 3
 gk_i += 1
-k_instrument = 0
-while (k_instrument < gi_instrumentCount) do
-k_channel = 0
-while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-gaInstrumentSignals[k_instrument][k_channel] = 0
-k_channel += 1
+iClearTrackChannelSignalInstrumentNumber = nstrnum("ClearTrackChannelSignal")
+iFraction = 1
+ii = 0
+while (ii < gi_instrumentCount) do
+ij = 0
+while (ij < $INTERNAL_CHANNEL_COUNT) do
+scoreline_i(sprintf("i %d.%03d 0 -1 %d %d", iClearTrackChannelSignalInstrumentNumber, iFraction, ii, ij))
+ij += 1
+iFraction += 1
 od
-k_instrument += 1
+ii += 1
 od
 k_bus = 0
 while (k_bus < gi_auxCount) do
@@ -2634,6 +2646,18 @@ prints("instr GenerateJson - done\\n")
 endin
 #end
 #define CSOUND_IS_PLAYBACK #1#
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -3125,12 +3149,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[0][0] = a1
-gaInstrumentSignals[0][1] = a2
-gaInstrumentSignals[0][2] = a3
-gaInstrumentSignals[0][3] = a4
-gaInstrumentSignals[0][4] = aAuxOut
-gaInstrumentSignals[0][5] = aAuxOut
+chnset(a1, "0/0")
+chnset(a2, "0/1")
+chnset(a3, "0/2")
+chnset(a4, "0/3")
+chnset(aAuxOut, "0/4")
+chnset(aAuxOut, "0/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_4"))
@@ -3157,6 +3181,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "1", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[1][0] = "8aac7747b6b44366b1080319e34a8616"
 instr Json_5
@@ -3344,12 +3380,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[1][0] = a1
-gaInstrumentSignals[1][1] = a2
-gaInstrumentSignals[1][2] = a3
-gaInstrumentSignals[1][3] = a4
-gaInstrumentSignals[1][4] = aAuxOut
-gaInstrumentSignals[1][5] = aAuxOut
+chnset(a1, "1/0")
+chnset(a2, "1/1")
+chnset(a3, "1/2")
+chnset(a4, "1/3")
+chnset(aAuxOut, "1/4")
+chnset(aAuxOut, "1/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[1] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_5"))
@@ -3376,6 +3412,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "2", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[2][0] = "8e12ccc0dff44a4283211d553199a8cd"
 instr Json_6
@@ -3563,12 +3611,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[2][0] = a1
-gaInstrumentSignals[2][1] = a2
-gaInstrumentSignals[2][2] = a3
-gaInstrumentSignals[2][3] = a4
-gaInstrumentSignals[2][4] = aAuxOut
-gaInstrumentSignals[2][5] = aAuxOut
+chnset(a1, "2/0")
+chnset(a2, "2/1")
+chnset(a3, "2/2")
+chnset(a4, "2/3")
+chnset(aAuxOut, "2/4")
+chnset(aAuxOut, "2/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[2] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_6"))
@@ -3595,6 +3643,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "3", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[3][0] = "6aecd056fd3f4c6d9a108de531c48ddf"
 instr Json_7
@@ -3782,12 +3842,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[3][0] = a1
-gaInstrumentSignals[3][1] = a2
-gaInstrumentSignals[3][2] = a3
-gaInstrumentSignals[3][3] = a4
-gaInstrumentSignals[3][4] = aAuxOut
-gaInstrumentSignals[3][5] = aAuxOut
+chnset(a1, "3/0")
+chnset(a2, "3/1")
+chnset(a3, "3/2")
+chnset(a4, "3/3")
+chnset(aAuxOut, "3/4")
+chnset(aAuxOut, "3/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[3] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_7"))
@@ -3814,6 +3874,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 7))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "4", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[4][0] = "e3e7d57082834a28b53e021beaeb783d"
 instr Json_8
@@ -4001,12 +4073,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[4][0] = a1
-gaInstrumentSignals[4][1] = a2
-gaInstrumentSignals[4][2] = a3
-gaInstrumentSignals[4][3] = a4
-gaInstrumentSignals[4][4] = aAuxOut
-gaInstrumentSignals[4][5] = aAuxOut
+chnset(a1, "4/0")
+chnset(a2, "4/1")
+chnset(a3, "4/2")
+chnset(a4, "4/3")
+chnset(aAuxOut, "4/4")
+chnset(aAuxOut, "4/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[4] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_8"))
@@ -4033,6 +4105,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "5", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[5][0] = "02c103e8fcef483292ebc49d3898ef96"
 instr Json_9
@@ -4220,12 +4304,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[5][0] = a1
-gaInstrumentSignals[5][1] = a2
-gaInstrumentSignals[5][2] = a3
-gaInstrumentSignals[5][3] = a4
-gaInstrumentSignals[5][4] = aAuxOut
-gaInstrumentSignals[5][5] = aAuxOut
+chnset(a1, "5/0")
+chnset(a2, "5/1")
+chnset(a3, "5/2")
+chnset(a4, "5/3")
+chnset(aAuxOut, "5/4")
+chnset(aAuxOut, "5/5")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[5] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_9"))
@@ -4252,6 +4336,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 9))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "6", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -4502,12 +4598,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[6][0] = gaInstrumentSignals[6][0] + a1
-gaInstrumentSignals[6][1] = gaInstrumentSignals[6][1] + a2
-gaInstrumentSignals[6][2] = gaInstrumentSignals[6][2] + a3
-gaInstrumentSignals[6][3] = gaInstrumentSignals[6][3] + a4
-gaInstrumentSignals[6][4] = gaInstrumentSignals[6][4] + aOut
-gaInstrumentSignals[6][5] = gaInstrumentSignals[6][5] + aOut
+chnmix(a1, "6/0")
+chnmix(a2, "6/1")
+chnmix(a3, "6/2")
+chnmix(a4, "6/3")
+chnmix(aOut, "6/4")
+chnmix(aOut, "6/5")
 #ifdef IS_GENERATING_JSON
 if (giTriangle2Synth_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_10"))
@@ -4539,6 +4635,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 10))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "7", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -4992,12 +5100,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-gaInstrumentSignals[7][0] = a1
-gaInstrumentSignals[7][1] = a2
-gaInstrumentSignals[7][2] = a3
-gaInstrumentSignals[7][3] = a4
-gaInstrumentSignals[7][4] = aOut
-gaInstrumentSignals[7][5] = aOut
+chnset(a1, "7/0")
+chnset(a2, "7/1")
+chnset(a3, "7/2")
+chnset(a4, "7/3")
+chnset(aOut, "7/4")
+chnset(aOut, "7/5")
 endif
 end:
 endin
@@ -5010,6 +5118,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 11))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "8", ii), 2)
+ii += 1
+od
 #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
 #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
 #end
@@ -5311,12 +5431,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-gaInstrumentSignals[8][0] = a1
-gaInstrumentSignals[8][1] = a2
-gaInstrumentSignals[8][2] = a3
-gaInstrumentSignals[8][3] = a4
-gaInstrumentSignals[8][4] = aOut
-gaInstrumentSignals[8][5] = aOut
+chnset(a1, "8/0")
+chnset(a2, "8/1")
+chnset(a3, "8/2")
+chnset(a4, "8/3")
+chnset(aOut, "8/4")
+chnset(aOut, "8/5")
 endif
 end:
 endin
@@ -5329,6 +5449,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 12))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "9", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -5600,12 +5732,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[9][0] = gaInstrumentSignals[9][0] + a1
-gaInstrumentSignals[9][1] = gaInstrumentSignals[9][1] + a2
-gaInstrumentSignals[9][2] = gaInstrumentSignals[9][2] + a3
-gaInstrumentSignals[9][3] = gaInstrumentSignals[9][3] + a4
-gaInstrumentSignals[9][4] = gaInstrumentSignals[9][4] + aReverbOut
-gaInstrumentSignals[9][5] = gaInstrumentSignals[9][5] + aReverbOut
+chnmix(a1, "9/0")
+chnmix(a2, "9/1")
+chnmix(a3, "9/2")
+chnmix(a4, "9/3")
+chnmix(aReverbOut, "9/4")
+chnmix(aReverbOut, "9/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5623,6 +5755,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 13))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "10", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[10][0] = "14afc0dff693459fb6fc521bcf3db0bc"
 instr Json_14
@@ -5746,12 +5890,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[10][0] = gaInstrumentSignals[10][0] + a1
-gaInstrumentSignals[10][1] = gaInstrumentSignals[10][1] + a2
-gaInstrumentSignals[10][2] = gaInstrumentSignals[10][2] + a3
-gaInstrumentSignals[10][3] = gaInstrumentSignals[10][3] + a4
-gaInstrumentSignals[10][4] = gaInstrumentSignals[10][4] + aReverbOut
-gaInstrumentSignals[10][5] = gaInstrumentSignals[10][5] + aReverbOut
+chnmix(a1, "10/0")
+chnmix(a2, "10/1")
+chnmix(a3, "10/2")
+chnmix(a4, "10/3")
+chnmix(aReverbOut, "10/4")
+chnmix(aReverbOut, "10/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5769,6 +5913,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 14))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "11", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[11][0] = "5006b8ea266f4bf9aba92ff5badfea3e"
 instr Json_15
@@ -5892,12 +6048,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[11][0] = gaInstrumentSignals[11][0] + a1
-gaInstrumentSignals[11][1] = gaInstrumentSignals[11][1] + a2
-gaInstrumentSignals[11][2] = gaInstrumentSignals[11][2] + a3
-gaInstrumentSignals[11][3] = gaInstrumentSignals[11][3] + a4
-gaInstrumentSignals[11][4] = gaInstrumentSignals[11][4] + aReverbOut
-gaInstrumentSignals[11][5] = gaInstrumentSignals[11][5] + aReverbOut
+chnmix(a1, "11/0")
+chnmix(a2, "11/1")
+chnmix(a3, "11/2")
+chnmix(a4, "11/3")
+chnmix(aReverbOut, "11/4")
+chnmix(aReverbOut, "11/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5915,6 +6071,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 15))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "12", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -6234,12 +6402,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[12][0] = gaInstrumentSignals[12][0] + a1
-gaInstrumentSignals[12][1] = gaInstrumentSignals[12][1] + a2
-gaInstrumentSignals[12][2] = gaInstrumentSignals[12][2] + a3
-gaInstrumentSignals[12][3] = gaInstrumentSignals[12][3] + a4
-gaInstrumentSignals[12][4] = gaInstrumentSignals[12][4] + aReverbOut
-gaInstrumentSignals[12][5] = gaInstrumentSignals[12][5] + aReverbOut
+chnmix(a1, "12/0")
+chnmix(a2, "12/1")
+chnmix(a3, "12/2")
+chnmix(a4, "12/3")
+chnmix(aReverbOut, "12/4")
+chnmix(aReverbOut, "12/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6257,6 +6425,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 16))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "13", ii), 2)
+ii += 1
+od
 gSCcInfo_Reverb[] = fillarray( \\
 \\
 "enabled", "bool", "false", "synced", \\
@@ -6383,46 +6563,39 @@ giCcValues_Reverb[0][iCcType] = iCcValue
 gkCcValues_Reverb[0][iCcType] = iCcValue
 turnoff
 elseif (iEventType == 1) then
-aIn[] init 2
-aOut[] init 2
-kI = 0
-kJ = 4
-while (kI < 2) do
+aIn1 init 0
+aIn2 init 0
+aOut1 init 0
+aOut2 init 0
 if (13 < gi_instrumentCount) then
-aIn[kI] = gaInstrumentSignals[13][kJ]
+aIn1 = chnget:a("13/4")
+aIn2 = chnget:a("13/5")
 else
 iAuxTrackIndex = 13 - gi_instrumentCount
-aIn[kI] = ga_auxSignals[iAuxTrackIndex][kJ]
+aIn1 = ga_auxSignals[iAuxTrackIndex][4]
+aIn1 = ga_auxSignals[iAuxTrackIndex][5]
 endif
-kJ += 1
-kI += 1
-od
 if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
+aOut1, aOut2 reverbsc aIn1, aIn2, gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
 kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
-aOut[0] = aOut[0] * kDryWet
-aOut[1] = aOut[1] * kDryWet
+aOut1 *= kDryWet
+aOut2 *= kDryWet
 kWetDry = 1 - kDryWet
-aOut[0] = aOut[0] + aIn[0] * kWetDry
-aOut[1] = aOut[1] + aIn[1] * kWetDry
+aOut1 += aIn1 * kWetDry
+aOut2 += aIn2 * kWetDry
 kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
-aOut[0] = aOut[0] * kVolume
-aOut[1] = aOut[1] * kVolume
+aOut1 *= kVolume
+aOut2 *= kVolume
 else
-aOut[0] = aIn[0]
-aOut[1] = aIn[1]
+aOut1 = aIn1
+aOut2 = aIn2
 endif
-kI = 0
-kJ = 4
-while (kI < 2) do
 iAuxTrackIndex = 13
 if (iAuxTrackIndex >= gi_instrumentCount) then
 iAuxTrackIndex -= gi_instrumentCount
 endif
-ga_auxSignals[iAuxTrackIndex][kJ] = aOut[kI]
-kJ += 1
-kI += 1
-od
+ga_auxSignals[iAuxTrackIndex][4] = aOut1
+ga_auxSignals[iAuxTrackIndex][5] = aOut2
 endif
 end:
 endin
@@ -6444,7 +6617,7 @@ kChannel = giAuxChannelIndexRanges[kAux][kInstrument][0]
 kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][1]
 while (kChannel <= kMaxChannel) do
 ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+ga_auxVolumes[kAux][kInstrument][kChannel] * chnget:a(gSInstrumentSignalIds[kInstrument][kChannel])
 kChannel += 1
 od
 kInstrument += 1
@@ -6478,7 +6651,7 @@ while (kTrack < gi_instrumentCount) do
 kChannel = giMasterChannelIndexRanges[kTrack][0]
 kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
 while (kChannel <= kChannelHigh) do
-ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
+ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + chnget:a(gSInstrumentSignalIds[kTrack][kChannel]) *
 ga_masterVolumes[kTrack][kChannel]
 kChannel += 1
 od
@@ -6551,6 +6724,10 @@ outs(aL * aMainVolume, aR * aMainVolume)
 aw += ga_masterSignals[4]
 fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
 #end
+endin
+instr ClearTrackChannelSignal
+SChannel init sprintf("%d/%d", p4, p5)
+chnclear(SChannel)
 endin
 instr EndOfInstrumentAllocations
 prints("-------------------------------------------------------------------------------------------------------\\n")

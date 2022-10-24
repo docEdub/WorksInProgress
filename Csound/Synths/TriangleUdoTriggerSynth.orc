@@ -87,12 +87,12 @@ instr INSTRUMENT_ID
         endif
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = aOut
+            chnset(a1, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+            chnset(a2, STRINGIZE(INSTRUMENT_TRACK_INDEX/1))
+            chnset(a3, STRINGIZE(INSTRUMENT_TRACK_INDEX/2))
+            chnset(a4, STRINGIZE(INSTRUMENT_TRACK_INDEX/3))
+            chnset(aOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/4))
+            chnset(aOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/5))
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1

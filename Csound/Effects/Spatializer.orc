@@ -78,7 +78,7 @@ instr INSTRUMENT_ID
 
         #if IS_PLAYBACK
             if (INSTRUMENT_TRACK_INDEX < gi_instrumentCount) then
-                aIn = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3]
+                aIn = chnget:a(STRINGIZE(INSTRUMENT_TRACK_INDEX/3))
             else
                 iAuxTrackIndex = INSTRUMENT_TRACK_INDEX - gi_instrumentCount
                 aIn = ga_auxSignals[iAuxTrackIndex][3]
