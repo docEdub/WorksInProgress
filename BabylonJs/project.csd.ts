@@ -2469,7 +2469,7 @@ ga_AF_Reverb_Send += a_signal
 endop
 gi_instrumentCount = 1
 gi_instrumentIndexOffset = 0
-gaInstrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+gSInstrumentSignalIds[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
 gi_auxCount = 1
 gi_auxIndexOffset = 0
 giAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
@@ -2499,8 +2499,17 @@ gi_instrumentIndexOffset = p5
 gi_auxCount = p6
 gi_auxIndexOffset = p7
 gi_trackCount = gi_instrumentCount + gi_auxCount
-a_instrumentSignals[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
-gaInstrumentSignals = a_instrumentSignals
+SInstrumentSignalIds[][] init gi_instrumentCount, $INTERNAL_CHANNEL_COUNT
+ii = 0
+while (ii < gi_instrumentCount) do
+ij = 0
+while (ij < $INTERNAL_CHANNEL_COUNT) do
+SInstrumentSignalIds[ii][ij] = sprintf("%d/%d", ii, ij)
+ij += 1
+od
+ii += 1
+od
+gSInstrumentSignalIds = SInstrumentSignalIds
 iAuxChannelIndexRanges[][][] init gi_auxCount, gi_instrumentCount, 2
 iI = 0
 while (iI < gi_auxCount) do
@@ -2536,14 +2545,17 @@ turnoff
 endin
 instr 3
 gk_i += 1
-k_instrument = 0
-while (k_instrument < gi_instrumentCount) do
-k_channel = 0
-while (k_channel < $INTERNAL_CHANNEL_COUNT) do
-gaInstrumentSignals[k_instrument][k_channel] = 0
-k_channel += 1
+iClearTrackChannelSignalInstrumentNumber = nstrnum("ClearTrackChannelSignal")
+iFraction = 1
+ii = 0
+while (ii < gi_instrumentCount) do
+ij = 0
+while (ij < $INTERNAL_CHANNEL_COUNT) do
+scoreline_i(sprintf("i %d.%03d 0 -1 %d %d", iClearTrackChannelSignalInstrumentNumber, iFraction, ii, ij))
+ij += 1
+iFraction += 1
 od
-k_instrument += 1
+ii += 1
 od
 k_bus = 0
 while (k_bus < gi_auxCount) do
@@ -6609,7 +6621,7 @@ kChannel = giAuxChannelIndexRanges[kAux][kInstrument][0]
 kMaxChannel = giAuxChannelIndexRanges[kAux][kInstrument][1]
 while (kChannel <= kMaxChannel) do
 ga_auxSignals[kAux][kChannel] = ga_auxSignals[kAux][kChannel] +
-ga_auxVolumes[kAux][kInstrument][kChannel] * gaInstrumentSignals[kInstrument][kChannel]
+ga_auxVolumes[kAux][kInstrument][kChannel] * chnget:a(gSInstrumentSignalIds[kInstrument][kChannel])
 kChannel += 1
 od
 kInstrument += 1
@@ -6643,7 +6655,7 @@ while (kTrack < gi_instrumentCount) do
 kChannel = giMasterChannelIndexRanges[kTrack][0]
 kChannelHigh = giMasterChannelIndexRanges[kTrack][1]
 while (kChannel <= kChannelHigh) do
-ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + gaInstrumentSignals[kTrack][kChannel] *
+ga_masterSignals[kChannel] = ga_masterSignals[kChannel] + chnget:a(gSInstrumentSignalIds[kTrack][kChannel]) *
 ga_masterVolumes[kTrack][kChannel]
 kChannel += 1
 od
@@ -6716,6 +6728,10 @@ outs(aL * aMainVolume, aR * aMainVolume)
 aw += ga_masterSignals[4]
 fout("mixdown-wyzx.aif", 9, aw, ay, az, ax)
 #end
+endin
+instr ClearTrackChannelSignal
+SChannel init sprintf("%d/%d", p4, p5)
+chnclear(SChannel)
 endin
 instr EndOfInstrumentAllocations
 prints("-------------------------------------------------------------------------------------------------------\\n")
