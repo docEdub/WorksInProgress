@@ -6565,7 +6565,8 @@ turnoff
 elseif (iEventType == 1) then
 aIn1 init 0
 aIn2 init 0
-aOut[] init 2
+aOut1 init 0
+aOut2 init 0
 if (13 < gi_instrumentCount) then
 aIn1 = chnget:a("13/4")
 aIn2 = chnget:a("13/5")
@@ -6575,31 +6576,26 @@ aIn1 = ga_auxSignals[iAuxTrackIndex][4]
 aIn1 = ga_auxSignals[iAuxTrackIndex][5]
 endif
 if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-aOut[0], aOut[1] reverbsc aIn1, aIn2, gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
+aOut1, aOut2 reverbsc aIn1, aIn2, gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
 kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
-aOut[0] = aOut[0] * kDryWet
-aOut[1] = aOut[1] * kDryWet
+aOut1 *= kDryWet
+aOut2 *= kDryWet
 kWetDry = 1 - kDryWet
-aOut[0] = aOut[0] + aIn1 * kWetDry
-aOut[1] = aOut[1] + aIn2 * kWetDry
+aOut1 += aIn1 * kWetDry
+aOut2 += aIn2 * kWetDry
 kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
-aOut[0] = aOut[0] * kVolume
-aOut[1] = aOut[1] * kVolume
+aOut1 *= kVolume
+aOut2 *= kVolume
 else
-aOut[0] = aIn1
-aOut[1] = aIn2
+aOut1 = aIn1
+aOut2 = aIn2
 endif
-kI = 0
-kJ = 4
-while (kI < 2) do
 iAuxTrackIndex = 13
 if (iAuxTrackIndex >= gi_instrumentCount) then
 iAuxTrackIndex -= gi_instrumentCount
 endif
-ga_auxSignals[iAuxTrackIndex][kJ] = aOut[kI]
-kJ += 1
-kI += 1
-od
+ga_auxSignals[iAuxTrackIndex][4] = aOut1
+ga_auxSignals[iAuxTrackIndex][5] = aOut2
 endif
 end:
 endin

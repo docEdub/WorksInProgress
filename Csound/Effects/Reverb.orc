@@ -80,7 +80,8 @@ instr INSTRUMENT_ID
     elseif (iEventType == EVENT_EFFECT_ON) then
         aIn1 init 0
         aIn2 init 0
-        aOut[] init 2
+        aOut1 init 0
+        aOut2 init 0
 
         #if IS_PLAYBACK
             if (INSTRUMENT_TRACK_INDEX < gi_instrumentCount) then
@@ -97,41 +98,36 @@ instr INSTRUMENT_ID
         #endif
 
         if (CC_VALUE_k(enabled) == true) then
-            aOut[0], aOut[1] reverbsc aIn1, aIn2, CC_VALUE_k(size), CC_VALUE_k(cutoffFrequency), sr, 0.1
+            aOut1, aOut2 reverbsc aIn1, aIn2, CC_VALUE_k(size), CC_VALUE_k(cutoffFrequency), sr, 0.1
             kDryWet = CC_VALUE_k(dryWet)
-            aOut[0] = aOut[0] * kDryWet
-            aOut[1] = aOut[1] * kDryWet
+            aOut1 *= kDryWet
+            aOut2 *= kDryWet
             kWetDry = 1 - kDryWet
-            aOut[0] = aOut[0] + aIn1 * kWetDry
-            aOut[1] = aOut[1] + aIn2 * kWetDry
+            aOut1 += aIn1 * kWetDry
+            aOut2 += aIn2 * kWetDry
             kVolume = CC_VALUE_k(volume)
-            aOut[0] = aOut[0] * kVolume
-            aOut[1] = aOut[1] * kVolume
+            aOut1 *= kVolume
+            aOut2 *= kVolume
         else
-            aOut[0] = aIn1
-            aOut[1] = aIn2
+            aOut1 = aIn1
+            aOut2 = aIn2
         endif
 
         #if IS_PLAYBACK
             log_i_debug("Instrument count = %d", gi_instrumentCount)
         #endif
 
-        kI = 0
-        kJ = 4
-        while (kI < 2) do
-            #if IS_PLAYBACK
-                iAuxTrackIndex = INSTRUMENT_TRACK_INDEX
-                if (iAuxTrackIndex >= gi_instrumentCount) then
-                    iAuxTrackIndex -= gi_instrumentCount
-                endif
-                ga_auxSignals[iAuxTrackIndex][kJ] = aOut[kI]
-                kJ += 1
-            #else
-                kJ += 1
-                outch(kJ, aOut[kI])
-            #endif
-            kI += 1
-        od
+        #if IS_PLAYBACK
+            iAuxTrackIndex = INSTRUMENT_TRACK_INDEX
+            if (iAuxTrackIndex >= gi_instrumentCount) then
+                iAuxTrackIndex -= gi_instrumentCount
+            endif
+            ga_auxSignals[iAuxTrackIndex][4] = aOut1
+            ga_auxSignals[iAuxTrackIndex][5] = aOut2
+        #else
+            outch(5, aOut1)
+            outch(6, aOut2)
+        #endif
 
         #if !IS_PLAYBACK
             if (gkReloaded == true) then
