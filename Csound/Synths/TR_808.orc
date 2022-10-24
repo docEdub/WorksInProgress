@@ -479,12 +479,12 @@ instr INSTRUMENT_ID
             endif
 
             #if IS_PLAYBACK
-                chnset(a1, STRINGIZE(MIX_ID/0))
-                chnset(a2, STRINGIZE(MIX_ID/0))
-                chnset(a3, STRINGIZE(MIX_ID/0))
-                chnset(a4, STRINGIZE(MIX_ID/0))
-                chnset(aAuxOut, STRINGIZE(MIX_ID/0))
-                chnset(aAuxOut, STRINGIZE(MIX_ID/0))
+                chnset(a1, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+                chnset(a2, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+                chnset(a3, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+                chnset(a4, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+                chnset(aAuxOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+                chnset(aAuxOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
             #else
                 kReloaded init false
                 kFadeTimeLeft init 0.1

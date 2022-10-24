@@ -238,12 +238,12 @@ instr INSTRUMENT_ID
         endif
 
         #if IS_PLAYBACK
-            chnmix(a1, STRINGIZE(MIX_ID/0))
-            chnmix(a2, STRINGIZE(MIX_ID/1))
-            chnmix(a3, STRINGIZE(MIX_ID/2))
-            chnmix(a4, STRINGIZE(MIX_ID/3))
-            chnmix(aReverbOut, STRINGIZE(MIX_ID/4))
-            chnmix(aReverbOut, STRINGIZE(MIX_ID/5))
+            chnmix(a1, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+            chnmix(a2, STRINGIZE(INSTRUMENT_TRACK_INDEX/1))
+            chnmix(a3, STRINGIZE(INSTRUMENT_TRACK_INDEX/2))
+            chnmix(a4, STRINGIZE(INSTRUMENT_TRACK_INDEX/3))
+            chnmix(aReverbOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/4))
+            chnmix(aReverbOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/5))
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1

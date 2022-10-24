@@ -22,10 +22,6 @@
     #define ORC_INSTANCE_INDEX 0
 #endif
 
-#ifndef MIX_ID
-    #define MIX_ID 0/0
-#endif
-
 _(#)ifndef MIX_CHANNEL_COUNT
     _(#)ifdef INTERNAL_CHANNEL_COUNT
         _(#)define MIX_CHANNEL_COUNT _(#) $INTERNAL_CHANNEL_COUNT _(#)
@@ -36,6 +32,6 @@ _(#)endif
 
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-    chn_a(sprintf("%s/%d", STRINGIZE(MIX_ID), ii), 2)
+    chn_a(sprintf("%s/%d", STRINGIZE(INSTRUMENT_TRACK_INDEX), ii), 2)
     ii += 1
 od

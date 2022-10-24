@@ -2643,7 +2643,7 @@ endin
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "0/0", ii), 2)
+chn_a(sprintf("%s/%d", "0", ii), 2)
 ii += 1
 od
 #ifndef ADSR_LINSEGR_UDO_ORC
@@ -3137,12 +3137,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "0/0/0")
-chnset(a2, "0/0/0")
-chnset(a3, "0/0/0")
-chnset(a4, "0/0/0")
-chnset(aAuxOut, "0/0/0")
-chnset(aAuxOut, "0/0/0")
+chnset(a1, "0/0")
+chnset(a2, "0/0")
+chnset(a3, "0/0")
+chnset(a4, "0/0")
+chnset(aAuxOut, "0/0")
+chnset(aAuxOut, "0/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_4"))
@@ -3178,7 +3178,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "1/1", ii), 2)
+chn_a(sprintf("%s/%d", "1", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -3368,12 +3368,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "1/1/0")
-chnset(a2, "1/1/0")
-chnset(a3, "1/1/0")
-chnset(a4, "1/1/0")
-chnset(aAuxOut, "1/1/0")
-chnset(aAuxOut, "1/1/0")
+chnset(a1, "1/0")
+chnset(a2, "1/0")
+chnset(a3, "1/0")
+chnset(a4, "1/0")
+chnset(aAuxOut, "1/0")
+chnset(aAuxOut, "1/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[1] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_5"))
@@ -3409,7 +3409,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "2/2", ii), 2)
+chn_a(sprintf("%s/%d", "2", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -3599,12 +3599,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "2/2/0")
-chnset(a2, "2/2/0")
-chnset(a3, "2/2/0")
-chnset(a4, "2/2/0")
-chnset(aAuxOut, "2/2/0")
-chnset(aAuxOut, "2/2/0")
+chnset(a1, "2/0")
+chnset(a2, "2/0")
+chnset(a3, "2/0")
+chnset(a4, "2/0")
+chnset(aAuxOut, "2/0")
+chnset(aAuxOut, "2/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[2] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_6"))
@@ -3640,7 +3640,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "3/3", ii), 2)
+chn_a(sprintf("%s/%d", "3", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -3830,12 +3830,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "3/3/0")
-chnset(a2, "3/3/0")
-chnset(a3, "3/3/0")
-chnset(a4, "3/3/0")
-chnset(aAuxOut, "3/3/0")
-chnset(aAuxOut, "3/3/0")
+chnset(a1, "3/0")
+chnset(a2, "3/0")
+chnset(a3, "3/0")
+chnset(a4, "3/0")
+chnset(aAuxOut, "3/0")
+chnset(aAuxOut, "3/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[3] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_7"))
@@ -3871,7 +3871,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 7))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "4/4", ii), 2)
+chn_a(sprintf("%s/%d", "4", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -4061,12 +4061,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "4/4/0")
-chnset(a2, "4/4/0")
-chnset(a3, "4/4/0")
-chnset(a4, "4/4/0")
-chnset(aAuxOut, "4/4/0")
-chnset(aAuxOut, "4/4/0")
+chnset(a1, "4/0")
+chnset(a2, "4/0")
+chnset(a3, "4/0")
+chnset(a4, "4/0")
+chnset(aAuxOut, "4/0")
+chnset(aAuxOut, "4/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[4] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_8"))
@@ -4102,7 +4102,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "5/5", ii), 2)
+chn_a(sprintf("%s/%d", "5", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -4292,12 +4292,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnset(a1, "5/5/0")
-chnset(a2, "5/5/0")
-chnset(a3, "5/5/0")
-chnset(a4, "5/5/0")
-chnset(aAuxOut, "5/5/0")
-chnset(aAuxOut, "5/5/0")
+chnset(a1, "5/0")
+chnset(a2, "5/0")
+chnset(a3, "5/0")
+chnset(a4, "5/0")
+chnset(aAuxOut, "5/0")
+chnset(aAuxOut, "5/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[5] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_9"))
@@ -4333,7 +4333,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 9))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "6/0", ii), 2)
+chn_a(sprintf("%s/%d", "6", ii), 2)
 ii += 1
 od
 #ifndef ADSR_LINSEGR_UDO_ORC
@@ -4586,12 +4586,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnmix(a1, "6/0/0")
-chnmix(a2, "6/0/1")
-chnmix(a3, "6/0/2")
-chnmix(a4, "6/0/3")
-chnmix(aOut, "6/0/4")
-chnmix(aOut, "6/0/5")
+chnmix(a1, "6/0")
+chnmix(a2, "6/1")
+chnmix(a3, "6/2")
+chnmix(a4, "6/3")
+chnmix(aOut, "6/4")
+chnmix(aOut, "6/5")
 #ifdef IS_GENERATING_JSON
 if (giTriangle2Synth_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_10"))
@@ -4632,7 +4632,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 10))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "7/0", ii), 2)
+chn_a(sprintf("%s/%d", "7", ii), 2)
 ii += 1
 od
 #ifndef ADSR_LINSEGR_UDO_ORC
@@ -5088,12 +5088,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-chnset(a1, "7/0/0")
-chnset(a2, "7/0/1")
-chnset(a3, "7/0/2")
-chnset(a4, "7/0/3")
-chnset(aOut, "7/0/4")
-chnset(aOut, "7/0/5")
+chnset(a1, "7/0")
+chnset(a2, "7/1")
+chnset(a3, "7/2")
+chnset(a4, "7/3")
+chnset(aOut, "7/4")
+chnset(aOut, "7/5")
 endif
 end:
 endin
@@ -5115,7 +5115,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 11))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "8/1", ii), 2)
+chn_a(sprintf("%s/%d", "8", ii), 2)
 ii += 1
 od
 #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
@@ -5419,12 +5419,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-chnset(a1, "8/1/0")
-chnset(a2, "8/1/1")
-chnset(a3, "8/1/2")
-chnset(a4, "8/1/3")
-chnset(aOut, "8/1/4")
-chnset(aOut, "8/1/5")
+chnset(a1, "8/0")
+chnset(a2, "8/1")
+chnset(a3, "8/2")
+chnset(a4, "8/3")
+chnset(aOut, "8/4")
+chnset(aOut, "8/5")
 endif
 end:
 endin
@@ -5446,7 +5446,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 12))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "9/0", ii), 2)
+chn_a(sprintf("%s/%d", "9", ii), 2)
 ii += 1
 od
 #ifndef ADSR_LINSEGR_UDO_ORC
@@ -5720,12 +5720,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnmix(a1, "9/0/0")
-chnmix(a2, "9/0/1")
-chnmix(a3, "9/0/2")
-chnmix(a4, "9/0/3")
-chnmix(aReverbOut, "9/0/4")
-chnmix(aReverbOut, "9/0/5")
+chnmix(a1, "9/0")
+chnmix(a2, "9/1")
+chnmix(a3, "9/2")
+chnmix(a4, "9/3")
+chnmix(aReverbOut, "9/4")
+chnmix(aReverbOut, "9/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5752,7 +5752,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 13))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "10/1", ii), 2)
+chn_a(sprintf("%s/%d", "10", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -5878,12 +5878,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnmix(a1, "10/1/0")
-chnmix(a2, "10/1/1")
-chnmix(a3, "10/1/2")
-chnmix(a4, "10/1/3")
-chnmix(aReverbOut, "10/1/4")
-chnmix(aReverbOut, "10/1/5")
+chnmix(a1, "10/0")
+chnmix(a2, "10/1")
+chnmix(a3, "10/2")
+chnmix(a4, "10/3")
+chnmix(aReverbOut, "10/4")
+chnmix(aReverbOut, "10/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5910,7 +5910,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 14))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "11/2", ii), 2)
+chn_a(sprintf("%s/%d", "11", ii), 2)
 ii += 1
 od
 #ifdef IS_GENERATING_JSON
@@ -6036,12 +6036,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnmix(a1, "11/2/0")
-chnmix(a2, "11/2/1")
-chnmix(a3, "11/2/2")
-chnmix(a4, "11/2/3")
-chnmix(aReverbOut, "11/2/4")
-chnmix(aReverbOut, "11/2/5")
+chnmix(a1, "11/0")
+chnmix(a2, "11/1")
+chnmix(a3, "11/2")
+chnmix(a4, "11/3")
+chnmix(aReverbOut, "11/4")
+chnmix(aReverbOut, "11/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6068,7 +6068,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 15))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "12/0", ii), 2)
+chn_a(sprintf("%s/%d", "12", ii), 2)
 ii += 1
 od
 #ifndef ADSR_LINSEGR_UDO_ORC
@@ -6390,12 +6390,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-chnmix(a1, "12/0/0")
-chnmix(a2, "12/0/1")
-chnmix(a3, "12/0/2")
-chnmix(a4, "12/0/3")
-chnmix(aReverbOut, "12/0/4")
-chnmix(aReverbOut, "12/0/5")
+chnmix(a1, "12/0")
+chnmix(a2, "12/1")
+chnmix(a3, "12/2")
+chnmix(a4, "12/3")
+chnmix(aReverbOut, "12/4")
+chnmix(aReverbOut, "12/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6422,7 +6422,7 @@ scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 16))
 #endif
 ii = 0
 while (ii < $MIX_CHANNEL_COUNT) do
-chn_a(sprintf("%s/%d", "13/0", ii), 2)
+chn_a(sprintf("%s/%d", "13", ii), 2)
 ii += 1
 od
 gSCcInfo_Reverb[] = fillarray( \\
@@ -6555,8 +6555,8 @@ aIn1 init 0
 aIn2 init 0
 aOut[] init 2
 if (13 < gi_instrumentCount) then
-aIn1 = chnget:a("13/0/4")
-aIn2 = chnget:a("13/0/5")
+aIn1 = chnget:a("13/4")
+aIn2 = chnget:a("13/5")
 else
 iAuxTrackIndex = 13 - gi_instrumentCount
 aIn1 = ga_auxSignals[iAuxTrackIndex][4]

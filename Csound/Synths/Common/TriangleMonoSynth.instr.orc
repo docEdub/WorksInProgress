@@ -329,12 +329,12 @@ instr INSTRUMENT_ID
 
     end__mono_handler:
         #if IS_PLAYBACK
-            chnset(a1, STRINGIZE(MIX_ID/0))
-            chnset(a2, STRINGIZE(MIX_ID/1))
-            chnset(a3, STRINGIZE(MIX_ID/2))
-            chnset(a4, STRINGIZE(MIX_ID/3))
-            chnset(aOut, STRINGIZE(MIX_ID/4))
-            chnset(aOut, STRINGIZE(MIX_ID/5))
+            chnset(a1, STRINGIZE(INSTRUMENT_TRACK_INDEX/0))
+            chnset(a2, STRINGIZE(INSTRUMENT_TRACK_INDEX/1))
+            chnset(a3, STRINGIZE(INSTRUMENT_TRACK_INDEX/2))
+            chnset(a4, STRINGIZE(INSTRUMENT_TRACK_INDEX/3))
+            chnset(aOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/4))
+            chnset(aOut, STRINGIZE(INSTRUMENT_TRACK_INDEX/5))
         #else
             outc(a1, a2, a3, a4, aOut, aOut)
         #endif
