@@ -157,12 +157,12 @@ instr INSTRUMENT_ID
         endif
 
         #if IS_PLAYBACK
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][0] + a1
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][1] + a2
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][2] + a3
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][3] + a4
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][4] + aOut
-            gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][5] + aOut
+            chnmix(a1, STRINGIZE(MIX_ID/0))
+            chnmix(a2, STRINGIZE(MIX_ID/1))
+            chnmix(a3, STRINGIZE(MIX_ID/2))
+            chnmix(a4, STRINGIZE(MIX_ID/3))
+            chnmix(aOut, STRINGIZE(MIX_ID/4))
+            chnmix(aOut, STRINGIZE(MIX_ID/5))
         #else
             kReloaded init false
             kFadeTimeLeft init 0.1

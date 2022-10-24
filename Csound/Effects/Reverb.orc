@@ -78,41 +78,38 @@ instr INSTRUMENT_ID
         gkCcValues[ORC_INSTANCE_INDEX][iCcType] = iCcValue
         turnoff
     elseif (iEventType == EVENT_EFFECT_ON) then
-        aIn[] init 2
+        aIn1 init 0
+        aIn2 init 0
         aOut[] init 2
 
-        kI = 0
-        kJ = 4
-        while (kI < 2) do
-            #if IS_PLAYBACK
-                if (INSTRUMENT_TRACK_INDEX < gi_instrumentCount) then
-                    aIn[kI] = gaInstrumentSignals[INSTRUMENT_TRACK_INDEX][kJ]
-                else
-                    iAuxTrackIndex = INSTRUMENT_TRACK_INDEX - gi_instrumentCount
-                    aIn[kI] = ga_auxSignals[iAuxTrackIndex][kJ]
-                endif
-                kJ += 1
-            #else
-                kJ += 1
-                aIn[kI] = inch(kJ)
-            #endif
-            kI += 1
-        od
+        #if IS_PLAYBACK
+            if (INSTRUMENT_TRACK_INDEX < gi_instrumentCount) then
+                aIn1 = chnget:a(STRINGIZE(MIX_ID/4))
+                aIn2 = chnget:a(STRINGIZE(MIX_ID/5))
+            else
+                iAuxTrackIndex = INSTRUMENT_TRACK_INDEX - gi_instrumentCount
+                aIn1 = ga_auxSignals[iAuxTrackIndex][4]
+                aIn1 = ga_auxSignals[iAuxTrackIndex][5]
+            endif
+        #else
+            aIn1 = inch(5)
+            aIn2 = inch(6)
+        #endif
 
         if (CC_VALUE_k(enabled) == true) then
-            aOut[0], aOut[1] reverbsc aIn[0], aIn[1], CC_VALUE_k(size), CC_VALUE_k(cutoffFrequency), sr, 0.1
+            aOut[0], aOut[1] reverbsc aIn1, aIn2, CC_VALUE_k(size), CC_VALUE_k(cutoffFrequency), sr, 0.1
             kDryWet = CC_VALUE_k(dryWet)
             aOut[0] = aOut[0] * kDryWet
             aOut[1] = aOut[1] * kDryWet
             kWetDry = 1 - kDryWet
-            aOut[0] = aOut[0] + aIn[0] * kWetDry
-            aOut[1] = aOut[1] + aIn[1] * kWetDry
+            aOut[0] = aOut[0] + aIn1 * kWetDry
+            aOut[1] = aOut[1] + aIn2 * kWetDry
             kVolume = CC_VALUE_k(volume)
             aOut[0] = aOut[0] * kVolume
             aOut[1] = aOut[1] * kVolume
         else
-            aOut[0] = aIn[0]
-            aOut[1] = aIn[1]
+            aOut[0] = aIn1
+            aOut[1] = aIn2
         endif
 
         #if IS_PLAYBACK

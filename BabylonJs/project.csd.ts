@@ -3137,12 +3137,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[0][0] = a1
-gaInstrumentSignals[0][1] = a2
-gaInstrumentSignals[0][2] = a3
-gaInstrumentSignals[0][3] = a4
-gaInstrumentSignals[0][4] = aAuxOut
-gaInstrumentSignals[0][5] = aAuxOut
+chnset(a1, "0/0/0")
+chnset(a2, "0/0/0")
+chnset(a3, "0/0/0")
+chnset(a4, "0/0/0")
+chnset(aAuxOut, "0/0/0")
+chnset(aAuxOut, "0/0/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_4"))
@@ -3368,12 +3368,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[1][0] = a1
-gaInstrumentSignals[1][1] = a2
-gaInstrumentSignals[1][2] = a3
-gaInstrumentSignals[1][3] = a4
-gaInstrumentSignals[1][4] = aAuxOut
-gaInstrumentSignals[1][5] = aAuxOut
+chnset(a1, "1/1/0")
+chnset(a2, "1/1/0")
+chnset(a3, "1/1/0")
+chnset(a4, "1/1/0")
+chnset(aAuxOut, "1/1/0")
+chnset(aAuxOut, "1/1/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[1] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_5"))
@@ -3599,12 +3599,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[2][0] = a1
-gaInstrumentSignals[2][1] = a2
-gaInstrumentSignals[2][2] = a3
-gaInstrumentSignals[2][3] = a4
-gaInstrumentSignals[2][4] = aAuxOut
-gaInstrumentSignals[2][5] = aAuxOut
+chnset(a1, "2/2/0")
+chnset(a2, "2/2/0")
+chnset(a3, "2/2/0")
+chnset(a4, "2/2/0")
+chnset(aAuxOut, "2/2/0")
+chnset(aAuxOut, "2/2/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[2] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_6"))
@@ -3830,12 +3830,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[3][0] = a1
-gaInstrumentSignals[3][1] = a2
-gaInstrumentSignals[3][2] = a3
-gaInstrumentSignals[3][3] = a4
-gaInstrumentSignals[3][4] = aAuxOut
-gaInstrumentSignals[3][5] = aAuxOut
+chnset(a1, "3/3/0")
+chnset(a2, "3/3/0")
+chnset(a3, "3/3/0")
+chnset(a4, "3/3/0")
+chnset(aAuxOut, "3/3/0")
+chnset(aAuxOut, "3/3/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[3] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_7"))
@@ -4061,12 +4061,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[4][0] = a1
-gaInstrumentSignals[4][1] = a2
-gaInstrumentSignals[4][2] = a3
-gaInstrumentSignals[4][3] = a4
-gaInstrumentSignals[4][4] = aAuxOut
-gaInstrumentSignals[4][5] = aAuxOut
+chnset(a1, "4/4/0")
+chnset(a2, "4/4/0")
+chnset(a3, "4/4/0")
+chnset(a4, "4/4/0")
+chnset(aAuxOut, "4/4/0")
+chnset(aAuxOut, "4/4/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[4] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_8"))
@@ -4292,12 +4292,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[5][0] = a1
-gaInstrumentSignals[5][1] = a2
-gaInstrumentSignals[5][2] = a3
-gaInstrumentSignals[5][3] = a4
-gaInstrumentSignals[5][4] = aAuxOut
-gaInstrumentSignals[5][5] = aAuxOut
+chnset(a1, "5/5/0")
+chnset(a2, "5/5/0")
+chnset(a3, "5/5/0")
+chnset(a4, "5/5/0")
+chnset(aAuxOut, "5/5/0")
+chnset(aAuxOut, "5/5/0")
 #ifdef IS_GENERATING_JSON
 if (giTR_808_NoteIndex[5] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_9"))
@@ -4586,12 +4586,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[6][0] = gaInstrumentSignals[6][0] + a1
-gaInstrumentSignals[6][1] = gaInstrumentSignals[6][1] + a2
-gaInstrumentSignals[6][2] = gaInstrumentSignals[6][2] + a3
-gaInstrumentSignals[6][3] = gaInstrumentSignals[6][3] + a4
-gaInstrumentSignals[6][4] = gaInstrumentSignals[6][4] + aOut
-gaInstrumentSignals[6][5] = gaInstrumentSignals[6][5] + aOut
+chnmix(a1, "6/0/0")
+chnmix(a2, "6/0/1")
+chnmix(a3, "6/0/2")
+chnmix(a4, "6/0/3")
+chnmix(aOut, "6/0/4")
+chnmix(aOut, "6/0/5")
 #ifdef IS_GENERATING_JSON
 if (giTriangle2Synth_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_10"))
@@ -5088,12 +5088,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-gaInstrumentSignals[7][0] = a1
-gaInstrumentSignals[7][1] = a2
-gaInstrumentSignals[7][2] = a3
-gaInstrumentSignals[7][3] = a4
-gaInstrumentSignals[7][4] = aOut
-gaInstrumentSignals[7][5] = aOut
+chnset(a1, "7/0/0")
+chnset(a2, "7/0/1")
+chnset(a3, "7/0/2")
+chnset(a4, "7/0/3")
+chnset(aOut, "7/0/4")
+chnset(aOut, "7/0/5")
 endif
 end:
 endin
@@ -5419,12 +5419,12 @@ endif
 kJsonFirstPass = 0
 #end
 end__mono_handler:
-gaInstrumentSignals[8][0] = a1
-gaInstrumentSignals[8][1] = a2
-gaInstrumentSignals[8][2] = a3
-gaInstrumentSignals[8][3] = a4
-gaInstrumentSignals[8][4] = aOut
-gaInstrumentSignals[8][5] = aOut
+chnset(a1, "8/1/0")
+chnset(a2, "8/1/1")
+chnset(a3, "8/1/2")
+chnset(a4, "8/1/3")
+chnset(aOut, "8/1/4")
+chnset(aOut, "8/1/5")
 endif
 end:
 endin
@@ -5720,12 +5720,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[9][0] = gaInstrumentSignals[9][0] + a1
-gaInstrumentSignals[9][1] = gaInstrumentSignals[9][1] + a2
-gaInstrumentSignals[9][2] = gaInstrumentSignals[9][2] + a3
-gaInstrumentSignals[9][3] = gaInstrumentSignals[9][3] + a4
-gaInstrumentSignals[9][4] = gaInstrumentSignals[9][4] + aReverbOut
-gaInstrumentSignals[9][5] = gaInstrumentSignals[9][5] + aReverbOut
+chnmix(a1, "9/0/0")
+chnmix(a2, "9/0/1")
+chnmix(a3, "9/0/2")
+chnmix(a4, "9/0/3")
+chnmix(aReverbOut, "9/0/4")
+chnmix(aReverbOut, "9/0/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -5878,12 +5878,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[10][0] = gaInstrumentSignals[10][0] + a1
-gaInstrumentSignals[10][1] = gaInstrumentSignals[10][1] + a2
-gaInstrumentSignals[10][2] = gaInstrumentSignals[10][2] + a3
-gaInstrumentSignals[10][3] = gaInstrumentSignals[10][3] + a4
-gaInstrumentSignals[10][4] = gaInstrumentSignals[10][4] + aReverbOut
-gaInstrumentSignals[10][5] = gaInstrumentSignals[10][5] + aReverbOut
+chnmix(a1, "10/1/0")
+chnmix(a2, "10/1/1")
+chnmix(a3, "10/1/2")
+chnmix(a4, "10/1/3")
+chnmix(aReverbOut, "10/1/4")
+chnmix(aReverbOut, "10/1/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6036,12 +6036,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[11][0] = gaInstrumentSignals[11][0] + a1
-gaInstrumentSignals[11][1] = gaInstrumentSignals[11][1] + a2
-gaInstrumentSignals[11][2] = gaInstrumentSignals[11][2] + a3
-gaInstrumentSignals[11][3] = gaInstrumentSignals[11][3] + a4
-gaInstrumentSignals[11][4] = gaInstrumentSignals[11][4] + aReverbOut
-gaInstrumentSignals[11][5] = gaInstrumentSignals[11][5] + aReverbOut
+chnmix(a1, "11/2/0")
+chnmix(a2, "11/2/1")
+chnmix(a3, "11/2/2")
+chnmix(a4, "11/2/3")
+chnmix(aReverbOut, "11/2/4")
+chnmix(aReverbOut, "11/2/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6390,12 +6390,12 @@ a2 = 0
 a3 = 0
 a4 = 0
 endif
-gaInstrumentSignals[12][0] = gaInstrumentSignals[12][0] + a1
-gaInstrumentSignals[12][1] = gaInstrumentSignals[12][1] + a2
-gaInstrumentSignals[12][2] = gaInstrumentSignals[12][2] + a3
-gaInstrumentSignals[12][3] = gaInstrumentSignals[12][3] + a4
-gaInstrumentSignals[12][4] = gaInstrumentSignals[12][4] + aReverbOut
-gaInstrumentSignals[12][5] = gaInstrumentSignals[12][5] + aReverbOut
+chnmix(a1, "12/0/0")
+chnmix(a2, "12/0/1")
+chnmix(a3, "12/0/2")
+chnmix(a4, "12/0/3")
+chnmix(aReverbOut, "12/0/4")
+chnmix(aReverbOut, "12/0/5")
 #ifdef IS_GENERATING_JSON
 if (lastcycle() == 1) then
 fprintks(SJsonFile, ",\\"offTime\\":%.3f}}", timeinsts() + iOnTime)
@@ -6551,34 +6551,31 @@ giCcValues_Reverb[0][iCcType] = iCcValue
 gkCcValues_Reverb[0][iCcType] = iCcValue
 turnoff
 elseif (iEventType == 1) then
-aIn[] init 2
+aIn1 init 0
+aIn2 init 0
 aOut[] init 2
-kI = 0
-kJ = 4
-while (kI < 2) do
 if (13 < gi_instrumentCount) then
-aIn[kI] = gaInstrumentSignals[13][kJ]
+aIn1 = chnget:a("13/0/4")
+aIn2 = chnget:a("13/0/5")
 else
 iAuxTrackIndex = 13 - gi_instrumentCount
-aIn[kI] = ga_auxSignals[iAuxTrackIndex][kJ]
+aIn1 = ga_auxSignals[iAuxTrackIndex][4]
+aIn1 = ga_auxSignals[iAuxTrackIndex][5]
 endif
-kJ += 1
-kI += 1
-od
 if (gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_enabled] == 1) then
-aOut[0], aOut[1] reverbsc aIn[0], aIn[1], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
+aOut[0], aOut[1] reverbsc aIn1, aIn2, gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_size], gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_cutoffFrequency], sr, 0.1
 kDryWet = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_dryWet]
 aOut[0] = aOut[0] * kDryWet
 aOut[1] = aOut[1] * kDryWet
 kWetDry = 1 - kDryWet
-aOut[0] = aOut[0] + aIn[0] * kWetDry
-aOut[1] = aOut[1] + aIn[1] * kWetDry
+aOut[0] = aOut[0] + aIn1 * kWetDry
+aOut[1] = aOut[1] + aIn2 * kWetDry
 kVolume = gkCcValues_Reverb[iOrcInstanceIndex][giCc_Reverb_volume]
 aOut[0] = aOut[0] * kVolume
 aOut[1] = aOut[1] * kVolume
 else
-aOut[0] = aIn[0]
-aOut[1] = aIn[1]
+aOut[0] = aIn1
+aOut[1] = aIn2
 endif
 kI = 0
 kJ = 4
