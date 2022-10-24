@@ -132,9 +132,7 @@
 #define INSTRUMENT_PLUGIN_UUID "ab018f191c70470f98ac3becb76e6d13" // -0
 #define ORC_INSTANCE_COUNT 2
 #define ORC_INSTANCE_INDEX 0
-#define MIX_ID 7/0
 #include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Triangle4BassMonoSynth/Triangle4BassMonoSynth.orc" // -0
-#undef MIX_ID
 #undef ORC_INSTANCE_INDEX
 #undef ORC_INSTANCE_COUNT
 #undef INSTRUMENT_PLUGIN_UUID
@@ -188,9 +186,7 @@
 #define INSTRUMENT_PLUGIN_UUID "14afc0dff693459fb6fc521bcf3db0bc" // -0
 #define ORC_INSTANCE_COUNT 3
 #define ORC_INSTANCE_INDEX 1
-#define MIX_ID 10/1
 #include "/Users/andy/-/code/WorksInProgress/Projects/2-PrimitiveTriangles/Csound/build/inlined/configured/Synths/Saw1RimSynth/Saw1RimSynth.orc" // -0
-#undef MIX_ID
 #undef ORC_INSTANCE_INDEX
 #undef ORC_INSTANCE_COUNT
 #undef INSTRUMENT_PLUGIN_UUID
