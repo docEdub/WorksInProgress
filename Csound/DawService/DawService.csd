@@ -1299,8 +1299,10 @@ instr WriteTracksetOrcFile
             fprintks(S_filename, "#define INSTRUMENT_PLUGIN_UUID \"%s\" // -%d\n", STrackUuid, 0)
             fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
             fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
+            fprintks(S_filename, "#define MIX_ID %d/%d\n", kI, kOrcInstance)
             fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/%s/%s/%s\" // -%d\n", \
                 SOrcDirectory, SOrcSubDirectory, S_orcFilename, 0)
+            fprintks(S_filename, "#undef MIX_ID\n")
             fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
             fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
             fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_UUID\n")
@@ -1331,8 +1333,10 @@ instr WriteTracksetOrcFile
                 fprintks(S_filename, "#define INSTRUMENT_PLUGIN_INDEX %d\n", kJ + 1)
                 fprintks(S_filename, "#define ORC_INSTANCE_COUNT %d\n", giOrcInstanceCounts[kOrcInstanceIndex])
                 fprintks(S_filename, "#define ORC_INSTANCE_INDEX %d\n", kOrcInstance)
+                fprintks(S_filename, "#define MIX_ID %d/%d\n", kI, kOrcInstance)
                 fprintks(S_filename, "#include \"${CSOUND_CMAKE_BUILD_INLINED_CONFIGURED_DIR}/Effects/%s/%s\" // -%d\n",
                     SOrcSubDirectory, SOrcFilename, 0)
+                fprintks(S_filename, "#undef MIX_ID\n")
                 fprintks(S_filename, "#undef ORC_INSTANCE_INDEX\n")
                 fprintks(S_filename, "#undef ORC_INSTANCE_COUNT\n")
                 fprintks(S_filename, "#undef INSTRUMENT_PLUGIN_INDEX\n")

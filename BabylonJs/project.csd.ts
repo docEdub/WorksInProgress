@@ -2634,6 +2634,18 @@ prints("instr GenerateJson - done\\n")
 endin
 #end
 #define CSOUND_IS_PLAYBACK #1#
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "0/0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -3157,6 +3169,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 4))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "1/1", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[1][0] = "8aac7747b6b44366b1080319e34a8616"
 instr Json_5
@@ -3376,6 +3400,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 5))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "2/2", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[2][0] = "8e12ccc0dff44a4283211d553199a8cd"
 instr Json_6
@@ -3595,6 +3631,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 6))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "3/3", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[3][0] = "6aecd056fd3f4c6d9a108de531c48ddf"
 instr Json_7
@@ -3814,6 +3862,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 7))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "4/4", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[4][0] = "e3e7d57082834a28b53e021beaeb783d"
 instr Json_8
@@ -4033,6 +4093,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 8))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "5/5", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[5][0] = "02c103e8fcef483292ebc49d3898ef96"
 instr Json_9
@@ -4252,6 +4324,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 9))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "6/0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -4539,6 +4623,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 10))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "7/0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -5010,6 +5106,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 11))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "8/1", ii), 2)
+ii += 1
+od
 #ifdef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
 #undef TriangleBassMonoSynth_VolumeEnvelopeAttackAndDecayTime
 #end
@@ -5329,6 +5437,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 12))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "9/0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -5623,6 +5743,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 13))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "10/1", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[10][0] = "14afc0dff693459fb6fc521bcf3db0bc"
 instr Json_14
@@ -5769,6 +5901,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 14))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "11/2", ii), 2)
+ii += 1
+od
 #ifdef IS_GENERATING_JSON
 gSPluginUuids[11][0] = "5006b8ea266f4bf9aba92ff5badfea3e"
 instr Json_15
@@ -5915,6 +6059,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 15))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "12/0", ii), 2)
+ii += 1
+od
 #ifndef ADSR_LINSEGR_UDO_ORC
 #define ADSR_LINSEGR_UDO_ORC ##
 opcode adsr_linsegr, a, iiii
@@ -6257,6 +6413,18 @@ od
 turnoff
 endin
 scoreline_i(sprintf("i \\"Preallocate_%d\\" 0 -1", 16))
+#ifndef MIX_CHANNEL_COUNT
+#ifdef INTERNAL_CHANNEL_COUNT
+#define MIX_CHANNEL_COUNT # $INTERNAL_CHANNEL_COUNT #
+#else
+#define MIX_CHANNEL_COUNT # 6 #
+#endif
+#endif
+ii = 0
+while (ii < $MIX_CHANNEL_COUNT) do
+chn_a(sprintf("%s/%d", "13/0", ii), 2)
+ii += 1
+od
 gSCcInfo_Reverb[] = fillarray( \\
 \\
 "enabled", "bool", "false", "synced", \\
