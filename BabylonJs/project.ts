@@ -3332,6 +3332,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     const audioSelectionOverlay = document.getElementById(`initial-overlay`)
     audioSelectionOverlay!.style.display = `block`
 
+    const audioSelectionContent = document.getElementById(`initial-content`)
+    audioSelectionContent!.style.display = `block`
+
     const hideLoadingUI = engine.hideLoadingUI
     engine.hideLoadingUI = () => {}
 
@@ -3341,7 +3344,9 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
     loadingElement.style.opacity = "0.75"
 
     const loadAudio = (engineName: string) => {
-        audioSelectionOverlay!.style.display = `none`
+        // Hide the overlay but leave it there so it blocks mouse movements.
+        audioSelectionOverlay!.style.background = `rgba(0, 0, 0, 0)`
+        audioSelectionContent!.style.display = `none`
         loadingElement.style.display = loadingElementDisplayStyle
 
         const script = document.createElement(`script`)
@@ -3352,6 +3357,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             audioEngine.earliestNoteOnTime = earliestNoteOnTime
             audioEngine.readyObservable.addOnce(() => {
                 audioEngine.onCameraMatrixChanged(camera.matrix)
+                audioSelectionOverlay!.style.display = `none`
                 engine.hideLoadingUI = hideLoadingUI
                 engine.hideLoadingUI()
             })
