@@ -523,11 +523,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             const xrButtonOverlays = document.getElementsByClassName(`xr-button-overlay`)
             xrButtonOverlay = xrButtonOverlays.length ? <HTMLElement>xrButtonOverlays[0] : null
-            if (xrButtonOverlay) {
-                xrButtonOverlay.style.display = "none"
-            }
+            hideXRUI()
         }
         return xr
+    }
+
+    const hideXRUI = () => {
+        if (xrButtonOverlay) {
+            xrButtonOverlay.style.display = "none"
+        }
     }
 
     const showXRUI = () => {
@@ -3369,6 +3373,7 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                         }
                     }
                 }
+                showXRUI()
             })
             camera.registerOnMatrixChanged(audioEngine.onCameraMatrixChanged)
 
@@ -3416,7 +3421,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 floorMeshes: [ ground ],
                 disableTeleportation: true
             })
-            showXRUI()
         }
 
         audio6dofButton.onclick = async () => {
@@ -3426,7 +3430,6 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
             await initXR({
                 floorMeshes: [ ground ]
             })
-            enterXR()
         }
     }
 
