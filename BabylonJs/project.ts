@@ -3360,6 +3360,15 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
                 audioSelectionOverlay!.style.display = `none`
                 engine.hideLoadingUI = hideLoadingUI
                 engine.hideLoadingUI()
+                canvas.focus()
+                canvas.onclick = () => {
+                    if (document.fullscreenElement) {
+                        canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock
+                        if (!!canvas.requestPointerLock) {
+                            canvas.requestPointerLock()
+                        }
+                    }
+                }
             })
             camera.registerOnMatrixChanged(audioEngine.onCameraMatrixChanged)
 
