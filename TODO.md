@@ -2,6 +2,7 @@
 - Fix disabling audio when browser tab is inactive.
 
 - Fix 3dof audio cutting out after exiting immersive mode on Quest 2.
+    - 221028: Reported issue to Dave Hill @ Meta on Discord.
 
 - Investigate frozen immersive view on Quest Pro when hand tracking is enabled and hand is detected.
     - 221027: Babylon.js internal issue created. Raanan says he can look at it in a week or so.
