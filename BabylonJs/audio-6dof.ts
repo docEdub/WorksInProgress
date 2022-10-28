@@ -367,6 +367,14 @@ class AudioEngine {
 
     public readyObservable = new BABYLON.Observable<void>()
 
+    public pause = () => {
+        this.csound.pause()
+    }
+
+    public resume = () => {
+        this.csound.resume()
+    }
+
     private audioContext = null
     private csound = null
 }

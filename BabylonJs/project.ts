@@ -21,6 +21,8 @@ declare global {
             sequenceTime: number
             onCameraMatrixChanged(matrix: BABYLON.Matrix): void
             readyObservable: BABYLON.Observable<void>
+            pause(): void
+            resume(): void
         }
     }
 }
@@ -3379,6 +3381,39 @@ class Playground { public static CreateScene(engine: BABYLON.Engine, canvas: HTM
 
             let previousTime = 0
             let time = -1
+
+            document.visible = true;
+            (function() {
+                var hidden = "hidden";
+                if (hidden in document) {
+                    document.addEventListener("visibilitychange", onchange);
+                }
+                else if ((hidden = "mozHidden") in document) {
+                    document.addEventListener("mozvisibilitychange", onchange);
+                }
+                else if ((hidden = "webkitHidden") in document) {
+                    document.addEventListener("webkitvisibilitychange", onchange);
+                }
+                else if ((hidden = "msHidden") in document) {
+                    document.addEventListener("msvisibilitychange", onchange);
+                }
+                else {
+                    // All others:
+                    window.onpageshow = window.onpagehide = window.onfocus = window.onblur = onchange;
+                }
+
+                function onchange (evt) {
+                    document.visible = document.visibilityState === 'visible';
+                    console.debug(`document.visible = ${document.visible}`);
+                    if (document.visible) {
+                        audioEngine?.resume()
+                    }
+                    else {
+                        audioEngine?.pause()
+                    }
+                }
+            })();
+
             scene.registerBeforeRender(() => {
                 previousTime = time
                 time = audioEngine.sequenceTime

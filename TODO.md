@@ -1,6 +1,4 @@
 
-- Fix disabling audio when browser tab is inactive.
-
 - Fix 3dof audio cutting out after exiting immersive mode on Quest 2.
     - 221028: Reported issue to Dave Hill @ Meta on Discord.
 

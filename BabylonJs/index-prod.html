@@ -153,32 +153,5 @@
         </div>
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <script src="./app.js"></script>
-        <script>
-            document.visible = true;
-            (function() {
-                var hidden = "hidden";
-                if (hidden in document) {
-                    document.addEventListener("visibilitychange", onchange);
-                }
-                else if ((hidden = "mozHidden") in document) {
-                    document.addEventListener("mozvisibilitychange", onchange);
-                }
-                else if ((hidden = "webkitHidden") in document) {
-                    document.addEventListener("webkitvisibilitychange", onchange);
-                }
-                else if ((hidden = "msHidden") in document) {
-                    document.addEventListener("msvisibilitychange", onchange);
-                }
-                else {
-                    // All others:
-                    window.onpageshow = window.onpagehide = window.onfocus = window.onblur = onchange;
-                }
-
-                function onchange (evt) {
-                    document.visible = document.visibilityState === 'visible';
-                    console.debug(`document.visible = ${document.visible}` );
-                }
-            })();
-        </script>
     </body>
 </html>

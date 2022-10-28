@@ -141,6 +141,9 @@ class AudioEngine {
 
     public readyObservable = new BABYLON.Observable<void>()
 
+    public pause = () => {}
+    public resume = () => {}
+
     private updateDawCameraMatrix = (matrix: BABYLON.Matrix): void => {
         const message = new OSC.Message('/DawService/camera_matrix')
         for (let i = 0; i < 16; i++) {

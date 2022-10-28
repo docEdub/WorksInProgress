@@ -105,6 +105,18 @@ class AudioEngine {
 
     public readyObservable = new BABYLON.Observable<void>()
 
+    public pause = () => {
+        this._.audioWY.pause()
+        this._.audioZX.pause()
+        this._.audioContext.suspend()
+    }
+
+    public resume = () => {
+        this._.audioContext.resume()
+        this._.audioWY.play()
+        this._.audioZX.play()
+    }
+
     private set rotationY(value: number) {
         if (0.01 < Math.abs(this._.rotationTargetY - value)) {
             this._.rotationTargetY = value
