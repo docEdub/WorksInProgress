@@ -4612,7 +4612,7 @@ giTriangle2Synth_NoteIndex[0] = giTriangle2Synth_NoteIndex[0] + 1
 SJsonFile = sprintf("json/%s.%d.json",
 "fd575f03378047af835c19ef4f7d5991",
 giTriangle2Synth_NoteIndex[0])
-iOnTime = times()
+iOnTime = times:i()
 SJsonData = sprintf("{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f,\\"pitchLfoTime\\":%.3f",
 iOnTime, iNoteNumber, iNoteNumberLfoTime)
 if (lastcycle() == 1) then
@@ -4918,7 +4918,7 @@ if (giTriangle4BassMonoSynth_NoteIndex[0] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_11"))
 endif
 giTriangle4BassMonoSynth_NoteIndex[0] = giTriangle4BassMonoSynth_NoteIndex[0] + 1
-iStartTime = times()
+iStartTime = times:i()
 kTime = (times:k() - 1 / kr) - iStartTime
 SiJson = sprintf("{\\"note\\":{\\"onTime\\":%.3f", iStartTime)
 SiJson = strcat(SiJson, ",\\"k\\":[")
@@ -5249,7 +5249,7 @@ if (giTriangle4BassMonoSynth_NoteIndex[1] == 0) then
 scoreline_i(sprintf("i \\"%s\\" 0 0", "Json_12"))
 endif
 giTriangle4BassMonoSynth_NoteIndex[1] = giTriangle4BassMonoSynth_NoteIndex[1] + 1
-iStartTime = times()
+iStartTime = times:i()
 kTime = (times:k() - 1 / kr) - iStartTime
 SiJson = sprintf("{\\"note\\":{\\"onTime\\":%.3f", iStartTime)
 SiJson = strcat(SiJson, ",\\"k\\":[")
@@ -5651,7 +5651,7 @@ giSaw1RimSynth_NoteIndex[0] = giSaw1RimSynth_NoteIndex[0] + 1
 SJsonFile = sprintf("json/%s.%d.json",
 "d51fb1d5a0104857a7f61b218692743c",
 giSaw1RimSynth_NoteIndex[0])
-iOnTime = times()
+iOnTime = times:i()
 fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
 #end
 kAmp init 0.333 * (iVelocity / 127)
@@ -5809,7 +5809,7 @@ giSaw1RimSynth_NoteIndex[1] = giSaw1RimSynth_NoteIndex[1] + 1
 SJsonFile = sprintf("json/%s.%d.json",
 "14afc0dff693459fb6fc521bcf3db0bc",
 giSaw1RimSynth_NoteIndex[1])
-iOnTime = times()
+iOnTime = times:i()
 fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
 #end
 kAmp init 0.333 * (iVelocity / 127)
@@ -5967,7 +5967,7 @@ giSaw1RimSynth_NoteIndex[2] = giSaw1RimSynth_NoteIndex[2] + 1
 SJsonFile = sprintf("json/%s.%d.json",
 "5006b8ea266f4bf9aba92ff5badfea3e",
 giSaw1RimSynth_NoteIndex[2])
-iOnTime = times()
+iOnTime = times:i()
 fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f", iOnTime, iNoteNumber)
 #end
 kAmp init 0.333 * (iVelocity / 127)
@@ -6286,7 +6286,7 @@ giSaw2FlyerSynth_NoteIndex[0] = giSaw2FlyerSynth_NoteIndex[0] + 1
 SJsonFile = sprintf("json/%s.%d.json",
 "89fb9657327e406b80a253b6c9d69b8a",
 giSaw2FlyerSynth_NoteIndex[0])
-iOnTime = times()
+iOnTime = times:i()
 fprints(SJsonFile, "{\\"note\\":{\\"onTime\\":%.3f,\\"pitch\\":%.3f,\\"flyerDirection\\":%d", iOnTime, iNoteNumber, iFlyerDirection)
 #end
 if (gkCcValues_Saw2FlyerSynth[iOrcInstanceIndex][giCc_Saw2FlyerSynth_positionEnabled] == 1) then

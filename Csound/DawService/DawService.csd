@@ -383,13 +383,17 @@ opcode set_mode, 0, k
     log_k_info("opcode set_mode(k_mode = %d) ...", k_mode)
 
     k_i = 0
+    SMode init gS_mode_channels[0]
     while (k_i < 4) do
         if (k_mode == k_i + 1) then
             k_on = true
         else
             k_on = false
         endif
-        chnset k_on, gS_mode_channels[k_i]
+        igoto skipSMode
+        SMode = gS_mode_channels[k_i]
+        skipSMode:
+        chnset k_on, SMode
         k_i += 1
     od
 

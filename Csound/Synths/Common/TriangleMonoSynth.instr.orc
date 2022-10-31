@@ -124,7 +124,7 @@ instr INSTRUMENT_ID
                 scoreline_i(sprintf("i \"%s\" 0 0", STRINGIZE(CONCAT(Json_, INSTRUMENT_ID))))
             endif
             gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] = gi${InstrumentName}_NoteIndex[ORC_INSTANCE_INDEX] + 1
-            iStartTime = times()
+            iStartTime = times:i()
             kTime = (times:k() - 1 / kr) - iStartTime
             SiJson = sprintf("{\"note\":{\"onTime\":%.3f", iStartTime)
             SiJson = strcat(SiJson, ",\"k\":[")

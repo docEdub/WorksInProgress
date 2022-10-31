@@ -187,7 +187,7 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giTriangle2Synth_NoteIndex[ORC_INSTANCE_INDEX])
-            iOnTime = times()
+            iOnTime = times:i()
             SJsonData = sprintf("{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f,\"pitchLfoTime\":%.3f",
                 iOnTime, iNoteNumber, iNoteNumberLfoTime)
             if (lastcycle() == true) then

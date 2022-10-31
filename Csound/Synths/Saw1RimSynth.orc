@@ -80,7 +80,7 @@ instr INSTRUMENT_ID
             SJsonFile = sprintf("json/%s.%d.json",
                 INSTRUMENT_PLUGIN_UUID,
                 giSaw1RimSynth_NoteIndex[ORC_INSTANCE_INDEX])
-            iOnTime = times()
+            iOnTime = times:i()
             fprints(SJsonFile, "{\"note\":{\"onTime\":%.3f,\"pitch\":%.3f", iOnTime, iNoteNumber)
         ${CSOUND_ENDIF}
 
