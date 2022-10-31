@@ -8,29 +8,30 @@ This project is a work in progress.
 I currently only build on macOS. 
 
 ### Build Csound content
-- Install Xcode command line tools for clang, and install Node, CMake 3.21.4, Csound 6.16.2, and Cabbage 2.5.12. Make
+1. Install Xcode command line tools for clang, and install Node, CMake 3.21.4, Csound 6.17.0, and Cabbage 2.5.12. Make
   sure `clang`, `node` and `cmake` are on the PATH.
-- In the `2-PrimitiveTrianglest` folder, run commands:
+    - Newer versions of CMake will probably work.
+    - Csound 6.18.0 does not work correctly for this project, yet.
+    - Cabbage 2.5.12 can be downloaded from https://github.com/docEdub/cabbage-releases/releases/download/Cabbage-2.5.12/Cabbage-2.5.12.zip
+1. In the `2-PrimitiveTrianglest` folder, run commands:
     ```
     node configure
     node make
     ```
-- To change the build options run command:
+1. To change the build options run command:
     ```
     node make edit_cache
     ```
-- To see `make` targets run command:
+1. To see `make` targets run command:
     ```
     node make help
     ```
-- To build the VST3 plugins run command:
+1. To build the VST3 plugins run command:
     ```
     node make vst3
     ```
 
 The .csd files and plugins will be generated in `2-PrimitiveTriangles/Csound/build`.
-
-If any of the above commands fail, try running them again. They may work the 2nd time.
 
 VST3 plugins should work with Reaper since that's what I use.
 
