@@ -35,15 +35,15 @@ If any of the above commands fail, try running them again. They may work the 2nd
 VST3 plugins should work with Reaper since that's what I use.
 
 ### Bounce Reaper projects to monolith Csound .csd
-- In Cabbage, open `Csound/build/included-output/DawService.csd` and start it.
-- In the Cabbage UI for DawService.csd make sure "Mode 1" is selected and open a Reaper project that uses the VST3
-  plugins built earlier.
-- If the Reaper project opens successfully, switch to "Mode 2" and play the Reaper project for a few seconds. This will
-  generate the Csound files needed to bounce the track and plugin chains.
-- Switch to "Mode 3" and play the Reaper project for a few seconds again to generate the Csound files for track
+- Build the VST3 plugins (see above).
+- Open `ReaperProjects/211214_1_PrimitiveTriangles.rpp` in Reaper.
+- In Reaper's mixer window, scroll to the far right and click on the `DawService` plugin at the top of the DawService track to show it's UI. You should see buttons labeled "Mode 1", "Mode 2", etc...
+- In the DawService plugin's UI, make sure "Mode 1" is selected and start playback to see if everything is built and working correctly.
+- If the Reaper project plays successfully, switch to "Mode 2" and play the Reaper project for a few seconds. This will generate the Csound files needed to bounce the track and plugin chains.
+- Next, switch to "Mode 3" and play the Reaper project for a few seconds again to generate the Csound files for track
   send/volume levels and automations.
-- Switch to "Mode 4" and play the entire Reaper project to generate the Csound score.
-- When done, switch back to "Mode 1" for normal playback.
+- Next, switch to "Mode 4" and play the entire Reaper project to generate the Csound score.
+- When done, switch back to "Mode 1" for normal playback. **Don't skip this step**. It is required to finalize the Csound score generated using "Mode 4".
 
 If everything went smoothly then you should be able to bounce all the generated Csound files into a monolithic .csd with
 the following command:
@@ -51,10 +51,11 @@ the following command:
 node bounce --with-json
 ```
 
-This will create 3 files in the `Csound/build/bounce` folder:
-1. `DawPlayback.csd` is the raw monolithic .csd.
-1. `DawPlayback.csd.js` is a minified version of the monolithic .csd I use to paste into `BabylonJs/project.ts`.
-1. `DawPlayback.json` is used for triggering the graphics in BabylonJs. It gets pasted into `BabylonJs/project.ts`, too.
+This will create 4 files in the `Csound/build/bounce` folder:
+1. `DawPlayback.csd` is the raw monolithic .csd used on the website. Note that this .csd will not play back correctly using Csound since it uses variables that are expected to be defined by the website's JavaScript context.
+1. `DawPlayback.configured.csd` is the same as `DawPlayback.csd` but the JavaScript variables are replaced with their values. This .csd should work in Csound.
+1. `DawPlayback.json` contains the data used for triggering the graphics in BabylonJs.
+1. `DawPlayback.min.json` is a minified version of `DawPlayback.json`.
 
 ### Build web content
 - Run the following commands to build the web content:
