@@ -18,9 +18,13 @@
     "hugo:start:help": "echo 'Starts a hugo dev server with automatic reload enabled.'",
     "hugo:start": "hugo server --buildDrafts",
     "hugo:start:prod": "hugo server",
-    "logo:build:help": "echo 'Builds the blog's minified docEdub.svg logo using the `svgo` tool.'",
-    "logo:build": "svgo ./logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ./config/svgo.js --multipass",
-    "logo:clean": "(test -f ./static/img/docEdub.svg && rm ./static/img/docEdub.svg) & exit 0"
+    "logo:build:help": "echo 'Builds the blog's minified docEdub.svg and E.svg logos using the `svgo` tool.'",
+    "logo:build": "npm run logo:build:docEdub && npm run logo:build:E",
+    "logo:build:docEdub": "svgo ./logos/docEdub.inkscape.svg -o ./static/img/docEdub.svg --config ./config/svgo.js --multipass",
+    "logo:build:E": "svgo ./logos/E.inkscape.svg -o ./static/img/E.svg --config ./config/svgo.js --multipass",
+    "logo:clean": "npm run logo:clean:docEdub && npm run logo:clean:E",
+    "logo:clean:docEdub": "(test -f ./static/img/docEdub.svg && rm ./static/img/docEdub.svg) & exit 0",
+    "logo:clean:E": "(test -f ./static/img/E.svg && rm ./static/img/E.svg) & exit 0"
   },
   "author": "",
   "license": "ISC",
