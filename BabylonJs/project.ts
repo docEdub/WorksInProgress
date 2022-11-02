@@ -31,7 +31,7 @@ declare global {
 
 document.isProduction = true
 document.debugAsserts = true
-document.alwaysRun = true
+document.alwaysRun = false
 
 const UrlParams = new URLSearchParams(window.location.search)
 
