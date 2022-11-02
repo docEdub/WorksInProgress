@@ -5,7 +5,7 @@ images: ["/posts/2/preview.jpg"]
 draft: false
 ---
 
-"[Triangle](/2/)" is my second virtual reality experience. It is the first of piece of a three part series named "Primitives". Each piece in the series explores using a basic shape to create with.
+"[Triangle](/2/)" is my second virtual reality experience. It is the first piece of a three part series named "Primitives". Each piece in the series explores using a basic shape to create with.
 
 The six degrees of freedom experience works in the Oculus Quest 2 browser and most desktop browsers.
 
@@ -19,7 +19,7 @@ The three degrees of freedom experience works on most mobile devices.
 
 ## Overview
 
-The triangle is everywhere in computer graphics, which is why I chose it as the first shape in the "Primitives" series. I used triangles a lot in it, as you can see. Maybe not so obvious, though, is I used [triangle waves](https://en.wikipedia.org/wiki/Triangle_wave) in the music, too, to draw an even deeper connection between the graphics and the audio than is visible on the surface.
+The triangle is everywhere in computer graphics, which is why I chose it as the first shape in the "Primitives" series. I used triangles a lot in it, as you can see. What you can't see is I used [triangle waves](https://en.wikipedia.org/wiki/Triangle_wave) in the music, too. This draws an even deeper connection between the graphics and the audio than is visible on the surface.
 
 The experience is pretty basic (primitive?) but that's the idea for now as I continue building out my creative workflow. I spent some of my coding time for this project getting the DAW synced with the graphics engine to make editing easier. This was one of the biggest issues I ran into while making my last piece. I had no way of jumping to any specific time in the music while tweaking the animation and spatial audio settings. To see how a change affected something at the end of the piece, I had to play the whole thing from the start each time. Not fun. For this piece I used [OSC](https://en.wikipedia.org/wiki/Open_Sound_Control) to keep the graphics engine synced with the DAW, and setup all the animations so they update correctly when the playback time in the DAW changes. It's a lot more fun, now.
 
